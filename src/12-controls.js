@@ -44,8 +44,6 @@
     if (S.treasure && !S.treasure.dug && Math.abs(x - S.treasure.x) < 35 * u && Math.abs(y - sandY(S.treasure.x)) < 50 * u) { dig(); return; }
     const chest = S.ground.find(g => g.kind === "chest" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.4)) < g.s * 1.2);
     if (chest) { chestBurst(chest); return; }
-    if (diverMode) return;
-    newVariant(randomSeed(), true);
   }
   canvas.addEventListener("pointercancel", () => { pointer.active = false; down = null; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("contextmenu", e => e.preventDefault());
@@ -112,7 +110,8 @@
 
   taskEl.addEventListener("click", explainTask);
 
-  // ---- diver, menu and photo buttons -------------------------------------
+  // ---- new ocean, diver, menu and photo buttons --------------------------
+  document.getElementById("next").addEventListener("click", () => newVariant(randomSeed(), true));
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {

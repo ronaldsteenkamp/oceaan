@@ -3,6 +3,7 @@
   function applyLang() {
     document.documentElement.lang = LANG;
     const tools = {
+      next: [L("Nieuwe oceaan", "New ocean"), L("Nieuw", "New")],
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
       diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
@@ -20,7 +21,7 @@
     document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
-      L("<b>Tik op het water</b> voor een nieuwe oceaan.", "<b>Tap the water</b> for a new ocean."),
+      L("De <b>pijltjesknop</b> onderaan geeft een nieuwe oceaan.", "The <b>arrow button</b> at the bottom gives a new ocean."),
       L("<b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.", "<b>Drag</b> to startle the animals, and <b>press and hold</b> to feed them."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),

@@ -6,7 +6,7 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 
 ## Bediening
 
-- Tik op het water voor een nieuwe oceaan.
+- De pijltjesknop onderaan geeft een nieuwe oceaan.
 - Sleep om de dieren te laten schrikken, houd ingedrukt om de vissen te voeren.
 - Tik op een schatkist, een fles of een verstopt zeepaardje. Tik op de zoekopdracht bovenin voor uitleg.
 - Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan.

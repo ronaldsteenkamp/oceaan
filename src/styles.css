@@ -196,7 +196,7 @@
   .photo-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
   /* labels under the icons on touch screens, for the first visits */
-  .toolbar.labels .tool { width: 58px; height: 50px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+  .toolbar.labels .tool { width: 52px; height: 50px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
   .toolbar.labels .tool::after { content: attr(data-short); font-size: 10px; line-height: 1; }
   .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
