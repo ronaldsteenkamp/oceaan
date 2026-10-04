@@ -194,7 +194,7 @@
       if (!keys.length) continue;
       html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
         const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 ? `<span class="count">${e.n}×</span>` : ""}</button>`;
+        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n}×</span>` : ""}</button>`;
       }).join("") + `</div>`;
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>

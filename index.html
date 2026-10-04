@@ -5443,7 +5443,7 @@
       if (!keys.length) continue;
       html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
         const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 ? `<span class="count">${e.n}×</span>` : ""}</button>`;
+        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n}×</span>` : ""}</button>`;
       }).join("") + `</div>`;
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>
@@ -5680,7 +5680,8 @@
         <p class="fact">${fact}</p>
         <dl>
           <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
-          <div><dt>${L("Gezien", "Seen")}</dt><dd>${e ? (e.n === 1 ? L("1 keer", "once") : L(e.n + " keer", e.n + " times")) : L("Nog niet gevonden", "Not found yet")}</dd></div>
+          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>`
+            : key.startsWith("shiny:") ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${e.n === 1 ? L("1 keer", "once") : e.n > 99 ? L("99+ keer", "99+ times") : L(e.n + " keer", e.n + " times")}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
         </dl>
       </div>`;
@@ -6142,7 +6143,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=4").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=5").catch(() => {}));
   }
 </script>
 </body>

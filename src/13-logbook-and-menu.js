@@ -168,7 +168,8 @@
         <p class="fact">${fact}</p>
         <dl>
           <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
-          <div><dt>${L("Gezien", "Seen")}</dt><dd>${e ? (e.n === 1 ? L("1 keer", "once") : L(e.n + " keer", e.n + " times")) : L("Nog niet gevonden", "Not found yet")}</dd></div>
+          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>`
+            : key.startsWith("shiny:") ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${e.n === 1 ? L("1 keer", "once") : e.n > 99 ? L("99+ keer", "99+ times") : L(e.n + " keer", e.n + " times")}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
         </dl>
       </div>`;
