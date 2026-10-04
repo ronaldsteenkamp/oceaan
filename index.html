@@ -18,165 +18,218 @@
 </style>
 <title>Oceaan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
 <style>
-  /* Layout: full-bleed underwater canvas, two quiet labels in the bottom corners */
+  /* Layout: full-bleed underwater canvas; a quiet status line bottom-left and one glass toolbar bottom-right */
   :root {
     --deep: #06182a;
-    --label: rgba(225, 240, 245, 0.6);
-    --label-strong: rgba(235, 248, 250, 0.95);
-    --veil: rgba(4, 20, 34, 0.5);
-    --line: rgba(225, 240, 245, 0.2);
-    --line-strong: rgba(225, 240, 245, 0.45);
-    --focus: #7fd8c9;
+    --surface: rgba(7, 24, 39, 0.9);
+    --raised: rgba(16, 40, 60, 0.92);
+    --glass: rgba(6, 22, 36, 0.58);
+    --text: #eaf4f6;
+    --text-dim: rgba(220, 236, 240, 0.66);
+    --text-faint: rgba(220, 236, 240, 0.42);
+    --line: rgba(220, 236, 240, 0.14);
+    --line-strong: rgba(220, 236, 240, 0.28);
+    --accent: #7fd8c9;
+    --accent-soft: rgba(127, 216, 201, 0.16);
+    --gold: #ffd479;
+    --sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "DM Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+    --shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
     color-scheme: dark;
   }
   html, body { height: 100%; }
   body {
-    background: var(--deep);
-    color: var(--label);
-    font-family: var(--mono);
-    overflow: hidden;
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
+    background: var(--deep); color: var(--text-dim);
+    font-family: var(--sans); font-size: 13px;
+    overflow: hidden; touch-action: none;
+    -webkit-user-select: none; user-select: none; -webkit-font-smoothing: antialiased;
   }
-  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
-  .corner {
-    position: fixed;
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    display: flex; align-items: center; gap: 10px;
-    font-size: 11px; letter-spacing: 0.08em;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-  }
-  .left { left: calc(16px + env(safe-area-inset-left, 0px)); }
-  .right { right: calc(16px + env(safe-area-inset-right, 0px)); }
-  #seed { font-variant-numeric: tabular-nums; }
-  #seed b { font-weight: 500; color: var(--label-strong); }
-  #rare { color: #ffd479; font-weight: 500; }
-  #hint { opacity: 0.85; transition: opacity 1.5s ease; }
-  #hint.gone { opacity: 0; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; -webkit-touch-callout: none; }
+
   button {
-    font: inherit; letter-spacing: inherit;
-    color: var(--label);
-    background: var(--veil);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 7px 13px;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transition: color .2s, border-color .2s;
+    font: inherit; color: var(--text);
+    background: var(--raised); border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 14px; cursor: pointer;
+    transition: background-color .15s, border-color .15s, color .15s;
   }
-  button:hover { color: var(--label-strong); border-color: var(--line-strong); }
-  button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  button.on, button[aria-pressed="true"] { color: var(--label-strong); border-color: var(--focus); }
-  #book { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; }
-  #book svg { display: block; }
-  #bookDot { position: absolute; top: 2px; right: 3px; width: 8px; height: 8px; border-radius: 50%; background: #ffd479; box-shadow: 0 0 0 2px var(--deep); }
+  button:hover { border-color: var(--line-strong); background: rgba(26, 56, 80, 0.95); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #05221f; font-weight: 600; }
+  button.primary:hover { background: #9ae4d8; border-color: #9ae4d8; }
+  button.ghost { background: transparent; }
+
+  /* status line */
+  .status {
+    position: fixed; left: calc(18px + env(safe-area-inset-left, 0px)); bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 12px; color: var(--text-dim); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55); pointer-events: none;
+  }
+  #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }
+  #rare {
+    color: var(--gold); font-weight: 600; text-shadow: none;
+    padding: 2px 9px; border: 1px solid rgba(255, 212, 121, 0.45); border-radius: 999px; background: rgba(255, 212, 121, 0.1);
+  }
+
+  /* toolbar */
+  .toolbar {
+    position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; gap: 2px; padding: 4px;
+    background: var(--glass); border: 1px solid var(--line); border-radius: 14px;
+    backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow: var(--shadow);
+  }
+  .tool {
+    position: relative; width: 42px; height: 40px; padding: 0;
+    display: inline-grid; place-items: center;
+    background: transparent; border: 1px solid transparent; border-radius: 10px; color: var(--text-dim);
+  }
+  .tool:hover { background: rgba(255, 255, 255, 0.08); border-color: transparent; color: var(--text); }
+  .tool[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+  .tool svg { width: 21px; height: 21px; display: block; }
+  #sound .on-icon, #sound.is-on .off-icon { display: none; }
+  #sound.is-on .on-icon { display: block; }
+  .toolbar .divider { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+  @media (hover: hover) {
+    .tool[data-tip]:hover::after {
+      content: attr(data-tip); position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+      white-space: nowrap; font-size: 12px; padding: 5px 9px; border-radius: 7px;
+      background: rgba(4, 16, 26, 0.96); color: var(--text); border: 1px solid var(--line); pointer-events: none;
+    }
+  }
+  #bookDot { position: absolute; top: 7px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px #0b2236; }
   #bookDot[hidden] { display: none; }
-  button.primary { background: rgba(127, 216, 201, 0.18); border-color: var(--focus); color: var(--label-strong); }
+  #book[data-rank="bronze"] { color: #e5ad74; }
+  #book[data-rank="silver"] { color: #eef3f5; }
+  #book[data-rank="gold"] { color: var(--gold); }
+  #book.glitter svg { filter: drop-shadow(0 0 3px rgba(255, 230, 150, 0.9)); }
+
+  /* search task and messages */
   #task {
-    position: fixed; top: calc(26px + env(safe-area-inset-top, 0px)); left: calc(16px + env(safe-area-inset-left, 0px));
-    font-size: 10px; letter-spacing: 0.06em; color: var(--label-strong);
-    background: var(--veil); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px;
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    position: fixed; top: calc(28px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
+    max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 12px; color: var(--text);
+    background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     transition: opacity 1.2s ease;
   }
   #task.fade { opacity: 0; pointer-events: none; }
-  #clock { color: var(--label); }
-  #welcome { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 8, 14, 0.55); }
-  #welcome[hidden] { display: none; }
-  #welcome .card {
-    width: min(420px, 100%); background: rgba(5, 18, 30, 0.95); border: 1px solid var(--line-strong); border-radius: 14px;
-    padding: 20px 20px 18px; color: var(--label-strong); font-size: 12.5px; line-height: 1.55;
-  }
-  #welcome h2 { font-family: Caveat, "Segoe Print", cursive; font-weight: 600; font-size: 30px; margin: 0 0 8px; letter-spacing: 0; }
-  #welcome ul { margin: 0 0 16px; padding-left: 18px; color: var(--label); }
-  #welcome b { color: var(--label-strong); font-weight: 500; }
-  #welcome .credit { margin: 14px 0 0; font-size: 10.5px; color: var(--label); }
-  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-  .row[hidden] { display: none; }
-  .row label { color: var(--label); }
-  .row input[type="range"] { flex: 1; min-width: 140px; accent-color: var(--focus); }
-  .hint-line { color: var(--label-strong); background: rgba(127, 216, 201, 0.1); border-radius: 8px; padding: 6px 10px; margin-top: 10px; }
-  .chip.off { cursor: pointer; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-  .card {
-    display: flex; flex-direction: column; gap: 5px; padding: 4px 4px 6px; border-radius: 10px;
-    border: 1px solid var(--line); background: rgba(127, 216, 201, 0.07);
-    color: var(--label-strong); font-size: 10.5px; line-height: 1.25; letter-spacing: 0.02em; text-align: center;
-    backdrop-filter: none; -webkit-backdrop-filter: none;
-  }
-  .card img { width: 100%; aspect-ratio: 120 / 84; border-radius: 7px; display: block; background: #0d3a52; }
-  .card span { min-width: 0; overflow-wrap: anywhere; }
-  .card { min-width: 0; }
-  .card.off { color: rgba(225, 240, 245, 0.42); border-style: dashed; background: transparent; }
-  .card.shiny.on { border-color: #ffd479; }
-  .card { position: relative; }
-  .card .count { position: absolute; top: 7px; right: 8px; font-size: 9.5px; padding: 1px 6px; border-radius: 999px; background: rgba(4, 20, 34, 0.78); color: var(--label-strong); }
-  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .badge { font-size: 10.5px; padding: 5px 10px; border-radius: 999px; border: 1px dashed var(--line); color: rgba(225, 240, 245, 0.45); }
-  .badge.on { border-style: solid; border-color: #ffd479; color: #ffd479; background: rgba(255, 212, 121, 0.08); }
-  .detail { display: flex; flex-direction: column; gap: 12px; }
-  .detail #detailBack { align-self: flex-start; }
-  .detail .big { width: 100%; max-width: 440px; aspect-ratio: 120 / 84; border-radius: 12px; align-self: center; display: block; background: #0d3a52; }
-  .detail h2 { font-family: Caveat, "Segoe Print", cursive; font-weight: 600; font-size: 32px; margin: 0; letter-spacing: 0; color: var(--label-strong); }
-  .detail .fact { font-size: 13px; line-height: 1.6; margin: 0; max-width: 62ch; color: var(--label-strong); }
-  .detail dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 0; }
-  .detail dl div { background: rgba(127, 216, 201, 0.08); border-radius: 8px; padding: 8px 10px; min-width: 0; }
-  .detail dt { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--label); }
-  .detail dd { margin: 3px 0 0; color: var(--label-strong); overflow-wrap: anywhere; }
-  #book[data-rank="bronze"] { border-color: #c98a4a; color: #e0a96d; }
-  #book[data-rank="silver"] { border-color: #dfe6ea; color: #f2f6f8; }
-  #book[data-rank="gold"] { border-color: #ffd479; color: #ffd479; }
-  #book.glitter svg { filter: drop-shadow(0 0 3px rgba(255, 230, 150, 0.9)); }
-  #panel h3.section { font-size: 11px; color: var(--label-strong); border-top: 1px solid var(--line); padding-top: 16px; margin-top: 22px; }
   #toast {
-    position: fixed; left: 50%; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
-    max-width: calc(100% - 32px); font-size: 12px; color: var(--label-strong); text-align: center;
-    background: rgba(4, 20, 34, 0.82); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px;
-    opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s;
+    position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
+    max-width: min(440px, calc(100% - 32px)); font-size: 13px; line-height: 1.4; color: var(--text); text-align: center;
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 16px;
+    box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
   }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* panel */
   #panel {
     position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    width: min(580px, calc(100% - 32px)); max-height: min(78vh, 680px); overflow: auto;
-    background: rgba(5, 18, 30, 0.94); border: 1px solid var(--line-strong); border-radius: 14px;
-    padding: 14px 16px 18px; color: var(--label-strong); font-size: 12px;
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    width: min(660px, calc(100% - 32px)); max-height: min(84vh, 760px);
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: 18px;
+    box-shadow: var(--shadow); color: var(--text);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   }
-  .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; position: sticky; top: -14px; padding-block: 4px 10px; background: inherit; }
-  .tabs { display: flex; gap: 6px; }
-  .tab[aria-selected="true"] { color: var(--label-strong); border-color: var(--focus); }
-  #panel h3 { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--label); margin: 16px 0 8px; }
-  #panel .sum { color: var(--label); line-height: 1.5; margin: 6px 0 0; }
-  #panel .sum b { color: var(--label-strong); font-size: 15px; }
+  #panel[hidden] { display: none; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 13px 22px; border-bottom: 1px solid var(--line); }
+  .panel-head h2 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
+  .icon-btn { width: 36px; height: 36px; padding: 0; display: inline-grid; place-items: center; border-radius: 10px; background: transparent; border-color: transparent; color: var(--text-dim); }
+  .icon-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: transparent; color: var(--text); }
+  .icon-btn svg { width: 20px; height: 20px; }
+  #panelBody { overflow: auto; overscroll-behavior: contain; padding: 4px 22px 24px; }
+  #panel h3 { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin: 24px 0 10px; }
+  #panel h3.section { font-size: 16px; letter-spacing: 0; text-transform: none; color: var(--text); border-top: 1px solid var(--line); padding-top: 22px; margin-top: 30px; }
+  #panel .sum { color: var(--text-dim); line-height: 1.55; margin: 16px 0 0; max-width: 64ch; }
+  #panel .sum b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .row[hidden] { display: none; }
+  .row label { color: var(--text-dim); }
+  .row input[type="range"] { flex: 1; min-width: 160px; accent-color: var(--accent); }
+  .share { display: flex; gap: 8px; margin-top: 10px; }
+  .share input {
+    flex: 1; min-width: 0; font-family: var(--mono); font-size: 13px; color: var(--text);
+    background: rgba(0, 0, 0, 0.28); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px;
+    -webkit-user-select: text; user-select: text;
+  }
+  .share input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { font-size: 11px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--label-strong); background: rgba(127, 216, 201, 0.12); }
-  .chip.off { color: rgba(225, 240, 245, 0.35); background: transparent; border-style: dashed; }
-  .chip.pick { cursor: pointer; color: var(--label); background: transparent; }
-  .chip.pick.on { color: var(--label-strong); background: rgba(127, 216, 201, 0.18); border-color: var(--focus); }
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .share { display: flex; gap: 8px; margin-top: 8px; }
-  .share input { flex: 1; min-width: 0; font: inherit; color: var(--label-strong); background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
-  #photoView {
-    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-    padding: 16px; background: rgba(2, 8, 14, 0.78); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  .chip { font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-dim); }
+  .chip:hover { background: rgba(255, 255, 255, 0.06); }
+  .chip.pick.on { color: var(--text); background: var(--accent-soft); border-color: rgba(127, 216, 201, 0.6); }
+  .switch { display: inline-flex; align-items: center; gap: 10px; background: transparent; border: none; padding: 4px 0; color: var(--text); font-weight: 500; }
+  .switch:hover { background: transparent; }
+  .switch .track { position: relative; flex: none; width: 38px; height: 22px; border-radius: 999px; background: rgba(255, 255, 255, 0.18); transition: background .2s; }
+  .switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .switch[aria-checked="true"] .track { background: var(--accent); }
+  .switch[aria-checked="true"] .track::after { transform: translateX(16px); }
+
+  /* logbook */
+  .progress { margin-top: 12px; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+  .progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), #c4f3ea); }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .badge { font-size: 11.5px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--text-faint); }
+  .badge.on { border-color: rgba(255, 212, 121, 0.55); color: var(--gold); background: rgba(255, 212, 121, 0.08); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(106px, 1fr)); gap: 10px; }
+  .card {
+    position: relative; min-width: 0; display: flex; flex-direction: column; gap: 7px;
+    padding: 5px 5px 9px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.03);
+    color: var(--text); font-size: 11.5px; font-weight: 500; line-height: 1.25; text-align: center;
   }
+  .card:hover { background: rgba(255, 255, 255, 0.07); border-color: var(--line-strong); }
+  .card img { width: 100%; aspect-ratio: 120 / 84; border-radius: 8px; display: block; background: #0d3a52; }
+  .card span { min-width: 0; overflow-wrap: anywhere; padding: 0 2px; }
+  .card.off { color: var(--text-faint); font-weight: 400; }
+  .card.shiny.on { border-color: rgba(255, 212, 121, 0.7); }
+  .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
+  .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
+  .detail #detailBack { align-self: flex-start; }
+  .detail .big { width: 100%; aspect-ratio: 120 / 84; border-radius: 14px; display: block; background: #0d3a52; }
+  .detail h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+  .detail .fact { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.6; color: var(--text); }
+  .detail dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 0; }
+  .detail dl div { min-width: 0; padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); }
+  .detail dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+  .detail dd { margin: 4px 0 0; color: var(--text); overflow-wrap: anywhere; }
+
+  /* welcome */
+  #welcome { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(2, 8, 14, 0.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  #welcome[hidden] { display: none; }
+  .welcome-card { width: min(450px, 100%); padding: 26px 26px 20px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); color: var(--text); }
+  .welcome-card h2 { margin: 0 0 6px; font-size: 23px; font-weight: 600; letter-spacing: -0.01em; }
+  .welcome-card .lead { margin: 0 0 20px; line-height: 1.5; color: var(--text-dim); }
+  .howto { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 12px; }
+  .howto li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; line-height: 1.45; color: var(--text-dim); }
+  .howto svg { width: 22px; height: 22px; color: var(--accent); }
+  .howto b { color: var(--text); font-weight: 600; }
+  #welcomeGo { width: 100%; padding: 12px; font-size: 14px; }
+  .welcome-card .credit { margin: 14px 0 0; font-size: 11.5px; color: var(--text-faint); text-align: center; }
+
+  /* photo */
+  #photoView { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 16px; background: rgba(2, 8, 14, 0.82); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
   #photoView[hidden] { display: none; }
   #polaroid { max-width: min(92vw, 900px); max-height: 72vh; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); transform: rotate(-1.2deg); }
-  .photo-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 12px; }
-  @media (max-width: 1100px) { #hint { display: none; } }
-  @media (max-width: 560px) {
-    .corner { gap: 6px; }
-    .left { bottom: calc(52px + env(safe-area-inset-bottom, 0px)); gap: 8px; }
-    .right { left: calc(16px + env(safe-area-inset-left, 0px)); justify-content: flex-end; flex-wrap: wrap; }
-    .corner button { padding: 6px 10px; font-size: 10.5px; }
-    #toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+  .photo-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+  @media (max-width: 600px) {
+    .status { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    .toolbar { left: 50%; right: auto; transform: translateX(-50%); }
+    #toast { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+    #panel {
+      top: auto; left: 0; bottom: 0; transform: none; width: 100%; max-height: 88vh;
+      border-radius: 20px 20px 0 0; border-left: 0; border-right: 0; border-bottom: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0px); animation: sheet .28s ease-out;
+    }
+    .panel-head { padding-left: 18px; }
+    #panelBody { padding: 4px 18px 22px; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px; }
   }
-  canvas { -webkit-touch-callout: none; }
+  @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
 </style>
 </head>
 <body>
@@ -185,41 +238,36 @@
 <canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
 <div id="task" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
-<div class="corner left">
-  <span id="seed">seed <b>—</b></span>
+<div class="status">
+  <span id="seed">Oceaan <b>—</b></span>
   <span id="clock"></span>
   <span id="rare" hidden></span>
-  <span id="hint">klik voor een nieuwe oceaan · houd ingedrukt om te voeren · tik op schatkist of fles</span>
 </div>
-<div class="corner right">
-  <button id="sound" type="button" aria-pressed="false">Geluid aan</button>
-  <button id="diver" type="button" aria-pressed="false">Duiker</button>
-  <button id="photo" type="button">Foto</button>
-  <button id="book" type="button" aria-haspopup="dialog" aria-label="Logboek" title="Logboek">
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-    <span id="bookDot" hidden></span>
-  </button>
-  <button id="menu" type="button" aria-haspopup="dialog">Menu</button>
-</div>
-<div id="panel" hidden role="dialog" aria-label="Logboek en aquarium">
+<nav class="toolbar" aria-label="Bediening">
+  <button id="sound" class="tool" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="diver" class="tool" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="photo" class="tool" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+  <span class="divider" aria-hidden="true"></span>
+  <button id="book" class="tool" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
+  <button id="menu" class="tool" type="button" aria-haspopup="dialog" aria-label="Maken en delen" data-tip="Maken en delen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+</nav>
+<div id="panel" hidden role="dialog" aria-labelledby="panelTitle">
   <div class="panel-head">
-    <div class="tabs" role="tablist">
-      <button type="button" class="tab" role="tab" data-tab="log" aria-selected="true">Logboek</button>
-      <button type="button" class="tab" role="tab" data-tab="set" aria-selected="false">Maken en delen</button>
-    </div>
-    <button type="button" id="closePanel">Sluiten</button>
+    <h2 id="panelTitle">Logboek</h2>
+    <button type="button" id="closePanel" class="icon-btn" aria-label="Sluiten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
   </div>
   <div id="panelBody"></div>
 </div>
-<div id="welcome" hidden role="dialog" aria-label="Welkom">
-  <div class="card">
-    <h2>Welkom in de oceaan</h2>
-    <ul>
-      <li><b>Tik</b> op het water voor een nieuwe oceaan.</li>
-      <li><b>Sleep</b> om de dieren te laten schrikken.</li>
-      <li><b>Houd ingedrukt</b> om de vissen te voeren.</li>
-      <li><b>Tik</b> op een schatkist, een fles of een verstopt zeepaardje.</li>
-      <li>Het <b>boekje</b> is je logboek; in <b>Menu</b> maak en deel je je eigen aquarium.</li>
+<div id="welcome" hidden role="dialog" aria-labelledby="welcomeTitle">
+  <div class="welcome-card">
+    <h2 id="welcomeTitle">Welkom in de oceaan</h2>
+    <p class="lead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
+    <ul class="howto">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span><b>Tik op het water</b> voor een nieuwe oceaan.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.</span></li>
     </ul>
     <button type="button" id="welcomeGo" class="primary">Duik erin</button>
     <p class="credit">Gemaakt door Ronald</p>
@@ -230,7 +278,7 @@
   <div class="photo-actions">
     <button type="button" id="savePolaroid" class="primary">Opslaan met lijstje</button>
     <button type="button" id="savePlain">Zonder lijstje</button>
-    <button type="button" id="closePhoto">Terug</button>
+    <button type="button" id="closePhoto" class="ghost">Terug</button>
   </div>
 </div>
 
@@ -252,6 +300,7 @@
   const toastEl = document.getElementById("toast");
   const panelEl = document.getElementById("panel");
   const panelBody = document.getElementById("panelBody");
+  const panelTitle = document.getElementById("panelTitle");
   const photoView = document.getElementById("photoView");
   const polaroidImg = document.getElementById("polaroid");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -3856,11 +3905,14 @@
   }
 
   soundBtn.addEventListener("click", () => {
-    if (!audio.ac && !initAudio()) { soundBtn.textContent = "Geen geluid"; soundBtn.disabled = true; return; }
+    if (!audio.ac && !initAudio()) { soundBtn.disabled = true; soundBtn.dataset.tip = "Geluid werkt hier niet"; soundBtn.setAttribute("aria-label", "Geluid werkt hier niet"); return; }
     audio.on = !audio.on;
     audio.ac.resume();
     audio.master.gain.setTargetAtTime(audio.on ? volume : 0, audio.ac.currentTime, 0.3);
-    soundBtn.textContent = audio.on ? "Geluid uit" : "Geluid aan";
+    const label = audio.on ? "Geluid uitzetten" : "Geluid aanzetten";
+    soundBtn.classList.toggle("is-on", audio.on);
+    soundBtn.dataset.tip = label;
+    soundBtn.setAttribute("aria-label", label);
     soundBtn.setAttribute("aria-pressed", String(audio.on));
   });
 
@@ -4963,8 +5015,11 @@
   });
 
   menuBtn.addEventListener("click", () => {
-    panelEl.hidden = !panelEl.hidden;
-    if (!panelEl.hidden) { aqDraft = null; renderPanel(); }
+    if (!panelEl.hidden && panelTab === "set") { panelEl.hidden = true; return; }
+    panelTab = "set";
+    aqDraft = null;
+    panelEl.hidden = false;
+    renderPanel();
   });
   // The book opens the logbook straight away.
   bookBtn.addEventListener("click", () => {
@@ -4975,10 +5030,9 @@
     renderPanel();
   });
   document.getElementById("closePanel").addEventListener("click", () => { panelEl.hidden = true; });
-  panelEl.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => { panelTab = b.dataset.tab; renderPanel(); }));
 
   function renderPanel() {
-    panelEl.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === panelTab)));
+    panelTitle.textContent = panelTab === "set" ? "Maken en delen" : "Logboek";
     detailOpen = false;
     if (panelTab === "set") { renderMake(); return; }
     bookDot.hidden = true;
@@ -4986,6 +5040,7 @@
     const got = all.filter(k => logbook.has(k)).length;
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
     let html = `<p class="sum"><b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.</p>`;
+    html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
     html += `<div class="badges">` + MILESTONES.map(m => `<span class="badge ${m.need() ? "on" : ""}">${m.name} · ${m.goal}</span>`).join("") + `</div>`;
     for (const [title, keys] of LOG_GROUPS) {
       html += `<h3>${title}</h3><div class="cards">` + keys.map(k => {
@@ -5132,7 +5187,7 @@
 
   let detailOpen = false, logScroll = 0;
   function openDetail(key) {
-    logScroll = panelEl.scrollTop;
+    logScroll = panelBody.scrollTop;
     detailOpen = true;
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const fact = key.startsWith("shiny:")
@@ -5142,7 +5197,7 @@
     const when = e && e.first ? new Date(e.first + "T12:00:00").toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "";
     panelBody.innerHTML = `
       <div class="detail">
-        <button type="button" id="detailBack">Terug naar het logboek</button>
+        <button type="button" id="detailBack" class="ghost">Terug naar het logboek</button>
         <img class="big" alt="${NAMES[key]}" src="${thumbURL(key, !!e, 4)}">
         <h2>${NAMES[key]}</h2>
         <p class="fact">${fact}</p>
@@ -5152,13 +5207,13 @@
           ${when ? `<div><dt>Eerste keer</dt><dd>${when}</dd></div>` : ""}
         </dl>
       </div>`;
-    panelEl.scrollTop = 0;
+    panelBody.scrollTop = 0;
     document.getElementById("detailBack").focus();
   }
   function closeDetail() {
     detailOpen = false;
     renderPanel();
-    panelEl.scrollTop = logScroll;
+    panelBody.scrollTop = logScroll;
   }
 
   // Hints are worked out from the same tables that build the oceans.
@@ -5186,9 +5241,9 @@
 
   // "Maken en delen": sharing, settings and your own aquarium on one page.
   function renderMake() {
-    const keep = panelEl.scrollTop;
+    const keep = panelBody.scrollTop;
     panelBody.innerHTML = settingsHTML() + `<h3 class="section">Eigen aquarium</h3>` + aquariumHTML();
-    panelEl.scrollTop = keep;
+    panelBody.scrollTop = keep;
   }
 
   function settingsHTML() {
@@ -5198,9 +5253,10 @@
       <p class="sum">Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.</p>
       <div class="share"><input id="shareCode" readonly value="${code}" aria-label="Code van deze oceaan"><button type="button" id="shareCopy">Kopieer</button></div>
       <h3>Een code openen</h3>
-      <div class="share"><input id="openCode" placeholder="bijvoorbeeld #12345" aria-label="Code om te openen"><button type="button" id="openGo">Open</button></div>
+      <div class="share"><input id="openCode" placeholder="#12345" aria-label="Code om te openen"><button type="button" id="openGo">Open</button></div>
       <h3>Rust en geluid</h3>
-      <div class="row"><button type="button" id="restToggle" aria-pressed="${restMode}">Rustmodus ${restMode ? "aan" : "uit"}</button><span class="sum">Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.</span></div>
+      <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>Rustmodus</button></div>
+      <p class="sum">Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.</p>
       <div class="row"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
       <h3>Uitleg</h3>
       <div class="row"><button type="button" id="showWelcome">Uitleg opnieuw tonen</button></div>
@@ -5375,7 +5431,6 @@
     }
   }
 
-  setTimeout(() => document.getElementById("hint").classList.add("gone"), 7000);
 
   // ---- start -------------------------------------------------------------
   applyRewards();
@@ -5389,7 +5444,7 @@
 <script>
   // maakt de oceaan installeerbaar en speelbaar zonder internet
   if ("serviceWorker" in navigator) {
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=1").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=2").catch(() => {}));
   }
 </script>
 </body>
