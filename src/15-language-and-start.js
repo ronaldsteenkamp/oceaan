@@ -67,6 +67,10 @@
         if (S.species[0]) S.species[0].leaving = 1;
         if (S.crabs[0]) S.crabs[0].leaving = -1;
         pointer.active = true; pointer.x = W * 0.3; pointer.y = H * 0.4; feeding = true; S.feedT = 6;
+        S.bloom.timer = 0; S.hatch.enabled = !!water.surface; S.hatch.timer = 0; S.serpent.enabled = true; S.serpent.timer = 0;
+        S.megalodon.enabled = true; S.megalodon.timer = 0;
+        if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
+        for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;

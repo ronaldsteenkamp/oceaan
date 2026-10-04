@@ -42,6 +42,7 @@
     const bottle = S.ground.find(g => g.kind === "bottle" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.3)) < g.s * 1.4);
     if (bottle && S.treasure && !S.treasure.dug) { mapT = 8; sfxChest(); return; }
     if (S.treasure && !S.treasure.dug && Math.abs(x - S.treasure.x) < 35 * u && Math.abs(y - sandY(S.treasure.x)) < 50 * u) { dig(); return; }
+    if (tapClam(x, y)) return;
     const chest = S.ground.find(g => g.kind === "chest" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.4)) < g.s * 1.2);
     if (chest) { chestBurst(chest); return; }
   }
@@ -193,7 +194,7 @@
       if (!keys.length) continue;
       html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
         const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n}×</span>` : ""}</button>`;
+        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
       }).join("") + `</div>`;
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>

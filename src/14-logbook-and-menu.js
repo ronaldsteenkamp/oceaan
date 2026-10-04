@@ -5,6 +5,32 @@
     "w:noordzee": "De Noordzee is gemiddeld maar zo'n 95 meter diep. Op de Doggersbank is het op sommige plekken minder dan twintig meter.",
     "w:kelpwoud": "Reuzenkelp is een van de snelst groeiende organismen op aarde: op een goede dag tot een halve meter.",
     "w:ijszee": "Zeewater bevriest pas rond min 1,9 graden, omdat het zout het vriespunt verlaagt.",
+    "w:mangrove": "Mangrovebossen groeien op de grens van land en zee. Tussen hun wortels groeien jonge vissen veilig op.",
+    "w:grot": "Sommige onderwatergrotten, zoals de cenotes in Mexico, lopen kilometers door. Het water is er vaak kristalhelder.",
+    amphora: "Romeinen vervoerden wijn, olijfolie en vissaus in amforen. Duikers vinden soms complete ladingen op de bodem.",
+    car: "Sommige landen laten oude auto's en treinen bewust zinken, zodat er een kunstmatig rif ontstaat.",
+    bell: "Aan de scheepsbel kun je vaak de naam van een wrak aflezen: die staat er meestal in gegraveerd.",
+    clam: "Een reuzenschelp kan meer dan een meter breed en wel honderd jaar oud worden. Algen in zijn mantel geven hem kleur.",
+    seagrass: "Zeegras is geen zeewier maar een plant met wortels en bloemen. Zeekoeien en schildpadden grazen erop.",
+    cassiopea: "De omgekeerde kwal ligt met zijn armen omhoog op de bodem, zodat de algen in zijn armen zonlicht krijgen.",
+    lionfish: "De stekels van een koraalduivel zijn giftig. Zijn felle strepen waarschuwen andere dieren.",
+    cuttlefish: "Een zeekat kan in een fractie van een seconde van kleur en patroon veranderen, terwijl hij zelf kleurenblind is.",
+    lobster: "Een Europese kreeft is blauwzwart. Pas als hij gekookt wordt, kleurt hij rood.",
+    nautilus: "De nautilus bestaat al zo'n 500 miljoen jaar. Met gas in de kamers van zijn schelp regelt hij hoe hoog hij zweeft.",
+    isopod: "Een reuzenpissebed kan groter worden dan een halve meter en jaren zonder eten op de diepzeebodem.",
+    seadragon: "De bladzeedraak lijkt op een drijvend stukje zeewier. Net als bij zeepaardjes draagt het mannetje de eitjes.",
+    manatee: "Een zeekoe eet tot wel honderd kilo zeegras per dag. Zijn verste familielid is de olifant.",
+    orca: "Orka's zijn eigenlijk de grootste dolfijnen. Elke familiegroep heeft een eigen 'dialect' van geluiden.",
+    hammerhead: "Door zijn brede kop kan een hamerhaai bijna rondom kijken. Hij voelt zelfs prooien die in het zand verstopt zitten.",
+    sunfish: "De maanvis is de zwaarste beenvis ter wereld: meer dan tweeduizend kilo. Hij eet vooral kwallen.",
+    beluga: "Belugas worden ook wel zeekanaries genoemd, omdat ze zoveel fluiten, klikken en piepen.",
+    jellybloom: "Soms drijven er miljoenen kwallen tegelijk door de zee. Dat heet een kwallenbloei.",
+    glowtide: "Zeevonk is een piepklein eencellig diertje dat blauw licht geeft als het water beweegt.",
+    hatchlings: "Babyschildpadjes kruipen 's nachts uit hun nest naar zee en zwemmen dagenlang door naar de open oceaan.",
+    whalesong: "Het lied van een bultrug kan een half uur duren en is honderden kilometers ver te horen.",
+    serpent: "Verhalen over zeeslangen zijn eeuwen oud. Waarschijnlijk zagen zeelieden soms een riemvis, die wel acht meter lang wordt.",
+    megalodon: "De megalodon was een haai van ruim vijftien meter die miljoenen jaren geleden uitstierf. Zijn tanden waren groter dan je hand.",
+    goldpearl: "Gouden parels groeien in een bijzondere parelschelp en horen bij de zeldzaamste parels ter wereld.",
     wreck: "Rond een scheepswrak ontstaat vaak binnen een paar jaar een kunstmatig rif vol leven.",
     plane: "Op veel zeebodems liggen nog vliegtuigwrakken uit de Tweede Wereldoorlog. Sommige zijn populaire duikplekken geworden.",
     chest: "Piraten begroeven hun buit bijna nooit. Meestal werd die meteen verdeeld en uitgegeven.",
@@ -80,6 +106,32 @@
     "w:noordzee": "The North Sea is only about 95 metres deep on average. On the Dogger Bank it is less than twenty metres in places.",
     "w:kelpwoud": "Giant kelp is one of the fastest-growing living things on earth: up to half a metre on a good day.",
     "w:ijszee": "Seawater only freezes at about minus 1.9 degrees, because the salt lowers the freezing point.",
+    "w:mangrove": "Mangrove forests grow where the land meets the sea. Young fish grow up safely between their roots.",
+    "w:grot": "Some underwater caves, like the cenotes in Mexico, run on for kilometres. The water there is often crystal clear.",
+    amphora: "The Romans shipped wine, olive oil and fish sauce in amphorae. Divers sometimes find whole cargoes on the seabed.",
+    car: "Some countries sink old cars and trains on purpose, so that an artificial reef grows on them.",
+    bell: "A ship's bell often tells you the name of a wreck: it is usually engraved on it.",
+    clam: "A giant clam can grow more than a metre wide and live for a hundred years. Algae in its mantle give it colour.",
+    seagrass: "Seagrass is not seaweed but a plant with roots and flowers. Manatees and turtles graze on it.",
+    cassiopea: "The upside-down jellyfish lies on the seabed with its arms up, so the algae in its arms get sunlight.",
+    lionfish: "The spines of a lionfish are venomous. Its bright stripes warn other animals.",
+    cuttlefish: "A cuttlefish can change colour and pattern in a fraction of a second, even though it is colour-blind itself.",
+    lobster: "A European lobster is blue-black. It only turns red when it is cooked.",
+    nautilus: "The nautilus has been around for some 500 million years. Gas in the chambers of its shell sets how high it floats.",
+    isopod: "A giant isopod can grow longer than half a metre and go for years without food on the deep seabed.",
+    seadragon: "A leafy seadragon looks like a drifting bit of seaweed. Just like seahorses, the male carries the eggs.",
+    manatee: "A manatee eats up to a hundred kilos of seagrass a day. Its distant relative is the elephant.",
+    orca: "Orcas are really the largest dolphins. Every family group has its own 'dialect' of calls.",
+    hammerhead: "Its wide head lets a hammerhead look almost all the way round, and even sense prey hidden in the sand.",
+    sunfish: "The ocean sunfish is the heaviest bony fish in the world: over two thousand kilos. It mostly eats jellyfish.",
+    beluga: "Belugas are also called sea canaries, because they whistle, click and squeak so much.",
+    jellybloom: "Sometimes millions of jellyfish drift through the sea together. This is called a jellyfish bloom.",
+    glowtide: "Sea sparkle is a tiny single-celled creature that gives off blue light when the water moves.",
+    hatchlings: "Turtle hatchlings crawl from their nest to the sea at night and swim for days to reach the open ocean.",
+    whalesong: "A humpback's song can last half an hour and be heard hundreds of kilometres away.",
+    serpent: "Stories of sea serpents are centuries old. Sailors probably saw an oarfish now and then, which grows up to eight metres long.",
+    megalodon: "The megalodon was a shark over fifteen metres long that died out millions of years ago. Its teeth were bigger than your hand.",
+    goldpearl: "Golden pearls grow in a special pearl oyster and are among the rarest pearls in the world.",
     wreck: "Within a few years a shipwreck often becomes an artificial reef full of life.",
     plane: "Many seabeds still hold plane wrecks from the Second World War. Some have become popular dive sites.",
     chest: "Pirates hardly ever buried their loot. Usually it was shared out and spent straight away.",
@@ -193,6 +245,11 @@
     eruption: "wacht bij de onderzeese vulkaan", task: "zoek de drie zeepaardjes die in de kelp verstopt zitten",
     mermaid: "zeldzaam, ongeveer 1 op de 17 oceanen", kraken: "zeldzaam, ongeveer 1 op de 17 oceanen",
     ghost: "zeldzaam, ongeveer 1 op de 17 oceanen", whalefall: "zeldzaam, ongeveer 1 op de 20 oceanen",
+    serpent: "zeldzaam, ongeveer 1 op de 25 oceanen", megalodon: "zeldzaam, ongeveer 1 op de 25 oceanen",
+    goldpearl: "zeldzaam, ongeveer 1 op de 33 oceanen; tik op de reuzenschelp als hij openstaat",
+    jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
+    glowtide: "op een donkere nacht in wateren met een oppervlak; beweeg dan je vinger door het water",
+    hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
   };
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
@@ -200,7 +257,7 @@
       const n = SHINY_N[key.slice(6)] || 1000;
       return L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`) + (base ? "; " + base : "");
     }
-    if (key.startsWith("w:")) return L("elke oceaan kiest een van de vijf wateren", "every ocean picks one of the five waters");
+    if (key.startsWith("w:")) return L(`elke oceaan kiest een van de ${WATERS.length} wateren`, `every ocean picks one of the ${WATERS.length} waters`);
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
     if (hints[key]) return hints[key];
     const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name));
@@ -217,6 +274,11 @@
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
     mermaid: "rare, about 1 in 17 oceans", kraken: "rare, about 1 in 17 oceans",
     ghost: "rare, about 1 in 17 oceans", whalefall: "rare, about 1 in 20 oceans",
+    serpent: "rare, about 1 in 25 oceans", megalodon: "rare, about 1 in 25 oceans",
+    goldpearl: "rare, about 1 in 33 oceans; tap the giant clam while it is open",
+    jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
+    glowtide: "on a dark night in waters with a surface; move your finger through the water",
+    hatchlings: "swim past now and then in waters with sea turtles",
   };
 
   // "Maken en delen": sharing, settings and your own aquarium on one page.

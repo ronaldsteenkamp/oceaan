@@ -112,7 +112,11 @@
       if (side > 0) s.floorR = s.canyon.x0 - 20 * u; else s.floorL = s.canyon.x0 + 20 * u;
     }
     if (aquarium) s.rares = RARE_KEYS.filter(k => aquarium.set.has(k));
-    else { const rr = rng(); s.rares = rr < 0.06 ? ["mermaid"] : rr < 0.12 ? ["kraken"] : rr < 0.18 ? ["ghost"] : rr < 0.23 ? ["whalefall"] : []; }
+    else {
+      const rr = rng();
+      s.rares = rr < 0.06 ? ["mermaid"] : rr < 0.12 ? ["kraken"] : rr < 0.18 ? ["ghost"] : rr < 0.23 ? ["whalefall"]
+        : rr < 0.27 ? ["serpent"] : rr < 0.31 ? ["megalodon"] : rr < 0.34 ? ["goldpearl"] : [];
+    }
     s.rare = s.rares[0] || null;
 
     s.rays = Array.from({ length: 3 + Math.floor(rng() * 4) }, () => ({
@@ -142,6 +146,7 @@
     if (chance(P.volcano)) big.push({ kind: "volcano", w: 170 * u, s: range(55, 80) * u, timer: range(6, 16), erupt: 0, lava: [], steam: [] });
     if (chance(P.city)) big.push(makeCity(W < 600 ? 0.7 : 1));
     if (chance(P.brine)) small.push({ kind: "brine", w: 170 * u, s: range(50, 70) * u });
+    addMoreGround(s, P, big, small);
     // on a phone the big landmarks shrink so more of them fit side by side
     if (W < 600) for (const g of big) if (g.kind !== "city") { g.w *= 0.7; if (g.s) g.s *= 0.7; }
     s.ground = placeGround([...big, ...small.sort(() => rng() - 0.5)]);
@@ -328,6 +333,7 @@
     for (const arr of [s.crabs, s.starfish, s.urchins, s.hermits, s.slugs, s.kelpBack, s.kelpFront, s.seahorses]) for (const o of arr) o.x = remap(o.x);
     if (s.octopus) s.octopus.x = remap(s.octopus.x);
     if (s.mantis) s.mantis.x = remap(s.mantis.x);
+    buildMore(s, Lf, clumps, remap);
 
     seen("w:" + water.name);
     for (const g of s.ground) seen(g.kind);

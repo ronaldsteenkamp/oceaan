@@ -1,6 +1,6 @@
 # Oceaan
 
-Een levende onderwaterwereld die elke keer anders is: scholen vissen, kwallen, krabben, een octopus, walvissen en haaien, gezonken piratenschepen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip of een zeemeermin. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
+Een levende onderwaterwereld die elke keer anders is, in zeven wateren van koraalrif tot mangrove en onderwatergrot: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang of een megalodon. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
 
 Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon kun je hem als app op je beginscherm zetten; daarna werkt hij ook zonder internet.
 
@@ -8,7 +8,7 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 
 - De pijltjesknop onderaan geeft een nieuwe oceaan.
 - Sleep om de dieren te laten schrikken, houd ingedrukt om de vissen te voeren.
-- Tik op een schatkist, een fles of een verstopt zeepaardje. Tik op de zoekopdracht bovenin voor uitleg.
+- Tik op een schatkist, een fles, een reuzenschelp of een verstopt zeepaardje. Tik op de zoekopdracht bovenin voor uitleg.
 - Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan.
 - Met een toetsenbord: pijltjes sturen de duiker, E opent wat hij aanraakt, de spatiebalk geeft een nieuwe oceaan.
 
@@ -22,10 +22,11 @@ De bron staat in `src/`:
 | `01-basis.js` | wateren, namen, logboek, mijlpalen, meldingen |
 | `02-scene.js` | het opbouwen van een oceaan uit een seed |
 | `03` tot en met `10` | water, bodem, dieren, bezoekers, geluid, licht en shiny's |
-| `11-frame.js` | de animatielus, snelheid en automatische kwaliteit |
-| `12-controls.js` | aanraken, duiker, foto en knoppen |
-| `13-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |
-| `14-language-and-start.js` | taal, zelftest en opstarten |
+| `11-expansion.js` | mangrove, grot, nieuwe vondsten, dieren, bezoekers, momenten en zeldzame dingen |
+| `12-frame.js` | de animatielus, snelheid en automatische kwaliteit |
+| `13-controls.js` | aanraken, duiker, foto en knoppen |
+| `14-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |
+| `15-language-and-start.js` | taal, zelftest en opstarten |
 
 ## Bijwerken
 

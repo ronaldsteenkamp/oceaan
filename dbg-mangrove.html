@@ -1,21 +1,3 @@
-<!doctype html>
-<html lang="nl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#06182a">
-<meta name="description" content="Een levende onderwaterwereld vol zeedieren, wrakken en schatten, die elke keer anders is.">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Oceaan">
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; }
-  img { max-width: 100%; }
-  [hidden] { display: none !important; }
-</style>
 <title>Oceaan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
@@ -244,9 +226,6 @@
   @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
 </style>
-</head>
-<body>
-
 
 <canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
 <button id="task" type="button" hidden></button>
@@ -642,7 +621,7 @@
   // The director keeps the big moments apart: one at a time, with quiet in between.
   let busyUntil = 0;
   function claim(seconds) {
-    if (restMode || t < busyUntil) return false;
+    if (restMode) return false;
     busyUntil = t + seconds + 12;
     return true;
   }
@@ -757,7 +736,7 @@
   function buildScene() {
     shadeCache.clear();
     const wi = Math.floor(rng() * WATERS.length);
-    water = aquarium ? aqWater(aquarium) : WATERS[wi];
+    water = Object.assign({}, WATERS[5]); water.life = Object.assign({}, water.life, {lionfish:1,cuttlefish:1,lobster:1,nautilus:1,isopod:1,seadragon:1,cassiopea:1}); water.props = Object.assign({}, water.props, {car:1,amphora:1,bell:1,clam:1,seagrass:1,wreck:0,city:0,plane:0,statue:0});
     const density = Math.max(0.45, Math.min(1.2, (W * H) / (1280 * 800)));
     const P = water.props, Lf = water.life;
     const s = { sand: { frac: range(0.08, 0.13), o1: range(0, TAU), o2: range(0, TAU) } };
@@ -992,6 +971,7 @@
     if (s.octopus) s.octopus.x = remap(s.octopus.x);
     if (s.mantis) s.mantis.x = remap(s.mantis.x);
     buildMore(s, Lf, clumps, remap);
+s.hatch.enabled = true; s.hatch.timer = 1; s.bloom.timer = 2; s.forceVisitor = 'manatee'; s.visitorTimer = 0; s.dayOffset = 0;
 
     seen("w:" + water.name);
     for (const g of s.ground) seen(g.kind);
@@ -5183,7 +5163,7 @@
         tilt: chance(0.5) ? range(-0.2, 0.2) : (chance(0.5) ? 1 : -1) * range(1.2, 1.5), color: pick(["#b8653a", "#c47a48", "#a8583a"]),
       })) });
     }
-    if (chance(P.bell || 0)) small.push({ kind: "bell", w: 60 * u, s: range(22, 28) * u, tilt: range(0.25, 0.7) * (chance(0.5) ? 1 : -1) });
+    if (chance(P.bell || 0)) small.push({ kind: "bell", w: 60 * u, s: range(20, 26) * u, tilt: range(1.0, 1.4) * (chance(0.5) ? 1 : -1) });
     // the golden pearl always comes with a clam, and that clam gets placed first
     const pearl = s.rares.includes("goldpearl");
     if (pearl || chance(P.clam || 0)) {
@@ -5373,19 +5353,14 @@
 
   function drawBell(g) {
     const s = g.s, bronze = sh("#a8803a"), green = sh("#5a9a7a"), dark = sh("#3a2a14");
-    // a ship's bell, half sunk and leaning over, with its clapper hanging out
-    ctx.save(); ctx.translate(g.x, sandY(g.x) + 6 * u); ctx.rotate(g.tilt); ctx.translate(0, -s * 0.5);
-    ctx.fillStyle = dark; ctx.beginPath(); ctx.arc(s * 0.08, s * 0.62, s * 0.1, 0, TAU); ctx.fill();
-    ctx.strokeStyle = dark; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, s * 0.3); ctx.lineTo(s * 0.08, s * 0.55); ctx.stroke();
+    ctx.save(); ctx.translate(g.x, sandY(g.x) + 3 * u - s * 0.45); ctx.rotate(g.tilt);
     ctx.fillStyle = bronze;
-    ctx.beginPath(); ctx.moveTo(-s * 0.28, -s * 0.45); ctx.quadraticCurveTo(-s * 0.32, s * 0.15, -s * 0.55, s * 0.42);
-    ctx.quadraticCurveTo(-s * 0.62, s * 0.5, -s * 0.5, s * 0.52); ctx.lineTo(s * 0.5, s * 0.52); ctx.quadraticCurveTo(s * 0.62, s * 0.5, s * 0.55, s * 0.42);
-    ctx.quadraticCurveTo(s * 0.32, s * 0.15, s * 0.28, -s * 0.45); ctx.quadraticCurveTo(0, -s * 0.62, -s * 0.28, -s * 0.45); ctx.fill();
-    ctx.strokeStyle = sh("#c8a050"); ctx.lineWidth = Math.max(0.8, s * 0.04);
-    ctx.beginPath(); ctx.moveTo(-s * 0.42, s * 0.32); ctx.quadraticCurveTo(0, s * 0.26, s * 0.42, s * 0.32); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-s * 0.3, -s * 0.5); ctx.quadraticCurveTo(-s * 0.35, s * 0.2, -s * 0.6, s * 0.5); ctx.lineTo(s * 0.6, s * 0.5);
+    ctx.quadraticCurveTo(s * 0.35, s * 0.2, s * 0.3, -s * 0.5); ctx.quadraticCurveTo(0, -s * 0.7, -s * 0.3, -s * 0.5); ctx.fill();
+    ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(0, s * 0.5, s * 0.6, s * 0.12, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = green;
     for (const [px, py, pr] of [[-0.15, -0.2, 0.12], [0.2, 0.15, 0.1], [-0.3, 0.3, 0.08]]) { ctx.beginPath(); ctx.arc(px * s, py * s, pr * s, 0, TAU); ctx.fill(); }
-    ctx.strokeStyle = bronze; ctx.lineWidth = s * 0.08; ctx.beginPath(); ctx.arc(0, -s * 0.58, s * 0.12, Math.PI, TAU); ctx.stroke();
+    ctx.strokeStyle = bronze; ctx.lineWidth = s * 0.08; ctx.beginPath(); ctx.arc(0, -s * 0.66, s * 0.12, Math.PI, TAU); ctx.stroke();
     ctx.restore();
   }
 
@@ -5406,7 +5381,7 @@
     if (g.pearl && g.open > 0.45) {
       const gold = g.pearl === "gold";
       ctx.fillStyle = gold ? "#f2c440" : "#f4f0ea";
-      ctx.beginPath(); ctx.arc(0, cy, s * (gold ? 0.17 : 0.12), 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, cy, s * 0.12, 0, TAU); ctx.fill();
       ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(-s * 0.04, cy - s * 0.04, s * 0.035, 0, TAU); ctx.fill();
       if (gold) { const tw = 0.5 + 0.5 * Math.sin(t * 3); ctx.fillStyle = `rgba(255,240,170,${0.25 * tw})`; ctx.beginPath(); ctx.arc(0, cy, s * 0.3, 0, TAU); ctx.fill(); }
     }
@@ -6018,11 +5993,11 @@
   Object.assign(THUMBS, {
     amphora: () => drawAmphora({ x: 60, jars: [{ dx: -18, s: 26, tilt: 0.1, color: "#b8653a" }, { dx: 18, s: 22, tilt: 1.3, color: "#c47a48" }] }),
     car: () => drawCar({ x: 60, s: 32, tilt: -0.04, dir: 1, color: "#6f8fa6" }),
-    bell: () => drawBell({ x: 60, s: 34, tilt: 0.35 }),
+    bell: () => drawBell({ x: 60, s: 28, tilt: 1.2 }),
     clam: () => drawClam({ x: 60, s: 30, ph: Math.PI / 2, open: 1, shut: 0, pearl: "white", mantle: "#3fa0d8" }, 0),
     goldpearl: () => drawClam({ x: 60, s: 30, ph: Math.PI / 2, open: 1, shut: 0, pearl: "gold", mantle: "#7a5ad8" }, 0),
     seagrass: () => drawSeagrass({ x: 60, blades: Array.from({ length: 18 }, (_, i) => ({ dx: (i - 9) * 5, h: 24 + (i * 7) % 22, ph: i, c: ["#6a9a3a", "#7aaa48", "#5a8a32"][i % 3] })) }),
-    cassiopea: () => drawCassio({ x: 60, s: 36, ph: 1, col: "#8aa86a" }, 0),
+    cassiopea: () => drawCassio({ x: 60, s: 24, ph: 1, col: "#8aa86a" }, 0),
     lionfish: () => drawLionfish({ x: 60, y: 44, dir: 1, s: 52, ph: 1, tx: 1000 }, 0),
     cuttlefish: () => drawCuttle({ x: 52, y: 42, dir: 1, s: 56, ph: 1, tx: 1000, flash: 0 }, 0),
     lobster: () => drawLobster({ x: 58, dir: 1, s: 52, leg: 0, pause: 9, speed: 0 }, 0),
@@ -6058,7 +6033,7 @@
       for (const r of [8, 16, 24]) { ctx.beginPath(); ctx.arc(96, 40, r, -0.8, 0.8); ctx.stroke(); }
     },
     serpent: () => {
-      scene.serpent = { active: true, dir: 1, len: 150, x: 94, y0: 46, logged: true, sc: 0.6, amp: 14 };
+      scene.serpent = { active: true, dir: 1, len: 180, x: 112, y0: 44, logged: true, sc: 0.6, amp: 16 };
       drawSerpent(0);
     },
     megalodon: () => {
@@ -6290,7 +6265,7 @@
   canvas.addEventListener("contextmenu", e => e.preventDefault());
 
   document.getElementById("welcomeGo").addEventListener("click", () => { welcomeEl.hidden = true; store.set("oceaan-welkom", true); });
-  if (!store.get("oceaan-welkom", false)) welcomeEl.hidden = false;
+  
 
   // Arrow keys steer the diver (and call it in); Enter opens whatever the diver touches.
   const keys = { ArrowLeft: 0, ArrowRight: 0, ArrowUp: 0, ArrowDown: 0 };
@@ -7172,37 +7147,3 @@
   requestAnimationFrame(now => { last = now; frame(now); });
 })();
 </script>
-
-<style>
-  .update-bar {
-    position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 10;
-    display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
-    padding: 8px 8px 8px 16px; border-radius: 12px; font: 13px "Figtree", system-ui, sans-serif;
-    color: #eaf4f6; background: rgba(7, 24, 39, 0.94); border: 1px solid rgba(220, 236, 240, 0.28); box-shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
-  }
-  .update-bar button { font: inherit; font-weight: 600; color: #05221f; background: #7fd8c9; border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; }
-</style>
-<script>
-  // maakt de oceaan installeerbaar en speelbaar zonder internet, en meldt een nieuwe versie
-  if ("serviceWorker" in navigator) {
-    const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (!hadController || document.querySelector(".update-bar")) return;
-      const nl = document.documentElement.lang !== "en";
-      const bar = document.createElement("div");
-      bar.className = "update-bar";
-      bar.setAttribute("role", "status");
-      const text = document.createElement("span");
-      text.textContent = nl ? "Er is een nieuwe versie van de oceaan." : "A new version of the ocean is ready.";
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = nl ? "Vernieuwen" : "Refresh";
-      btn.addEventListener("click", () => location.reload());
-      bar.append(text, btn);
-      document.body.appendChild(bar);
-    });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=8").catch(() => {}));
-  }
-</script>
-</body>
-</html>

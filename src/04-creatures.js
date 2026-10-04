@@ -189,10 +189,12 @@
       if (j.hd === undefined) j.hd = (Math.random() < 0.5 ? -1 : 1) * (0.04 + Math.random() * 0.1);
       j.x += j.hd * u * k;
       if (water.surface) { const lim = waveY(j.x) + j.r * 1.3; if (j.y < lim) j.y = lim; }
+      else if (j.bloom) j.y = Math.max(j.y, j.r * 2);
       else if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; renewJelly(j); }
       if (j.y > H * 0.85) j.y -= 0.5 * u * k;
-      if (j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
-      if (j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
+      // jellies in a swarm just drift on through; the others come back as new jellies
+      if (!j.bloom && j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
+      if (!j.bloom && j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
@@ -586,7 +588,7 @@
       dolphins: () => rnd(70, 95) * u, swordfish: () => rnd(130, 180) * u, sub: () => rnd(120, 170) * u,
       narwhal: () => rnd(110, 150) * u, mermaid: () => rnd(110, 140) * u,
     };
-    const size = SIZE[type]();
+    const size = (SIZE[type] || MORE_SIZE[type])();
     const v = {
       type, dir, size, ph: 0, yOff: 0,
       y: H * (type === "whale" ? rnd(0.15, 0.35) : type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
@@ -629,7 +631,7 @@
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
     if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
     // hunters steer towards the biggest school
-    if (v.type === "shark" || v.type === "swordfish") {
+    if (v.type === "shark" || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
       let best = null;
       for (const s of scene.species) if (!best || s.fish.length > best.fish.length) best = s;
       if (best && best.fish.length) {

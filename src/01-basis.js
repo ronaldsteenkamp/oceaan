@@ -113,14 +113,61 @@
   };
   WATERS.forEach(w => { Object.assign(w.props, MORE[w.name].props); Object.assign(w.life, MORE[w.name].life); });
 
+  // Mangroves, caves and the newest finds, animals and visitors.
+  const NEWEST = {
+    rif: { props: { amphora: 0.25, car: 0.15, bell: 0.2, clam: 0.7, seagrass: 0.5 }, life: { lionfish: 0.6, cuttlefish: 0.4, cassiopea: 0.2, seadragon: 0.15, lobster: 0.2 }, visitors: ["hammerhead", "sunfish", "manatee"] },
+    diepzee: { props: { amphora: 0.2, car: 0.05, bell: 0.25 }, life: { nautilus: 0.5, isopod: 0.8, lobster: 0.2 }, visitors: ["sunfish"] },
+    noordzee: { props: { amphora: 0.15, car: 0.3, bell: 0.4, clam: 0.1, seagrass: 0.4 }, life: { lobster: 0.8, cuttlefish: 0.6 }, visitors: ["orca", "sunfish"] },
+    kelpwoud: { props: { amphora: 0.15, car: 0.2, bell: 0.3, clam: 0.15, seagrass: 0.3 }, life: { lobster: 0.5, seadragon: 0.6, cuttlefish: 0.3 }, visitors: ["orca", "sunfish"] },
+    ijszee: { props: { amphora: 0.05, car: 0.1, bell: 0.35 }, life: { isopod: 0.3, lobster: 0.2 }, visitors: ["orca", "beluga", "beluga"] },
+  };
+  WATERS.forEach(w => { Object.assign(w.props, NEWEST[w.name].props); Object.assign(w.life, NEWEST[w.name].life); w.visitors.push(...NEWEST[w.name].visitors); });
+  WATERS.push(
+    { name: "mangrove", top: "#7fa66a", mid: "#3b5e3c", bottom: "#16271a", tintK: 0.3,
+      ray: "245,255,220", rayA: 0.13, snow: "220,230,190",
+      sand: ["#7a6a4a", "#3a3020"], rock: "#4a4434",
+      kelp: ["#5c7a34", "#6d8a3a", "#4a6a2c"],
+      fish: [["#e8d070", "#6a5a20"], ["#9ab8c8", "#3a5868"], ["#f08a4a", "#6a3414"], ["#c8c8b0", "#5a5a48"]],
+      jelly: ["240,220,170", "220,240,200"], glow: false, whale: "20,40,24",
+      surface: true, mangrove: true, fewKelp: true,
+      props: { wreck: 0.3, chest: 0.5, anchor: 0.4, bottle: 0.6, skull: 0.4, rocks: 0.6, helmet: 0.3, cannon: 0.2, plane: 0.15, arch: 0.2, amphora: 0.2, car: 0.35, bell: 0.25, clam: 0.3, seagrass: 0.9 },
+      life: { crab: 1, starfish: 0.4, urchin: 0.3, octopus: 0.4, ray: 0.6, eels: 0.2, seahorse: 0.7, puffer: 0.7, hermit: 0.8, slugs: 0.4, archer: 0.9, flyingfish: 0.2, cassiopea: 0.9, lionfish: 0.3, cuttlefish: 0.3, mantis: 0.4, cleaners: 0.3 },
+      visitors: ["manatee", "turtle", "shark", "hammerhead", "manatee", "dolphins", "turtle"] },
+    { name: "grot", top: "#1f4f63", mid: "#0c2433", bottom: "#03080e", tintK: 0.45,
+      ray: "200,240,255", rayA: 0.2, snow: "190,220,235",
+      sand: ["#4a4a46", "#161816"], rock: "#2a2e30",
+      kelp: ["#1f3a3a", "#244444"],
+      fish: [["#e8e4dc", "#8a847a"], ["#c8d4dc", "#5a6a74"], ["#9cc3e6", "#3a5a7a"]],
+      jelly: ["170,230,255", "210,190,255"], glow: true, whale: "4,10,16",
+      surface: false, cave: true, fewKelp: true,
+      props: { wreck: 0.2, chest: 0.7, skull: 0.7, rocks: 1, helmet: 0.6, bottle: 0.2, anchor: 0.3, ruins: 0.5, statue: 0.35, arch: 0.3, canyon: 0.35, vent: 0.2, brine: 0.2, amphora: 0.7, bell: 0.3, clam: 0.4 },
+      life: { crab: 0.7, starfish: 0.4, urchin: 0.5, octopus: 0.5, eels: 0.3, moray: 0.6, hermit: 0.4, slugs: 0.5, comb: 0.6, lantern: 0.8, squid: 0.3, nautilus: 0.8, isopod: 0.9, lobster: 0.5 },
+      visitors: ["shark", "turtle", "sub", "turtle"] },
+  );
+
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon"];
   const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish"];
   const VIS_KEYS = ["whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall"];
   const AQ_ALL = [...PROP_KEYS, ...LIFE_KEYS, ...VIS_KEYS, ...RARE_KEYS];
+  // newer keys go at the end of the aquarium code, so older aquarium links keep working
+  const NEW_PROPS = ["amphora", "car", "bell", "clam", "seagrass"];
+  const NEW_LIFE = ["cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon"];
+  const NEW_VIS = ["manatee", "orca", "hammerhead", "sunfish", "beluga"];
+  const NEW_RARE = ["serpent", "megalodon", "goldpearl"];
+  PROP_KEYS.push(...NEW_PROPS); LIFE_KEYS.push(...NEW_LIFE); VIS_KEYS.push(...NEW_VIS); RARE_KEYS.push(...NEW_RARE);
+  AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE);
+  const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong"];
   const NAMES = {
     "w:rif": "Koraalrif", "w:diepzee": "Diepzee", "w:noordzee": "Noordzee", "w:kelpwoud": "Kelpwoud", "w:ijszee": "IJszee",
+    "w:mangrove": "Mangrove", "w:grot": "Onderwatergrot",
+    amphora: "Amforen", car: "Gezonken auto", bell: "Scheepsbel", clam: "Reuzenschelp", seagrass: "Zeegrasveld",
+    cassiopea: "Omgekeerde kwal", lionfish: "Koraalduivel", cuttlefish: "Zeekat", lobster: "Kreeft", nautilus: "Nautilus",
+    isopod: "Reuzenpissebed", seadragon: "Bladzeedraak",
+    manatee: "Zeekoe", orca: "Orka", hammerhead: "Hamerhaai", sunfish: "Maanvis", beluga: "Beluga",
+    jellybloom: "Kwallenzwerm", glowtide: "Zeevonken", hatchlings: "Babyschildpadjes", whalesong: "Walvisgezang",
+    serpent: "Zeeslang", megalodon: "Megalodon", goldpearl: "Gouden parel",
     wreck: "Piratenwrak", plane: "Vliegtuigwrak", chest: "Schatkist", treasure: "Opgegraven schat", anchor: "Anker", cannon: "Kanon",
     ruins: "Zuilen", statue: "Atlantis", city: "Gezonken stad", arch: "Rotsboog", helmet: "Duikerhelm", mine: "Zeemijn",
     bottle: "Flessenpost", skull: "Doodshoofd", coral: "Koraaltuin", anemone: "Anemoon", vent: "Heetwaterbron",
@@ -137,11 +184,11 @@
     mermaid: "Zeemeermin", kraken: "Kraken", ghost: "Spookschip", whalefall: "Walvisval",
   };
   const LOG_GROUPS = [
-    ["Wateren", ["w:rif", "w:diepzee", "w:noordzee", "w:kelpwoud", "w:ijszee"]],
+    ["Wateren", WATERS.map(w => "w:" + w.name)],
     ["Bodem en vondsten", [...PROP_KEYS.slice(0, 2), "chest", "treasure", ...PROP_KEYS.slice(3)]],
     ["Dieren", ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"]],
     ["Bezoekers", VIS_KEYS],
-    ["Momenten", ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task"]],
+    ["Momenten", MOMENT_KEYS],
     ["Zeldzaam", RARE_KEYS],
   ];
 
@@ -153,17 +200,27 @@
     seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
     penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
     whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
+    cassiopea: 600, lionfish: 150, cuttlefish: 150, lobster: 300, nautilus: 150, isopod: 300, seadragon: 150,
+    manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
   };
   const shinyChance = key => 1 / (SHINY_N[key] || 1000);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
-    "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid"];
+    "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
+    "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);
 
   const NAMES_EN = {
     "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest", "w:ijszee": "Polar sea",
+    "w:mangrove": "Mangrove", "w:grot": "Underwater cave",
+    amphora: "Amphorae", car: "Sunken car", bell: "Ship's bell", clam: "Giant clam", seagrass: "Seagrass meadow",
+    cassiopea: "Upside-down jellyfish", lionfish: "Lionfish", cuttlefish: "Cuttlefish", lobster: "Lobster", nautilus: "Nautilus",
+    isopod: "Giant isopod", seadragon: "Leafy seadragon",
+    manatee: "Manatee", orca: "Orca", hammerhead: "Hammerhead shark", sunfish: "Ocean sunfish", beluga: "Beluga",
+    jellybloom: "Jellyfish swarm", glowtide: "Sea sparkle", hatchlings: "Turtle hatchlings", whalesong: "Whale song",
+    serpent: "Sea serpent", megalodon: "Megalodon", goldpearl: "Golden pearl",
     wreck: "Pirate wreck", plane: "Plane wreck", chest: "Treasure chest", treasure: "Dug-up treasure", anchor: "Anchor", cannon: "Cannon",
     ruins: "Columns", statue: "Atlantis", city: "Sunken town", arch: "Rock arch", helmet: "Diving helmet", mine: "Sea mine",
     bottle: "Message in a bottle", skull: "Skull", coral: "Coral garden", anemone: "Anemone", vent: "Hydrothermal vent",
@@ -184,7 +241,7 @@
   const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
   const groupName = title => L(title, GROUP_EN[title] || title);
   const LOG_KEY = "oceaan-logboek";
-  const LOUD = new Set([...VIS_KEYS, ...RARE_KEYS, "giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "treasure", ...SHINY_KEYS.map(k => "shiny:" + k)]);
+  const LOUD = new Set([...VIS_KEYS, ...RARE_KEYS, ...MOMENT_KEYS, "treasure", ...SHINY_KEYS.map(k => "shiny:" + k)]);
   // The logbook remembers, for everything found, how often it was seen and the date of the first time.
   // Older logbooks were a plain list of names; those still load.
   function loadLog(raw) {

@@ -2,8 +2,9 @@
   function drawRays() {
     ctx.globalCompositeOperation = "lighter";
     for (const r of scene.rays) {
-      const x = ((r.x + t * 0.004 * r.sp) % 1.2 - 0.1) * W;
-      const w = r.w * W;
+      const cv = scene.cave;
+      const x = cv ? (cv.ox + Math.sin(t * 0.05 * r.sp + r.ph) * cv.ow * 0.25) * W : ((r.x + t * 0.004 * r.sp) % 1.2 - 0.1) * W;
+      const w = r.w * W * (cv ? 0.5 : 1);
       const a = water.rayA * (0.55 + 0.45 * Math.sin(t * r.sp + r.ph)) * (0.15 + 0.85 * day) * (scene.season === "herfst" ? 0.6 : 1.15);
       const g = ctx.createLinearGradient(0, 0, 0, H * 0.9);
       g.addColorStop(0, `rgba(${water.ray},${a})`);

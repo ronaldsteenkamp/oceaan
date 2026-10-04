@@ -49,6 +49,8 @@
       moray: !!(S.wreck && S.wreck.moray), squid: S.squids.length, hermit: S.hermits.length, slugs: S.slugs.length,
       comb: S.combs.length, lantern: S.species.some(x => x.lantern), otters: S.otters.length, seal: !!S.seal, penguins: S.penguins.length,
       mantis: !!S.mantis, archer: !!S.archer, cleaners: !!S.station,
+      cassiopea: S.cassio.length, lionfish: !!S.lionfish, cuttlefish: !!S.cuttle, lobster: S.lobsters.length, nautilus: !!S.nautilus,
+      isopod: S.isopods.length, seadragon: !!S.dragon,
     };
   }
 

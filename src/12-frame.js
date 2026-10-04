@@ -1,6 +1,6 @@
   // ---- speed: cached floor, automatic quality, background pause --------
   // Landmarks that never move are drawn once into a layer instead of every frame.
-  const STATIC = new Set(["rocks", "skull", "bottle", "anchor", "cannon", "ruins", "statue", "plane"]);
+  const STATIC = new Set(["rocks", "skull", "bottle", "anchor", "cannon", "ruins", "statue", "plane", "amphora", "car", "bell"]);
   function staticLayer(name) {
     const S = scene;
     if (!canvas.width || !canvas.height) return; // a hidden pane can report a zero size
@@ -71,6 +71,7 @@
     updateTentacles(S.giant, dtSec, GIANT);
     updateStorm(dtSec);
     updateTurnover(dtSec);
+    updateMore(k, dtSec);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = bgGrad;
@@ -80,9 +81,11 @@
     updateVisitor(k, dtSec);
     const v = S.visitor;
     if (v && v.type === "whale") shinyDraw(v, () => drawWhale(v));
+    drawMegalodon(k);
 
     drawSnow(k);
     drawKelp(S.kelpBack, 0.7);
+    drawMangrove();
     drawHidden(k);
     drawAbyss(k);
     staticLayer("back");
@@ -95,6 +98,7 @@
     for (const f of S.starfish) shinyDraw(f, () => drawStarfish(f));
     for (const o of S.slugs) shinyDraw(o, () => drawSlug(o, k));
     for (const h of S.hermits) shinyDraw(h, () => drawHermit(h, k));
+    drawMoreFloor(k);
     for (const g of S.ground) if (g.kind === "anemone") drawAnemone(g);
     if (S.mantis) shinyDraw(S.mantis, () => drawMantis(S.mantis, k));
     if (S.ray) shinyDraw(S.ray, () => drawRay(S.ray, k));
@@ -102,6 +106,7 @@
     if (S.octopus) shinyDraw(S.octopus, () => drawOctopus(S.octopus, k));
     for (const h of S.seahorses) shinyDraw(h, () => drawSeahorse(h));
     if (S.angler) shinyDraw(S.angler, () => drawAngler(S.angler, k));
+    drawMoreMid(k);
     if (S.station) drawStation(S.station, k);
     if (S.giant.active) drawTentacleSet(S.giant, GIANT);
     updateAndDrawSquids(k);
@@ -116,6 +121,9 @@
     drawPenguins(k);
     updateAndDrawJellies(k);
     drawCombs(k, false);
+    drawHatchlings(k);
+    drawSerpent(k);
+    drawSongRings(k);
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
@@ -129,6 +137,7 @@
     drawKelp(S.kelpFront, 1);
     updateAndDrawBubbles(k);
     drawStreaks(k);
+    drawCaveRoof();
     drawSurface(k, dtSec);
     updateAndDrawFlyers(k, dtSec);
     drawRain(k);
@@ -145,6 +154,7 @@
     }
     drawMoon();
     drawLights(k);
+    drawGlowtide(k);
     if (S.storm.flash > 0) { ctx.fillStyle = `rgba(225,235,255,${S.storm.flash * 0.4})`; ctx.fillRect(0, 0, W, H); }
     drawMap(k);
 
