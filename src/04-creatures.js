@@ -96,8 +96,17 @@
         if (f.y < top) ay += 0.015 * u;
         if (f.y > bottom) ay -= 0.015 * u;
         if (f.y > sandY(f.x) - 40 * u) ay -= 0.08 * u;
-        if (f.x < -50 * u) ax += 0.04 * u;
-        if (f.x > W + 50 * u) ax -= 0.04 * u;
+        if (sp.leaving) ax += sp.leaving * 0.06 * u;
+        else {
+          if (f.x < -50 * u) ax += 0.04 * u;
+          if (f.x > W + 50 * u) ax -= 0.04 * u;
+        }
+        // a fish that sees the bait on the hook swims over to it
+        const boat = scene.boat;
+        if (boat && boat.hx !== undefined && !boat.caught && !boat.done && !sp.predator && !sp.lantern && sp.size <= 12) {
+          const dx = boat.hx - 4 * u - f.x, dy = boat.hy - f.y, d = Math.hypot(dx, dy);
+          if (d < 150 * u && d > 0.01) { ax += dx / d * 0.035 * u; ay += dy / d * 0.035 * u; }
+        }
 
         let scare = 0;
         if (sp.predator) {
@@ -141,12 +150,19 @@
         f.vx *= clamp; f.vy *= clamp;
         f.vy *= 0.985;
         f.x += f.vx * k; f.y += f.vy * k;
+        if (water.surface) {
+          // fish stay under the water line
+          const lim = waveY(f.x) + sp.size * u + 4 * u;
+          if (f.y < lim) { f.y = lim; if (f.vy < 0) f.vy *= -0.5; }
+        }
         f.ph += (0.18 + (spd / u) * 0.12) * k;
         if (f.grow && f.scale < f.grow) f.scale += 0.0005 * k;
         if (sp.plankton && frameNo % 6 === 0) {
           for (const p of scene.snow) if (Math.abs(p.x - f.x) < 7 * u && Math.abs(p.y - f.y) < 7 * u) { p.y = -4; p.x = Math.random() * W; }
         }
       }
+      // a school that has swum off is replaced by a new one coming in
+      if (sp.leaving && sp.fish.every(f => (sp.leaving < 0 ? f.x < -80 * u : f.x > W + 80 * u))) renewSchool(sp);
     }
   }
 
@@ -170,10 +186,13 @@
         const d = Math.hypot(dx, dy), R = 110 * u;
         if (d < R && d > 0.01) { j.x += dx / d * (1 - d / R) * 1.1 * u * k; j.y += dy / d * (1 - d / R) * 1.1 * u * k; }
       }
-      if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; }
+      if (j.hd === undefined) j.hd = (Math.random() < 0.5 ? -1 : 1) * (0.04 + Math.random() * 0.1);
+      j.x += j.hd * u * k;
+      if (water.surface) { const lim = waveY(j.x) + j.r * 1.3; if (j.y < lim) j.y = lim; }
+      else if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; renewJelly(j); }
       if (j.y > H * 0.85) j.y -= 0.5 * u * k;
-      if (j.x < -j.r * 3) j.x = W + j.r * 2;
-      if (j.x > W + j.r * 3) j.x = -j.r * 2;
+      if (j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
+      if (j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
@@ -227,16 +246,19 @@
   // ---- bottom dwellers ---------------------------------------------------
   function drawCrab(c, k) {
     const flee = near(c.x, sandY(c.x), 110 * u);
-    if (flee) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
-    if (c.pause > 0) c.pause -= k / 60;
+    if (flee && !c.leaving) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
+    if (c.pause > 0 && !c.leaving) c.pause -= k / 60;
     else {
       c.x += c.dir * c.speed * u * k * (1 + flee * 3);
       c.leg += 0.35 * k * (1 + flee * 2);
-      if (Math.random() < 0.004 * k) c.pause = 1 + Math.random() * 3;
-      if (Math.random() < 0.002 * k) c.dir *= -1;
+      if (!c.leaving && Math.random() < 0.004 * k) c.pause = 1 + Math.random() * 3;
+      if (!c.leaving && Math.random() < 0.002 * k) c.dir *= -1;
     }
-    if (c.x < scene.floorL + 20) c.dir = 1;
-    if (c.x > scene.floorR - 20) c.dir = -1;
+    if (c.leaving) { if (c.x < -40 || c.x > W + 40) renewCrab(c); }
+    else {
+      if (c.x < scene.floorL + 20) c.dir = 1;
+      if (c.x > scene.floorR - 20) c.dir = -1;
+    }
     if (flee > 0.3 && Math.random() < 0.3 * k) puff(c.x, sandY(c.x) + 5 * u, 1);
     const s = c.s, x = c.x, y = sandY(x) + 5 * u;
     const col = sh(c.color), dark = sh("#5a2418");
@@ -571,7 +593,7 @@
       speed: VISITOR_SPEED[type] * u,
     };
     if (type === "dolphins") {
-      v.pod = Array.from({ length: 3 + Math.floor(Math.random() * 3) }, (_, i) => ({
+      v.pod = Array.from({ length: 1 + Math.floor(Math.random() * 6) }, (_, i) => ({
         dx: -i * size * 0.8 - Math.random() * size * 0.4, dy: (Math.random() - 0.5) * 80 * u, ph: Math.random() * TAU, sc: 0.8 + Math.random() * 0.3,
       }));
     }
@@ -581,12 +603,12 @@
     const alive = () => scene.visitor === v;
     if (type === "dolphins") {
       for (const d of v.pod) {
-        if (Math.random() < SHINY_RATE) {
+        if (Math.random() < shinyChance("dolphins")) {
           d.shiny = "dolphins";
           scene.shinies.push({ key: "dolphins", r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
         }
       }
-    } else if (type !== "sub" && Math.random() < SHINY_RATE) {
+    } else if (type !== "sub" && Math.random() < shinyChance(type)) {
       v.shiny = type;
       scene.shinies.push({ key: type, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
     }
@@ -605,6 +627,7 @@
     v.x += v.dir * sp * k;
     v.ph += (VISITOR_PHASE[v.type] || 0.03) * k;
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
+    if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
     // hunters steer towards the biggest school
     if (v.type === "shark" || v.type === "swordfish") {
       let best = null;

@@ -94,7 +94,9 @@
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     transition: opacity 1.2s ease;
   }
-  #task.fade { opacity: 0; pointer-events: none; }
+  #task { cursor: pointer; font: inherit; font-size: 12px; }
+  #task.fade { opacity: 0.35; }
+  #task:hover, #task:focus-visible { opacity: 1; border-color: var(--line-strong); }
   #toast {
     position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
     max-width: min(440px, calc(100% - 32px)); font-size: 13px; line-height: 1.4; color: var(--text); text-align: center;

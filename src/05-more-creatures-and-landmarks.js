@@ -21,7 +21,7 @@
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, TAU);
       ctx.stroke();
-      return b.y > -10;
+      return b.y > (water.surface ? waveY(b.x) + 2 * u : -10); // bubbles pop at the surface
     });
   }
 
@@ -409,6 +409,7 @@
       if (q.x < -30 * u) q.vx += 0.5 * u;
       if (q.x > W + 30 * u) q.vx -= 0.5 * u;
       if (q.y < H * 0.12) q.vy += 0.1 * u;
+      if (water.surface && q.y < waveY(q.x) + q.s) { q.y = waveY(q.x) + q.s; q.vy = Math.abs(q.vy) * 0.5; }
       if (q.y > H * 0.7) q.vy -= 0.1 * u;
       if (Math.abs(q.vx) > 0.2 * u) q.face = Math.sign(q.vx);
       const face = q.face || 1, s = q.s;
@@ -444,6 +445,7 @@
       if (!lightsPass) {
         c.ph += 0.01 * k;
         c.y += Math.sin(c.ph) * 0.2 * u * k;
+        if (water.surface) c.y = Math.max(c.y, waveY(c.x) + c.r * 1.2);
         c.x += (Math.sin(t * 0.1 + c.drift) * 0.15 + current * 0.5) * u * k;
         if (c.x < -30) c.x = W + 20;
         if (c.x > W + 30) c.x = -20;
@@ -469,8 +471,13 @@
   function drawSeal(se, k) {
     se.ph += 0.018 * k;
     se.x += se.dir * 1.1 * u * k;
-    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) { se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3); }
-    const y = se.y0 + Math.sin(se.ph) * 70 * u;
+    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) {
+      // a seal that has swum off comes back as a different seal
+      se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3);
+      maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
+    }
+    let y = se.y0 + Math.sin(se.ph) * 70 * u;
+    if (water.surface) y = Math.max(y, waveY(se.x) + se.s * 0.25);
     se.y = y;
     const ang = Math.atan2(Math.cos(se.ph) * 70 * u * 0.018, 1.1 * u);
     const s = se.s, body = sh("#6f7478"), spot = sh("#3e4246"), belly = sh("#a9aca8");
@@ -508,8 +515,9 @@
       const depthF = Math.max(0, Math.sin(cyc * 0.5)); // 0 at the surface, 1 at the deepest point of the dive
       const vx = (1.2 + depthF * 0.8) * u;
       p.x += p.dir * vx * k;
-      if (p.x < -40) p.x = W + 30;
-      if (p.x > W + 40) p.x = -30;
+      const pgGet = () => [p.x, waveY(p.x) + 6 * u + Math.max(0, Math.sin((p.ph % TAU) * 0.5)) * p.depth];
+      if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;
@@ -575,7 +583,10 @@
     for (const d of v.pod) {
       const w = v.ph * 1.5 + d.ph;
       const ang = Math.atan2(Math.cos(w) * 35 * u * 0.045, v.speed);
-      shinyDraw(d, () => drawDolphin(v.x + d.dx * v.dir, v.y + d.dy + Math.sin(w) * 35 * u, v.dir, ang, v.size * d.sc, v.ph * 3 + d.ph));
+      const x = v.x + d.dx * v.dir;
+      let y = v.y + d.dy + Math.sin(w) * 35 * u;
+      if (water.surface) y = Math.max(y, waveY(x) + v.size * d.sc * 0.15);
+      shinyDraw(d, () => drawDolphin(x, y, v.dir, ang, v.size * d.sc, v.ph * 3 + d.ph));
     }
   }
 

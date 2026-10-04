@@ -116,7 +116,9 @@
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     transition: opacity 1.2s ease;
   }
-  #task.fade { opacity: 0; pointer-events: none; }
+  #task { cursor: pointer; font: inherit; font-size: 12px; }
+  #task.fade { opacity: 0.35; }
+  #task:hover, #task:focus-visible { opacity: 1; border-color: var(--line-strong); }
   #toast {
     position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
     max-width: min(440px, calc(100% - 32px)); font-size: 13px; line-height: 1.4; color: var(--text); text-align: center;
@@ -247,7 +249,7 @@
 
 
 <canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
-<div id="task" hidden></div>
+<button id="task" type="button" hidden></button>
 <div id="toast" role="status" aria-live="polite"></div>
 <p id="sceneDesc" class="sr-only" aria-live="polite"></p>
 <div class="status">
@@ -404,17 +406,17 @@
 
   // Volcanoes, brine pools, sunken cities, canyons and the newest creatures.
   const MORE = {
-    rif: { props: { volcano: 0, brine: 0, city: 0.15, canyon: 0.3 }, life: { mantis: 0.7, archer: 0.6, cleaners: 0.9 } },
-    diepzee: { props: { volcano: 0.45, brine: 0.5, city: 0.1, canyon: 0.5 }, life: { mantis: 0, archer: 0, cleaners: 0 } },
-    noordzee: { props: { volcano: 0, brine: 0.2, city: 0.3, canyon: 0.3 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4 } },
-    kelpwoud: { props: { volcano: 0, brine: 0, city: 0.2, canyon: 0.25 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4 } },
-    ijszee: { props: { volcano: 0.1, brine: 0.25, city: 0, canyon: 0.35 }, life: { mantis: 0, archer: 0, cleaners: 0 } },
+    rif: { props: { volcano: 0, brine: 0, city: 0.15, canyon: 0.3 }, life: { mantis: 0.7, archer: 0.6, cleaners: 0.9, flyingfish: 0.85 } },
+    diepzee: { props: { volcano: 0.45, brine: 0.5, city: 0.1, canyon: 0.5 }, life: { mantis: 0, archer: 0, cleaners: 0, flyingfish: 0 } },
+    noordzee: { props: { volcano: 0, brine: 0.2, city: 0.3, canyon: 0.3 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4, flyingfish: 0.45 } },
+    kelpwoud: { props: { volcano: 0, brine: 0, city: 0.2, canyon: 0.25 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4, flyingfish: 0.35 } },
+    ijszee: { props: { volcano: 0.1, brine: 0.25, city: 0, canyon: 0.35 }, life: { mantis: 0, archer: 0, cleaners: 0, flyingfish: 0 } },
   };
   WATERS.forEach(w => { Object.assign(w.props, MORE[w.name].props); Object.assign(w.life, MORE[w.name].life); });
 
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon"];
-  const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners"];
+  const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish"];
   const VIS_KEYS = ["whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall"];
   const AQ_ALL = [...PROP_KEYS, ...LIFE_KEYS, ...VIS_KEYS, ...RARE_KEYS];
@@ -428,7 +430,7 @@
     ray: "Pijlstaartrog", eels: "Zandalen", seahorse: "Zeepaardje", puffer: "Kogelvis", angler: "Hengelvis", moray: "Murene",
     squid: "Inktvisjes", hermit: "Heremietkreeft", slugs: "Zeekomkommer", comb: "Ribkwal", lantern: "Lantaarnvis",
     otters: "Zeeotter", seal: "Zeehond", penguins: "Pinguïns", clown: "Clownvis", mantis: "Bidsprinkhaankreeft",
-    archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars",
+    archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars", flyingfish: "Vliegende vis",
     whale: "Walvis", humpback: "Bultrug", shark: "Haai", turtle: "Zeeschildpad", manta: "Manta", dolphins: "Dolfijnen",
     swordfish: "Zeilvis", sub: "Duikboot", narwhal: "Narwal",
     giant: "Reuzeninktvis", baitball: "Bait-ball", spawning: "Paaiende vissen", coralspawn: "Koraalpaai",
@@ -444,10 +446,18 @@
     ["Zeldzaam", RARE_KEYS],
   ];
 
-  // One in a thousand of every animal is shiny: it glitters and gets its own page in the logbook.
-  const SHINY_RATE = 1 / 1000;
+  // Shinies are rare colour variants with their own page in the logbook. The odds are set per kind of animal:
+  // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
+  // so that every kind of shiny turns up about as often.
+  const SHINY_N = {
+    fish: 60000, lantern: 9000, jelly: 6000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
+    seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
+    penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
+    whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
+  };
+  const shinyChance = key => 1 / (SHINY_N[key] || 1000);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
-    "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper",
+    "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
@@ -463,7 +473,7 @@
     ray: "Stingray", eels: "Garden eels", seahorse: "Seahorse", puffer: "Pufferfish", angler: "Anglerfish", moray: "Moray eel",
     squid: "Squid", hermit: "Hermit crab", slugs: "Sea cucumber", comb: "Comb jelly", lantern: "Lanternfish",
     otters: "Sea otter", seal: "Seal", penguins: "Penguins", clown: "Clownfish", mantis: "Mantis shrimp",
-    archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper",
+    archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper", flyingfish: "Flying fish",
     whale: "Whale", humpback: "Humpback whale", shark: "Shark", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
     swordfish: "Sailfish", sub: "Submarine", narwhal: "Narwhal",
     giant: "Giant squid", baitball: "Bait ball", spawning: "Spawning fish", coralspawn: "Coral spawning",
@@ -551,7 +561,7 @@
     toastBusy = true;
     toastEl.textContent = msg;
     toastEl.classList.add("show");
-    setTimeout(() => { toastEl.classList.remove("show"); setTimeout(nextToast, 400); }, 2600);
+    setTimeout(() => { toastEl.classList.remove("show"); setTimeout(nextToast, 400); }, Math.max(2600, msg.length * 55));
   }
 
   // Settings a viewer keeps in their own browser.
@@ -889,6 +899,9 @@
     s.moon = { x: W * range(0.2, 0.8), phase: chance(0.3) ? 1 : range(0.15, 0.9) };
     s.storm = { enabled: !!water.surface, active: false, age: 0, timer: range(50, 130), flash: 0, nextFlash: 0 };
     s.bait = { enabled: water.name !== "diepzee", active: false, timer: range(35, 70), fish: [], att: [] };
+    s.flyers = { enabled: chance(Lf.flyingfish) && !!water.surface, timer: range(8, 22), fish: [] };
+    s.turnTimer = range(10, 20);
+    s.taskT0 = t;
     s.spawnTimer = range(25, 50);
     s.treasure = null;
     if (s.ground.some(g => g.kind === "bottle")) {
@@ -1034,6 +1047,10 @@
         if (n) ang += Math.sign(x - pointer.x || 1) * 0.12 * n;
         x += Math.cos(ang) * seg;
         y += Math.sin(ang) * seg;
+        if (water.surface) {
+          const lim = waveY(x) + 5 * u;
+          if (y < lim) { y = lim; ang = Math.cos(ang) >= 0 ? -0.05 : Math.PI + 0.05; }
+        }
         pts.push([x, y, ang]);
       }
       kp.pts = pts;
@@ -1748,8 +1765,17 @@
         if (f.y < top) ay += 0.015 * u;
         if (f.y > bottom) ay -= 0.015 * u;
         if (f.y > sandY(f.x) - 40 * u) ay -= 0.08 * u;
-        if (f.x < -50 * u) ax += 0.04 * u;
-        if (f.x > W + 50 * u) ax -= 0.04 * u;
+        if (sp.leaving) ax += sp.leaving * 0.06 * u;
+        else {
+          if (f.x < -50 * u) ax += 0.04 * u;
+          if (f.x > W + 50 * u) ax -= 0.04 * u;
+        }
+        // a fish that sees the bait on the hook swims over to it
+        const boat = scene.boat;
+        if (boat && boat.hx !== undefined && !boat.caught && !boat.done && !sp.predator && !sp.lantern && sp.size <= 12) {
+          const dx = boat.hx - 4 * u - f.x, dy = boat.hy - f.y, d = Math.hypot(dx, dy);
+          if (d < 150 * u && d > 0.01) { ax += dx / d * 0.035 * u; ay += dy / d * 0.035 * u; }
+        }
 
         let scare = 0;
         if (sp.predator) {
@@ -1793,12 +1819,19 @@
         f.vx *= clamp; f.vy *= clamp;
         f.vy *= 0.985;
         f.x += f.vx * k; f.y += f.vy * k;
+        if (water.surface) {
+          // fish stay under the water line
+          const lim = waveY(f.x) + sp.size * u + 4 * u;
+          if (f.y < lim) { f.y = lim; if (f.vy < 0) f.vy *= -0.5; }
+        }
         f.ph += (0.18 + (spd / u) * 0.12) * k;
         if (f.grow && f.scale < f.grow) f.scale += 0.0005 * k;
         if (sp.plankton && frameNo % 6 === 0) {
           for (const p of scene.snow) if (Math.abs(p.x - f.x) < 7 * u && Math.abs(p.y - f.y) < 7 * u) { p.y = -4; p.x = Math.random() * W; }
         }
       }
+      // a school that has swum off is replaced by a new one coming in
+      if (sp.leaving && sp.fish.every(f => (sp.leaving < 0 ? f.x < -80 * u : f.x > W + 80 * u))) renewSchool(sp);
     }
   }
 
@@ -1822,10 +1855,13 @@
         const d = Math.hypot(dx, dy), R = 110 * u;
         if (d < R && d > 0.01) { j.x += dx / d * (1 - d / R) * 1.1 * u * k; j.y += dy / d * (1 - d / R) * 1.1 * u * k; }
       }
-      if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; }
+      if (j.hd === undefined) j.hd = (Math.random() < 0.5 ? -1 : 1) * (0.04 + Math.random() * 0.1);
+      j.x += j.hd * u * k;
+      if (water.surface) { const lim = waveY(j.x) + j.r * 1.3; if (j.y < lim) j.y = lim; }
+      else if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; renewJelly(j); }
       if (j.y > H * 0.85) j.y -= 0.5 * u * k;
-      if (j.x < -j.r * 3) j.x = W + j.r * 2;
-      if (j.x > W + j.r * 3) j.x = -j.r * 2;
+      if (j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
+      if (j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
@@ -1879,16 +1915,19 @@
   // ---- bottom dwellers ---------------------------------------------------
   function drawCrab(c, k) {
     const flee = near(c.x, sandY(c.x), 110 * u);
-    if (flee) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
-    if (c.pause > 0) c.pause -= k / 60;
+    if (flee && !c.leaving) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
+    if (c.pause > 0 && !c.leaving) c.pause -= k / 60;
     else {
       c.x += c.dir * c.speed * u * k * (1 + flee * 3);
       c.leg += 0.35 * k * (1 + flee * 2);
-      if (Math.random() < 0.004 * k) c.pause = 1 + Math.random() * 3;
-      if (Math.random() < 0.002 * k) c.dir *= -1;
+      if (!c.leaving && Math.random() < 0.004 * k) c.pause = 1 + Math.random() * 3;
+      if (!c.leaving && Math.random() < 0.002 * k) c.dir *= -1;
     }
-    if (c.x < scene.floorL + 20) c.dir = 1;
-    if (c.x > scene.floorR - 20) c.dir = -1;
+    if (c.leaving) { if (c.x < -40 || c.x > W + 40) renewCrab(c); }
+    else {
+      if (c.x < scene.floorL + 20) c.dir = 1;
+      if (c.x > scene.floorR - 20) c.dir = -1;
+    }
     if (flee > 0.3 && Math.random() < 0.3 * k) puff(c.x, sandY(c.x) + 5 * u, 1);
     const s = c.s, x = c.x, y = sandY(x) + 5 * u;
     const col = sh(c.color), dark = sh("#5a2418");
@@ -2223,7 +2262,7 @@
       speed: VISITOR_SPEED[type] * u,
     };
     if (type === "dolphins") {
-      v.pod = Array.from({ length: 3 + Math.floor(Math.random() * 3) }, (_, i) => ({
+      v.pod = Array.from({ length: 1 + Math.floor(Math.random() * 6) }, (_, i) => ({
         dx: -i * size * 0.8 - Math.random() * size * 0.4, dy: (Math.random() - 0.5) * 80 * u, ph: Math.random() * TAU, sc: 0.8 + Math.random() * 0.3,
       }));
     }
@@ -2233,12 +2272,12 @@
     const alive = () => scene.visitor === v;
     if (type === "dolphins") {
       for (const d of v.pod) {
-        if (Math.random() < SHINY_RATE) {
+        if (Math.random() < shinyChance("dolphins")) {
           d.shiny = "dolphins";
           scene.shinies.push({ key: "dolphins", r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
         }
       }
-    } else if (type !== "sub" && Math.random() < SHINY_RATE) {
+    } else if (type !== "sub" && Math.random() < shinyChance(type)) {
       v.shiny = type;
       scene.shinies.push({ key: type, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
     }
@@ -2257,6 +2296,7 @@
     v.x += v.dir * sp * k;
     v.ph += (VISITOR_PHASE[v.type] || 0.03) * k;
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
+    if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
     // hunters steer towards the biggest school
     if (v.type === "shark" || v.type === "swordfish") {
       let best = null;
@@ -2469,7 +2509,7 @@
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, TAU);
       ctx.stroke();
-      return b.y > -10;
+      return b.y > (water.surface ? waveY(b.x) + 2 * u : -10); // bubbles pop at the surface
     });
   }
 
@@ -2857,6 +2897,7 @@
       if (q.x < -30 * u) q.vx += 0.5 * u;
       if (q.x > W + 30 * u) q.vx -= 0.5 * u;
       if (q.y < H * 0.12) q.vy += 0.1 * u;
+      if (water.surface && q.y < waveY(q.x) + q.s) { q.y = waveY(q.x) + q.s; q.vy = Math.abs(q.vy) * 0.5; }
       if (q.y > H * 0.7) q.vy -= 0.1 * u;
       if (Math.abs(q.vx) > 0.2 * u) q.face = Math.sign(q.vx);
       const face = q.face || 1, s = q.s;
@@ -2892,6 +2933,7 @@
       if (!lightsPass) {
         c.ph += 0.01 * k;
         c.y += Math.sin(c.ph) * 0.2 * u * k;
+        if (water.surface) c.y = Math.max(c.y, waveY(c.x) + c.r * 1.2);
         c.x += (Math.sin(t * 0.1 + c.drift) * 0.15 + current * 0.5) * u * k;
         if (c.x < -30) c.x = W + 20;
         if (c.x > W + 30) c.x = -20;
@@ -2917,8 +2959,13 @@
   function drawSeal(se, k) {
     se.ph += 0.018 * k;
     se.x += se.dir * 1.1 * u * k;
-    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) { se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3); }
-    const y = se.y0 + Math.sin(se.ph) * 70 * u;
+    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) {
+      // a seal that has swum off comes back as a different seal
+      se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3);
+      maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
+    }
+    let y = se.y0 + Math.sin(se.ph) * 70 * u;
+    if (water.surface) y = Math.max(y, waveY(se.x) + se.s * 0.25);
     se.y = y;
     const ang = Math.atan2(Math.cos(se.ph) * 70 * u * 0.018, 1.1 * u);
     const s = se.s, body = sh("#6f7478"), spot = sh("#3e4246"), belly = sh("#a9aca8");
@@ -2956,8 +3003,9 @@
       const depthF = Math.max(0, Math.sin(cyc * 0.5)); // 0 at the surface, 1 at the deepest point of the dive
       const vx = (1.2 + depthF * 0.8) * u;
       p.x += p.dir * vx * k;
-      if (p.x < -40) p.x = W + 30;
-      if (p.x > W + 40) p.x = -30;
+      const pgGet = () => [p.x, waveY(p.x) + 6 * u + Math.max(0, Math.sin((p.ph % TAU) * 0.5)) * p.depth];
+      if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;
@@ -3023,7 +3071,10 @@
     for (const d of v.pod) {
       const w = v.ph * 1.5 + d.ph;
       const ang = Math.atan2(Math.cos(w) * 35 * u * 0.045, v.speed);
-      shinyDraw(d, () => drawDolphin(v.x + d.dx * v.dir, v.y + d.dy + Math.sin(w) * 35 * u, v.dir, ang, v.size * d.sc, v.ph * 3 + d.ph));
+      const x = v.x + d.dx * v.dir;
+      let y = v.y + d.dy + Math.sin(w) * 35 * u;
+      if (water.surface) y = Math.max(y, waveY(x) + v.size * d.sc * 0.15);
+      shinyDraw(d, () => drawDolphin(x, y, v.dir, ang, v.size * d.sc, v.ph * 3 + d.ph));
     }
   }
 
@@ -3417,6 +3468,7 @@
     },
     mantis: () => drawMantis({ x: 60, s: 30, cool: 1e9, strike: 0 }, 0),
     archer: () => drawArcher({ x: 60, vx: 0.5, s: 24, cool: 1e9, face: 1 }, 0),
+    flyingfish: () => drawFlyingFish({ x: 60, y: 44, dir: 1, vx: 3, vy: -0.6, air: true, ph: 1, s: 30 }),
     cleaners: () => {
       drawFishShape(44, 36, 0.3, 14, sh("#58b4f2"), sh("#10202e"), 0.5, false);
       drawFishShape(76, 50, -0.2, 14, sh("#58b4f2"), sh("#10202e"), 1.5, false);
@@ -3633,15 +3685,40 @@
     }
     if (S.boat) {
       const b = S.boat;
-      b.x += b.dir * 0.7 * u * k;
+      // the boat drifts slowly while it fishes, and speeds off once it has caught something
+      b.x += b.dir * (b.done ? 1.1 : 0.35) * u * k;
       const y = waveY(b.x);
       ctx.strokeStyle = "rgba(230,240,240,0.35)"; ctx.lineWidth = 0.8;
-      const hx = b.x + b.L * 0.3 + Math.sin(t * 0.7) * 6 * u, hy = y + b.line;
+      const hx = b.x + b.L * 0.3 + Math.sin(t * 0.7) * 6 * u * (b.caught ? 0.3 : 1), hy = y + b.line;
+      b.hx = hx; b.hy = hy;
       ctx.beginPath(); ctx.moveTo(b.x + b.L * 0.3, y + 2 * u); ctx.lineTo(hx, hy); ctx.stroke();
       ctx.strokeStyle = "rgba(200,205,210,0.8)"; ctx.lineWidth = 1.5 * u;
       ctx.beginPath(); ctx.arc(hx - 3 * u, hy, 3 * u, 0, Math.PI); ctx.stroke();
-      ctx.fillStyle = sh("#c96a6a");
-      ctx.beginPath(); ctx.ellipse(hx - 6 * u, hy - 2 * u, 2 * u, 3.5 * u, 0.4, 0, TAU); ctx.fill();
+      if (!b.caught && !b.done) {
+        ctx.fillStyle = sh("#c96a6a");
+        ctx.beginPath(); ctx.ellipse(hx - 6 * u, hy - 2 * u, 2 * u, 3.5 * u, 0.4, 0, TAU); ctx.fill();
+        // a fish that reaches the bait bites (shinies are lucky and never get caught)
+        for (const sp of S.species) {
+          if (sp.lantern || sp.predator || sp.size > 12) continue;
+          const i = sp.fish.findIndex(f => !f.shiny && Math.hypot(f.x - (hx - 5 * u), f.y - hy) < 9 * u);
+          if (i >= 0) {
+            const f = sp.fish.splice(i, 1)[0];
+            b.caught = { main: sp.main, dark: sp.dark, L: sp.size * u * f.scale, ph: 0 };
+            for (let n = 0; n < 6; n++) bubbles.push({ x: hx, y: hy, r: (1 + Math.random() * 2) * u, ph: Math.random() * TAU });
+            break;
+          }
+        }
+      }
+      if (b.caught) {
+        // reel it in: the line gets shorter until the fish is out of the water
+        b.line = Math.max(4 * u, b.line - 0.8 * u * k);
+        b.caught.ph += 0.7 * k;
+        drawFishShape(hx - 4 * u, hy + b.caught.L * 0.95, -Math.PI / 2 + Math.sin(b.caught.ph) * 0.5, b.caught.L, b.caught.main, b.caught.dark, b.caught.ph * 2, false);
+        if (b.line <= 4 * u) {
+          b.caught = null; b.done = true;
+          for (let n = 0; n < 2; n++) ripples.push({ x: hx + (n - 0.5) * 8 * u, r: 1, a: 0.7 });
+        }
+      }
       ctx.save();
       ctx.translate(b.x, y);
       ctx.rotate(Math.sin(t * 1.2) * 0.03);
@@ -3700,7 +3777,13 @@
 
   function updateAndDrawFood(k) {
     if (feeding && pointer.active && Math.random() < 0.5 * k && food.length < 90) {
-      food.push({ x: pointer.x + (Math.random() - 0.5) * 20 * u, y: pointer.y + (Math.random() - 0.5) * 10 * u, ph: Math.random() * TAU, r: (1 + Math.random()) * u });
+      const fy = Math.max(pointer.y, (water.surface ? waveY(pointer.x) : 0) + 8 * u);
+      food.push({ x: pointer.x + (Math.random() - 0.5) * 20 * u, y: fy + (Math.random() - 0.5) * 10 * u, ph: Math.random() * TAU, r: (1 + Math.random()) * u });
+    }
+    // food draws in new fish from the nearest side
+    if (feeding && pointer.active) {
+      scene.feedT = (scene.feedT || 0) + k / 60;
+      if (scene.feedT > 6) { scene.feedT = 0; bringNewcomers(); }
     }
     ctx.fillStyle = sh("#e3c98f", -0.1);
     food = food.filter(p => {
@@ -4283,11 +4366,17 @@
     B.rot = Math.random() < 0.5 ? 1 : -1;
     const n = Math.round(90 + 50 * Math.min(1, (W * H) / (1280 * 800)));
     B.fish = Array.from({ length: n }, () => ({ a: Math.random() * TAU, r: Math.sqrt(Math.random()) * 0.95 + 0.05, sp: 0.01 + Math.random() * 0.015, ox: 0, oy: 0, ph: Math.random() * TAU }));
+    // the hunters start outside the screen and swim in towards the ball
     const mk = (type, L) => {
       const side = Math.random() < 0.5 ? -1 : 1;
-      return { type, L, x: B.cx - side * B.R * (3 + Math.random()), y: B.cy + (Math.random() - 0.5) * B.R, ang: side > 0 ? 0 : Math.PI, sp: (type === "sail" ? 5 : 4) * u, ph: Math.random() * TAU };
+      const x = side < 0 ? -L * 1.2 - Math.random() * L : W + L * 1.2 + Math.random() * L;
+      const y = B.cy + (Math.random() - 0.5) * B.R * 1.5;
+      const back = Math.atan2(B.cy - y, B.cx - x);
+      const rel = Math.max(-0.6, Math.min(0.6, Math.atan2(Math.sin(back), Math.abs(Math.cos(back)))));
+      return { type, L, x, y, ang: Math.cos(back) >= 0 ? rel : Math.PI - rel, sp: (type === "sail" ? 5 : 4) * u, ph: Math.random() * TAU };
     };
-    B.att = [mk("dolphin", 80 * u), mk("dolphin", 72 * u), mk("dolphin", 88 * u), mk("sail", 150 * u)];
+    B.att = Array.from({ length: 1 + Math.floor(Math.random() * 4) }, () => mk("dolphin", (70 + Math.random() * 20) * u));
+    if (Math.random() < 0.6) B.att.push(mk("sail", 150 * u));
     sfxWhistle();
   }
 
@@ -4300,14 +4389,17 @@
       return;
     }
     B.age += dtSec;
-    if (B.age > 31) { B.active = false; B.timer = 100 + Math.random() * 60; return; }
+    // the moment ends once the ball has broken up and every hunter has swum out of view
+    const hunted = B.att.every(a => a.x < -a.L * 1.2 || a.x > W + a.L * 1.2);
+    if (B.age > 31 && hunted) { B.active = false; B.timer = 100 + Math.random() * 60; return; }
     const inF = smooth(Math.min(1, B.age / 4)), outF = B.age > 26 ? Math.min(1, (B.age - 26) / 5) : 0;
     const spread = 1 + (1 - inF) * 3 + outF * 3;
     B.cx += (Math.sin(t * 0.2) * 0.2 + current * 0.3) * u * k;
     for (const a of B.att) {
       a.x += Math.cos(a.ang) * a.sp * k; a.y += Math.sin(a.ang) * a.sp * k; a.ph += 0.2 * k;
+      if (water.surface) a.y = Math.max(a.y, waveY(a.x) + a.L * 0.2);
       const dx = a.x - B.cx, dy = a.y - B.cy;
-      if (Math.hypot(dx, dy) > B.R * 3.2 && dx * Math.cos(a.ang) + dy * Math.sin(a.ang) > 0) {
+      if (B.age < 26 && Math.hypot(dx, dy) > B.R * 3.2 && dx * Math.cos(a.ang) + dy * Math.sin(a.ang) > 0) {
         // swing round for another pass through the ball, staying mostly level
         const back = Math.atan2(-dy, -dx) + (Math.random() - 0.5) * 0.6;
         const rel = Math.max(-0.6, Math.min(0.6, Math.atan2(Math.sin(back), Math.abs(Math.cos(back)))));
@@ -4316,7 +4408,7 @@
     }
     ctx.globalAlpha = 1 - outF;
     const main = sh("#cfd8dc"), dark = sh("#5a6a74");
-    for (let i = B.fish.length - 1; i >= 0; i--) {
+    for (let i = B.age > 31 ? -1 : B.fish.length - 1; i >= 0; i--) {
       const f = B.fish[i];
       f.a += f.sp * B.rot * k;
       const x = B.cx + Math.cos(f.a) * f.r * B.R * spread + f.ox, y = B.cy + Math.sin(f.a) * f.r * B.R * 0.75 * spread + f.oy;
@@ -4368,7 +4460,8 @@
           const a = Math.random() * TAU;
           const baby = { x: e.x, y: e.y, vx: Math.cos(a) * u, vy: Math.sin(a) * u * 0.3, ph: Math.random() * TAU, scale: 0.35, grow: 0.85 + Math.random() * 0.3, shinyBase: hexHue(e.sp.main) };
           e.sp.fish.push(baby);
-          if (Math.random() < SHINY_RATE) { const sp = e.sp; baby.shiny = "fish"; scene.shinies.push({ key: "fish", r: sp.size * u * 0.5, alive: () => sp.fish.includes(baby), get: () => [baby.x, baby.y] }); }
+          const sp = e.sp;
+          maybeShiny("fish", baby, sp.size * u * 0.5, () => [baby.x, baby.y], () => sp.fish.includes(baby));
         }
         return false;
       }
@@ -4469,6 +4562,92 @@
     if (Math.random() < 0.04 * k) abyssGlows.push({ x: xa + Math.random() * (xb - xa), y: H + 10, vy: -(0.2 + Math.random() * 0.3) * u, life: 0, col: Math.random() < 0.5 ? "120,240,255" : "200,140,255", r: (1.5 + Math.random() * 2) * u });
   }
 
+  // What the seahorse task is about, shown when the task is tapped (and once, the first time).
+  function explainTask() {
+    toast(L("Drie zeepaardjes hebben de kleur van het zeewier aangenomen en houden zich vast aan de wuivende planten. Kijk goed en tik op een zeepaardje als je het ziet. Vind je ze alle drie, dan regent het munten en komt het in je logboek.",
+      "Three seahorses have taken on the colour of the seaweed and cling to the swaying plants. Look closely and tap a seahorse when you spot it. Find all three and it rains coins, and it goes in your logbook."));
+  }
+
+  // ---- flying fish --------------------------------------------------------
+  // A small group races along just under the surface, then leaps out and glides on its big fins before diving back in.
+  function splash(x) {
+    for (let n = 0; n < 2; n++) ripples.push({ x: x + (n - 0.5) * 6 * u, r: 1, a: 0.7 });
+    for (let n = 0; n < 5; n++) bubbles.push({ x: x + (Math.random() - 0.5) * 8 * u, y: waveY(x) + (4 + Math.random() * 8) * u, r: (1 + Math.random() * 2) * u, ph: Math.random() * TAU });
+  }
+
+  function updateAndDrawFlyers(k, dtSec) {
+    const F = scene.flyers;
+    if (!F || !F.enabled || !water.surface) return;
+    if (!F.fish.length) {
+      F.timer -= dtSec;
+      if (F.timer > 0) return;
+      F.timer = 25 + Math.random() * 30;
+      const dir = Math.random() < 0.5 ? 1 : -1, n = 2 + Math.floor(Math.random() * 4);
+      for (let i = 0; i < n; i++) {
+        const f = { dir, vx: (2.6 + Math.random()) * u, vy: 0, air: false, launched: false, ph: Math.random() * TAU, s: (12 + Math.random() * 4) * u, depth: (25 + Math.random() * 35) * u };
+        f.x = dir > 0 ? -40 * u - i * 34 * u : W + 40 * u + i * 34 * u;
+        f.y = waveY(f.x) + f.depth;
+        f.launchX = W * (0.15 + Math.random() * 0.7);
+        maybeShiny("flyingfish", f, f.s * 0.7, () => [f.x, f.y], () => F.fish.includes(f));
+        F.fish.push(f);
+      }
+      seen("flyingfish");
+      return;
+    }
+    for (let i = F.fish.length - 1; i >= 0; i--) {
+      const f = F.fish[i];
+      f.ph += 0.45 * k;
+      f.x += f.dir * f.vx * k;
+      const surf = waveY(f.x);
+      if (!f.launched && (f.dir > 0 ? f.x > f.launchX : f.x < f.launchX)) { f.launched = true; f.vy = -(2.4 + Math.random() * 0.8) * u; }
+      if (f.air) {
+        f.vy += 0.045 * u * k; // the wide fins turn the fall into a glide
+        f.y += f.vy * k;
+        if (f.y > surf) { f.air = false; splash(f.x); f.vy = 1.2 * u; }
+      } else if (f.launched && f.vy < 0) {
+        f.y += f.vy * k;
+        if (f.y < surf) { f.air = true; splash(f.x); }
+      } else {
+        f.vy *= Math.pow(0.95, k);
+        f.y += f.vy * k + (surf + f.depth - f.y) * 0.02 * k;
+        if (!f.launched) f.y = Math.max(f.y, surf + f.s * 0.6);
+      }
+      shinyDraw(f, () => drawFlyingFish(f));
+      if (f.x < -80 * u || f.x > W + 80 * u) { if (f.launched) F.fish.splice(i, 1); }
+    }
+  }
+
+  function drawFlyingFish(f) {
+    const L = f.s, body = sh("#4f86c6"), back = sh("#24466e"), belly = sh("#dfe8ef");
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.scale(f.dir, 1);
+    ctx.rotate(Math.atan2(f.vy, f.vx));
+    // the big pectoral fins: spread wide in the air, folded along the body in the water
+    const spread = f.air ? 1 : 0.25;
+    ctx.fillStyle = "rgba(190,220,245,0.55)";
+    ctx.strokeStyle = "rgba(120,170,215,0.8)"; ctx.lineWidth = Math.max(0.6, L * 0.03);
+    ctx.beginPath();
+    ctx.moveTo(L * 0.25, -L * 0.05);
+    ctx.quadraticCurveTo(-L * 0.2, -L * (0.25 + 0.75 * spread), -L * 0.75, -L * (0.1 + 0.55 * spread));
+    ctx.quadraticCurveTo(-L * 0.3, -L * 0.1, L * 0.05, L * 0.02);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = back;
+    ctx.save(); ctx.translate(-L * 0.8, 0); ctx.rotate(Math.sin(f.ph) * (f.air ? 0.1 : 0.35));
+    ctx.beginPath(); ctx.moveTo(L * 0.05, 0); ctx.lineTo(-L * 0.45, -L * 0.25); ctx.lineTo(-L * 0.25, 0); ctx.lineTo(-L * 0.55, L * 0.35); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = body;
+    ctx.beginPath(); ctx.ellipse(0, 0, L, L * 0.2, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = belly;
+    ctx.beginPath(); ctx.ellipse(L * 0.05, L * 0.08, L * 0.85, L * 0.08, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = back;
+    ctx.beginPath(); ctx.ellipse(-L * 0.05, -L * 0.1, L * 0.8, L * 0.06, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#0e1a26";
+    ctx.beginPath(); ctx.arc(L * 0.72, -L * 0.03, Math.max(0.8, L * 0.06), 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+
   // ---- the diver ---------------------------------------------------------
   function updateAndDrawDiver(k) {
     if (!diverMode) return;
@@ -4532,6 +4711,19 @@
       ctx.globalAlpha = h.found ? 1 : 0.8;
       drawSeahorse({ px: h.x, py: h.y, s: 10 * u, dir: h.dir, ph: h.k, color: h.found ? "#f2b134" : kp.color });
       ctx.globalAlpha = 1;
+      // after 40 seconds an unfound seahorse gives a small twinkle now and then, as a hint
+      if (!h.found && t - (scene.taskT0 || 0) > 40) {
+        const tw = Math.sin(t * 1.3 + h.k * 2.1);
+        if (tw > 0.9) {
+          const a = (tw - 0.9) * 10;
+          ctx.fillStyle = `rgba(255,245,200,${0.9 * a})`;
+          const sx = h.x + 7 * u, sy = h.y - 12 * u, r = (2 + 3 * a) * u;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy - r); ctx.lineTo(sx + r * 0.25, sy - r * 0.25); ctx.lineTo(sx + r, sy); ctx.lineTo(sx + r * 0.25, sy + r * 0.25);
+          ctx.lineTo(sx, sy + r); ctx.lineTo(sx - r * 0.25, sy + r * 0.25); ctx.lineTo(sx - r, sy); ctx.lineTo(sx - r * 0.25, sy - r * 0.25);
+          ctx.fill();
+        }
+      }
       if (h.flash > 0) {
         h.flash -= 0.02 * k;
         ctx.strokeStyle = `rgba(255,230,150,${Math.max(0, h.flash)})`; ctx.lineWidth = 2 * u;
@@ -4547,8 +4739,14 @@
     taskEl.hidden = !h.length || restMode;
     if (taskEl.hidden) return;
     const n = h.filter(x => x.found).length, done = n === h.length;
-    taskEl.textContent = done ? L("Alle zeepaardjes gevonden!", "All seahorses found!") : L(`Zoek de verstopte zeepaardjes: ${n} van ${h.length}`, `Find the hidden seahorses: ${n} of ${h.length}`);
+    taskEl.textContent = done ? L("Alle zeepaardjes gevonden!", "All seahorses found!") : L(`Zoek ${h.length} verstopte zeepaardjes · ${n}/${h.length} · uitleg`, `Find ${h.length} hidden seahorses · ${n}/${h.length} · how`);
+    taskEl.setAttribute("aria-label", done ? taskEl.textContent : L("Uitleg over de verstopte zeepaardjes", "How the hidden seahorses work"));
     taskEl.classList.remove("fade");
+    // the first time a search task appears, explain what it is about (once the welcome screen is closed)
+    if (!done && !n && !store.get("oceaan-taakuitleg", false) && welcomeEl.hidden && !/^#(zelftest|schermtest)/.test(location.hash)) {
+      store.set("oceaan-taakuitleg", true);
+      setTimeout(explainTask, 1200);
+    }
     clearTimeout(taskTimer);
     taskTimer = setTimeout(() => taskEl.classList.add("fade"), done ? 4000 : n ? 5000 : 9000);
   }
@@ -4647,7 +4845,7 @@
     const sr = mulberry32((seed ^ 0x9e3779b9) >>> 0);
     const list = [];
     // obj is the creature that gets recoloured; get() says where it is, for the glints and the logbook
-    const add = (key, obj, r, get, alive) => { if (sr() < SHINY_RATE) { obj.shiny = key; list.push({ key, r, get, alive }); } };
+    const add = (key, obj, r, get, alive) => { if (sr() < shinyChance(key)) { obj.shiny = key; list.push({ key, obj, r, get, alive }); } };
     const tag = (obj, hue) => { obj.shinyBase = hue; return obj; };
     const floorY = x => sandY(x) + 5 * u;
     for (const sp of s.species) for (const f of sp.fish) add(sp.lantern ? "lantern" : "fish", sp.lantern ? f : tag(f, hexHue(sp.main)), sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
@@ -4697,6 +4895,94 @@
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
     whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
+  // A creature that has left and come back (or is new) gets a fresh shiny roll.
+  function maybeShiny(key, obj, r, get, alive) {
+    scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
+    delete obj.shiny;
+    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive }); }
+  }
+
+  // ---- coming and going ----------------------------------------------------
+  // Now and then a school swims off or a crab walks away, and new ones arrive, each with its own shiny chance.
+  function updateTurnover(dtSec) {
+    const S = scene;
+    S.turnTimer -= dtSec;
+    if (S.turnTimer > 0) return;
+    S.turnTimer = 14 + Math.random() * 18;
+    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length);
+    const crabExit = S.floorL <= 0 || S.floorR >= W;
+    const options = [];
+    if (schools.length) options.push("school");
+    if (S.crabs.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
+    if (!options.length) return;
+    if (options[Math.floor(Math.random() * options.length)] === "school") {
+      const sp = schools[Math.floor(Math.random() * schools.length)];
+      let cx = 0;
+      for (const f of sp.fish) cx += f.x;
+      sp.leaving = cx / sp.fish.length < W / 2 ? -1 : 1;
+    } else {
+      const c = S.crabs[Math.floor(Math.random() * S.crabs.length)];
+      const leftOk = S.floorL <= 0, rightOk = S.floorR >= W;
+      c.leaving = leftOk && (!rightOk || c.x < W / 2) ? -1 : 1;
+      c.dir = c.leaving; c.pause = 0;
+    }
+  }
+
+  function renewSchool(sp) {
+    const pal = water.fish[Math.floor(Math.random() * water.fish.length)];
+    if (!sp.lantern) { sp.main = pal[0]; sp.dark = pal[1]; }
+    sp.leaving = 0;
+    const from = Math.random() < 0.5 ? -1 : 1, n = sp.predator ? Math.min(12, sp.count) : sp.count, cy = H * sp.bandC;
+    sp.fish = Array.from({ length: n }, () => {
+      const f = {
+        x: from < 0 ? -60 * u - Math.random() * 140 * u : W + 60 * u + Math.random() * 140 * u,
+        y: cy + (Math.random() - 0.5) * 80 * u, vx: -from * sp.speed * u, vy: 0,
+        ph: Math.random() * TAU, scale: 0.85 + Math.random() * 0.3, shinyBase: hexHue(sp.main),
+      };
+      if (sp.predator) f.hunger = 5 + Math.random() * 15;
+      maybeShiny(sp.lantern ? "lantern" : "fish", f, sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
+      return f;
+    });
+  }
+
+  function renewCrab(c) {
+    const S = scene, sides = [];
+    if (S.floorL <= 0) sides.push(-1);
+    if (S.floorR >= W) sides.push(1);
+    const side = sides[Math.floor(Math.random() * sides.length)] || -1;
+    c.leaving = 0;
+    c.x = side < 0 ? -30 : W + 30;
+    c.dir = -side;
+    c.color = ["#d9543b", "#e07a3a", "#b84a5a", "#c9603c"][Math.floor(Math.random() * 4)];
+    c.s = (12 + Math.random() * 8) * u;
+    c.shinyBase = hexHue(c.color);
+    maybeShiny("crab", c, c.s * 0.8, () => [c.x, floorY(c.x) - c.s * 0.45]);
+  }
+
+  function renewJelly(j) {
+    j.col = water.jelly[Math.floor(Math.random() * water.jelly.length)];
+    j.r = (12 + Math.random() * 18) * u;
+    const [r, g, b] = j.col.split(",").map(Number);
+    j.shinyBase = rgbHue(r, g, b);
+    maybeShiny("jelly", j, j.r, () => [j.x, j.y - j.r * 0.3]);
+  }
+
+  // Feeding brings a few new fish in from the nearest side.
+  function bringNewcomers() {
+    const cands = scene.species.filter(sp => !sp.predator && !sp.lantern && !sp.leaving && sp.fish.length < sp.count * 1.5);
+    if (!cands.length) return;
+    const sp = cands[Math.floor(Math.random() * cands.length)], side = pointer.x < W / 2 ? -1 : 1, n = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < n; i++) {
+      const f = {
+        x: side < 0 ? -40 * u - i * 18 * u : W + 40 * u + i * 18 * u,
+        y: Math.max(pointer.y + (Math.random() - 0.5) * 60 * u, (water.surface ? waveY(pointer.x) : 0) + 30 * u),
+        vx: -side * sp.speed * u, vy: 0, ph: Math.random() * TAU, scale: 0.85 + Math.random() * 0.3, shinyBase: hexHue(sp.main),
+      };
+      sp.fish.push(f);
+      maybeShiny("fish", f, sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
+    }
+  }
+
   function rgbHue(r, g, b) {
     r /= 255; g /= 255; b /= 255;
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
@@ -4872,6 +5158,7 @@
     updateTentacles(S.kraken, dtSec, KRAKEN);
     updateTentacles(S.giant, dtSec, GIANT);
     updateStorm(dtSec);
+    updateTurnover(dtSec);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = bgGrad;
@@ -4931,6 +5218,7 @@
     updateAndDrawBubbles(k);
     drawStreaks(k);
     drawSurface(k, dtSec);
+    updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
     if (S.season === "herfst") { ctx.fillStyle = `rgba(70,90,50,${0.12 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
@@ -5046,7 +5334,7 @@
       if (!diverMode) diverBtn.click();
       return;
     }
-    if (e.key === "Enter" && diverMode && focusTag !== "BUTTON" && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
     if (e.key === " " || e.key === "Enter") {
       const tag = document.activeElement && document.activeElement.tagName;
       if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
@@ -5071,12 +5359,14 @@
     window.claude.use("downloads").then(d => { downloads = d; }).catch(() => {});
   }
 
+  taskEl.addEventListener("click", explainTask);
+
   // ---- diver, menu and photo buttons -------------------------------------
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger of muis. Spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger or mouse. Space gives a new ocean."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. De spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Space gives a new ocean."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
   });
@@ -5271,6 +5561,7 @@
     clown: "Clownvissen worden allemaal als mannetje geboren. De grootste van een groepje wordt een vrouwtje.",
     mantis: "Een bidsprinkhaankreeft slaat zo snel dat er in het water een flitsje en een knalletje ontstaan.",
     archer: "Een schuttersvis schiet met een straaltje water insecten van takken boven het water.",
+    flyingfish: "Vliegende vissen springen uit het water en zweven op hun grote borstvinnen tientallen meters ver, om roofvissen te ontwijken.",
     cleaners: "Poetsvisjes eten parasieten van grotere vissen, die daar speciaal voor naar hun poetsstation komen.",
     grouper: "Tandbaarzen kunnen heel groot worden. De reuzentandbaars wordt meer dan twee meter lang.",
     whale: "Walvissen stammen af van landdieren die zo'n vijftig miljoen jaar geleden de zee weer in gingen.",
@@ -5345,6 +5636,7 @@
     clown: "All clownfish are born male. The largest of a small group becomes a female.",
     mantis: "A mantis shrimp strikes so fast that a tiny flash and pop appear in the water.",
     archer: "An archerfish shoots insects off branches above the water with a jet of water.",
+    flyingfish: "Flying fish leap out of the water and glide for tens of metres on their big pectoral fins, to escape from predators.",
     cleaners: "Cleaner wrasse eat parasites off larger fish, which visit their cleaning station especially for that.",
     grouper: "Groupers can grow very large. The giant grouper reaches more than two metres.",
     whale: "Whales descend from land animals that went back into the sea about fifty million years ago.",
@@ -5376,7 +5668,7 @@
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:")
-      ? L("Een shiny is een zeldzame kleurvariant: maar 1 op de 1000 van deze dieren ziet er zo uit. ", "A shiny is a rare colour variant: only 1 in 1000 of these animals looks like this. ") + (facts[base] || "")
+      ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 1000} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 1000} of these animals looks like this. `) + (facts[base] || "")
       : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
@@ -5416,7 +5708,8 @@
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
       const base = hintFor(key.slice(6));
-      return L("1 op de 1000 van deze dieren glinstert", "1 in 1000 of these animals glitters") + (base ? "; " + base : "");
+      const n = SHINY_N[key.slice(6)] || 1000;
+      return L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`) + (base ? "; " + base : "");
     }
     if (key.startsWith("w:")) return L("elke oceaan kiest een van de vijf wateren", "every ocean picks one of the five waters");
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
@@ -5468,7 +5761,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, Enter opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, Enter opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -5503,6 +5796,7 @@
     for (const k of LIFE_KEYS) if (life[k]) set.add(k);
     for (const v of S.visitorPool) if (VIS_KEYS.includes(v)) set.add(v);
     for (const r of S.rares) set.add(r);
+    if (S.flyers && S.flyers.enabled) set.add("flyingfish");
     return { water: S.waterIndex, set };
   }
 
@@ -5769,8 +6063,12 @@
         S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
         S.bait.enabled = true; S.bait.timer = 0; S.storm.enabled = !!water.surface; S.storm.timer = 0;
         S.kraken.enabled = true; S.kraken.timer = 0; S.giant.enabled = true; S.giant.timer = 0; S.spawnTimer = 0;
+        S.flyers.enabled = !!water.surface; S.flyers.timer = 0; S.boatTimer = 0; S.turnTimer = 0;
+        if (S.species[0]) S.species[0].leaving = 1;
+        if (S.crabs[0]) S.crabs[0].leaving = -1;
+        pointer.active = true; pointer.x = W * 0.3; pointer.y = H * 0.4; feeding = true; S.feedT = 6;
         if (S.treasure) dig();
-        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; frame(last + 33, true); }
+        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
     }
@@ -5844,7 +6142,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=3").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=4").catch(() => {}));
   }
 </script>
 </body>

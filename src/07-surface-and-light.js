@@ -50,15 +50,40 @@
     }
     if (S.boat) {
       const b = S.boat;
-      b.x += b.dir * 0.7 * u * k;
+      // the boat drifts slowly while it fishes, and speeds off once it has caught something
+      b.x += b.dir * (b.done ? 1.1 : 0.35) * u * k;
       const y = waveY(b.x);
       ctx.strokeStyle = "rgba(230,240,240,0.35)"; ctx.lineWidth = 0.8;
-      const hx = b.x + b.L * 0.3 + Math.sin(t * 0.7) * 6 * u, hy = y + b.line;
+      const hx = b.x + b.L * 0.3 + Math.sin(t * 0.7) * 6 * u * (b.caught ? 0.3 : 1), hy = y + b.line;
+      b.hx = hx; b.hy = hy;
       ctx.beginPath(); ctx.moveTo(b.x + b.L * 0.3, y + 2 * u); ctx.lineTo(hx, hy); ctx.stroke();
       ctx.strokeStyle = "rgba(200,205,210,0.8)"; ctx.lineWidth = 1.5 * u;
       ctx.beginPath(); ctx.arc(hx - 3 * u, hy, 3 * u, 0, Math.PI); ctx.stroke();
-      ctx.fillStyle = sh("#c96a6a");
-      ctx.beginPath(); ctx.ellipse(hx - 6 * u, hy - 2 * u, 2 * u, 3.5 * u, 0.4, 0, TAU); ctx.fill();
+      if (!b.caught && !b.done) {
+        ctx.fillStyle = sh("#c96a6a");
+        ctx.beginPath(); ctx.ellipse(hx - 6 * u, hy - 2 * u, 2 * u, 3.5 * u, 0.4, 0, TAU); ctx.fill();
+        // a fish that reaches the bait bites (shinies are lucky and never get caught)
+        for (const sp of S.species) {
+          if (sp.lantern || sp.predator || sp.size > 12) continue;
+          const i = sp.fish.findIndex(f => !f.shiny && Math.hypot(f.x - (hx - 5 * u), f.y - hy) < 9 * u);
+          if (i >= 0) {
+            const f = sp.fish.splice(i, 1)[0];
+            b.caught = { main: sp.main, dark: sp.dark, L: sp.size * u * f.scale, ph: 0 };
+            for (let n = 0; n < 6; n++) bubbles.push({ x: hx, y: hy, r: (1 + Math.random() * 2) * u, ph: Math.random() * TAU });
+            break;
+          }
+        }
+      }
+      if (b.caught) {
+        // reel it in: the line gets shorter until the fish is out of the water
+        b.line = Math.max(4 * u, b.line - 0.8 * u * k);
+        b.caught.ph += 0.7 * k;
+        drawFishShape(hx - 4 * u, hy + b.caught.L * 0.95, -Math.PI / 2 + Math.sin(b.caught.ph) * 0.5, b.caught.L, b.caught.main, b.caught.dark, b.caught.ph * 2, false);
+        if (b.line <= 4 * u) {
+          b.caught = null; b.done = true;
+          for (let n = 0; n < 2; n++) ripples.push({ x: hx + (n - 0.5) * 8 * u, r: 1, a: 0.7 });
+        }
+      }
       ctx.save();
       ctx.translate(b.x, y);
       ctx.rotate(Math.sin(t * 1.2) * 0.03);
@@ -117,7 +142,13 @@
 
   function updateAndDrawFood(k) {
     if (feeding && pointer.active && Math.random() < 0.5 * k && food.length < 90) {
-      food.push({ x: pointer.x + (Math.random() - 0.5) * 20 * u, y: pointer.y + (Math.random() - 0.5) * 10 * u, ph: Math.random() * TAU, r: (1 + Math.random()) * u });
+      const fy = Math.max(pointer.y, (water.surface ? waveY(pointer.x) : 0) + 8 * u);
+      food.push({ x: pointer.x + (Math.random() - 0.5) * 20 * u, y: fy + (Math.random() - 0.5) * 10 * u, ph: Math.random() * TAU, r: (1 + Math.random()) * u });
+    }
+    // food draws in new fish from the nearest side
+    if (feeding && pointer.active) {
+      scene.feedT = (scene.feedT || 0) + k / 60;
+      if (scene.feedT > 6) { scene.feedT = 0; bringNewcomers(); }
     }
     ctx.fillStyle = sh("#e3c98f", -0.1);
     food = food.filter(p => {

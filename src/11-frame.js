@@ -70,6 +70,7 @@
     updateTentacles(S.kraken, dtSec, KRAKEN);
     updateTentacles(S.giant, dtSec, GIANT);
     updateStorm(dtSec);
+    updateTurnover(dtSec);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = bgGrad;
@@ -129,6 +130,7 @@
     updateAndDrawBubbles(k);
     drawStreaks(k);
     drawSurface(k, dtSec);
+    updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
     if (S.season === "herfst") { ctx.fillStyle = `rgba(70,90,50,${0.12 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }

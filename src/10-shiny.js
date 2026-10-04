@@ -4,7 +4,7 @@
     const sr = mulberry32((seed ^ 0x9e3779b9) >>> 0);
     const list = [];
     // obj is the creature that gets recoloured; get() says where it is, for the glints and the logbook
-    const add = (key, obj, r, get, alive) => { if (sr() < SHINY_RATE) { obj.shiny = key; list.push({ key, r, get, alive }); } };
+    const add = (key, obj, r, get, alive) => { if (sr() < shinyChance(key)) { obj.shiny = key; list.push({ key, obj, r, get, alive }); } };
     const tag = (obj, hue) => { obj.shinyBase = hue; return obj; };
     const floorY = x => sandY(x) + 5 * u;
     for (const sp of s.species) for (const f of sp.fish) add(sp.lantern ? "lantern" : "fish", sp.lantern ? f : tag(f, hexHue(sp.main)), sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
@@ -54,6 +54,94 @@
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
     whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
+  // A creature that has left and come back (or is new) gets a fresh shiny roll.
+  function maybeShiny(key, obj, r, get, alive) {
+    scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
+    delete obj.shiny;
+    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive }); }
+  }
+
+  // ---- coming and going ----------------------------------------------------
+  // Now and then a school swims off or a crab walks away, and new ones arrive, each with its own shiny chance.
+  function updateTurnover(dtSec) {
+    const S = scene;
+    S.turnTimer -= dtSec;
+    if (S.turnTimer > 0) return;
+    S.turnTimer = 14 + Math.random() * 18;
+    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length);
+    const crabExit = S.floorL <= 0 || S.floorR >= W;
+    const options = [];
+    if (schools.length) options.push("school");
+    if (S.crabs.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
+    if (!options.length) return;
+    if (options[Math.floor(Math.random() * options.length)] === "school") {
+      const sp = schools[Math.floor(Math.random() * schools.length)];
+      let cx = 0;
+      for (const f of sp.fish) cx += f.x;
+      sp.leaving = cx / sp.fish.length < W / 2 ? -1 : 1;
+    } else {
+      const c = S.crabs[Math.floor(Math.random() * S.crabs.length)];
+      const leftOk = S.floorL <= 0, rightOk = S.floorR >= W;
+      c.leaving = leftOk && (!rightOk || c.x < W / 2) ? -1 : 1;
+      c.dir = c.leaving; c.pause = 0;
+    }
+  }
+
+  function renewSchool(sp) {
+    const pal = water.fish[Math.floor(Math.random() * water.fish.length)];
+    if (!sp.lantern) { sp.main = pal[0]; sp.dark = pal[1]; }
+    sp.leaving = 0;
+    const from = Math.random() < 0.5 ? -1 : 1, n = sp.predator ? Math.min(12, sp.count) : sp.count, cy = H * sp.bandC;
+    sp.fish = Array.from({ length: n }, () => {
+      const f = {
+        x: from < 0 ? -60 * u - Math.random() * 140 * u : W + 60 * u + Math.random() * 140 * u,
+        y: cy + (Math.random() - 0.5) * 80 * u, vx: -from * sp.speed * u, vy: 0,
+        ph: Math.random() * TAU, scale: 0.85 + Math.random() * 0.3, shinyBase: hexHue(sp.main),
+      };
+      if (sp.predator) f.hunger = 5 + Math.random() * 15;
+      maybeShiny(sp.lantern ? "lantern" : "fish", f, sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
+      return f;
+    });
+  }
+
+  function renewCrab(c) {
+    const S = scene, sides = [];
+    if (S.floorL <= 0) sides.push(-1);
+    if (S.floorR >= W) sides.push(1);
+    const side = sides[Math.floor(Math.random() * sides.length)] || -1;
+    c.leaving = 0;
+    c.x = side < 0 ? -30 : W + 30;
+    c.dir = -side;
+    c.color = ["#d9543b", "#e07a3a", "#b84a5a", "#c9603c"][Math.floor(Math.random() * 4)];
+    c.s = (12 + Math.random() * 8) * u;
+    c.shinyBase = hexHue(c.color);
+    maybeShiny("crab", c, c.s * 0.8, () => [c.x, floorY(c.x) - c.s * 0.45]);
+  }
+
+  function renewJelly(j) {
+    j.col = water.jelly[Math.floor(Math.random() * water.jelly.length)];
+    j.r = (12 + Math.random() * 18) * u;
+    const [r, g, b] = j.col.split(",").map(Number);
+    j.shinyBase = rgbHue(r, g, b);
+    maybeShiny("jelly", j, j.r, () => [j.x, j.y - j.r * 0.3]);
+  }
+
+  // Feeding brings a few new fish in from the nearest side.
+  function bringNewcomers() {
+    const cands = scene.species.filter(sp => !sp.predator && !sp.lantern && !sp.leaving && sp.fish.length < sp.count * 1.5);
+    if (!cands.length) return;
+    const sp = cands[Math.floor(Math.random() * cands.length)], side = pointer.x < W / 2 ? -1 : 1, n = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < n; i++) {
+      const f = {
+        x: side < 0 ? -40 * u - i * 18 * u : W + 40 * u + i * 18 * u,
+        y: Math.max(pointer.y + (Math.random() - 0.5) * 60 * u, (water.surface ? waveY(pointer.x) : 0) + 30 * u),
+        vx: -side * sp.speed * u, vy: 0, ph: Math.random() * TAU, scale: 0.85 + Math.random() * 0.3, shinyBase: hexHue(sp.main),
+      };
+      sp.fish.push(f);
+      maybeShiny("fish", f, sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
+    }
+  }
+
   function rgbHue(r, g, b) {
     r /= 255; g /= 255; b /= 255;
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;

@@ -62,8 +62,12 @@
         S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
         S.bait.enabled = true; S.bait.timer = 0; S.storm.enabled = !!water.surface; S.storm.timer = 0;
         S.kraken.enabled = true; S.kraken.timer = 0; S.giant.enabled = true; S.giant.timer = 0; S.spawnTimer = 0;
+        S.flyers.enabled = !!water.surface; S.flyers.timer = 0; S.boatTimer = 0; S.turnTimer = 0;
+        if (S.species[0]) S.species[0].leaving = 1;
+        if (S.crabs[0]) S.crabs[0].leaving = -1;
+        pointer.active = true; pointer.x = W * 0.3; pointer.y = H * 0.4; feeding = true; S.feedT = 6;
         if (S.treasure) dig();
-        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; frame(last + 33, true); }
+        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
     }

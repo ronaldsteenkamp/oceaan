@@ -49,6 +49,7 @@
     clown: "Clownvissen worden allemaal als mannetje geboren. De grootste van een groepje wordt een vrouwtje.",
     mantis: "Een bidsprinkhaankreeft slaat zo snel dat er in het water een flitsje en een knalletje ontstaan.",
     archer: "Een schuttersvis schiet met een straaltje water insecten van takken boven het water.",
+    flyingfish: "Vliegende vissen springen uit het water en zweven op hun grote borstvinnen tientallen meters ver, om roofvissen te ontwijken.",
     cleaners: "Poetsvisjes eten parasieten van grotere vissen, die daar speciaal voor naar hun poetsstation komen.",
     grouper: "Tandbaarzen kunnen heel groot worden. De reuzentandbaars wordt meer dan twee meter lang.",
     whale: "Walvissen stammen af van landdieren die zo'n vijftig miljoen jaar geleden de zee weer in gingen.",
@@ -123,6 +124,7 @@
     clown: "All clownfish are born male. The largest of a small group becomes a female.",
     mantis: "A mantis shrimp strikes so fast that a tiny flash and pop appear in the water.",
     archer: "An archerfish shoots insects off branches above the water with a jet of water.",
+    flyingfish: "Flying fish leap out of the water and glide for tens of metres on their big pectoral fins, to escape from predators.",
     cleaners: "Cleaner wrasse eat parasites off larger fish, which visit their cleaning station especially for that.",
     grouper: "Groupers can grow very large. The giant grouper reaches more than two metres.",
     whale: "Whales descend from land animals that went back into the sea about fifty million years ago.",
@@ -154,7 +156,7 @@
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:")
-      ? L("Een shiny is een zeldzame kleurvariant: maar 1 op de 1000 van deze dieren ziet er zo uit. ", "A shiny is a rare colour variant: only 1 in 1000 of these animals looks like this. ") + (facts[base] || "")
+      ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 1000} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 1000} of these animals looks like this. `) + (facts[base] || "")
       : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
@@ -194,7 +196,8 @@
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
       const base = hintFor(key.slice(6));
-      return L("1 op de 1000 van deze dieren glinstert", "1 in 1000 of these animals glitters") + (base ? "; " + base : "");
+      const n = SHINY_N[key.slice(6)] || 1000;
+      return L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`) + (base ? "; " + base : "");
     }
     if (key.startsWith("w:")) return L("elke oceaan kiest een van de vijf wateren", "every ocean picks one of the five waters");
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
@@ -246,7 +249,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, Enter opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, Enter opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -281,6 +284,7 @@
     for (const k of LIFE_KEYS) if (life[k]) set.add(k);
     for (const v of S.visitorPool) if (VIS_KEYS.includes(v)) set.add(v);
     for (const r of S.rares) set.add(r);
+    if (S.flyers && S.flyers.enabled) set.add("flyingfish");
     return { water: S.waterIndex, set };
   }
 

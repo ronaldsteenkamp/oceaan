@@ -50,6 +50,10 @@
         if (n) ang += Math.sign(x - pointer.x || 1) * 0.12 * n;
         x += Math.cos(ang) * seg;
         y += Math.sin(ang) * seg;
+        if (water.surface) {
+          const lim = waveY(x) + 5 * u;
+          if (y < lim) { y = lim; ang = Math.cos(ang) >= 0 ? -0.05 : Math.PI + 0.05; }
+        }
         pts.push([x, y, ang]);
       }
       kp.pts = pts;

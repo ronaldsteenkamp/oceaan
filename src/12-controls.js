@@ -85,7 +85,7 @@
       if (!diverMode) diverBtn.click();
       return;
     }
-    if (e.key === "Enter" && diverMode && focusTag !== "BUTTON" && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
     if (e.key === " " || e.key === "Enter") {
       const tag = document.activeElement && document.activeElement.tagName;
       if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
@@ -110,12 +110,14 @@
     window.claude.use("downloads").then(d => { downloads = d; }).catch(() => {});
   }
 
+  taskEl.addEventListener("click", explainTask);
+
   // ---- diver, menu and photo buttons -------------------------------------
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger of muis. Spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger or mouse. Space gives a new ocean."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. De spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Space gives a new ocean."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
   });

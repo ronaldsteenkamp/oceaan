@@ -105,17 +105,17 @@
 
   // Volcanoes, brine pools, sunken cities, canyons and the newest creatures.
   const MORE = {
-    rif: { props: { volcano: 0, brine: 0, city: 0.15, canyon: 0.3 }, life: { mantis: 0.7, archer: 0.6, cleaners: 0.9 } },
-    diepzee: { props: { volcano: 0.45, brine: 0.5, city: 0.1, canyon: 0.5 }, life: { mantis: 0, archer: 0, cleaners: 0 } },
-    noordzee: { props: { volcano: 0, brine: 0.2, city: 0.3, canyon: 0.3 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4 } },
-    kelpwoud: { props: { volcano: 0, brine: 0, city: 0.2, canyon: 0.25 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4 } },
-    ijszee: { props: { volcano: 0.1, brine: 0.25, city: 0, canyon: 0.35 }, life: { mantis: 0, archer: 0, cleaners: 0 } },
+    rif: { props: { volcano: 0, brine: 0, city: 0.15, canyon: 0.3 }, life: { mantis: 0.7, archer: 0.6, cleaners: 0.9, flyingfish: 0.85 } },
+    diepzee: { props: { volcano: 0.45, brine: 0.5, city: 0.1, canyon: 0.5 }, life: { mantis: 0, archer: 0, cleaners: 0, flyingfish: 0 } },
+    noordzee: { props: { volcano: 0, brine: 0.2, city: 0.3, canyon: 0.3 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4, flyingfish: 0.45 } },
+    kelpwoud: { props: { volcano: 0, brine: 0, city: 0.2, canyon: 0.25 }, life: { mantis: 0.3, archer: 0.3, cleaners: 0.4, flyingfish: 0.35 } },
+    ijszee: { props: { volcano: 0.1, brine: 0.25, city: 0, canyon: 0.35 }, life: { mantis: 0, archer: 0, cleaners: 0, flyingfish: 0 } },
   };
   WATERS.forEach(w => { Object.assign(w.props, MORE[w.name].props); Object.assign(w.life, MORE[w.name].life); });
 
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon"];
-  const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners"];
+  const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish"];
   const VIS_KEYS = ["whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall"];
   const AQ_ALL = [...PROP_KEYS, ...LIFE_KEYS, ...VIS_KEYS, ...RARE_KEYS];
@@ -129,7 +129,7 @@
     ray: "Pijlstaartrog", eels: "Zandalen", seahorse: "Zeepaardje", puffer: "Kogelvis", angler: "Hengelvis", moray: "Murene",
     squid: "Inktvisjes", hermit: "Heremietkreeft", slugs: "Zeekomkommer", comb: "Ribkwal", lantern: "Lantaarnvis",
     otters: "Zeeotter", seal: "Zeehond", penguins: "Pinguïns", clown: "Clownvis", mantis: "Bidsprinkhaankreeft",
-    archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars",
+    archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars", flyingfish: "Vliegende vis",
     whale: "Walvis", humpback: "Bultrug", shark: "Haai", turtle: "Zeeschildpad", manta: "Manta", dolphins: "Dolfijnen",
     swordfish: "Zeilvis", sub: "Duikboot", narwhal: "Narwal",
     giant: "Reuzeninktvis", baitball: "Bait-ball", spawning: "Paaiende vissen", coralspawn: "Koraalpaai",
@@ -145,10 +145,18 @@
     ["Zeldzaam", RARE_KEYS],
   ];
 
-  // One in a thousand of every animal is shiny: it glitters and gets its own page in the logbook.
-  const SHINY_RATE = 1 / 1000;
+  // Shinies are rare colour variants with their own page in the logbook. The odds are set per kind of animal:
+  // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
+  // so that every kind of shiny turns up about as often.
+  const SHINY_N = {
+    fish: 60000, lantern: 9000, jelly: 6000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
+    seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
+    penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
+    whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
+  };
+  const shinyChance = key => 1 / (SHINY_N[key] || 1000);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
-    "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper",
+    "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
@@ -164,7 +172,7 @@
     ray: "Stingray", eels: "Garden eels", seahorse: "Seahorse", puffer: "Pufferfish", angler: "Anglerfish", moray: "Moray eel",
     squid: "Squid", hermit: "Hermit crab", slugs: "Sea cucumber", comb: "Comb jelly", lantern: "Lanternfish",
     otters: "Sea otter", seal: "Seal", penguins: "Penguins", clown: "Clownfish", mantis: "Mantis shrimp",
-    archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper",
+    archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper", flyingfish: "Flying fish",
     whale: "Whale", humpback: "Humpback whale", shark: "Shark", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
     swordfish: "Sailfish", sub: "Submarine", narwhal: "Narwhal",
     giant: "Giant squid", baitball: "Bait ball", spawning: "Spawning fish", coralspawn: "Coral spawning",
@@ -252,7 +260,7 @@
     toastBusy = true;
     toastEl.textContent = msg;
     toastEl.classList.add("show");
-    setTimeout(() => { toastEl.classList.remove("show"); setTimeout(nextToast, 400); }, 2600);
+    setTimeout(() => { toastEl.classList.remove("show"); setTimeout(nextToast, 400); }, Math.max(2600, msg.length * 55));
   }
 
   // Settings a viewer keeps in their own browser.

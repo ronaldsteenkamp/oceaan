@@ -113,6 +113,7 @@
     },
     mantis: () => drawMantis({ x: 60, s: 30, cool: 1e9, strike: 0 }, 0),
     archer: () => drawArcher({ x: 60, vx: 0.5, s: 24, cool: 1e9, face: 1 }, 0),
+    flyingfish: () => drawFlyingFish({ x: 60, y: 44, dir: 1, vx: 3, vy: -0.6, air: true, ph: 1, s: 30 }),
     cleaners: () => {
       drawFishShape(44, 36, 0.3, 14, sh("#58b4f2"), sh("#10202e"), 0.5, false);
       drawFishShape(76, 50, -0.2, 14, sh("#58b4f2"), sh("#10202e"), 1.5, false);

@@ -300,6 +300,9 @@
     s.moon = { x: W * range(0.2, 0.8), phase: chance(0.3) ? 1 : range(0.15, 0.9) };
     s.storm = { enabled: !!water.surface, active: false, age: 0, timer: range(50, 130), flash: 0, nextFlash: 0 };
     s.bait = { enabled: water.name !== "diepzee", active: false, timer: range(35, 70), fish: [], att: [] };
+    s.flyers = { enabled: chance(Lf.flyingfish) && !!water.surface, timer: range(8, 22), fish: [] };
+    s.turnTimer = range(10, 20);
+    s.taskT0 = t;
     s.spawnTimer = range(25, 50);
     s.treasure = null;
     if (s.ground.some(g => g.kind === "bottle")) {
