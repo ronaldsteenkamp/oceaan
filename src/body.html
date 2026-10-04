@@ -1,0 +1,50 @@
+
+<canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
+<div id="task" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<p id="sceneDesc" class="sr-only" aria-live="polite"></p>
+<div class="status">
+  <span id="seed"><span id="seedLabel">Oceaan</span> <b>—</b></span>
+  <span id="clock"></span>
+  <span id="rare" hidden></span>
+</div>
+<nav class="toolbar" aria-label="Bediening">
+  <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="photo" class="tool" data-short="Foto" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+  <span class="divider" aria-hidden="true"></span>
+  <button id="book" class="tool" data-short="Logboek" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
+  <button id="menu" class="tool" data-short="Menu" type="button" aria-haspopup="dialog" aria-label="Maken en delen" data-tip="Maken en delen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+</nav>
+<div id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+  <div class="panel-head">
+    <h2 id="panelTitle" tabindex="-1">Logboek</h2>
+    <button type="button" id="closePanel" class="icon-btn" aria-label="Sluiten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  </div>
+  <div id="panelBody"></div>
+</div>
+<div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-card">
+    <h2 id="welcomeTitle">Welkom in de oceaan</h2>
+    <p class="lead" id="welcomeLead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
+    <ul class="howto">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span id="howto0"><b>Tik op het water</b> voor een nieuwe oceaan.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span id="howto1"><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="howto2"><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="howto3">Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span id="howto4">Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.</span></li>
+    </ul>
+    <button type="button" id="welcomeGo" class="primary">Duik erin</button>
+    <p class="credit" id="credit">Gemaakt door Ronald</p>
+  </div>
+</div>
+<div id="photoView" hidden role="dialog" aria-modal="true" aria-label="Foto">
+  <img id="polaroid" alt="Polaroid van de huidige oceaan">
+  <div class="photo-actions">
+    <button type="button" id="savePolaroid" class="primary">Opslaan met lijstje</button>
+    <button type="button" id="savePlain">Zonder lijstje</button>
+    <button type="button" id="saveAlbum">In mijn album</button>
+    <button type="button" id="closePhoto" class="ghost">Terug</button>
+  </div>
+</div>
+

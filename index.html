@@ -215,6 +215,17 @@
   #polaroid { max-width: min(92vw, 900px); max-height: 72vh; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); transform: rotate(-1.2deg); }
   .photo-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
+  /* labels under the icons on touch screens, for the first visits */
+  .toolbar.labels .tool { width: 58px; height: 50px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+  .toolbar.labels .tool::after { content: attr(data-short); font-size: 10px; line-height: 1; }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .album { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .album button { padding: 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); }
+  .album img { width: 100%; display: block; border-radius: 6px; }
+  .album-view img { width: 100%; border-radius: 10px; display: block; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+  #panelTitle:focus { outline: none; }
+
   @media (max-width: 600px) {
     .status { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
     .toolbar { left: 50%; right: auto; transform: translateX(-50%); }
@@ -238,46 +249,48 @@
 <canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
 <div id="task" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<p id="sceneDesc" class="sr-only" aria-live="polite"></p>
 <div class="status">
-  <span id="seed">Oceaan <b>—</b></span>
+  <span id="seed"><span id="seedLabel">Oceaan</span> <b>—</b></span>
   <span id="clock"></span>
   <span id="rare" hidden></span>
 </div>
 <nav class="toolbar" aria-label="Bediening">
-  <button id="sound" class="tool" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
-  <button id="diver" class="tool" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-  <button id="photo" class="tool" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+  <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="photo" class="tool" data-short="Foto" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
   <span class="divider" aria-hidden="true"></span>
-  <button id="book" class="tool" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
-  <button id="menu" class="tool" type="button" aria-haspopup="dialog" aria-label="Maken en delen" data-tip="Maken en delen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+  <button id="book" class="tool" data-short="Logboek" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
+  <button id="menu" class="tool" data-short="Menu" type="button" aria-haspopup="dialog" aria-label="Maken en delen" data-tip="Maken en delen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
 </nav>
-<div id="panel" hidden role="dialog" aria-labelledby="panelTitle">
+<div id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="panelTitle">
   <div class="panel-head">
-    <h2 id="panelTitle">Logboek</h2>
+    <h2 id="panelTitle" tabindex="-1">Logboek</h2>
     <button type="button" id="closePanel" class="icon-btn" aria-label="Sluiten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
   </div>
   <div id="panelBody"></div>
 </div>
-<div id="welcome" hidden role="dialog" aria-labelledby="welcomeTitle">
+<div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
   <div class="welcome-card">
     <h2 id="welcomeTitle">Welkom in de oceaan</h2>
-    <p class="lead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
+    <p class="lead" id="welcomeLead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
     <ul class="howto">
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span><b>Tik op het water</b> voor een nieuwe oceaan.</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span id="howto0"><b>Tik op het water</b> voor een nieuwe oceaan.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span id="howto1"><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="howto2"><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="howto3">Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span id="howto4">Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.</span></li>
     </ul>
     <button type="button" id="welcomeGo" class="primary">Duik erin</button>
-    <p class="credit">Gemaakt door Ronald</p>
+    <p class="credit" id="credit">Gemaakt door Ronald</p>
   </div>
 </div>
-<div id="photoView" hidden role="dialog" aria-label="Foto">
+<div id="photoView" hidden role="dialog" aria-modal="true" aria-label="Foto">
   <img id="polaroid" alt="Polaroid van de huidige oceaan">
   <div class="photo-actions">
     <button type="button" id="savePolaroid" class="primary">Opslaan met lijstje</button>
     <button type="button" id="savePlain">Zonder lijstje</button>
+    <button type="button" id="saveAlbum">In mijn album</button>
     <button type="button" id="closePhoto" class="ghost">Terug</button>
   </div>
 </div>
@@ -301,6 +314,12 @@
   const panelEl = document.getElementById("panel");
   const panelBody = document.getElementById("panelBody");
   const panelTitle = document.getElementById("panelTitle");
+  const toolbarEl = document.querySelector(".toolbar");
+  const sceneDescEl = document.getElementById("sceneDesc");
+  // inside a claude.ai artifact the page cannot use its own address for sharing
+  const IN_ARTIFACT = !!(window.claude && typeof window.claude.use === "function");
+  // a short buzz on phones that support it
+  function buzz(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
   const photoView = document.getElementById("photoView");
   const polaroidImg = document.getElementById("polaroid");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -433,6 +452,28 @@
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);
+
+  const NAMES_EN = {
+    "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest", "w:ijszee": "Polar sea",
+    wreck: "Pirate wreck", plane: "Plane wreck", chest: "Treasure chest", treasure: "Dug-up treasure", anchor: "Anchor", cannon: "Cannon",
+    ruins: "Columns", statue: "Atlantis", city: "Sunken town", arch: "Rock arch", helmet: "Diving helmet", mine: "Sea mine",
+    bottle: "Message in a bottle", skull: "Skull", coral: "Coral garden", anemone: "Anemone", vent: "Hydrothermal vent",
+    volcano: "Undersea volcano", brine: "Brine pool", rocks: "Boulders", canyon: "Abyss",
+    fish: "Fish schools", jelly: "Jellyfish", crab: "Crab", starfish: "Starfish", urchin: "Sea urchin", octopus: "Octopus",
+    ray: "Stingray", eels: "Garden eels", seahorse: "Seahorse", puffer: "Pufferfish", angler: "Anglerfish", moray: "Moray eel",
+    squid: "Squid", hermit: "Hermit crab", slugs: "Sea cucumber", comb: "Comb jelly", lantern: "Lanternfish",
+    otters: "Sea otter", seal: "Seal", penguins: "Penguins", clown: "Clownfish", mantis: "Mantis shrimp",
+    archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper",
+    whale: "Whale", humpback: "Humpback whale", shark: "Shark", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
+    swordfish: "Sailfish", sub: "Submarine", narwhal: "Narwhal",
+    giant: "Giant squid", baitball: "Bait ball", spawning: "Spawning fish", coralspawn: "Coral spawning",
+    storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
+    mermaid: "Mermaid", kraken: "Kraken", ghost: "Ghost ship", whalefall: "Whale fall",
+  };
+  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin" };
+  for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || NAMES_EN[k].toLowerCase());
+  const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
+  const groupName = title => L(title, GROUP_EN[title] || title);
   const LOG_KEY = "oceaan-logboek";
   const LOUD = new Set([...VIS_KEYS, ...RARE_KEYS, "giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "treasure", ...SHINY_KEYS.map(k => "shiny:" + k)]);
   // The logbook remembers, for everything found, how often it was seen and the date of the first time.
@@ -461,7 +502,7 @@
     const d = new Date();
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
-    if (LOUD.has(key)) toast("Nieuw in je logboek: " + NAMES[key]);
+    if (LOUD.has(key)) toast(L("Nieuw in je logboek: ", "New in your logbook: ") + nm(key));
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
     if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderPanel();
@@ -472,12 +513,12 @@
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
   const MILESTONES = [
-    { id: "m10", name: "Ontdekker", goal: "10 vondsten", need: () => foundCount() >= 10, reward: "een bronzen boekje" },
-    { id: "s1", name: "Eerste shiny", goal: "1 shiny", need: () => shinyCount() >= 1, reward: "een glinsterend boekje" },
-    { id: "m25", name: "Zeekenner", goal: "25 vondsten", need: () => foundCount() >= 25, reward: "groene zwemvliezen voor je duiker" },
-    { id: "m50", name: "Oceanograaf", goal: "50 vondsten", need: () => foundCount() >= 50, reward: "een zilveren boekje" },
-    { id: "s10", name: "Shinyjager", goal: "10 shiny's", need: () => shinyCount() >= 10, reward: "regenboogzwemvliezen voor je duiker" },
-    { id: "mall", name: "Meester van de zee", goal: "alles gevonden", need: () => foundCount() >= BASE_LOG_KEYS.length, reward: "een gouden boekje en een gouden duikfles" },
+    { id: "m10", name: ["Ontdekker", "Explorer"], goal: ["10 vondsten", "10 finds"], need: () => foundCount() >= 10, reward: ["een bronzen boekje", "a bronze logbook"] },
+    { id: "s1", name: ["Eerste shiny", "First shiny"], goal: ["1 shiny", "1 shiny"], need: () => shinyCount() >= 1, reward: ["een glinsterend boekje", "a glittering logbook"] },
+    { id: "m25", name: ["Zeekenner", "Sea expert"], goal: ["25 vondsten", "25 finds"], need: () => foundCount() >= 25, reward: ["groene zwemvliezen voor je duiker", "green fins for your diver"] },
+    { id: "m50", name: ["Oceanograaf", "Oceanographer"], goal: ["50 vondsten", "50 finds"], need: () => foundCount() >= 50, reward: ["een zilveren boekje", "a silver logbook"] },
+    { id: "s10", name: ["Shinyjager", "Shiny hunter"], goal: ["10 shiny's", "10 shinies"], need: () => shinyCount() >= 10, reward: ["regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"] },
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], need: () => foundCount() >= BASE_LOG_KEYS.length, reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
   ];
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
@@ -490,7 +531,8 @@
     for (const id of reached()) {
       if (before.includes(id)) continue;
       const m = MILESTONES.find(x => x.id === id);
-      toast(`Mijlpaal: ${m.name}! Je krijgt ${m.reward}.`);
+      toast(L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`));
+      buzz([60, 60, 120]);
     }
     applyRewards();
   }
@@ -499,7 +541,7 @@
   const toastQueue = [];
   let toastBusy = false;
   function toast(msg) {
-    if (restMode && msg.startsWith("Nieuw in je logboek")) return;
+    if (restMode && (msg.startsWith("Nieuw in je logboek") || msg.startsWith("New in your logbook"))) return;
     if (toastQueue.length < 4 && !toastQueue.includes(msg)) toastQueue.push(msg);
     if (!toastBusy) nextToast();
   }
@@ -518,6 +560,13 @@
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} },
   };
   let restMode = store.get("oceaan-rust", false);
+
+  // Dutch or English. The first visit follows the browser's language.
+  let LANG = store.get("oceaan-taal", String(navigator.language || "nl").toLowerCase().startsWith("nl") ? "nl" : "en");
+  if (LANG !== "nl" && LANG !== "en") LANG = "nl";
+  const L = (nl, en) => (LANG === "en" ? en : nl);
+  const nm = key => (LANG === "en" ? NAMES_EN[key] : NAMES[key]) || NAMES[key] || key;
+  const dateText = iso => new Date(iso + "T12:00:00").toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
   let volume = store.get("oceaan-volume", 0.8);
   let dprCap = 2;
 
@@ -893,11 +942,24 @@
     buildScene();
     seedEl.textContent = seed + (aquarium ? " · aquarium" : "");
     rareEl.hidden = !scene.rare;
-    rareEl.textContent = scene.rare ? "zeldzaam: " + NAMES[scene.rare].toLowerCase() : "";
+    rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
     updateTask();
     updateClock();
+    describeScene();
     fade = soft ? 0.9 : 1;
+  }
+
+  // A short spoken summary of the ocean, for people who use a screen reader.
+  function describeScene() {
+    const S = scene, life = presentLife(S);
+    const things = [...new Set(S.ground.filter(g => NAMES[g.kind]).map(g => nm(g.kind)))];
+    const animals = ["fish", "jelly", ...LIFE_KEYS].filter(k => k === "fish" || (k === "jelly" ? S.jellies.length : life[k])).map(k => nm(k).toLowerCase());
+    const text = `${nm("w:" + water.name)}, ${clockEl.textContent}. ` +
+      (things.length ? L("Op de bodem: ", "On the seabed: ") + things.join(", ").toLowerCase() + ". " : "") +
+      L("Dieren: ", "Animals: ") + animals.join(", ") + "." + (S.rare ? L(" Zeldzaam: ", " Rare: ") + nm(S.rare).toLowerCase() + "." : "");
+    sceneDescEl.textContent = text;
+    canvas.setAttribute("aria-label", L("Onderwaterwereld. ", "Underwater world. ") + text);
   }
 
   function randomSeed() { return Math.floor(Math.random() * 1e9); }
@@ -3677,6 +3739,7 @@
     for (let i = 0; i < 30; i++) bubbles.push({ x: g.x + (Math.random() - 0.5) * s, y: y - Math.random() * s, r: (1 + Math.random() * 4) * u, ph: Math.random() * TAU });
     if (Math.random() < 0.35) g.eel = 1;
     sfxChest();
+    buzz(25);
   }
 
   function drawStreaks(k) {
@@ -3905,11 +3968,11 @@
   }
 
   soundBtn.addEventListener("click", () => {
-    if (!audio.ac && !initAudio()) { soundBtn.disabled = true; soundBtn.dataset.tip = "Geluid werkt hier niet"; soundBtn.setAttribute("aria-label", "Geluid werkt hier niet"); return; }
+    if (!audio.ac && !initAudio()) { soundBtn.disabled = true; soundBtn.dataset.tip = L("Geluid werkt hier niet", "Sound does not work here"); soundBtn.setAttribute("aria-label", soundBtn.dataset.tip); return; }
     audio.on = !audio.on;
     audio.ac.resume();
     audio.master.gain.setTargetAtTime(audio.on ? volume : 0, audio.ac.currentTime, 0.3);
-    const label = audio.on ? "Geluid uitzetten" : "Geluid aanzetten";
+    const label = audio.on ? L("Geluid uitzetten", "Turn sound off") : L("Geluid aanzetten", "Turn sound on");
     soundBtn.classList.toggle("is-on", audio.on);
     soundBtn.dataset.tip = label;
     soundBtn.setAttribute("aria-label", label);
@@ -4484,7 +4547,7 @@
     taskEl.hidden = !h.length || restMode;
     if (taskEl.hidden) return;
     const n = h.filter(x => x.found).length, done = n === h.length;
-    taskEl.textContent = done ? "Alle zeepaardjes gevonden!" : `Zoek de verstopte zeepaardjes: ${n} van ${h.length}`;
+    taskEl.textContent = done ? L("Alle zeepaardjes gevonden!", "All seahorses found!") : L(`Zoek de verstopte zeepaardjes: ${n} van ${h.length}`, `Find the hidden seahorses: ${n} of ${h.length}`);
     taskEl.classList.remove("fade");
     clearTimeout(taskTimer);
     taskTimer = setTimeout(() => taskEl.classList.add("fade"), done ? 4000 : n ? 5000 : 9000);
@@ -4498,8 +4561,8 @@
 
   function updateClock() {
     computeLight();
-    const part = day > 0.8 ? "dag" : night > 0.8 ? "nacht" : "schemer";
-    clockEl.textContent = `${part} · ${scene.season}`;
+    const part = day > 0.8 ? L("dag", "day") : night > 0.8 ? L("nacht", "night") : L("schemer", "dusk");
+    clockEl.textContent = `${part} · ${scene.season === "herfst" ? L("herfst", "autumn") : L("zomer", "summer")}`;
   }
 
   function drawTreasureMound() {
@@ -4517,6 +4580,7 @@
     T.dug = true;
     puff(T.x, sandY(T.x) + 4 * u, 30);
     sfxDig();
+    buzz(70);
     const g = { kind: "chest", x: T.x, w: 90 * u, s: 40 * u, eel: 0, sparkles: Array.from({ length: 6 }, () => [Math.random() * 2 - 1, -0.6 - Math.random(), Math.random() * TAU]) };
     scene.ground.push(g);
     chestBurst(g);
@@ -4541,7 +4605,7 @@
     ctx.fillStyle = "#5a3a1a";
     ctx.font = `600 ${Math.round(24 * u)}px Caveat, "Segoe Print", cursive`;
     ctx.textBaseline = "top";
-    ctx.fillText("Hier ligt de schat", 16 * u, 10 * u);
+    ctx.fillText(L("Hier ligt de schat", "The treasure is here"), 16 * u, 10 * u);
     const fy = mh * 0.68, base = H * (1 - S.sand.frac), toMap = x => 16 * u + (x / W) * (mw - 32 * u);
     const floor = x => Math.min(mh - 8 * u, fy + (sandY(x) - base) * 0.4);
     ctx.strokeStyle = "#7a5a30"; ctx.lineWidth = 2 * u;
@@ -4573,7 +4637,7 @@
     ctx.fillText("N", mw - 34 * u, 46 * u);
     ctx.font = `${Math.round(10 * u)}px "DM Mono", monospace`;
     ctx.fillStyle = "rgba(90,58,26,0.7)";
-    ctx.fillText("tik op het kruisje in het zand om te graven", 16 * u, mh - 18 * u);
+    ctx.fillText(L("tik op het kruisje in het zand om te graven", "tap the cross in the sand to dig"), 16 * u, mh - 18 * u);
     ctx.restore();
   }
 
@@ -4716,8 +4780,9 @@
         e.told = true;
         const key = "shiny:" + e.key, isNew = !logbook.has(key);
         seen(key);
-        if (!isNew) toast(`Er is een ${NAMES[key].toLowerCase()} in de buurt!`);
+        if (!isNew) toast(L(`Er is een ${nm(key).toLowerCase()} in de buurt!`, `There is a ${nm(key).toLowerCase()} nearby!`));
         sfxShiny();
+        buzz([30, 40, 30]);
       }
       // small glints that flash on the body itself
       for (let i = 0; i < 3; i++) {
@@ -4782,10 +4847,10 @@
   });
 
   // ---- frame -------------------------------------------------------------
-  function frame(now) {
+  function frame(now, once) {
     const dtMs = Math.min(50, now - last);
     last = now;
-    if (paused || document.hidden) { requestAnimationFrame(frame); return; }
+    if (paused || document.hidden) { if (!once) requestAnimationFrame(frame); return; }
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();
@@ -4874,7 +4939,7 @@
     const dark = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;
     if (dark > 0.01) {
       // murky or crowded water never goes fully black, so there is always something to see
-      const floorCap = water.denseKelp || S.season === "herfst" ? 0.4 : 0.6;
+      const floorCap = water.denseKelp || S.season === "herfst" ? 0.36 : 0.5;
       ctx.fillStyle = `rgba(2,6,22,${Math.min(floorCap, dark)})`;
       ctx.fillRect(0, 0, W, H);
     }
@@ -4891,7 +4956,7 @@
       fade = Math.max(0, fade - 0.025 * k);
     }
     audioTick();
-    requestAnimationFrame(frame);
+    if (!once) requestAnimationFrame(frame);
   }
 
   // ---- interaction -------------------------------------------------------
@@ -4930,6 +4995,7 @@
       updateTask();
       if (S.hidden.every(h => h.found)) {
         seen("task");
+        buzz([40, 50, 40, 50, 80]);
         for (let i = 0; i < 20; i++) { const a = -Math.PI / 2 + (Math.random() - 0.5) * 2, v = (1 + Math.random() * 3) * u; coins.push({ x: hid.x, y: hid.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 4 * u, rot: Math.random() * TAU, spin: 0.2, life: 4 }); }
       }
       return;
@@ -4962,13 +5028,14 @@
     let best = null, bd = 90 * u;
     for (const p of spots) { const d = Math.hypot(p[0] - diver.x, p[1] - diver.y); if (d < bd) { bd = d; best = p; } }
     if (best) handleTap(best[0], best[1]);
-    else toast("Zwem dichter naar een kist, fles of zeepaardje");
+    else toast(L("Zwem dichter naar een kist, fles of zeepaardje", "Swim closer to a chest, bottle or seahorse"));
   }
 
   addEventListener("keydown", e => {
     if (e.key === "Escape") {
       if (!panelEl.hidden && detailOpen) { closeDetail(); return; }
-      panelEl.hidden = true; welcomeEl.hidden = true;
+      if (!panelEl.hidden) closePanel();
+      welcomeEl.hidden = true;
       if (!photoView.hidden) closePhoto();
       return;
     }
@@ -5009,58 +5076,101 @@
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast("Stuur de duiker met je vinger of muis. Spatiebalk geeft een nieuwe oceaan.");
+      toast(L("Stuur de duiker met je vinger of muis. Spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger or mouse. Space gives a new ocean."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
   });
 
-  menuBtn.addEventListener("click", () => {
-    if (!panelEl.hidden && panelTab === "set") { panelEl.hidden = true; return; }
-    panelTab = "set";
-    aqDraft = null;
+  let panelOpener = null;
+  function openPanel(tab, opener) {
+    panelTab = tab;
+    panelOpener = opener || null;
     panelEl.hidden = false;
     renderPanel();
+    panelTitle.focus();
+  }
+  function closePanel() {
+    panelEl.hidden = true;
+    if (panelOpener) panelOpener.focus();
+  }
+  menuBtn.addEventListener("click", () => {
+    if (!panelEl.hidden && panelTab === "set") { closePanel(); return; }
+    aqDraft = null;
+    openPanel("set", menuBtn);
   });
   // The book opens the logbook straight away.
   bookBtn.addEventListener("click", () => {
-    if (!panelEl.hidden && panelTab === "log") { panelEl.hidden = true; return; }
-    panelTab = "log";
-    panelEl.hidden = false;
+    if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
-    renderPanel();
+    openPanel("log", bookBtn);
   });
-  document.getElementById("closePanel").addEventListener("click", () => { panelEl.hidden = true; });
+  document.getElementById("closePanel").addEventListener("click", closePanel);
+
+  // Tab stays inside whichever dialog is open.
+  addEventListener("keydown", e => {
+    if (e.key !== "Tab") return;
+    const dlg = [photoView, welcomeEl, panelEl].find(d => !d.hidden);
+    if (!dlg) return;
+    const items = [...dlg.querySelectorAll("button, input, [tabindex]")].filter(el => !el.disabled && el.offsetParent !== null && el.tabIndex >= 0);
+    if (!items.length) return;
+    const first = items[0], lastItem = items[items.length - 1];
+    if (!dlg.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastItem.focus(); }
+    else if (!e.shiftKey && document.activeElement === lastItem) { e.preventDefault(); first.focus(); }
+  });
+
+  // On touch screens the icons get a label for the first visits; holding a button shows its name.
+  const visits = store.get("oceaan-bezoeken", 0) + 1;
+  store.set("oceaan-bezoeken", visits);
+  const touchOnly = matchMedia("(hover: none)").matches;
+  if (touchOnly && visits <= 3) toolbarEl.classList.add("labels");
+  let holdTimer = null, held = false;
+  toolbarEl.addEventListener("pointerdown", e => {
+    const b = e.target.closest(".tool");
+    if (!b || e.pointerType === "mouse") return;
+    held = false;
+    holdTimer = setTimeout(() => { held = true; toast(b.dataset.tip); buzz(15); }, 500);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => toolbarEl.addEventListener(ev, () => clearTimeout(holdTimer)));
+  toolbarEl.addEventListener("click", e => { if (held) { held = false; e.stopPropagation(); e.preventDefault(); } }, true);
 
   function renderPanel() {
-    panelTitle.textContent = panelTab === "set" ? "Maken en delen" : "Logboek";
+    panelTitle.textContent = panelTab === "set" ? L("Maken en delen", "Create and share") : L("Logboek", "Logbook");
     detailOpen = false;
     if (panelTab === "set") { renderMake(); return; }
     bookDot.hidden = true;
     const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
     const got = all.filter(k => logbook.has(k)).length;
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    let html = `<p class="sum"><b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.</p>`;
+    let html = `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
-    html += `<div class="badges">` + MILESTONES.map(m => `<span class="badge ${m.need() ? "on" : ""}">${m.name} · ${m.goal}</span>`).join("") + `</div>`;
-    for (const [title, keys] of LOG_GROUPS) {
-      html += `<h3>${title}</h3><div class="cards">` + keys.map(k => {
+    html += `<div class="badges">` + MILESTONES.map(m => `<span class="badge ${m.need() ? "on" : ""}">${L(m.name[0], m.name[1])} · ${L(m.goal[0], m.goal[1])}</span>`).join("") + `</div>`;
+    const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
+    html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
+    if (logFilter === "album") html += albumHTML();
+    for (const [title, allKeys] of logFilter === "album" ? [] : LOG_GROUPS) {
+      const keys = allKeys.filter(k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:")));
+      if (!keys.length) continue;
+      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
         const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${NAMES[k]}</span>${e && e.n > 1 ? `<span class="count">${e.n}×</span>` : ""}</button>`;
+        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 ? `<span class="count">${e.n}×</span>` : ""}</button>`;
       }).join("") + `</div>`;
     }
-    html += `<h3>Bewaren</h3>
-      <p class="sum">Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.</p>
-      <div class="row"><button type="button" id="logExport">Opslaan als bestand</button><button type="button" id="logImport">Bestand inladen</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>`;
-    html += `<h3>Opnieuw beginnen</h3>
-      <div class="row" id="resetRow"><button type="button" id="logReset">Logboek wissen</button></div>
+    html += `<h3>${L("Bewaren", "Keep")}</h3>
+      <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
+      <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>`;
+    html += `<h3>${L("Opnieuw beginnen", "Start over")}</h3>
+      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
       <div class="row" id="resetConfirm" hidden>
-        <span class="sum">Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.</span>
-        <button type="button" id="logResetYes" class="primary">Ja, wis mijn logboek</button>
-        <button type="button" id="logResetNo">Annuleren</button>
+        <span class="sum">${L("Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.", "Everything you have seen will be cleared, shinies too. This cannot be undone.")}</span>
+        <button type="button" id="logResetYes" class="primary">${L("Ja, wis mijn logboek", "Yes, clear my logbook")}</button>
+        <button type="button" id="logResetNo">${L("Annuleren", "Cancel")}</button>
       </div>`;
     panelBody.innerHTML = html;
     fillThumbs();
   }
+
+  let logFilter = "all";
 
   // Pictures are drawn a few at a time so the logbook opens straight away.
   let thumbJob = 0;
@@ -5185,26 +5295,101 @@
     whalefall: "Een dode walvis op de bodem kan tientallen jaren lang voedsel zijn voor honderden soorten dieren.",
   };
 
+  const FACTS_EN = {
+    "w:rif": "Coral reefs cover less than one percent of the ocean floor, yet almost a quarter of all sea creatures live on or around them.",
+    "w:diepzee": "Below a thousand metres no sunlight reaches. Many animals down there make their own light.",
+    "w:noordzee": "The North Sea is only about 95 metres deep on average. On the Dogger Bank it is less than twenty metres in places.",
+    "w:kelpwoud": "Giant kelp is one of the fastest-growing living things on earth: up to half a metre on a good day.",
+    "w:ijszee": "Seawater only freezes at about minus 1.9 degrees, because the salt lowers the freezing point.",
+    wreck: "Within a few years a shipwreck often becomes an artificial reef full of life.",
+    plane: "Many seabeds still hold plane wrecks from the Second World War. Some have become popular dive sites.",
+    chest: "Pirates hardly ever buried their loot. Usually it was shared out and spent straight away.",
+    treasure: "The treasure map with a cross mostly comes from books like Treasure Island. Real dug-up pirate treasure is very rare.",
+    anchor: "The anchor of a large cargo ship can weigh more than ten tonnes.",
+    cannon: "Old cannons are often found inside a hard crust of sand and lime that protects them for centuries.",
+    ruins: "In the Mediterranean whole harbours lie under water, such as parts of the ancient harbour of Alexandria.",
+    statue: "Atlantis comes from a story by the Greek philosopher Plato. No evidence has ever been found that it really existed.",
+    city: "In the St Elizabeth flood of 1421, whole villages in the Netherlands disappeared beneath the waves.",
+    arch: "A rock arch forms because waves and currents wear away softer rock faster than hard rock.",
+    helmet: "Copper diving helmets were used for more than a hundred years. The diver got air through a hose from the ship.",
+    mine: "Thousands of sea mines from the world wars still lie in the North Sea. They are still being cleared.",
+    bottle: "One of the oldest messages in a bottle ever found drifted for more than a hundred years before it washed ashore.",
+    skull: "The flag with the skull is also called the Jolly Roger.",
+    coral: "Coral is not a plant but a colony of tiny animals: polyps.",
+    anemone: "An anemone stings with stinging cells, but clownfish are protected by a layer of mucus.",
+    vent: "At hydrothermal vents the water can be hotter than 350 degrees. Because of the enormous pressure it still does not boil.",
+    volcano: "Most of the volcanoes on earth are under water.",
+    brine: "A brine pool is so salty that it is heavier than the seawater above it. It has its own surface, waves and all.",
+    rocks: "Many animals that attach themselves live on rocks, such as mussels, barnacles and anemones.",
+    canyon: "The deepest point of the ocean, in the Mariana Trench, is almost eleven kilometres down.",
+    fish: "Fish in a school keep their distance with their lateral line, a sense that feels tiny vibrations in the water.",
+    jelly: "Jellyfish have no brain, no heart and no bones. They are more than 95 percent water.",
+    crab: "Crabs usually walk sideways, because their legs are hinged in a way that makes that the fastest.",
+    starfish: "A starfish can regrow a lost arm.",
+    urchin: "A sea urchin walks on hundreds of tiny tube feet between its spines.",
+    octopus: "An octopus has three hearts and blue blood.",
+    ray: "A stingray often lies half buried in the sand, with only its eyes showing.",
+    eels: "Garden eels live in colonies and dart back into their burrows the moment there is danger.",
+    seahorse: "With seahorses, the male has the babies. He carries the eggs in a pouch.",
+    puffer: "A pufferfish inflates itself by quickly swallowing a lot of water.",
+    angler: "The light of an anglerfish comes from bacteria that live in its lure.",
+    moray: "A moray keeps opening and closing its mouth. That is how it pumps water over its gills.",
+    squid: "Squid swim by jet propulsion: they squirt water out with force.",
+    hermit: "A hermit crab moves into a bigger shell once it has grown.",
+    slugs: "When threatened, a sea cucumber can throw out part of its insides. They grow back later.",
+    comb: "Comb jellies are not real jellyfish. The rainbow light comes from rows of tiny hairs that break up the light.",
+    lantern: "Every night lanternfish swim hundreds of metres up to feed, and dive back into the deep at daybreak.",
+    otters: "Sea otters sometimes hold paws while they sleep, so they do not drift apart.",
+    seal: "A seal can slow its heartbeat a lot while diving to save oxygen.",
+    penguins: "Penguins cannot fly, but under water they almost do, using their wings as flippers.",
+    clown: "All clownfish are born male. The largest of a small group becomes a female.",
+    mantis: "A mantis shrimp strikes so fast that a tiny flash and pop appear in the water.",
+    archer: "An archerfish shoots insects off branches above the water with a jet of water.",
+    cleaners: "Cleaner wrasse eat parasites off larger fish, which visit their cleaning station especially for that.",
+    grouper: "Groupers can grow very large. The giant grouper reaches more than two metres.",
+    whale: "Whales descend from land animals that went back into the sea about fifty million years ago.",
+    humpback: "Male humpback whales sing long songs that can last more than twenty minutes and are repeated for hours.",
+    shark: "A shark has no bones. Its skeleton is made of cartilage, like your ear.",
+    turtle: "Sea turtles often return to lay eggs on the beach where they themselves were born.",
+    manta: "A giant manta can have a wingspan of about seven metres.",
+    dolphins: "Dolphins sleep with one half of their brain at a time, so they can keep breathing.",
+    swordfish: "The sailfish is one of the fastest fish. It raises its big dorsal fin to herd a school of fish together.",
+    sub: "Around 1620 the Dutchman Cornelis Drebbel built one of the first submarines, which travelled under water along the Thames.",
+    narwhal: "A narwhal tusk is a tooth that grows out through the upper lip, sometimes almost three metres long.",
+    giant: "A giant squid has eyes as big as a dinner plate.",
+    baitball: "In a bait ball small fish press together into a spinning ball, so a predator cannot pick out a single one.",
+    spawning: "Many fish lay thousands or even millions of eggs at once. Only a few of them grow up.",
+    coralspawn: "On the Great Barrier Reef, corals release their eggs all at once a few nights after a full moon.",
+    storm: "Under water you notice little of a storm. A few metres down it is already much calmer.",
+    eruption: "Lava that comes out under water cools in a flash into round lumps: pillow lava.",
+    task: "Seahorses are masters of camouflage. Some species can change colour.",
+    mermaid: "Stories about mermaids exist all over the world. Sailors sometimes mistook a manatee for a mermaid.",
+    kraken: "The Kraken comes from Norwegian sea tales. The story was probably inspired by the real giant squid.",
+    ghost: "The Flying Dutchman is the most famous ghost ship in sea tales.",
+    whalefall: "A dead whale on the seabed can feed hundreds of kinds of animals for decades.",
+  };
+
   let detailOpen = false, logScroll = 0;
   function openDetail(key) {
     logScroll = panelBody.scrollTop;
     detailOpen = true;
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
+    const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:")
-      ? `Een shiny is een zeldzame kleurvariant: maar 1 op de 1000 van deze dieren ziet er zo uit. ${FACTS[base] || ""}`
-      : FACTS[key] || "";
+      ? L("Een shiny is een zeldzame kleurvariant: maar 1 op de 1000 van deze dieren ziet er zo uit. ", "A shiny is a rare colour variant: only 1 in 1000 of these animals looks like this. ") + (facts[base] || "")
+      : facts[key] || "";
     const where = hintFor(key);
-    const when = e && e.first ? new Date(e.first + "T12:00:00").toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "";
+    const when = e && e.first ? dateText(e.first) : "";
     panelBody.innerHTML = `
       <div class="detail">
-        <button type="button" id="detailBack" class="ghost">Terug naar het logboek</button>
-        <img class="big" alt="${NAMES[key]}" src="${thumbURL(key, !!e, 4)}">
-        <h2>${NAMES[key]}</h2>
+        <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
+        <img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
+        <h2>${nm(key)}</h2>
         <p class="fact">${fact}</p>
         <dl>
-          <div><dt>Waar</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : "Overal"}</dd></div>
-          <div><dt>Gezien</dt><dd>${e ? (e.n === 1 ? "1 keer" : e.n + " keer") : "Nog niet gevonden"}</dd></div>
-          ${when ? `<div><dt>Eerste keer</dt><dd>${when}</dd></div>` : ""}
+          <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
+          <div><dt>${L("Gezien", "Seen")}</dt><dd>${e ? (e.n === 1 ? L("1 keer", "once") : L(e.n + " keer", e.n + " times")) : L("Nog niet gevonden", "Not found yet")}</dd></div>
+          ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
         </dl>
       </div>`;
     panelBody.scrollTop = 0;
@@ -5231,40 +5416,63 @@
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
       const base = hintFor(key.slice(6));
-      return "1 op de 1000 van deze dieren glinstert" + (base ? "; " + base : "");
+      return L("1 op de 1000 van deze dieren glinstert", "1 in 1000 of these animals glitters") + (base ? "; " + base : "");
     }
-    if (key.startsWith("w:")) return "elke oceaan kiest een van de vijf wateren";
-    if (EVENT_HINTS[key]) return EVENT_HINTS[key];
-    const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => NAMES["w:" + w.name]);
-    return where.length ? "komt voor in " + where.join(", ") : "";
+    if (key.startsWith("w:")) return L("elke oceaan kiest een van de vijf wateren", "every ocean picks one of the five waters");
+    const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
+    if (hints[key]) return hints[key];
+    const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name));
+    return where.length ? L("komt voor in ", "found in ") + where.join(", ") : "";
   }
+
+  const EVENT_HINTS_EN = {
+    fish: "seen everywhere", jelly: "drifts in almost every water",
+    treasure: "tap a bottle for the treasure map, then dig at the cross",
+    moray: "lives in the hole in the pirate wreck", clown: "lives in the anemone on the coral reef",
+    grouper: "visits the cleaning station", giant: "now and then reaches out its tentacles in the deep sea",
+    baitball: "happens now and then, in every water except the deep sea", spawning: "schools lay eggs now and then",
+    coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
+    eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
+    mermaid: "rare, about 1 in 17 oceans", kraken: "rare, about 1 in 17 oceans",
+    ghost: "rare, about 1 in 17 oceans", whalefall: "rare, about 1 in 20 oceans",
+  };
 
   // "Maken en delen": sharing, settings and your own aquarium on one page.
   function renderMake() {
     const keep = panelBody.scrollTop;
-    panelBody.innerHTML = settingsHTML() + `<h3 class="section">Eigen aquarium</h3>` + aquariumHTML();
+    panelBody.innerHTML = settingsHTML() + `<h3 class="section">${L("Eigen aquarium", "Your own aquarium")}</h3>` + aquariumHTML();
     panelBody.scrollTop = keep;
   }
 
-  function settingsHTML() {
+  function shareLink() {
     const code = "#" + (aquarium ? aqCode() : seed);
+    return IN_ARTIFACT ? code : location.href.split("#")[0] + code;
+  }
+
+  function settingsHTML() {
+    const link = shareLink(), canShare = !IN_ARTIFACT && !!navigator.share;
     return `
-      <h3>Deze oceaan delen</h3>
-      <p class="sum">Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.</p>
-      <div class="share"><input id="shareCode" readonly value="${code}" aria-label="Code van deze oceaan"><button type="button" id="shareCopy">Kopieer</button></div>
-      <h3>Een code openen</h3>
-      <div class="share"><input id="openCode" placeholder="#12345" aria-label="Code om te openen"><button type="button" id="openGo">Open</button></div>
-      <h3>Rust en geluid</h3>
-      <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>Rustmodus</button></div>
-      <p class="sum">Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.</p>
-      <div class="row"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
-      <h3>Uitleg</h3>
-      <div class="row"><button type="button" id="showWelcome">Uitleg opnieuw tonen</button></div>
-      <p class="sum">Met het toetsenbord: pijltjes sturen de duiker, Enter opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.</p>`;
+      <h3>${L("Deze oceaan delen", "Share this ocean")}</h3>
+      <p class="sum">${IN_ARTIFACT ? L("Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.", "Send this code along with the link. Whoever enters it below gets exactly this ocean.") : L("Wie deze link opent, krijgt precies deze oceaan.", "Whoever opens this link gets exactly this ocean.")}</p>
+      <div class="share"><input id="shareCode" readonly value="${link}" aria-label="${L("Code van deze oceaan", "Code of this ocean")}"><button type="button" id="shareCopy">${L("Kopieer", "Copy")}</button>${canShare ? `<button type="button" id="shareNative" class="primary">${L("Delen", "Share")}</button>` : ""}</div>
+      <h3>${L("Een code openen", "Open a code")}</h3>
+      <div class="share"><input id="openCode" placeholder="#12345" aria-label="${L("Code om te openen", "Code to open")}"><button type="button" id="openGo">${L("Open", "Open")}</button></div>
+      <h3>${L("Rust en geluid", "Calm and sound")}</h3>
+      <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>${L("Rustmodus", "Calm mode")}</button></div>
+      <p class="sum">${L("Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.", "Slower, without big events or messages. Nice as a background.")}</p>
+      <div class="row"><label for="vol">${L("Volume", "Volume")}</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
+      <h3>${L("Taal", "Language")}</h3>
+      <div class="chips" role="group" aria-label="${L("Taal", "Language")}">
+        <button type="button" class="chip pick ${LANG === "nl" ? "on" : ""}" data-lang="nl" aria-pressed="${LANG === "nl"}" lang="nl">Nederlands</button>
+        <button type="button" class="chip pick ${LANG === "en" ? "on" : ""}" data-lang="en" aria-pressed="${LANG === "en"}" lang="en">English</button>
+      </div>
+      <h3>${L("Uitleg", "Help")}</h3>
+      <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, Enter opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, Enter opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
-    const str = raw.trim().replace(/^#/, "").toLowerCase();
+    const str = raw.trim().replace(/^.*#/, "").toLowerCase();
     const aq = parseAq(str);
     if (aq) { aquarium = { water: aq.water, set: aq.set }; aqDraft = null; newVariant(aq.seed, true); return true; }
     if (/^\d{1,10}$/.test(str)) { aquarium = null; aqDraft = null; newVariant(Number(str), true); return true; }
@@ -5277,10 +5485,10 @@
     const reader = new FileReader();
     reader.onload = () => {
       const n = importLog(String(reader.result));
-      if (n) { renderPanel(); toast(`Logboek ingeladen: ${n} vondsten`); }
-      else toast("Dit bestand is geen logboek van de oceaan");
+      if (n) { renderPanel(); toast(L(`Logboek ingeladen: ${n} vondsten`, `Logbook loaded: ${n} finds`)); }
+      else toast(L("Dit bestand is geen logboek van de oceaan", "This file is not an ocean logbook"));
     };
-    reader.onerror = () => toast("Het bestand kon niet worden gelezen");
+    reader.onerror = () => toast(L("Het bestand kon niet worden gelezen", "The file could not be read"));
     reader.readAsText(e.target.files[0]);
   });
   panelBody.addEventListener("keydown", e => { if (e.target.id === "openCode" && e.key === "Enter") document.getElementById("openGo").click(); });
@@ -5300,13 +5508,13 @@
 
   function aquariumHTML() {
     if (!aqDraft) aqDraft = currentAsDraft();
-    let html = `<p class="sum">Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.</p><h3>Water</h3><div class="chips">`;
-    html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${NAMES["w:" + w.name]}</button>`).join("") + `</div>`;
+    let html = `<p class="sum">${L("Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.", "Choose what goes into your ocean. On a narrow screen not all large things fit side by side.")}</p><h3>${L("Water", "Water")}</h3><div class="chips">`;
+    html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${nm("w:" + w.name)}</button>`).join("") + `</div>`;
     for (const [title, keys] of AQ_GROUPS) {
-      html += `<h3>${title}</h3><div class="chips">` + keys.map(k => `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${NAMES[k]}</button>`).join("") + `</div>`;
+      html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`).join("") + `</div>`;
     }
-    html += `<div class="actions"><button type="button" id="aqBuild" class="primary">Bouw dit aquarium</button><button type="button" id="aqRandom">Terug naar willekeurig</button></div>`;
-    if (aquarium) html += `<p class="sum">Je aquarium is gebouwd. De code bovenaan deze pagina deelt precies dit aquarium.</p>`;
+    html += `<div class="actions"><button type="button" id="aqBuild" class="primary">${L("Bouw dit aquarium", "Build this aquarium")}</button><button type="button" id="aqRandom">${L("Terug naar willekeurig", "Back to random")}</button></div>`;
+    if (aquarium) html += `<p class="sum">${L("Je aquarium is gebouwd. De code bovenaan deze pagina deelt precies dit aquarium.", "Your aquarium is built. The code at the top of this page shares exactly this aquarium.")}</p>`;
     return html;
   }
 
@@ -5314,6 +5522,12 @@
     const b = e.target.closest("button");
     if (!b) return;
     if (b.dataset.detail) { openDetail(b.dataset.detail); return; }
+    if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
+    if (b.dataset.lang) { setLang(b.dataset.lang); return; }
+    if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
+    if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
+    if (b.id === "photoDelete") { document.getElementById("photoDeleteConfirm").hidden = false; b.hidden = true; return; }
+    if (b.id === "photoDeleteYes") { album = album.filter(x => x.id !== b.dataset.id); saveAlbum(); closeDetail(); toast(L("Foto verwijderd", "Photo removed")); return; }
     if (b.id === "detailBack") { closeDetail(); return; }
     if (b.id === "logExport") { exportLog(); return; }
     if (b.id === "logImport") { document.getElementById("logFile").click(); return; }
@@ -5331,18 +5545,22 @@
     if (b.id === "logResetYes") {
       resetLogbook();
       renderPanel();
-      toast("Je logboek is gewist");
+      toast(L("Je logboek is gewist", "Your logbook has been cleared"));
+      return;
+    }
+    if (b.id === "shareNative") {
+      navigator.share({ title: "Oceaan", text: "Kijk eens naar deze oceaan", url: shareLink() }).catch(() => {});
       return;
     }
     if (b.id === "shareCopy") {
       const inp = document.getElementById("shareCode");
-      navigator.clipboard.writeText(inp.value).then(() => toast("Gekopieerd"), () => { inp.select(); toast("Selecteer en kopieer de code zelf"); });
+      navigator.clipboard.writeText(inp.value).then(() => toast(L("Gekopieerd", "Copied")), () => { inp.select(); toast(L("Selecteer en kopieer de code zelf", "Select and copy the code yourself")); });
       return;
     }
     if (b.id === "openGo") {
       const inp = document.getElementById("openCode");
-      if (openCode(inp.value)) { renderMake(); toast("Code geopend"); }
-      else toast("Die code herken ik niet. Een code is een getal of begint met #aq-");
+      if (openCode(inp.value)) { renderMake(); toast(L("Code geopend", "Code opened")); }
+      else toast(L("Die code herken ik niet. Een code is een getal of begint met #aq-", "That code is not recognised. A code is a number or starts with #aq-"));
       return;
     }
     if (b.id === "restToggle") {
@@ -5355,7 +5573,7 @@
     if (b.id === "showWelcome") { panelEl.hidden = true; welcomeEl.hidden = false; document.getElementById("welcomeGo").focus(); return; }
     if (b.dataset.water) { aqDraft.water = Number(b.dataset.water); renderMake(); }
     else if (b.dataset.key) { const k = b.dataset.key; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
-    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast("Je aquarium is gebouwd"); }
+    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
     else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(randomSeed(), true); renderMake(); }
   });
 
@@ -5385,16 +5603,70 @@
     g.fillStyle = "#f7f4ec"; g.fillRect(0, 0, c.width, c.height);
     g.drawImage(canvas, pad, pad, iw, ih);
     g.strokeStyle = "rgba(0,0,0,0.08)"; g.strokeRect(pad, pad, iw, ih);
-    const date = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+    const date = new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
     g.fillStyle = "#2b2a33"; g.textBaseline = "middle";
     g.font = `600 ${Math.round(bottom * 0.36)}px Caveat, "Segoe Print", cursive`;
-    g.fillText(`${NAMES["w:" + water.name]} · ${date}`, pad, ih + pad + bottom * 0.42);
+    g.fillText(`${nm("w:" + water.name)} · ${date}`, pad, ih + pad + bottom * 0.42);
     g.font = `${Math.round(bottom * 0.17)}px "DM Mono", monospace`; g.fillStyle = "rgba(43,42,51,0.6)";
-    g.fillText(`seed ${seed}${scene.rare ? " · " + NAMES[scene.rare] : ""}`, pad, ih + pad + bottom * 0.75);
+    g.fillText(`${L("oceaan", "ocean")} ${seed}${scene.rare ? " · " + nm(scene.rare) : ""}`, pad, ih + pad + bottom * 0.75);
     return c;
   }
 
-  function closePhoto() { photoView.hidden = true; paused = false; }
+  function closePhoto() { photoView.hidden = true; paused = false; photoBtn.focus(); }
+
+  // Photos you keep go into an album in this browser, as small pictures so many of them fit.
+  const ALBUM_KEY = "oceaan-album", ALBUM_MAX = 24;
+  let album = store.get(ALBUM_KEY, []);
+  if (!Array.isArray(album)) album = [];
+  album = album.filter(x => x && typeof x.img === "string" && x.img.startsWith("data:image/jpeg"));
+  function saveAlbum() {
+    while (album.length) {
+      try { localStorage.setItem(ALBUM_KEY, JSON.stringify(album)); return true; }
+      catch (e) { if (album.length <= 1) return false; album.pop(); toast(L("Je album is vol: de oudste foto is eruit gegaan", "Your album is full: the oldest photo was removed")); }
+    }
+    try { localStorage.removeItem(ALBUM_KEY); } catch (e) {}
+    return true;
+  }
+  function addToAlbum() {
+    const w = 520, h = Math.round(polaroidCanvas.height * (w / polaroidCanvas.width));
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(polaroidCanvas, 0, 0, w, h);
+    const d = new Date();
+    album.unshift({ id: String(Date.now()), d: d.toISOString().slice(0, 10), seed, water: water.name, img: c.toDataURL("image/jpeg", 0.78) });
+    album.length = Math.min(album.length, ALBUM_MAX);
+    toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
+  }
+  function albumHTML() {
+    if (!album.length) return `<p class="sum">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
+    return `<h3>${L("Mijn foto's", "My photos")}</h3><div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`;
+  }
+  function openPhoto(id) {
+    const ph = album.find(x => x.id === id);
+    if (!ph) return;
+    logScroll = panelBody.scrollTop;
+    detailOpen = true;
+    const when = dateText(ph.d);
+    panelBody.innerHTML = `
+      <div class="detail album-view">
+        <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
+        <img alt="${L("Foto van ", "Photo from ")}${when}" src="${ph.img}">
+        <dl>
+          <div><dt>${L("Gemaakt", "Taken")}</dt><dd>${when}</dd></div>
+          <div><dt>${L("Oceaan", "Ocean")}</dt><dd>${nm("w:" + ph.water)} · ${ph.seed}</dd></div>
+        </dl>
+        <div class="row">
+          <button type="button" id="photoSave" class="primary" data-id="${ph.id}">${L("Opslaan", "Save")}</button>
+          <button type="button" id="photoDelete">${L("Verwijderen", "Delete")}</button>
+        </div>
+        <div class="row" id="photoDeleteConfirm" hidden>
+          <span class="sum">${L("Deze foto uit je album verwijderen?", "Remove this photo from your album?")}</span>
+          <button type="button" id="photoDeleteYes" data-id="${ph.id}">${L("Ja, verwijder", "Yes, delete")}</button>
+        </div>
+      </div>`;
+    panelBody.scrollTop = 0;
+    document.getElementById("detailBack").focus();
+  }
 
   photoBtn.addEventListener("click", async () => {
     paused = true;
@@ -5405,19 +5677,20 @@
   });
   document.getElementById("savePolaroid").addEventListener("click", () => saveCanvas(polaroidCanvas, `oceaan-${seed}-polaroid.png`));
   document.getElementById("savePlain").addEventListener("click", () => saveCanvas(canvas, `oceaan-${seed}.png`));
+  document.getElementById("saveAlbum").addEventListener("click", () => { if (polaroidCanvas) addToAlbum(); });
   document.getElementById("closePhoto").addEventListener("click", closePhoto);
 
   function saveCanvas(c, filename) {
-    c.toBlob(blob => { if (blob) saveBlob(blob, filename); else toast("Opslaan mislukt"); }, "image/png");
+    c.toBlob(blob => { if (blob) saveBlob(blob, filename); else toast(L("Opslaan mislukt", "Saving failed")); }, "image/png");
   }
 
   async function saveBlob(blob, filename) {
     {
       if (downloads) {
-        try { await downloads.save({ filename, data: blob }); toast("Opgeslagen"); }
+        try { await downloads.save({ filename, data: blob }); toast(L("Opgeslagen", "Saved")); }
         catch (err) {
           if (err && err.code === "declined") return;
-          toast("Opslaan is hier niet beschikbaar");
+          toast(L("Opslaan is hier niet beschikbaar", "Saving is not available here"));
         }
         return;
       }
@@ -5432,19 +5705,146 @@
   }
 
 
+  // ---- language ----------------------------------------------------------
+  // Sets every fixed text on the page in the current language.
+  function applyLang() {
+    document.documentElement.lang = LANG;
+    const tools = {
+      sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
+      diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
+      photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
+      book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
+      menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
+    };
+    for (const [id, [tip, short]] of Object.entries(tools)) {
+      const b = document.getElementById(id);
+      if (id === "sound" && b.disabled) continue;
+      b.dataset.tip = tip; b.dataset.short = short; b.setAttribute("aria-label", tip);
+    }
+    toolbarEl.setAttribute("aria-label", L("Bediening", "Controls"));
+    document.getElementById("seedLabel").textContent = L("Oceaan", "Ocean");
+    document.getElementById("closePanel").setAttribute("aria-label", L("Sluiten", "Close"));
+    document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
+    document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
+    const howto = [
+      L("<b>Tik op het water</b> voor een nieuwe oceaan.", "<b>Tap the water</b> for a new ocean."),
+      L("<b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.", "<b>Drag</b> to startle the animals, and <b>press and hold</b> to feed them."),
+      L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
+      L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
+      L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
+    ];
+    howto.forEach((h, i) => { document.getElementById("howto" + i).innerHTML = h; });
+    document.getElementById("welcomeGo").textContent = L("Duik erin", "Dive in");
+    document.getElementById("credit").textContent = L("Gemaakt door Ronald", "Made by Ronald");
+    document.getElementById("savePolaroid").textContent = L("Opslaan met lijstje", "Save with frame");
+    document.getElementById("savePlain").textContent = L("Zonder lijstje", "Without frame");
+    document.getElementById("saveAlbum").textContent = L("In mijn album", "Add to my album");
+    document.getElementById("closePhoto").textContent = L("Terug", "Back");
+    polaroidImg.alt = L("Polaroid van de huidige oceaan", "Polaroid of the current ocean");
+    photoView.setAttribute("aria-label", L("Foto", "Photo"));
+    if (scene) {
+      rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
+      updateTask(); updateClock(); describeScene();
+    }
+  }
+
+  function setLang(lang) {
+    LANG = lang;
+    store.set("oceaan-taal", lang);
+    applyLang();
+    if (!panelEl.hidden) renderPanel();
+  }
+
+  // ---- self-test and screen test -------------------------------------
+  // #zelftest builds many oceans, forces every big moment and visitor, and draws every logbook picture.
+  // The result is written into the page, so check.py can read it from a headless browser.
+  function selfTest(count) {
+    const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
+    rebuilding = true; // a test run never touches the logbook
+    let oceans = 0;
+    for (let sd = 1; sd <= count; sd++) {
+      try {
+        newVariant(sd, false);
+        const S = scene;
+        S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
+        S.bait.enabled = true; S.bait.timer = 0; S.storm.enabled = !!water.surface; S.storm.timer = 0;
+        S.kraken.enabled = true; S.kraken.timer = 0; S.giant.enabled = true; S.giant.timer = 0; S.spawnTimer = 0;
+        if (S.treasure) dig();
+        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; frame(last + 33, true); }
+        oceans++;
+      } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
+    }
+    for (const key of LOG_GROUPS.flatMap(g => g[1])) {
+      try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
+    }
+    try {
+      panelTab = "log"; panelEl.hidden = false; renderPanel(); openDetail("shiny:crab"); closeDetail();
+      panelTab = "set"; renderPanel();
+      for (const f of ["missing", "found", "shiny", "album"]) { panelTab = "log"; logFilter = f; renderPanel(); }
+      logFilter = "all";
+      setLang(LANG === "nl" ? "en" : "nl"); panelTab = "log"; renderPanel(); openDetail("octopus"); panelTab = "set"; renderPanel();
+      setLang(LANG === "nl" ? "en" : "nl");
+      panelEl.hidden = true;
+    } catch (e) { errors.push(`menu: ${e.message}`); }
+    rebuilding = false;
+    const out = document.createElement("pre");
+    out.id = "selftest"; out.hidden = true;
+    out.textContent = `${errors.length ? "FOUT" : "OK"}\n${oceans} oceanen in ${Math.round(performance.now() - t0)} ms\n${errors.join("\n")}`;
+    document.body.appendChild(out);
+  }
+
   // ---- start -------------------------------------------------------------
+  applyLang();
   applyRewards();
   resize();
-  const initial = seedFromHash();
-  newVariant(initial !== null ? initial : randomSeed(), false);
+  // read the address before newVariant writes the seed into it
+  const startHash = location.hash;
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom))?$/.exec(startHash);
+  if (screenTest) {
+    welcomeEl.hidden = screenTest[2] !== "welkom";
+    newVariant(Number(screenTest[1]), false);
+    if (screenTest[2] === "logboek") bookBtn.click();
+    if (screenTest[2] === "menu") menuBtn.click();
+  } else {
+    const initial = seedFromHash();
+    newVariant(initial !== null ? initial : randomSeed(), false);
+  }
+  // the self-test runs straight away, so a headless browser can read the result as soon as the page has loaded
+  const selfTestRun = /^#zelftest(?:-(\d+))?$/.exec(startHash);
+  if (selfTestRun) { welcomeEl.hidden = true; last = performance.now(); selfTest(Number(selfTestRun[1] || 60)); }
   requestAnimationFrame(now => { last = now; frame(now); });
 })();
 </script>
 
+<style>
+  .update-bar {
+    position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 10;
+    display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
+    padding: 8px 8px 8px 16px; border-radius: 12px; font: 13px "Figtree", system-ui, sans-serif;
+    color: #eaf4f6; background: rgba(7, 24, 39, 0.94); border: 1px solid rgba(220, 236, 240, 0.28); box-shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
+  }
+  .update-bar button { font: inherit; font-weight: 600; color: #05221f; background: #7fd8c9; border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+</style>
 <script>
-  // maakt de oceaan installeerbaar en speelbaar zonder internet
+  // maakt de oceaan installeerbaar en speelbaar zonder internet, en meldt een nieuwe versie
   if ("serviceWorker" in navigator) {
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=2").catch(() => {}));
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController || document.querySelector(".update-bar")) return;
+      const nl = document.documentElement.lang !== "en";
+      const bar = document.createElement("div");
+      bar.className = "update-bar";
+      bar.setAttribute("role", "status");
+      const text = document.createElement("span");
+      text.textContent = nl ? "Er is een nieuwe versie van de oceaan." : "A new version of the ocean is ready.";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = nl ? "Vernieuwen" : "Refresh";
+      btn.addEventListener("click", () => location.reload());
+      bar.append(text, btn);
+      document.body.appendChild(bar);
+    });
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=3").catch(() => {}));
   }
 </script>
 </body>

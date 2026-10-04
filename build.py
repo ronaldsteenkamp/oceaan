@@ -1,17 +1,35 @@
-"""Bouwt de installeerbare app-versie van de oceaan uit ../oceaan.html.
+"""Bouwt de oceaan uit de bronbestanden in src/.
 
-Gebruik: python build.py
+Gebruik: python build.py [--zonder-controle]
+
+1. Voegt src/ samen tot ../oceaan.html (de pagina die ook als claude.ai-artifact wordt gepubliceerd).
+2. Draait check.py: een zelftest in een onzichtbare Chrome plus schermafbeeldingen. Bij een fout stopt de build.
+3. Schrijft de app-versie: index.html, sw.js, manifest en iconen.
+
 Daarna committen en pushen. Bij elke build gaat het versienummer omhoog,
 zodat geïnstalleerde apps de nieuwe versie ophalen.
 """
 import json
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
 HERE = Path(__file__).parent
+SRC = HERE / "src"
 SOURCE = HERE.parent / "oceaan.html"
 STATE = HERE / "version.json"
+
+
+def assemble_page():
+    """Voegt src/ samen tot ../oceaan.html: de pagina die ook als artifact wordt gepubliceerd."""
+    def read(name):
+        return (SRC / name).read_text(encoding="utf-8")
+    scripts = sorted(SRC.glob("[0-9][0-9]-*.js"))
+    page = (read("head.html") + "<style>\n" + read("styles.css") + "</style>\n" + read("body.html")
+            + "<script>\n(() => {\n" + "".join(p.read_text(encoding="utf-8") for p in scripts) + "})();\n</script>\n")
+    SOURCE.write_text(page, encoding="utf-8", newline="\n")
+    return page
 
 
 def next_version():
@@ -49,9 +67,34 @@ def build_index(version):
 </head>
 <body>
 {body_part}
+<style>
+  .update-bar {{
+    position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 10;
+    display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
+    padding: 8px 8px 8px 16px; border-radius: 12px; font: 13px "Figtree", system-ui, sans-serif;
+    color: #eaf4f6; background: rgba(7, 24, 39, 0.94); border: 1px solid rgba(220, 236, 240, 0.28); box-shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
+  }}
+  .update-bar button {{ font: inherit; font-weight: 600; color: #05221f; background: #7fd8c9; border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; }}
+</style>
 <script>
-  // maakt de oceaan installeerbaar en speelbaar zonder internet
+  // maakt de oceaan installeerbaar en speelbaar zonder internet, en meldt een nieuwe versie
   if ("serviceWorker" in navigator) {{
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {{
+      if (!hadController || document.querySelector(".update-bar")) return;
+      const nl = document.documentElement.lang !== "en";
+      const bar = document.createElement("div");
+      bar.className = "update-bar";
+      bar.setAttribute("role", "status");
+      const text = document.createElement("span");
+      text.textContent = nl ? "Er is een nieuwe versie van de oceaan." : "A new version of the ocean is ready.";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = nl ? "Vernieuwen" : "Refresh";
+      btn.addEventListener("click", () => location.reload());
+      bar.append(text, btn);
+      document.body.appendChild(bar);
+    }});
     addEventListener("load", () => navigator.serviceWorker.register("sw.js?v={version}").catch(() => {{}}));
   }}
 </script>
@@ -176,6 +219,14 @@ def build_icons():
 
 
 if __name__ == "__main__":
+    assemble_page()
+    if "--zonder-controle" not in sys.argv:
+        import check
+        ok, report = check.self_test(SOURCE.resolve().as_uri())
+        print(report)
+        if not ok:
+            sys.exit("De zelftest vond een fout; er is niets gebouwd.")
+        print(f"{len(check.screenshots(SOURCE.resolve().as_uri()))} schermafbeeldingen in checks/")
     v = next_version()
     build_index(v)
     build_sw(v)

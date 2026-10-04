@@ -1,0 +1,108 @@
+  // ---- language ----------------------------------------------------------
+  // Sets every fixed text on the page in the current language.
+  function applyLang() {
+    document.documentElement.lang = LANG;
+    const tools = {
+      sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
+      diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
+      photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
+      book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
+      menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
+    };
+    for (const [id, [tip, short]] of Object.entries(tools)) {
+      const b = document.getElementById(id);
+      if (id === "sound" && b.disabled) continue;
+      b.dataset.tip = tip; b.dataset.short = short; b.setAttribute("aria-label", tip);
+    }
+    toolbarEl.setAttribute("aria-label", L("Bediening", "Controls"));
+    document.getElementById("seedLabel").textContent = L("Oceaan", "Ocean");
+    document.getElementById("closePanel").setAttribute("aria-label", L("Sluiten", "Close"));
+    document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
+    document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
+    const howto = [
+      L("<b>Tik op het water</b> voor een nieuwe oceaan.", "<b>Tap the water</b> for a new ocean."),
+      L("<b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.", "<b>Drag</b> to startle the animals, and <b>press and hold</b> to feed them."),
+      L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
+      L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
+      L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
+    ];
+    howto.forEach((h, i) => { document.getElementById("howto" + i).innerHTML = h; });
+    document.getElementById("welcomeGo").textContent = L("Duik erin", "Dive in");
+    document.getElementById("credit").textContent = L("Gemaakt door Ronald", "Made by Ronald");
+    document.getElementById("savePolaroid").textContent = L("Opslaan met lijstje", "Save with frame");
+    document.getElementById("savePlain").textContent = L("Zonder lijstje", "Without frame");
+    document.getElementById("saveAlbum").textContent = L("In mijn album", "Add to my album");
+    document.getElementById("closePhoto").textContent = L("Terug", "Back");
+    polaroidImg.alt = L("Polaroid van de huidige oceaan", "Polaroid of the current ocean");
+    photoView.setAttribute("aria-label", L("Foto", "Photo"));
+    if (scene) {
+      rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
+      updateTask(); updateClock(); describeScene();
+    }
+  }
+
+  function setLang(lang) {
+    LANG = lang;
+    store.set("oceaan-taal", lang);
+    applyLang();
+    if (!panelEl.hidden) renderPanel();
+  }
+
+  // ---- self-test and screen test -------------------------------------
+  // #zelftest builds many oceans, forces every big moment and visitor, and draws every logbook picture.
+  // The result is written into the page, so check.py can read it from a headless browser.
+  function selfTest(count) {
+    const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
+    rebuilding = true; // a test run never touches the logbook
+    let oceans = 0;
+    for (let sd = 1; sd <= count; sd++) {
+      try {
+        newVariant(sd, false);
+        const S = scene;
+        S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
+        S.bait.enabled = true; S.bait.timer = 0; S.storm.enabled = !!water.surface; S.storm.timer = 0;
+        S.kraken.enabled = true; S.kraken.timer = 0; S.giant.enabled = true; S.giant.timer = 0; S.spawnTimer = 0;
+        if (S.treasure) dig();
+        for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; frame(last + 33, true); }
+        oceans++;
+      } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
+    }
+    for (const key of LOG_GROUPS.flatMap(g => g[1])) {
+      try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
+    }
+    try {
+      panelTab = "log"; panelEl.hidden = false; renderPanel(); openDetail("shiny:crab"); closeDetail();
+      panelTab = "set"; renderPanel();
+      for (const f of ["missing", "found", "shiny", "album"]) { panelTab = "log"; logFilter = f; renderPanel(); }
+      logFilter = "all";
+      setLang(LANG === "nl" ? "en" : "nl"); panelTab = "log"; renderPanel(); openDetail("octopus"); panelTab = "set"; renderPanel();
+      setLang(LANG === "nl" ? "en" : "nl");
+      panelEl.hidden = true;
+    } catch (e) { errors.push(`menu: ${e.message}`); }
+    rebuilding = false;
+    const out = document.createElement("pre");
+    out.id = "selftest"; out.hidden = true;
+    out.textContent = `${errors.length ? "FOUT" : "OK"}\n${oceans} oceanen in ${Math.round(performance.now() - t0)} ms\n${errors.join("\n")}`;
+    document.body.appendChild(out);
+  }
+
+  // ---- start -------------------------------------------------------------
+  applyLang();
+  applyRewards();
+  resize();
+  // read the address before newVariant writes the seed into it
+  const startHash = location.hash;
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom))?$/.exec(startHash);
+  if (screenTest) {
+    welcomeEl.hidden = screenTest[2] !== "welkom";
+    newVariant(Number(screenTest[1]), false);
+    if (screenTest[2] === "logboek") bookBtn.click();
+    if (screenTest[2] === "menu") menuBtn.click();
+  } else {
+    const initial = seedFromHash();
+    newVariant(initial !== null ? initial : randomSeed(), false);
+  }
+  // the self-test runs straight away, so a headless browser can read the result as soon as the page has loaded
+  const selfTestRun = /^#zelftest(?:-(\d+))?$/.exec(startHash);
+  if (selfTestRun) { welcomeEl.hidden = true; last = performance.now(); selfTest(Number(selfTestRun[1] || 60)); }
+  requestAnimationFrame(now => { last = now; frame(now); });

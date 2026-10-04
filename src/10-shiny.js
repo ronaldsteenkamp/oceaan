@@ -1,0 +1,159 @@
+  // ---- shiny animals ----------------------------------------------------
+  // Creatures that exist when the ocean is built are rolled from the seed, so a shared seed keeps its shinies.
+  function registerShinies(s) {
+    const sr = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+    const list = [];
+    // obj is the creature that gets recoloured; get() says where it is, for the glints and the logbook
+    const add = (key, obj, r, get, alive) => { if (sr() < SHINY_RATE) { obj.shiny = key; list.push({ key, r, get, alive }); } };
+    const tag = (obj, hue) => { obj.shinyBase = hue; return obj; };
+    const floorY = x => sandY(x) + 5 * u;
+    for (const sp of s.species) for (const f of sp.fish) add(sp.lantern ? "lantern" : "fish", sp.lantern ? f : tag(f, hexHue(sp.main)), sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
+    for (const j of s.jellies) { const [r, g, b] = j.col.split(",").map(Number); add("jelly", tag(j, rgbHue(r, g, b)), j.r, () => [j.x, j.y - j.r * 0.3]); }
+    for (const c of s.crabs) add("crab", tag(c, hexHue(c.color)), c.s * 0.8, () => [c.x, floorY(c.x) - c.s * 0.45]);
+    for (const f of s.starfish) add("starfish", tag(f, hexHue(f.color)), f.s * 0.8, () => [f.x, sandY(f.x) + 3 * u - f.s * 0.55]);
+    for (const o of s.urchins) add("urchin", o, o.s, () => [o.x, floorY(o.x) - o.s * 0.4]);
+    if (s.octopus) { const o = s.octopus; add("octopus", o, o.s * 0.8, () => [o.x, floorY(o.x) - o.s * 0.9]); }
+    if (s.ray) {
+      const r = s.ray;
+      add("ray", r, r.s * 0.5, () => [r.x, Math.min(sandY(r.x), H * (1 - s.sand.frac) + 12 * u) + 6 * u - r.lift - Math.sin(r.ph * 0.3) * 6 * u]);
+    }
+    for (const g of s.ground) {
+      if (g.kind === "eels") for (const e of g.eels) add("eels", e, 5 * u, () => [g.x + e.dx, sandY(g.x + e.dx) + 6 * u - e.h * g.e * 0.6], () => g.e > 0.3);
+      if (g.kind === "anemone" && g.clown) {
+        g.clownObjs = [{}, {}];
+        g.clownObjs.forEach((o, i) => add("clown", o, g.s * 0.35, () => {
+          const a = t * 0.9 + i * Math.PI;
+          return [g.x + Math.cos(a) * g.s * 1.3, sandY(g.x) + 5 * u - g.s * 1.3 + Math.sin(a * 1.3) * g.s * 0.35];
+        }));
+      }
+    }
+    for (const h of s.seahorses) add("seahorse", tag(h, hexHue(h.color)), h.s * 0.6, () => [h.x + Math.sin(t * 0.3 + h.ph) * 10 * u, sandY(h.x) - h.lift + Math.sin(t * 0.8 + h.ph) * 10 * u - h.s * 0.3]);
+    if (s.puffer) { const pf = s.puffer; add("puffer", pf, pf.s, () => [pf.x, pf.y]); }
+    if (s.angler) { const a = s.angler; add("angler", a, a.s * 0.7, () => [a.x, a.y + Math.sin(a.ph) * 8 * u]); }
+    for (const q of s.squids) add("squid", q, q.s * 0.7, () => [q.x, q.y]);
+    for (const h of s.hermits) add("hermit", h, h.s * 0.7, () => [h.x, floorY(h.x) - h.s * 0.6]);
+    for (const o of s.slugs) add("slugs", tag(o, o.type === "nudi" ? hexHue(o.body) : hexHue(o.color)), o.s * 0.7, () => [o.x, floorY(o.x) - o.s * 0.3]);
+    for (const c of s.combs) add("comb", c, c.r * 0.7, () => [c.x, c.y]);
+    for (const o of s.otters) add("otters", o, o.s * 0.5, () => [o.x, waveY(o.x)]);
+    if (s.seal) { const se = s.seal; add("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]); }
+    for (const pg of s.penguins) add("penguins", pg, pg.s * 0.7, () => [pg.x, waveY(pg.x) + 6 * u + Math.max(0, Math.sin((pg.ph % TAU) * 0.5)) * pg.depth]);
+    if (s.mantis) { const m = s.mantis; add("mantis", m, m.s * 0.6, () => [m.x, sandY(m.x) + 6 * u - m.s * 0.7]); }
+    if (s.archer) { const a = s.archer; add("archer", a, a.s * 0.8, () => [a.x, waveY(a.x) + 28 * u]); }
+    if (s.station) {
+      const st = s.station, gp = st.grouper;
+      add("grouper", gp, gp.s * 0.7, () => [gp.x, gp.y]);
+      st.cleanObjs = [{}, {}, {}];
+      st.cleanObjs.forEach((o, i) => add("cleaners", o, 4 * u, () => st["c" + i] || [st.x, sandY(st.x) - 55 * u]));
+    }
+    s.shinies = list;
+  }
+
+  // A shiny's colour sits far round the colour wheel from the animal's own colour.
+  const BASE_HUE = {
+    octopus: 18, ray: 30, eels: 45, puffer: 45, squid: 340, hermit: 15, otters: 25, clown: 25, mantis: 140, archer: 190,
+    cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
+    whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
+  };
+  function rgbHue(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    if (!d) return 0;
+    const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return (h * 60 + 360) % 360;
+  }
+  const hexHue = hex => { const [r, g, b] = hexRgb(hex); return rgbHue(r, g, b); };
+  function shinyHueFor(key, obj) {
+    const base = obj && obj.shinyBase !== undefined ? obj.shinyBase : BASE_HUE[key] !== undefined ? BASE_HUE[key] : 200;
+    return (base + 150) % 360;
+  }
+
+  // A shiny creature is drawn into a spare layer, recoloured there, and then put back.
+  let shinyA = null, shinyB = null, shinyMain = null;
+  function beginShiny() {
+    if (shinyMain || !canvas.width) return false;
+    if (!shinyA || shinyA.width !== canvas.width || shinyA.height !== canvas.height) {
+      shinyA = document.createElement("canvas"); shinyB = document.createElement("canvas");
+      shinyA.width = shinyB.width = canvas.width; shinyA.height = shinyB.height = canvas.height;
+    }
+    const a = shinyA.getContext("2d");
+    a.setTransform(1, 0, 0, 1, 0, 0);
+    a.clearRect(0, 0, shinyA.width, shinyA.height);
+    a.setTransform(ctx.getTransform());
+    a.globalAlpha = ctx.globalAlpha;
+    shinyMain = ctx;
+    ctx = a;
+    return true;
+  }
+  function endShiny(key, obj) {
+    if (!shinyMain) return;
+    const a = ctx, w = shinyA.width, h = shinyA.height;
+    ctx = shinyMain;
+    shinyMain = null;
+    const b = shinyB.getContext("2d");
+    b.setTransform(1, 0, 0, 1, 0, 0);
+    b.globalCompositeOperation = "copy";
+    b.drawImage(shinyA, 0, 0);
+    b.globalCompositeOperation = "source-over";
+    a.setTransform(1, 0, 0, 1, 0, 0);
+    a.globalAlpha = 1;
+    // keep the shading of the animal, but swap its colour; whites and blacks get a tint too
+    const hue = shinyHueFor(key, obj);
+    a.globalCompositeOperation = "color";
+    a.fillStyle = `hsl(${hue} 80% ${50 + 8 * Math.sin(t * 2.5)}%)`;
+    a.fillRect(0, 0, w, h);
+    a.globalCompositeOperation = "multiply";
+    a.globalAlpha = 0.45;
+    a.fillStyle = `hsl(${hue} 85% 72%)`;
+    a.fillRect(0, 0, w, h);
+    a.globalCompositeOperation = "screen";
+    a.globalAlpha = 0.35;
+    a.fillStyle = `hsl(${hue} 70% 32%)`;
+    a.fillRect(0, 0, w, h);
+    a.globalAlpha = 1;
+    a.globalCompositeOperation = "destination-in";
+    a.drawImage(shinyB, 0, 0);
+    a.globalCompositeOperation = "source-over";
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.drawImage(shinyA, 0, 0);
+    ctx.restore();
+  }
+  // Draw something; recolour it when the creature is shiny.
+  function shinyDraw(obj, fn) {
+    if (obj && obj.shiny && beginShiny()) { fn(); endShiny(obj.shiny, obj); }
+    else fn();
+  }
+
+  function drawShinies() {
+    for (const e of scene.shinies) {
+      if (e.alive && !e.alive()) continue;
+      const [x, y] = e.get();
+      if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
+      if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
+      if (!e.told && x > 0 && x < W && y > 0 && y < H) {
+        // the first time it swims into view: a chime, and a note in the logbook
+        e.told = true;
+        const key = "shiny:" + e.key, isNew = !logbook.has(key);
+        seen(key);
+        if (!isNew) toast(L(`Er is een ${nm(key).toLowerCase()} in de buurt!`, `There is a ${nm(key).toLowerCase()} nearby!`));
+        sfxShiny();
+        buzz([30, 40, 30]);
+      }
+      // small glints that flash on the body itself
+      for (let i = 0; i < 3; i++) {
+        const slot = Math.floor(t * 1.6 + i * 0.37), ph = (t * 1.6 + i * 0.37) % 1;
+        const tw = Math.sin(ph * Math.PI);
+        if (tw < 0.15) continue;
+        const rx = Math.sin(slot * 12.9898 + i * 78.233) * 0.5, ry = Math.sin(slot * 39.346 + i * 11.135) * 0.35;
+        const sx = x + rx * e.r * 1.4, sy = y + ry * e.r * 1.4, sz = (1.5 + 2.5 * tw) * u;
+        ctx.fillStyle = `rgba(255,252,235,${0.9 * tw})`;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy - sz); ctx.lineTo(sx + sz * 0.22, sy - sz * 0.22); ctx.lineTo(sx + sz, sy); ctx.lineTo(sx + sz * 0.22, sy + sz * 0.22);
+        ctx.lineTo(sx, sy + sz); ctx.lineTo(sx - sz * 0.22, sy + sz * 0.22); ctx.lineTo(sx - sz, sy); ctx.lineTo(sx - sz * 0.22, sy - sz * 0.22);
+        ctx.fill();
+      }
+    }
+  }
+
