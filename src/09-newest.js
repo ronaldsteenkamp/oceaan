@@ -610,6 +610,13 @@
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
     d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
     const L = 46 * u, suit = "#1d2228";
+    if (rewards.has("s30")) {
+      // a trail of twinkling stars
+      for (let i = 1; i <= 4; i++) {
+        const tw = 0.5 + 0.5 * Math.sin(t * 5 + i * 1.7);
+        star(d.x - d.face * (16 + i * 13) * u - d.vx * i * 2, d.y + Math.sin(t * 3 + i) * 5 * u, (3.4 - i * 0.5) * u * (0.5 + tw * 0.5) + 0.5, `rgba(255,245,200,${0.85 - i * 0.15})`);
+      }
+    }
     ctx.save();
     ctx.translate(d.x, d.y);
     ctx.scale(d.face, 1);
@@ -619,11 +626,11 @@
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
       ctx.rotate(Math.sin(d.kick + off * Math.PI) * 0.35);
       ctx.fillStyle = suit; ctx.fillRect(-L * 0.35, -L * 0.035, L * 0.35, L * 0.07);
-      ctx.fillStyle = rewards.has("s10") ? `hsl(${(t * 80 + off * 60) % 360} 80% 55%)` : rewards.has("m25") ? sh("#2fb37a") : sh("#2f6fe0");
+      ctx.fillStyle = rewards.has("s15") ? `hsl(${(t * 80 + off * 60) % 360} 80% 55%)` : rewards.has("s5") ? "#e8c040" : rewards.has("m25") ? sh("#2fb37a") : sh("#2f6fe0");
       ctx.beginPath(); ctx.moveTo(-L * 0.33, -L * 0.04); ctx.lineTo(-L * 0.6, -L * 0.09); ctx.lineTo(-L * 0.6, L * 0.06); ctx.lineTo(-L * 0.33, L * 0.04); ctx.fill();
       ctx.restore();
     }
-    ctx.fillStyle = rewards.has("mall") ? "#ffd479" : sh("#e8b52a", -0.1);
+    ctx.fillStyle = rewards.has("sall") ? `hsl(${(t * 60) % 360} 80% 60%)` : rewards.has("mall") ? "#ffd479" : sh("#e8b52a", -0.1);
     ctx.beginPath(); ctx.roundRect(-L * 0.2, -L * 0.13, L * 0.36, L * 0.08, L * 0.04); ctx.fill();
     ctx.fillStyle = suit;
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.27, L * 0.07, 0, 0, TAU); ctx.fill();
@@ -634,6 +641,17 @@
     ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.03, L * 0.07, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(170,220,240,0.85)";
     ctx.beginPath(); ctx.ellipse(L * 0.38, -L * 0.04, L * 0.035, L * 0.03, 0, 0, TAU); ctx.fill();
+    if (rewards.has("m75")) {
+      // a helmet lamp lights the way, brighter at night
+      ctx.globalCompositeOperation = "lighter";
+      const g = ctx.createRadialGradient(L * 0.4, -L * 0.06, 0, L * 0.4, -L * 0.06, L * 2.2);
+      g.addColorStop(0, `rgba(255,245,210,${0.12 + 0.25 * night})`);
+      g.addColorStop(1, "rgba(255,245,210,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.moveTo(L * 0.4, -L * 0.06); ctx.lineTo(L * 2.6, -L * 0.7); ctx.lineTo(L * 2.6, L * 0.6); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    }
     ctx.restore();
   }
 

@@ -325,6 +325,7 @@
     const d = new Date();
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
+    fresh.add(key); saveFresh();
     if (LOUD.has(key)) toast(L("Nieuw in je logboek: ", "New in your logbook: ") + nm(key));
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
@@ -335,26 +336,46 @@
   const BASE_LOG_KEYS = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
+  const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
+  const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
+  // Each milestone says how far along you are; the ones with a reward change something you can see.
+  const tier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`${n} vondsten`, `${n} finds`], prog: () => [foundCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
+  const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
+  const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    { id: "m10", name: ["Ontdekker", "Explorer"], goal: ["10 vondsten", "10 finds"], need: () => foundCount() >= 10, reward: ["een bronzen boekje", "a bronze logbook"] },
-    { id: "s1", name: ["Eerste shiny", "First shiny"], goal: ["1 shiny", "1 shiny"], need: () => shinyCount() >= 1, reward: ["een glinsterend boekje", "a glittering logbook"] },
-    { id: "m25", name: ["Zeekenner", "Sea expert"], goal: ["25 vondsten", "25 finds"], need: () => foundCount() >= 25, reward: ["groene zwemvliezen voor je duiker", "green fins for your diver"] },
-    { id: "m50", name: ["Oceanograaf", "Oceanographer"], goal: ["50 vondsten", "50 finds"], need: () => foundCount() >= 50, reward: ["een zilveren boekje", "a silver logbook"] },
-    { id: "s10", name: ["Shinyjager", "Shiny hunter"], goal: ["10 shiny's", "10 shinies"], need: () => shinyCount() >= 10, reward: ["regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"] },
-    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], need: () => foundCount() >= BASE_LOG_KEYS.length, reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje", "a bronze logbook"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen voor je duiker", "green fins for your diver"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje", "a silver logbook"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker", "a lamp on your diver's helmet"),
+    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek", "golden edges in your logbook"),
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "gouden zwemvliezen voor je duiker", "golden fins for your diver"),
+    shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"),
+    shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een regenboogduikfles", "a rainbow air tank"] },
+    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
+    allOf("gb", "Schatzoeker", "Treasure seeker", "Bodem en vondsten", "vondsten op de bodem", "finds on the seabed"),
+    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
+    allOf("gv", "Gastvrij", "Welcoming host", "Bezoekers", "bezoekers", "visitors"),
+    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),
+    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things"),
+    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: null },
   ];
+  for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
   function applyRewards() {
     rewards = new Set(reached());
     bookBtn.dataset.rank = rewards.has("mall") ? "gold" : rewards.has("m50") ? "silver" : rewards.has("m10") ? "bronze" : "";
     bookBtn.classList.toggle("glitter", rewards.has("s1"));
+    panelEl.classList.toggle("gilded", rewards.has("m100"));
   }
   function checkMilestones(before) {
     for (const id of reached()) {
       if (before.includes(id)) continue;
       const m = MILESTONES.find(x => x.id === id);
-      toast(L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`));
+      toast(m.reward ? L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`) : L(`Mijlpaal: ${m.name[0]}!`, `Milestone: ${m.name[1]}!`));
       buzz([60, 60, 120]);
     }
     applyRewards();
@@ -383,6 +404,9 @@
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} },
   };
   let restMode = store.get("oceaan-rust", false);
+  // What was found since the logbook was last opened; it shows at the top of the logbook.
+  let fresh = new Set(store.get("oceaan-nieuw", []));
+  const saveFresh = () => store.set("oceaan-nieuw", [...fresh]);
 
   // Dutch or English. The first visit follows the browser's language.
   let LANG = store.get("oceaan-taal", String(navigator.language || "nl").toLowerCase().startsWith("nl") ? "nl" : "en");

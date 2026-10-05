@@ -124,13 +124,16 @@
 
   let panelOpener = null;
   function openPanel(tab, opener) {
+    if (!panelEl.hidden && panelTab === "log" && tab !== "log") clearFresh();
     panelTab = tab;
     panelOpener = opener || null;
     panelEl.hidden = false;
     renderPanel();
     panelTitle.focus();
   }
+  function clearFresh() { if (fresh.size) { fresh.clear(); saveFresh(); } }
   function closePanel() {
+    if (panelTab === "log") clearFresh();
     panelEl.hidden = true;
     if (panelOpener) panelOpener.focus();
   }
@@ -143,7 +146,9 @@
   bookBtn.addEventListener("click", () => {
     if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
+    logFilter = "all";
     openPanel("log", bookBtn);
+    panelBody.scrollTop = 0; // new finds are at the top
   });
   document.getElementById("closePanel").addEventListener("click", closePanel);
 
@@ -183,19 +188,31 @@
     const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
     const got = all.filter(k => logbook.has(k)).length;
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    let html = `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
+    const card = (k, isNew) => {
+      const e = logbook.get(k);
+      return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}${isNew ? " new" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
+    };
+    const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
+    let html = "";
+    if (news.length && logFilter !== "album") {
+      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => card(k, true)).join("") + `</div>`;
+    }
+    html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
-    html += `<div class="badges">` + MILESTONES.map(m => `<span class="badge ${m.need() ? "on" : ""}">${L(m.name[0], m.name[1])} · ${L(m.goal[0], m.goal[1])}</span>`).join("") + `</div>`;
+    html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
+    html += `<div class="badges">` + MILESTONES.map(m => {
+      const [have, need] = m.prog(), done = have >= need;
+      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
+      return `<span class="badge ${done ? "on" : ""}" title="${tip}">${L(m.name[0], m.name[1])} · ${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}${m.reward ? ` <i class="gift" aria-label="${tip}">★</i>` : ""}</span>`;
+    }).join("") + `</div>`;
+    if (MILESTONES.some(m => m.reward)) html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt: een ander boekje, zwemvliezen of iets voor je duiker.", "A ★ means you get something for it: a different logbook, fins or something for your diver.")}</p>`;
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();
     for (const [title, allKeys] of logFilter === "album" ? [] : LOG_GROUPS) {
       const keys = allKeys.filter(k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:")));
       if (!keys.length) continue;
-      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
-        const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
-      }).join("") + `</div>`;
+      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>
       <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
@@ -232,6 +249,7 @@
   function resetLogbook() {
     logbook = new Map();
     try { localStorage.removeItem(LOG_KEY); } catch (e) {}
+    fresh.clear(); saveFresh();
     // shinies that are on screen right now may announce themselves again
     for (const e of scene.shinies) e.told = false;
     applyRewards();

@@ -187,6 +187,12 @@
   .card span { min-width: 0; overflow-wrap: anywhere; padding: 0 2px; }
   .card.off { color: var(--text-faint); font-weight: 400; }
   .card.shiny.on { border-color: rgba(255, 212, 121, 0.7); }
+  .card.new { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .card .newtag { position: absolute; top: 9px; left: 9px; padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600; background: var(--accent); color: #04141f; }
+  h3.newhead { margin-top: 0; color: var(--accent); }
+  .badge .gift { font-style: normal; color: var(--gold); opacity: 0.8; }
+  .sum.small { font-size: 11.5px; margin-top: 8px; }
+  #panel.gilded .card.on { border-color: rgba(255, 212, 121, 0.55); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
   .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
   .detail #detailBack { align-self: flex-start; }
@@ -628,6 +634,7 @@
     const d = new Date();
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
+    fresh.add(key); saveFresh();
     if (LOUD.has(key)) toast(L("Nieuw in je logboek: ", "New in your logbook: ") + nm(key));
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
@@ -638,26 +645,46 @@
   const BASE_LOG_KEYS = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
+  const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
+  const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
+  // Each milestone says how far along you are; the ones with a reward change something you can see.
+  const tier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`${n} vondsten`, `${n} finds`], prog: () => [foundCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
+  const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
+  const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    { id: "m10", name: ["Ontdekker", "Explorer"], goal: ["10 vondsten", "10 finds"], need: () => foundCount() >= 10, reward: ["een bronzen boekje", "a bronze logbook"] },
-    { id: "s1", name: ["Eerste shiny", "First shiny"], goal: ["1 shiny", "1 shiny"], need: () => shinyCount() >= 1, reward: ["een glinsterend boekje", "a glittering logbook"] },
-    { id: "m25", name: ["Zeekenner", "Sea expert"], goal: ["25 vondsten", "25 finds"], need: () => foundCount() >= 25, reward: ["groene zwemvliezen voor je duiker", "green fins for your diver"] },
-    { id: "m50", name: ["Oceanograaf", "Oceanographer"], goal: ["50 vondsten", "50 finds"], need: () => foundCount() >= 50, reward: ["een zilveren boekje", "a silver logbook"] },
-    { id: "s10", name: ["Shinyjager", "Shiny hunter"], goal: ["10 shiny's", "10 shinies"], need: () => shinyCount() >= 10, reward: ["regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"] },
-    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], need: () => foundCount() >= BASE_LOG_KEYS.length, reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje", "a bronze logbook"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen voor je duiker", "green fins for your diver"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje", "a silver logbook"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker", "a lamp on your diver's helmet"),
+    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek", "golden edges in your logbook"),
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "gouden zwemvliezen voor je duiker", "golden fins for your diver"),
+    shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"),
+    shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een regenboogduikfles", "a rainbow air tank"] },
+    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
+    allOf("gb", "Schatzoeker", "Treasure seeker", "Bodem en vondsten", "vondsten op de bodem", "finds on the seabed"),
+    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
+    allOf("gv", "Gastvrij", "Welcoming host", "Bezoekers", "bezoekers", "visitors"),
+    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),
+    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things"),
+    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: null },
   ];
+  for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
   function applyRewards() {
     rewards = new Set(reached());
     bookBtn.dataset.rank = rewards.has("mall") ? "gold" : rewards.has("m50") ? "silver" : rewards.has("m10") ? "bronze" : "";
     bookBtn.classList.toggle("glitter", rewards.has("s1"));
+    panelEl.classList.toggle("gilded", rewards.has("m100"));
   }
   function checkMilestones(before) {
     for (const id of reached()) {
       if (before.includes(id)) continue;
       const m = MILESTONES.find(x => x.id === id);
-      toast(L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`));
+      toast(m.reward ? L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`) : L(`Mijlpaal: ${m.name[0]}!`, `Milestone: ${m.name[1]}!`));
       buzz([60, 60, 120]);
     }
     applyRewards();
@@ -686,6 +713,9 @@
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} },
   };
   let restMode = store.get("oceaan-rust", false);
+  // What was found since the logbook was last opened; it shows at the top of the logbook.
+  let fresh = new Set(store.get("oceaan-nieuw", []));
+  const saveFresh = () => store.set("oceaan-nieuw", [...fresh]);
 
   // Dutch or English. The first visit follows the browser's language.
   let LANG = store.get("oceaan-taal", String(navigator.language || "nl").toLowerCase().startsWith("nl") ? "nl" : "en");
@@ -4826,6 +4856,13 @@
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
     d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
     const L = 46 * u, suit = "#1d2228";
+    if (rewards.has("s30")) {
+      // a trail of twinkling stars
+      for (let i = 1; i <= 4; i++) {
+        const tw = 0.5 + 0.5 * Math.sin(t * 5 + i * 1.7);
+        star(d.x - d.face * (16 + i * 13) * u - d.vx * i * 2, d.y + Math.sin(t * 3 + i) * 5 * u, (3.4 - i * 0.5) * u * (0.5 + tw * 0.5) + 0.5, `rgba(255,245,200,${0.85 - i * 0.15})`);
+      }
+    }
     ctx.save();
     ctx.translate(d.x, d.y);
     ctx.scale(d.face, 1);
@@ -4835,11 +4872,11 @@
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
       ctx.rotate(Math.sin(d.kick + off * Math.PI) * 0.35);
       ctx.fillStyle = suit; ctx.fillRect(-L * 0.35, -L * 0.035, L * 0.35, L * 0.07);
-      ctx.fillStyle = rewards.has("s10") ? `hsl(${(t * 80 + off * 60) % 360} 80% 55%)` : rewards.has("m25") ? sh("#2fb37a") : sh("#2f6fe0");
+      ctx.fillStyle = rewards.has("s15") ? `hsl(${(t * 80 + off * 60) % 360} 80% 55%)` : rewards.has("s5") ? "#e8c040" : rewards.has("m25") ? sh("#2fb37a") : sh("#2f6fe0");
       ctx.beginPath(); ctx.moveTo(-L * 0.33, -L * 0.04); ctx.lineTo(-L * 0.6, -L * 0.09); ctx.lineTo(-L * 0.6, L * 0.06); ctx.lineTo(-L * 0.33, L * 0.04); ctx.fill();
       ctx.restore();
     }
-    ctx.fillStyle = rewards.has("mall") ? "#ffd479" : sh("#e8b52a", -0.1);
+    ctx.fillStyle = rewards.has("sall") ? `hsl(${(t * 60) % 360} 80% 60%)` : rewards.has("mall") ? "#ffd479" : sh("#e8b52a", -0.1);
     ctx.beginPath(); ctx.roundRect(-L * 0.2, -L * 0.13, L * 0.36, L * 0.08, L * 0.04); ctx.fill();
     ctx.fillStyle = suit;
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.27, L * 0.07, 0, 0, TAU); ctx.fill();
@@ -4850,6 +4887,17 @@
     ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.03, L * 0.07, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(170,220,240,0.85)";
     ctx.beginPath(); ctx.ellipse(L * 0.38, -L * 0.04, L * 0.035, L * 0.03, 0, 0, TAU); ctx.fill();
+    if (rewards.has("m75")) {
+      // a helmet lamp lights the way, brighter at night
+      ctx.globalCompositeOperation = "lighter";
+      const g = ctx.createRadialGradient(L * 0.4, -L * 0.06, 0, L * 0.4, -L * 0.06, L * 2.2);
+      g.addColorStop(0, `rgba(255,245,210,${0.12 + 0.25 * night})`);
+      g.addColorStop(1, "rgba(255,245,210,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.moveTo(L * 0.4, -L * 0.06); ctx.lineTo(L * 2.6, -L * 0.7); ctx.lineTo(L * 2.6, L * 0.6); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    }
     ctx.restore();
   }
 
@@ -7116,13 +7164,16 @@
 
   let panelOpener = null;
   function openPanel(tab, opener) {
+    if (!panelEl.hidden && panelTab === "log" && tab !== "log") clearFresh();
     panelTab = tab;
     panelOpener = opener || null;
     panelEl.hidden = false;
     renderPanel();
     panelTitle.focus();
   }
+  function clearFresh() { if (fresh.size) { fresh.clear(); saveFresh(); } }
   function closePanel() {
+    if (panelTab === "log") clearFresh();
     panelEl.hidden = true;
     if (panelOpener) panelOpener.focus();
   }
@@ -7135,7 +7186,9 @@
   bookBtn.addEventListener("click", () => {
     if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
+    logFilter = "all";
     openPanel("log", bookBtn);
+    panelBody.scrollTop = 0; // new finds are at the top
   });
   document.getElementById("closePanel").addEventListener("click", closePanel);
 
@@ -7175,19 +7228,31 @@
     const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
     const got = all.filter(k => logbook.has(k)).length;
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    let html = `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
+    const card = (k, isNew) => {
+      const e = logbook.get(k);
+      return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}${isNew ? " new" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
+    };
+    const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
+    let html = "";
+    if (news.length && logFilter !== "album") {
+      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => card(k, true)).join("") + `</div>`;
+    }
+    html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
-    html += `<div class="badges">` + MILESTONES.map(m => `<span class="badge ${m.need() ? "on" : ""}">${L(m.name[0], m.name[1])} · ${L(m.goal[0], m.goal[1])}</span>`).join("") + `</div>`;
+    html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
+    html += `<div class="badges">` + MILESTONES.map(m => {
+      const [have, need] = m.prog(), done = have >= need;
+      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
+      return `<span class="badge ${done ? "on" : ""}" title="${tip}">${L(m.name[0], m.name[1])} · ${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}${m.reward ? ` <i class="gift" aria-label="${tip}">★</i>` : ""}</span>`;
+    }).join("") + `</div>`;
+    if (MILESTONES.some(m => m.reward)) html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt: een ander boekje, zwemvliezen of iets voor je duiker.", "A ★ means you get something for it: a different logbook, fins or something for your diver.")}</p>`;
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();
     for (const [title, allKeys] of logFilter === "album" ? [] : LOG_GROUPS) {
       const keys = allKeys.filter(k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:")));
       if (!keys.length) continue;
-      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => {
-        const e = logbook.get(k);
-        return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
-      }).join("") + `</div>`;
+      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>
       <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
@@ -7224,6 +7289,7 @@
   function resetLogbook() {
     logbook = new Map();
     try { localStorage.removeItem(LOG_KEY); } catch (e) {}
+    fresh.clear(); saveFresh();
     // shinies that are on screen right now may announce themselves again
     for (const e of scene.shinies) e.told = false;
     applyRewards();
@@ -7791,9 +7857,11 @@
     c.width = w; c.height = h;
     c.getContext("2d").drawImage(polaroidCanvas, 0, 0, w, h);
     const d = new Date();
+    const before = reached();
     album.unshift({ id: String(Date.now()), d: d.toISOString().slice(0, 10), seed, water: water.name, img: c.toDataURL("image/jpeg", 0.78) });
     album.length = Math.min(album.length, ALBUM_MAX);
     toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
+    checkMilestones(before);
   }
   function albumHTML() {
     if (!album.length) return `<p class="sum">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
@@ -8015,7 +8083,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=11").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=12").catch(() => {}));
   }
 </script>
 </body>

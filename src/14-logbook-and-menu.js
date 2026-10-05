@@ -536,9 +536,11 @@
     c.width = w; c.height = h;
     c.getContext("2d").drawImage(polaroidCanvas, 0, 0, w, h);
     const d = new Date();
+    const before = reached();
     album.unshift({ id: String(Date.now()), d: d.toISOString().slice(0, 10), seed, water: water.name, img: c.toDataURL("image/jpeg", 0.78) });
     album.length = Math.min(album.length, ALBUM_MAX);
     toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
+    checkMilestones(before);
   }
   function albumHTML() {
     if (!album.length) return `<p class="sum">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
