@@ -192,7 +192,7 @@
   h3.newhead { margin-top: 0; color: var(--accent); }
   .badge .gift { font-style: normal; color: var(--gold); opacity: 0.8; }
   .sum.small { font-size: 11.5px; margin-top: 8px; }
-  #panel.gilded .card.on { border-color: rgba(255, 212, 121, 0.55); }
+  #panel.gilded .card.on:not(.new) { border-color: rgba(255, 212, 121, 0.55); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
   .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
   .detail #detailBack { align-self: flex-start; }
@@ -4857,11 +4857,19 @@
     d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
     const L = 46 * u, suit = "#1d2228";
     if (rewards.has("s30")) {
-      // a trail of twinkling stars
-      for (let i = 1; i <= 4; i++) {
-        const tw = 0.5 + 0.5 * Math.sin(t * 5 + i * 1.7);
-        star(d.x - d.face * (16 + i * 13) * u - d.vx * i * 2, d.y + Math.sin(t * 3 + i) * 5 * u, (3.4 - i * 0.5) * u * (0.5 + tw * 0.5) + 0.5, `rgba(255,245,200,${0.85 - i * 0.15})`);
-      }
+      // a trail of twinkling stars that stay behind and slowly fade
+      d.trailT = (d.trailT || 0) - k;
+      if (!d.trail) d.trail = [];
+      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - d.face * 22 * u, y: d.y + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
+      ctx.globalCompositeOperation = "lighter";
+      d.trail = d.trail.filter(p => {
+        p.a -= 0.012 * k; p.y -= 0.1 * u * k;
+        if (p.a <= 0) return false;
+        const tw = 0.6 + 0.4 * Math.sin(t * 6 + p.ph);
+        star(p.x, p.y, (2.5 + 4.5 * p.a) * u * tw, `rgba(255,236,160,${p.a})`);
+        return true;
+      });
+      ctx.globalCompositeOperation = "source-over";
     }
     ctx.save();
     ctx.translate(d.x, d.y);
@@ -8083,7 +8091,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=12").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=13").catch(() => {}));
   }
 </script>
 </body>

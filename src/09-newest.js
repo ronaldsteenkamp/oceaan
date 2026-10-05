@@ -611,11 +611,19 @@
     d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
     const L = 46 * u, suit = "#1d2228";
     if (rewards.has("s30")) {
-      // a trail of twinkling stars
-      for (let i = 1; i <= 4; i++) {
-        const tw = 0.5 + 0.5 * Math.sin(t * 5 + i * 1.7);
-        star(d.x - d.face * (16 + i * 13) * u - d.vx * i * 2, d.y + Math.sin(t * 3 + i) * 5 * u, (3.4 - i * 0.5) * u * (0.5 + tw * 0.5) + 0.5, `rgba(255,245,200,${0.85 - i * 0.15})`);
-      }
+      // a trail of twinkling stars that stay behind and slowly fade
+      d.trailT = (d.trailT || 0) - k;
+      if (!d.trail) d.trail = [];
+      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - d.face * 22 * u, y: d.y + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
+      ctx.globalCompositeOperation = "lighter";
+      d.trail = d.trail.filter(p => {
+        p.a -= 0.012 * k; p.y -= 0.1 * u * k;
+        if (p.a <= 0) return false;
+        const tw = 0.6 + 0.4 * Math.sin(t * 6 + p.ph);
+        star(p.x, p.y, (2.5 + 4.5 * p.a) * u * tw, `rgba(255,236,160,${p.a})`);
+        return true;
+      });
+      ctx.globalCompositeOperation = "source-over";
     }
     ctx.save();
     ctx.translate(d.x, d.y);
