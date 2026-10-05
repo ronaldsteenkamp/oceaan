@@ -46,9 +46,11 @@
 
   // ---- frame -------------------------------------------------------------
   function frame(now, once) {
+    // the next frame is booked first, so one unexpected error can never freeze the ocean
+    if (!once) requestAnimationFrame(frame);
     const dtMs = Math.min(50, now - last);
     last = now;
-    if (paused || document.hidden) { if (!once) requestAnimationFrame(frame); return; }
+    if (paused || document.hidden) return;
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();
@@ -174,6 +176,5 @@
       fade = Math.max(0, fade - 0.025 * k);
     }
     audioTick();
-    if (!once) requestAnimationFrame(frame);
   }
 

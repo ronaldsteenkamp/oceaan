@@ -35,6 +35,7 @@
   function tone(o) {
     const ac = audio.ac;
     if (!ac || !audio.on) return;
+    if (!o.freqs.every(([f, at]) => isFinite(f) && isFinite(at)) || !isFinite(o.gain) || !isFinite(o.dur)) return;
     const now = ac.currentTime + (o.delay || 0);
     const osc = ac.createOscillator();
     osc.type = o.type || "sine";
@@ -90,6 +91,9 @@
 
   function audioTick() {
     if (!audio.on || !audio.ac) return;
+    try { audioStep(); } catch (e) { /* a sound that fails is skipped; the ocean keeps moving */ }
+  }
+  function audioStep() {
     const now = audio.ac.currentTime, n = audio.next, v = scene.visitor;
     if (now > n.bubble) { sfxBubble(); n.bubble = now + 0.3 + Math.random() * 2.2; }
     if (v && (v.type === "whale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
@@ -101,11 +105,12 @@
   const SCALES = {
     rif: [0, 2, 4, 7, 9, 12, 14], diepzee: [0, 3, 5, 7, 10], noordzee: [0, 2, 3, 7, 9, 12],
     kelpwoud: [0, 2, 5, 7, 9, 12], ijszee: [0, 4, 7, 11, 14, 19],
+    mangrove: [0, 2, 3, 7, 8, 12], grot: [0, 1, 5, 7, 8], lagune: [0, 2, 4, 7, 9, 11, 14], sargasso: [0, 2, 5, 7, 10, 12],
   };
-  const ROOT = { rif: 261.6, diepzee: 110, noordzee: 196, kelpwoud: 220, ijszee: 329.6 };
+  const ROOT = { rif: 261.6, diepzee: 110, noordzee: 196, kelpwoud: 220, ijszee: 329.6, mangrove: 174.6, grot: 130.8, lagune: 293.7, sargasso: 164.8 };
   function playNote() {
     const sc = SCALES[water.name] || SCALES.rif;
-    const f = ROOT[water.name] * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
+    const f = (ROOT[water.name] || ROOT.rif) * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
     tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85 });
     if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6 });
   }

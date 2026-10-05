@@ -4266,6 +4266,7 @@
   function tone(o) {
     const ac = audio.ac;
     if (!ac || !audio.on) return;
+    if (!o.freqs.every(([f, at]) => isFinite(f) && isFinite(at)) || !isFinite(o.gain) || !isFinite(o.dur)) return;
     const now = ac.currentTime + (o.delay || 0);
     const osc = ac.createOscillator();
     osc.type = o.type || "sine";
@@ -4321,6 +4322,9 @@
 
   function audioTick() {
     if (!audio.on || !audio.ac) return;
+    try { audioStep(); } catch (e) { /* a sound that fails is skipped; the ocean keeps moving */ }
+  }
+  function audioStep() {
     const now = audio.ac.currentTime, n = audio.next, v = scene.visitor;
     if (now > n.bubble) { sfxBubble(); n.bubble = now + 0.3 + Math.random() * 2.2; }
     if (v && (v.type === "whale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
@@ -4332,11 +4336,12 @@
   const SCALES = {
     rif: [0, 2, 4, 7, 9, 12, 14], diepzee: [0, 3, 5, 7, 10], noordzee: [0, 2, 3, 7, 9, 12],
     kelpwoud: [0, 2, 5, 7, 9, 12], ijszee: [0, 4, 7, 11, 14, 19],
+    mangrove: [0, 2, 3, 7, 8, 12], grot: [0, 1, 5, 7, 8], lagune: [0, 2, 4, 7, 9, 11, 14], sargasso: [0, 2, 5, 7, 10, 12],
   };
-  const ROOT = { rif: 261.6, diepzee: 110, noordzee: 196, kelpwoud: 220, ijszee: 329.6 };
+  const ROOT = { rif: 261.6, diepzee: 110, noordzee: 196, kelpwoud: 220, ijszee: 329.6, mangrove: 174.6, grot: 130.8, lagune: 293.7, sargasso: 164.8 };
   function playNote() {
     const sc = SCALES[water.name] || SCALES.rif;
-    const f = ROOT[water.name] * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
+    const f = (ROOT[water.name] || ROOT.rif) * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
     tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85 });
     if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6 });
   }
@@ -7268,9 +7273,11 @@
 
   // ---- frame -------------------------------------------------------------
   function frame(now, once) {
+    // the next frame is booked first, so one unexpected error can never freeze the ocean
+    if (!once) requestAnimationFrame(frame);
     const dtMs = Math.min(50, now - last);
     last = now;
-    if (paused || document.hidden) { if (!once) requestAnimationFrame(frame); return; }
+    if (paused || document.hidden) return;
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();
@@ -7396,7 +7403,6 @@
       fade = Math.max(0, fade - 0.025 * k);
     }
     audioTick();
-    if (!once) requestAnimationFrame(frame);
   }
 
   // ---- interaction -------------------------------------------------------
@@ -8391,6 +8397,8 @@
   function selfTest(count) {
     const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
     rebuilding = true; // a test run never touches the logbook
+    // sound is on during the test (silent), so a broken sound shows up as an error
+    try { if (!audio.ac) initAudio(); audio.on = !!audio.ac; if (audio.master) audio.master.gain.value = 0; } catch (e) { errors.push("geluid: " + e.message); }
     let oceans = 0;
     for (let sd = 1; sd <= count; sd++) {
       try {
@@ -8413,6 +8421,8 @@
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
         diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
+        if (audio.next) audio.next.note = 0;
+        try { audioStep(); } catch (e) { errors.push(`geluid in oceaan ${sd} (${water.name}): ${e.message}`); }
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
@@ -8431,6 +8441,7 @@
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
     diverMode = false;
+    audio.on = false;
     canvas.style.transform = "";
     const out = document.createElement("pre");
     out.id = "selftest"; out.hidden = true;
@@ -8489,7 +8500,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=21").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=22").catch(() => {}));
   }
 </script>
 </body>

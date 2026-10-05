@@ -57,6 +57,8 @@
   function selfTest(count) {
     const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
     rebuilding = true; // a test run never touches the logbook
+    // sound is on during the test (silent), so a broken sound shows up as an error
+    try { if (!audio.ac) initAudio(); audio.on = !!audio.ac; if (audio.master) audio.master.gain.value = 0; } catch (e) { errors.push("geluid: " + e.message); }
     let oceans = 0;
     for (let sd = 1; sd <= count; sd++) {
       try {
@@ -79,6 +81,8 @@
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
         diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
+        if (audio.next) audio.next.note = 0;
+        try { audioStep(); } catch (e) { errors.push(`geluid in oceaan ${sd} (${water.name}): ${e.message}`); }
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
@@ -97,6 +101,7 @@
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
     diverMode = false;
+    audio.on = false;
     canvas.style.transform = "";
     const out = document.createElement("pre");
     out.id = "selftest"; out.hidden = true;
