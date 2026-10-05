@@ -46,6 +46,7 @@
       st.cleanObjs.forEach((o, i) => add("cleaners", o, 4 * u, () => st["c" + i] || [st.x, sandY(st.x) - 55 * u]));
     }
     registerMoreShinies(s, add, tag);
+    registerWave2Shinies(s, add);
     s.shinies = list;
   }
 

@@ -115,7 +115,8 @@
     else {
       const rr = rng();
       s.rares = rr < 0.06 ? ["mermaid"] : rr < 0.12 ? ["kraken"] : rr < 0.18 ? ["ghost"] : rr < 0.23 ? ["whalefall"]
-        : rr < 0.27 ? ["serpent"] : rr < 0.31 ? ["megalodon"] : rr < 0.34 ? ["goldpearl"] : [];
+        : rr < 0.27 ? ["serpent"] : rr < 0.31 ? ["megalodon"] : rr < 0.34 ? ["goldpearl"]
+        : rr < 0.37 ? (water.surface ? ["aurora"] : []) : rr < 0.40 ? ["mobydick"] : rr < 0.43 ? ["ghostdiver"] : [];
     }
     s.rare = s.rares[0] || null;
 
@@ -147,6 +148,7 @@
     if (chance(P.city)) big.push(makeCity(W < 600 ? 0.7 : 1));
     if (chance(P.brine)) small.push({ kind: "brine", w: 170 * u, s: range(50, 70) * u });
     addMoreGround(s, P, big, small);
+    addWave2Ground(s, P, big, small);
     // on a phone the big landmarks shrink so more of them fit side by side
     if (W < 600) for (const g of big) if (g.kind !== "city") { g.w *= 0.7; if (g.s) g.s *= 0.7; }
     s.ground = placeGround([...big, ...small.sort(() => rng() - 0.5)]);
@@ -334,6 +336,7 @@
     if (s.octopus) s.octopus.x = remap(s.octopus.x);
     if (s.mantis) s.mantis.x = remap(s.mantis.x);
     buildMore(s, Lf, clumps, remap);
+    buildWave2(s, Lf, remap);
 
     seen("w:" + water.name);
     for (const g of s.ground) seen(g.kind);

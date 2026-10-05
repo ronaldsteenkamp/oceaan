@@ -51,6 +51,7 @@
       mantis: !!S.mantis, archer: !!S.archer, cleaners: !!S.station,
       cassiopea: S.cassio.length, lionfish: !!S.lionfish, cuttlefish: !!S.cuttle, lobster: S.lobsters.length, nautilus: !!S.nautilus,
       isopod: S.isopods.length, seadragon: !!S.dragon,
+      parrotfish: !!S.parrot, boxfish: !!S.boxfish, pistol: !!S.pistol, sargassumfish: !!S.frogfish, spidercrab: !!S.spider,
     };
   }
 

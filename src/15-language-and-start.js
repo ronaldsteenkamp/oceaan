@@ -69,6 +69,9 @@
         pointer.active = true; pointer.x = W * 0.3; pointer.y = H * 0.4; feeding = true; S.feedT = 6;
         S.bloom.timer = 0; S.hatch.enabled = !!water.surface; S.hatch.timer = 0; S.serpent.enabled = true; S.serpent.timer = 0;
         S.megalodon.enabled = true; S.megalodon.timer = 0;
+        S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
+        if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
+        if (water.surface && !S.aurora) S.aurora = { logged: false };
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
@@ -89,6 +92,7 @@
       panelEl.hidden = true;
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
+    canvas.style.transform = "";
     const out = document.createElement("pre");
     out.id = "selftest"; out.hidden = true;
     out.textContent = `${errors.length ? "FOUT" : "OK"}\n${oceans} oceanen in ${Math.round(performance.now() - t0)} ms\n${errors.join("\n")}`;

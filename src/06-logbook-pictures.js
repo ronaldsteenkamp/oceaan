@@ -5,7 +5,7 @@
   const THUMB_WATER = Object.assign({}, WATERS[0], { name: "thumb", tintK: 0, glow: false, surface: true });
   const FULL_THUMBS = new Set([...WATERS.map(w => "w:" + w.name), "canyon", "storm"]);
   const FLOOR_THUMBS = new Set([...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
-    "goldpearl", "cassiopea", "lobster", "isopod"]);
+    "goldpearl", "cassiopea", "lobster", "isopod", "pistol", "spidercrab", "parrotfish", "crabmarch", "quake"]);
   const thumbCache = new Map();
 
   function thumbScene() {
@@ -37,6 +37,14 @@
     if (w.glow) { ctx.fillStyle = "rgba(120,240,255,0.8)"; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.arc((i * 37) % TW, (i * 23) % 60 + 6, 1, 0, TAU); ctx.fill(); } }
     if (w.surface) { ctx.strokeStyle = "rgba(255,255,255,0.45)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 8); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 8 + Math.sin(x * 0.12) * 1.5); ctx.stroke(); }
     if (w.ice) { ctx.fillStyle = "rgba(240,250,255,0.95)"; ctx.fillRect(18, 0, 40, 9); ctx.fillRect(74, 0, 28, 7); }
+    if (w.caustics) {
+      ctx.strokeStyle = "rgba(255,255,230,0.5)"; ctx.lineWidth = 1;
+      for (let i = 0; i < 3; i++) { ctx.beginPath(); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 66 + i * 3 + Math.sin(x * 0.2 + i * 2) * 2); ctx.stroke(); }
+    }
+    if (w.sargasso) {
+      ctx.fillStyle = "#8a7a2a";
+      for (const [x, n] of [[24, 7], [80, 9]]) for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.ellipse(x - 14 + i * 4, 11 + (i % 3) * 3, 4, 1.6, i, 0, TAU); ctx.fill(); }
+    }
     if (w.mangrove) {
       ctx.strokeStyle = "#3a2c1e"; ctx.lineWidth = 3;
       for (const [x0, x1] of [[30, 6], [30, 46], [86, 64], [86, 114]]) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.quadraticCurveTo(x0 + (x1 - x0) * 0.3, 30, x1, 76); ctx.stroke(); }

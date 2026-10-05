@@ -1,6 +1,6 @@
 # Oceaan
 
-Een levende onderwaterwereld die elke keer anders is, in zeven wateren van koraalrif tot mangrove en onderwatergrot: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang of een megalodon. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
+Een levende onderwaterwereld die elke keer anders is, in negen wateren van koraalrif en lagune tot Sargassozee, mangrove en onderwatergrot: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang, een megalodon, de witte potvis of een spookduiker. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
 
 Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon kun je hem als app op je beginscherm zetten; daarna werkt hij ook zonder internet.
 
@@ -23,6 +23,7 @@ De bron staat in `src/`:
 | `02-scene.js` | het opbouwen van een oceaan uit een seed |
 | `03` tot en met `10` | water, bodem, dieren, bezoekers, geluid, licht en shiny's |
 | `11-expansion.js` | mangrove, grot, nieuwe vondsten, dieren, bezoekers, momenten en zeldzame dingen |
+| `11-x2-lagoon-and-sargasso.js` | lagune, Sargassozee en de derde ronde nieuwe dingen |
 | `12-frame.js` | de animatielus, snelheid en automatische kwaliteit |
 | `13-controls.js` | aanraken, duiker, foto en knoppen |
 | `14-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |
