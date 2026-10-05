@@ -68,6 +68,8 @@
     font-size: 12px; color: var(--text-dim); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55); pointer-events: none;
   }
   #seed, #clock, #rare { display: none; }
+  .tool[hidden] { display: none; }
+  .tool.cooling { opacity: 0.45; }
   #biome { color: var(--text); font-weight: 500; }
   #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
   #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }
@@ -273,6 +275,7 @@
   <span class="divider" aria-hidden="true"></span>
   <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="sonar" class="tool" data-short="Sonar" type="button" hidden aria-label="Sonar" data-tip="Sonar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.8" fill="currentColor"/><path d="M10 8.5a5 5 0 0 1 0 7M13.5 6a8.5 8.5 0 0 1 0 12M17 3.5a12 12 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="photo" class="tool" data-short="Foto" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
   <span class="divider" aria-hidden="true"></span>
   <button id="book" class="tool" data-short="Logboek" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
@@ -6430,6 +6433,7 @@
     s.quake = { timer: range(110, 260), age: -1 };
     s.march = { enabled: !s.canyon, timer: range(70, 160), queue: [], list: [], next: 0, logged: false };
     s.bubbleRings = [];
+    s.sonar = { cool: 0, rings: [], echoAt: -1, side: 0, arrow: 0, dir: 0 };
     s.aurora = s.rares.includes("aurora") && water.surface ? { logged: false } : null;
     if (s.aurora) s.dayOffset = range(0.45, 0.52); // the northern lights need a dark sky
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
@@ -7062,6 +7066,95 @@
     drawAurora();
   }
 
+  // ---- the diver's sonar ------------------------------------------------------
+  // A ping goes out from the diver. If something rare lives in this ocean, a golden echo comes back from its direction.
+  const SONAR_HINTS = {
+    mermaid: ["Er klinkt een zacht gezang terug...", "A soft song echoes back..."],
+    kraken: ["Er antwoordt iets enorms uit de diepte...", "Something enormous answers from the deep..."],
+    megalodon: ["Een gigantische schaduw weerkaatst je sonar...", "A gigantic shadow bounces your sonar back..."],
+    whalefall: ["Je sonar vindt grote botten op de bodem...", "Your sonar finds huge bones on the seabed..."],
+    serpent: ["Iets lang en kronkelends weerkaatst je sonar...", "Something long and winding bounces your sonar back..."],
+    goldpearl: ["Er glinstert iets kostbaars in een schelp...", "Something precious glints inside a shell..."],
+    aurora: ["De echo komt gekleurd terug van het oppervlak...", "The echo comes back coloured from the surface..."],
+    mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
+    ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
+    ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
+  };
+
+  function sonarSource(S) {
+    const r = S.rares[0], side = (S.sonar.side = S.sonar.side || (Math.random() < 0.5 ? -1 : 1));
+    const g = S.ground.find(x => x.kind === (r === "goldpearl" ? "clam" : "whalefall") && (r !== "goldpearl" || x.pearl === "gold"));
+    if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
+    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
+    if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
+    if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
+    if (r === "aurora") return [W * 0.5, -60 * u];
+    if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
+    if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
+    if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
+    return [side < 0 ? -80 * u : W + 80 * u, H * 0.45];
+  }
+
+  function sonarPing() {
+    const S = scene, so = S.sonar;
+    if (!diverMode || so.cool > 0) return;
+    so.cool = 5;
+    so.rings.push({ x: diver.x, y: diver.y, r: 6 * u, a: 0.8, gold: false });
+    so.rings.push({ x: diver.x, y: diver.y, r: -30 * u, a: 0.8, gold: false });
+    tone({ freqs: [[1500, 0], [1420, 0.4]], dur: 0.7, gain: 0.06, attack: 0.005, release: 0.5, verb: 0.9 });
+    buzz(20);
+    so.echoAt = 1.3;
+  }
+
+  function updateAndDrawSonar(k, dtSec) {
+    const S = scene, so = S.sonar;
+    if (so.cool > 0) so.cool -= dtSec;
+    sonarBtn.classList.toggle("cooling", so.cool > 0);
+    if (so.echoAt > 0) {
+      so.echoAt -= dtSec;
+      if (so.echoAt <= 0) {
+        if (S.rares.length) {
+          const [sx, sy] = sonarSource(S);
+          for (let i = 0; i < 3; i++) so.rings.push({ x: sx, y: sy, r: -i * 40 * u, a: 0.9, gold: true });
+          so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = 2.5;
+          tone({ type: "triangle", freqs: [[900, 0], [1200, 0.25], [1000, 0.6]], dur: 0.9, gain: 0.05, attack: 0.02, release: 0.5, verb: 0.9 });
+          buzz([30, 60, 30]);
+          const h = SONAR_HINTS[S.rares[0]];
+          toast(h ? L(h[0], h[1]) : L("Er komt een gouden echo terug!", "A golden echo comes back!"));
+        } else {
+          toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
+        }
+      }
+    }
+    if (!so.rings.length && !(so.arrow > 0)) return;
+    ctx.globalCompositeOperation = "lighter";
+    so.rings = so.rings.filter(r => {
+      r.r += (r.gold ? 4.5 : 5) * u * k;
+      if (r.r < 0) return true;
+      r.a -= (r.gold ? 0.006 : 0.008) * k;
+      if (r.a <= 0) return false;
+      // the golden echo is drawn solid, so it stands out in bright water too
+      ctx.globalCompositeOperation = r.gold ? "source-over" : "lighter";
+      if (r.gold) { ctx.strokeStyle = `rgba(90,60,10,${r.a * 0.5})`; ctx.lineWidth = 5 * u; ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, TAU); ctx.stroke(); }
+      ctx.strokeStyle = r.gold ? `rgba(255,200,80,${r.a})` : `rgba(140,230,255,${r.a * 0.8})`;
+      ctx.lineWidth = (r.gold ? 3 : 2) * u;
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, TAU); ctx.stroke();
+      return true;
+    });
+    // a small golden arrow by the diver points to where the echo came from
+    if (so.arrow > 0 && diverMode) {
+      so.arrow -= dtSec;
+      const a = Math.min(1, so.arrow), d = 46 * u, x = diver.x + Math.cos(so.dir) * d, y = diver.y + Math.sin(so.dir) * d;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.save(); ctx.translate(x, y); ctx.rotate(so.dir);
+      ctx.beginPath(); ctx.moveTo(12 * u, 0); ctx.lineTo(-6 * u, -8 * u); ctx.lineTo(-1 * u, 0); ctx.lineTo(-6 * u, 8 * u); ctx.closePath();
+      ctx.fillStyle = `rgba(255,200,80,${a})`; ctx.fill();
+      ctx.strokeStyle = `rgba(90,60,10,${0.7 * a})`; ctx.lineWidth = 1.5 * u; ctx.stroke();
+      ctx.restore();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  }
+
   // ---- logbook pictures -------------------------------------------------------
   Object.assign(THUMBS, {
     wheel: () => drawWheel({ x: 60, s: 32, tilt: 0.2, spin: 0.3 }),
@@ -7249,6 +7342,7 @@
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
+    updateAndDrawSonar(k, dtSec);
     if (S.kraken.active) shinyDraw(S.kraken, () => drawTentacleSet(S.kraken, KRAKEN));
     drawInk(k);
     updateAndDrawFood(k);
@@ -7379,6 +7473,7 @@
       return;
     }
     if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if (e.key === " " || e.key === "Enter") {
       const tag = document.activeElement && document.activeElement.tagName;
       if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
@@ -7411,10 +7506,13 @@
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. De spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Space gives a new ocean."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
+    sonarBtn.hidden = !diverMode;
   });
+  const sonarBtn = document.getElementById("sonar");
+  sonarBtn.addEventListener("click", sonarPing);
 
   let panelOpener = null;
   function openPanel(tab, opener) {
@@ -7949,7 +8047,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, space gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, space gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -8198,6 +8296,7 @@
       next: [L("Nieuwe oceaan", "New ocean"), L("Nieuw", "New")],
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
       diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
+      sonar: [L("Sonar: zoek naar iets zeldzaams", "Sonar: search for something rare"), L("Sonar", "Sonar")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
       book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
@@ -8269,6 +8368,7 @@
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
+        diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
@@ -8286,6 +8386,7 @@
       panelEl.hidden = true;
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
+    diverMode = false;
     canvas.style.transform = "";
     const out = document.createElement("pre");
     out.id = "selftest"; out.hidden = true;
@@ -8344,7 +8445,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=17").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=18").catch(() => {}));
   }
 </script>
 </body>

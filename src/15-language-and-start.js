@@ -6,6 +6,7 @@
       next: [L("Nieuwe oceaan", "New ocean"), L("Nieuw", "New")],
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
       diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
+      sonar: [L("Sonar: zoek naar iets zeldzaams", "Sonar: search for something rare"), L("Sonar", "Sonar")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
       book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
@@ -77,6 +78,7 @@
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
+        diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
@@ -94,6 +96,7 @@
       panelEl.hidden = true;
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
+    diverMode = false;
     canvas.style.transform = "";
     const out = document.createElement("pre");
     out.id = "selftest"; out.hidden = true;

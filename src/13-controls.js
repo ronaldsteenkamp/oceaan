@@ -85,6 +85,7 @@
       return;
     }
     if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if (e.key === " " || e.key === "Enter") {
       const tag = document.activeElement && document.activeElement.tagName;
       if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
@@ -117,10 +118,13 @@
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. De spatiebalk geeft een nieuwe oceaan.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Space gives a new ocean."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
+    sonarBtn.hidden = !diverMode;
   });
+  const sonarBtn = document.getElementById("sonar");
+  sonarBtn.addEventListener("click", sonarPing);
 
   let panelOpener = null;
   function openPanel(tab, opener) {

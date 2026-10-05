@@ -32,6 +32,7 @@
     s.quake = { timer: range(110, 260), age: -1 };
     s.march = { enabled: !s.canyon, timer: range(70, 160), queue: [], list: [], next: 0, logged: false };
     s.bubbleRings = [];
+    s.sonar = { cool: 0, rings: [], echoAt: -1, side: 0, arrow: 0, dir: 0 };
     s.aurora = s.rares.includes("aurora") && water.surface ? { logged: false } : null;
     if (s.aurora) s.dayOffset = range(0.45, 0.52); // the northern lights need a dark sky
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
@@ -662,6 +663,95 @@
     drawSargassum(k);
     if (scene.frogfish) shinyDraw(scene.frogfish, () => drawFrog(scene.frogfish, k));
     drawAurora();
+  }
+
+  // ---- the diver's sonar ------------------------------------------------------
+  // A ping goes out from the diver. If something rare lives in this ocean, a golden echo comes back from its direction.
+  const SONAR_HINTS = {
+    mermaid: ["Er klinkt een zacht gezang terug...", "A soft song echoes back..."],
+    kraken: ["Er antwoordt iets enorms uit de diepte...", "Something enormous answers from the deep..."],
+    megalodon: ["Een gigantische schaduw weerkaatst je sonar...", "A gigantic shadow bounces your sonar back..."],
+    whalefall: ["Je sonar vindt grote botten op de bodem...", "Your sonar finds huge bones on the seabed..."],
+    serpent: ["Iets lang en kronkelends weerkaatst je sonar...", "Something long and winding bounces your sonar back..."],
+    goldpearl: ["Er glinstert iets kostbaars in een schelp...", "Something precious glints inside a shell..."],
+    aurora: ["De echo komt gekleurd terug van het oppervlak...", "The echo comes back coloured from the surface..."],
+    mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
+    ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
+    ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
+  };
+
+  function sonarSource(S) {
+    const r = S.rares[0], side = (S.sonar.side = S.sonar.side || (Math.random() < 0.5 ? -1 : 1));
+    const g = S.ground.find(x => x.kind === (r === "goldpearl" ? "clam" : "whalefall") && (r !== "goldpearl" || x.pearl === "gold"));
+    if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
+    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
+    if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
+    if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
+    if (r === "aurora") return [W * 0.5, -60 * u];
+    if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
+    if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
+    if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
+    return [side < 0 ? -80 * u : W + 80 * u, H * 0.45];
+  }
+
+  function sonarPing() {
+    const S = scene, so = S.sonar;
+    if (!diverMode || so.cool > 0) return;
+    so.cool = 5;
+    so.rings.push({ x: diver.x, y: diver.y, r: 6 * u, a: 0.8, gold: false });
+    so.rings.push({ x: diver.x, y: diver.y, r: -30 * u, a: 0.8, gold: false });
+    tone({ freqs: [[1500, 0], [1420, 0.4]], dur: 0.7, gain: 0.06, attack: 0.005, release: 0.5, verb: 0.9 });
+    buzz(20);
+    so.echoAt = 1.3;
+  }
+
+  function updateAndDrawSonar(k, dtSec) {
+    const S = scene, so = S.sonar;
+    if (so.cool > 0) so.cool -= dtSec;
+    sonarBtn.classList.toggle("cooling", so.cool > 0);
+    if (so.echoAt > 0) {
+      so.echoAt -= dtSec;
+      if (so.echoAt <= 0) {
+        if (S.rares.length) {
+          const [sx, sy] = sonarSource(S);
+          for (let i = 0; i < 3; i++) so.rings.push({ x: sx, y: sy, r: -i * 40 * u, a: 0.9, gold: true });
+          so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = 2.5;
+          tone({ type: "triangle", freqs: [[900, 0], [1200, 0.25], [1000, 0.6]], dur: 0.9, gain: 0.05, attack: 0.02, release: 0.5, verb: 0.9 });
+          buzz([30, 60, 30]);
+          const h = SONAR_HINTS[S.rares[0]];
+          toast(h ? L(h[0], h[1]) : L("Er komt een gouden echo terug!", "A golden echo comes back!"));
+        } else {
+          toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
+        }
+      }
+    }
+    if (!so.rings.length && !(so.arrow > 0)) return;
+    ctx.globalCompositeOperation = "lighter";
+    so.rings = so.rings.filter(r => {
+      r.r += (r.gold ? 4.5 : 5) * u * k;
+      if (r.r < 0) return true;
+      r.a -= (r.gold ? 0.006 : 0.008) * k;
+      if (r.a <= 0) return false;
+      // the golden echo is drawn solid, so it stands out in bright water too
+      ctx.globalCompositeOperation = r.gold ? "source-over" : "lighter";
+      if (r.gold) { ctx.strokeStyle = `rgba(90,60,10,${r.a * 0.5})`; ctx.lineWidth = 5 * u; ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, TAU); ctx.stroke(); }
+      ctx.strokeStyle = r.gold ? `rgba(255,200,80,${r.a})` : `rgba(140,230,255,${r.a * 0.8})`;
+      ctx.lineWidth = (r.gold ? 3 : 2) * u;
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, TAU); ctx.stroke();
+      return true;
+    });
+    // a small golden arrow by the diver points to where the echo came from
+    if (so.arrow > 0 && diverMode) {
+      so.arrow -= dtSec;
+      const a = Math.min(1, so.arrow), d = 46 * u, x = diver.x + Math.cos(so.dir) * d, y = diver.y + Math.sin(so.dir) * d;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.save(); ctx.translate(x, y); ctx.rotate(so.dir);
+      ctx.beginPath(); ctx.moveTo(12 * u, 0); ctx.lineTo(-6 * u, -8 * u); ctx.lineTo(-1 * u, 0); ctx.lineTo(-6 * u, 8 * u); ctx.closePath();
+      ctx.fillStyle = `rgba(255,200,80,${a})`; ctx.fill();
+      ctx.strokeStyle = `rgba(90,60,10,${0.7 * a})`; ctx.lineWidth = 1.5 * u; ctx.stroke();
+      ctx.restore();
+    }
+    ctx.globalCompositeOperation = "source-over";
   }
 
   // ---- logbook pictures -------------------------------------------------------
