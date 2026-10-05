@@ -616,12 +616,12 @@
       for (const d of v.pod) {
         if (Math.random() < shinyChance("dolphins")) {
           d.shiny = "dolphins";
-          scene.shinies.push({ key: "dolphins", r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
+          scene.shinies.push({ key: "dolphins", temp: true, r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
         }
       }
     } else if (type !== "sub" && Math.random() < shinyChance(type)) {
       v.shiny = type;
-      scene.shinies.push({ key: type, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
+      scene.shinies.push({ key: type, temp: true, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
     }
   }
 

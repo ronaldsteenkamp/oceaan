@@ -673,7 +673,9 @@
           const dir = Math.random() < 0.5 ? 1 : -1, n = 8 + Math.floor(Math.random() * 7);
           Hh.logged = false;
           for (let i = 0; i < n; i++) {
-            Hh.list.push({ x: dir > 0 ? -20 * u - Math.random() * 260 * u : W + 20 * u + Math.random() * 260 * u, y: H * (0.08 + Math.random() * 0.2), dir, s: (9 + Math.random() * 3) * u, ph: Math.random() * TAU, sp: 0.8 + Math.random() * 0.5 });
+            const h = { x: dir > 0 ? -20 * u - Math.random() * 260 * u : W + 20 * u + Math.random() * 260 * u, y: H * (0.08 + Math.random() * 0.2), dir, s: (9 + Math.random() * 3) * u, ph: Math.random() * TAU, sp: 0.8 + Math.random() * 0.5 };
+            Hh.list.push(h);
+            maybeShiny("hatchlings", h, h.s, () => [h.x, h.cy || h.y], () => scene.hatch.list.includes(h));
           }
         }
       }
@@ -702,6 +704,14 @@
         }
       }
     }
+
+    // the giant squid can be shiny, rolled each time it reaches out of the deep
+    const Gs = S.giant;
+    if (Gs.active && !Gs.rolled) {
+      Gs.rolled = true;
+      maybeShiny("giant", Gs, 70 * u, () => { const T = Gs.list[1] || Gs.list[0]; return T ? [T.bx + Math.cos(T.ang) * T.len * 0.35 * Gs.reach, T.by + Math.sin(T.ang) * T.len * 0.35 * Gs.reach] : [-999, -999]; }, () => Gs.active && Gs.reach > 0.4);
+    }
+    if (!Gs.active) Gs.rolled = false;
 
     // a humpback sometimes sings while it swims past
     const v = S.visitor;
@@ -763,7 +773,8 @@
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
       if (!Hh.logged && h.x > 0 && h.x < W) { Hh.logged = true; seen("hatchlings"); }
-      drawHatchling(h.x, y, h.dir, h.s, h.ph);
+      h.cy = y;
+      shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
     }
   }

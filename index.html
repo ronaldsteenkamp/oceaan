@@ -191,6 +191,8 @@
   .card.shiny.on { border-color: rgba(255, 212, 121, 0.7); }
   .card.new { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
   .card .newtag { position: absolute; top: 9px; left: 9px; padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600; background: var(--accent); color: #04141f; }
+  h4.sub { margin: 14px 0 8px; font-size: 11.5px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.02em; }
+  h4.sub span { color: var(--text-faint); font-weight: 400; margin-left: 4px; }
   h3.newhead { margin-top: 0; color: var(--accent); }
   .badge .gift { font-style: normal; color: var(--gold); opacity: 0.8; }
   .sum.small { font-size: 11.5px; margin-top: 8px; }
@@ -548,14 +550,63 @@
     storm: "Onweer", eruption: "Vulkaanuitbarsting", task: "Alle zeepaardjes gevonden",
     mermaid: "Zeemeermin", kraken: "Kraken", ghost: "Spookschip", whalefall: "Walvisval",
   };
-  const LOG_GROUPS = [
-    ["Wateren", WATERS.map(w => "w:" + w.name)],
-    ["Bodem en vondsten", [...PROP_KEYS.slice(0, 2), "chest", "treasure", ...PROP_KEYS.slice(3)]],
-    ["Dieren", ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"]],
-    ["Bezoekers", VIS_KEYS],
-    ["Momenten", MOMENT_KEYS],
-    ["Zeldzaam", RARE_KEYS],
-  ];
+  // The logbook in a sensible order: each group is split into small families, from warm to cold, from fish to mammals.
+  const LOG_SUBS = {
+    "Wateren": [
+      ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
+      ["Koel en open", "Cool and open", ["w:kelpwoud", "w:noordzee", "w:sargasso"]],
+      ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
+    ],
+    "Bodem en vondsten": [
+      ["Natuur", "Nature", ["rocks", "arch", "canyon", "coral", "anemone", "sponges", "seagrass", "clam", "vent", "volcano", "brine"]],
+      ["Wrakken en scheepsspullen", "Wrecks and ship's gear", ["wreck", "plane", "car", "anchor", "cannon", "wheel", "bell", "helmet", "mine"]],
+      ["Schatten en vondsten", "Treasure and finds", ["chest", "treasure", "bottle", "skull", "amphora", "idol", "phonebox"]],
+      ["Oude beschavingen", "Ancient ruins", ["ruins", "statue", "city"]],
+    ],
+    "Dieren": [
+      ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels"]],
+      ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
+      ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
+      ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
+      ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
+      ["Zeesterren, egels en roggen", "Starfish, urchins and rays", ["starfish", "urchin", "slugs", "ray"]],
+      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "penguins"]],
+    ],
+    "Bezoekers": [
+      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
+      ["Roggen", "Rays", ["manta", "eagleray"]],
+      ["Reptielen", "Reptiles", ["turtle", "crocodile"]],
+      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "beluga", "narwhal", "humpback", "whale", "spermwhale"]],
+      ["Zeeleeuwen en zeekoeien", "Sea lions and manatees", ["sealion", "manatee"]],
+      ["Mensenwerk", "Made by people", ["sub"]],
+    ],
+    "Momenten": [
+      ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
+      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
+      ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
+      ["Speurtochten", "Quests", ["task"]],
+    ],
+    "Zeldzaam": [
+      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
+      ["Spoken", "Ghosts", ["ghost", "ghostdiver"]],
+      ["Wonderen", "Wonders", ["goldpearl", "whalefall", "aurora"]],
+    ],
+  };
+  const LOG_ALL = {
+    "Wateren": WATERS.map(w => "w:" + w.name),
+    "Bodem en vondsten": [...PROP_KEYS, "treasure"],
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"],
+    "Bezoekers": VIS_KEYS,
+    "Momenten": MOMENT_KEYS,
+    "Zeldzaam": RARE_KEYS,
+  };
+  // anything not placed in a family yet still shows, at the end of its group
+  for (const title in LOG_ALL) {
+    const placed = new Set(LOG_SUBS[title].flatMap(s => s[2]));
+    const rest = LOG_ALL[title].filter(k => !placed.has(k));
+    if (rest.length) LOG_SUBS[title].push(["Overig", "Other", rest]);
+  }
+  const LOG_GROUPS = Object.keys(LOG_SUBS).map(title => [title, LOG_SUBS[title].flatMap(s => s[2]), LOG_SUBS[title]]);
 
   // Shinies are rare colour variants with their own page in the logbook. The odds are set per kind of animal:
   // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
@@ -570,6 +621,7 @@
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
     kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
+    hatchlings: 300, eelmigration: 1200, giant: 150,
   };
   // shinies are five times easier to find than the base table above
   const SHINY_EASE = 5;
@@ -580,10 +632,22 @@
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver"];
-  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
+    "hatchlings", "eelmigration", "giant"];
+  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
+    hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
-  LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);
+  // the shinies follow the same order as the animals, visitors, moments and rare things
+  {
+    const subs = ["Dieren", "Bezoekers", "Momenten", "Zeldzaam"].map(title => {
+      const order = LOG_SUBS[title].flatMap(s => s[2]).filter(k => SHINY_KEYS.includes(k));
+      return [title, title, order.map(k => "shiny:" + k)];
+    }).filter(s => s[2].length);
+    const placed = new Set(subs.flatMap(s => s[2]));
+    const rest = SHINY_KEYS.map(k => "shiny:" + k).filter(k => !placed.has(k));
+    if (rest.length) subs.push(["Overig", "Other", rest]);
+    LOG_GROUPS.push(["Shiny", subs.flatMap(s => s[2]), subs]);
+  }
 
   const NAMES_EN = {
     "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest", "w:ijszee": "Polar sea",
@@ -615,7 +679,8 @@
     storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
     mermaid: "Mermaid", kraken: "Kraken", ghost: "Ghost ship", whalefall: "Whale fall",
   };
-  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin" };
+  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
+    hatchlings: "turtle hatchling", eelmigration: "glass eel", giant: "giant squid" };
   for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || NAMES_EN[k].toLowerCase());
   const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
   const groupName = title => L(title, GROUP_EN[title] || title);
@@ -2454,12 +2519,12 @@
       for (const d of v.pod) {
         if (Math.random() < shinyChance("dolphins")) {
           d.shiny = "dolphins";
-          scene.shinies.push({ key: "dolphins", r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
+          scene.shinies.push({ key: "dolphins", temp: true, r: size * d.sc * 0.3, alive, get: () => [v.x + d.dx * v.dir, v.y + d.dy + Math.sin(v.ph * 1.5 + d.ph) * 35 * u] });
         }
       }
     } else if (type !== "sub" && Math.random() < shinyChance(type)) {
       v.shiny = type;
-      scene.shinies.push({ key: type, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
+      scene.shinies.push({ key: type, temp: true, r: size * 0.3, alive, get: () => [v.x, v.y + v.yOff] });
     }
   }
 
@@ -4634,6 +4699,11 @@
     };
     B.att = Array.from({ length: 1 + Math.floor(Math.random() * 4) }, () => mk("dolphin", (70 + Math.random() * 20) * u));
     if (Math.random() < 0.6) B.att.push(mk("sail", 150 * u));
+    for (const a of B.att) maybeShiny(a.type === "sail" ? "swordfish" : "dolphins", a, a.L * 0.3, () => [a.x, a.y], () => scene.bait.active && scene.bait.att.includes(a));
+    for (const f of B.fish) {
+      f.shinyBase = hexHue("#cfd8dc");
+      maybeShiny("fish", f, 5 * u, () => [f.x || -999, f.y || -999], () => scene.bait.active && scene.bait.fish.includes(f));
+    }
     sfxWhistle();
   }
 
@@ -4678,17 +4748,18 @@
       if (eaten) { B.fish.splice(i, 1); continue; }
       f.ox *= Math.pow(0.95, k); f.oy *= Math.pow(0.95, k);
       f.ph += 0.4 * k;
-      drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false);
+      f.x = x; f.y = y;
+      shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
       const dir = Math.cos(a.ang) >= 0 ? 1 : -1, rel = Math.atan2(Math.sin(a.ang), Math.abs(Math.cos(a.ang)));
-      if (a.type === "dolphin") drawDolphin(a.x, a.y, dir, rel, a.L, a.ph);
-      else {
+      if (a.type === "dolphin") shinyDraw(a, () => drawDolphin(a.x, a.y, dir, rel, a.L, a.ph));
+      else shinyDraw(a, () => {
         ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(dir > 0 ? rel : -rel);
         drawSwordfish({ x: 0, y: 0, yOff: 0, dir, size: a.L, ph: a.ph });
         ctx.restore();
-      }
+      });
     }
   }
 
@@ -5196,13 +5267,15 @@
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
+  Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
   Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
-    scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
+    // only creatures that have really gone are tidied away; a kraken that is resting stays on the list
+    scene.shinies = scene.shinies.filter(e => e.obj !== obj && !(e.temp && e.alive && !e.alive()));
     delete obj.shiny;
-    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive }); }
+    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive, temp: true }); }
   }
 
   // ---- coming and going ----------------------------------------------------
@@ -6072,7 +6145,9 @@
           const dir = Math.random() < 0.5 ? 1 : -1, n = 8 + Math.floor(Math.random() * 7);
           Hh.logged = false;
           for (let i = 0; i < n; i++) {
-            Hh.list.push({ x: dir > 0 ? -20 * u - Math.random() * 260 * u : W + 20 * u + Math.random() * 260 * u, y: H * (0.08 + Math.random() * 0.2), dir, s: (9 + Math.random() * 3) * u, ph: Math.random() * TAU, sp: 0.8 + Math.random() * 0.5 });
+            const h = { x: dir > 0 ? -20 * u - Math.random() * 260 * u : W + 20 * u + Math.random() * 260 * u, y: H * (0.08 + Math.random() * 0.2), dir, s: (9 + Math.random() * 3) * u, ph: Math.random() * TAU, sp: 0.8 + Math.random() * 0.5 };
+            Hh.list.push(h);
+            maybeShiny("hatchlings", h, h.s, () => [h.x, h.cy || h.y], () => scene.hatch.list.includes(h));
           }
         }
       }
@@ -6101,6 +6176,14 @@
         }
       }
     }
+
+    // the giant squid can be shiny, rolled each time it reaches out of the deep
+    const Gs = S.giant;
+    if (Gs.active && !Gs.rolled) {
+      Gs.rolled = true;
+      maybeShiny("giant", Gs, 70 * u, () => { const T = Gs.list[1] || Gs.list[0]; return T ? [T.bx + Math.cos(T.ang) * T.len * 0.35 * Gs.reach, T.by + Math.sin(T.ang) * T.len * 0.35 * Gs.reach] : [-999, -999]; }, () => Gs.active && Gs.reach > 0.4);
+    }
+    if (!Gs.active) Gs.rolled = false;
 
     // a humpback sometimes sings while it swims past
     const v = S.visitor;
@@ -6162,7 +6245,8 @@
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
       if (!Hh.logged && h.x > 0 && h.x < W) { Hh.logged = true; seen("hatchlings"); }
-      drawHatchling(h.x, y, h.dir, h.s, h.ph);
+      h.cy = y;
+      shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
     }
   }
@@ -6790,7 +6874,11 @@
         if (claim(18)) {
           const dir = Math.random() < 0.5 ? 1 : -1, cy = H * (0.25 + Math.random() * 0.35);
           E.logged = false;
-          for (let i = 0; i < 40; i++) E.list.push({ x: dir > 0 ? -20 * u - i * 18 * u - Math.random() * 30 * u : W + 20 * u + i * 18 * u + Math.random() * 30 * u, y: cy + (Math.random() - 0.5) * 70 * u, dir, ph: Math.random() * TAU, s: (12 + Math.random() * 6) * u, sp: 1.2 + Math.random() * 0.5 });
+          for (let i = 0; i < 40; i++) {
+            const e = { x: dir > 0 ? -20 * u - i * 18 * u - Math.random() * 30 * u : W + 20 * u + i * 18 * u + Math.random() * 30 * u, y: cy + (Math.random() - 0.5) * 70 * u, dir, ph: Math.random() * TAU, s: (12 + Math.random() * 6) * u, sp: 1.2 + Math.random() * 0.5 };
+            E.list.push(e);
+            maybeShiny("eelmigration", e, 8 * u, () => [e.x, e.y], () => scene.eels.list.includes(e));
+          }
         }
       }
     }
@@ -6830,7 +6918,11 @@
     }
     if (C.queue.length) {
       C.next -= dtSec;
-      if (C.next <= 0) { const c = C.queue.shift(); c.x = c.dir > 0 ? -30 : W + 30; C.list.push(c); C.next = 0.25 + Math.random() * 0.35; }
+      if (C.next <= 0) {
+        const c = C.queue.shift(); c.x = c.dir > 0 ? -30 : W + 30; C.list.push(c); C.next = 0.25 + Math.random() * 0.35;
+        c.shinyBase = hexHue(c.color);
+        maybeShiny("crab", c, c.s * 0.8, () => [c.x, sandY(c.x) + 5 * u - c.s * 0.45], () => scene.march.list.includes(c));
+      }
     }
 
     // dolphins sometimes blow rings of air that wobble up to the surface
@@ -6869,11 +6961,13 @@
         const e = E.list[i];
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
         if (!E.logged && e.x > 0 && e.x < W) { E.logged = true; seen("eelmigration"); }
-        ctx.strokeStyle = "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
-        ctx.beginPath();
-        for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
-        ctx.stroke();
-        ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
+        shinyDraw(e, () => {
+          ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
+          ctx.beginPath();
+          for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+          ctx.stroke();
+          ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
+        });
         if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) E.list.splice(i, 1);
       }
     }
@@ -6882,7 +6976,7 @@
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
       if (!C.logged && c.x > 0 && c.x < W) { C.logged = true; seen("crabmarch"); }
-      drawCrab(c, k);
+      shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
       r.y -= 0.6 * u * k; r.ph += 0.08 * k; r.r += 0.03 * u * k;
@@ -7135,7 +7229,7 @@
     drawMoreMid(k);
     drawWave2Mid(k);
     if (S.station) drawStation(S.station, k);
-    if (S.giant.active) drawTentacleSet(S.giant, GIANT);
+    if (S.giant.active) shinyDraw(S.giant, () => drawTentacleSet(S.giant, GIANT));
     updateAndDrawSquids(k);
     updateFish(k);
     drawFish();
@@ -7409,10 +7503,16 @@
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();
-    for (const [title, allKeys] of logFilter === "album" ? [] : LOG_GROUPS) {
-      const keys = allKeys.filter(k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:")));
-      if (!keys.length) continue;
-      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
+    const show = k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:"));
+    for (const [title, allKeys, subs] of logFilter === "album" ? [] : LOG_GROUPS) {
+      if (!allKeys.some(show)) continue;
+      html += `<h3>${groupName(title)}</h3>`;
+      for (const [nl, en, keys] of subs) {
+        const vis = keys.filter(show);
+        if (!vis.length) continue;
+        const label = title === "Shiny" ? groupName(nl) : L(nl, en);
+        html += `<h4 class="sub">${label} <span>${vis.filter(k => logbook.has(k)).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
+      }
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>
       <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
@@ -7874,7 +7974,8 @@
   });
   panelBody.addEventListener("keydown", e => { if (e.target.id === "openCode" && e.key === "Enter") document.getElementById("openGo").click(); });
 
-  const AQ_GROUPS = [["Bodem en vondsten", PROP_KEYS], ["Dieren", LIFE_KEYS], ["Bezoekers", VIS_KEYS], ["Zeldzaam", RARE_KEYS]];
+  const inLogOrder = (title, keys) => groupKeys(title).filter(k => keys.includes(k)).concat(keys.filter(k => !groupKeys(title).includes(k)));
+  const AQ_GROUPS = [["Bodem en vondsten", inLogOrder("Bodem en vondsten", PROP_KEYS)], ["Dieren", inLogOrder("Dieren", LIFE_KEYS)], ["Bezoekers", inLogOrder("Bezoekers", VIS_KEYS)], ["Zeldzaam", inLogOrder("Zeldzaam", RARE_KEYS)]];
 
   function currentAsDraft() {
     const S = scene, set = new Set();
@@ -8243,7 +8344,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=16").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=17").catch(() => {}));
   }
 </script>
 </body>

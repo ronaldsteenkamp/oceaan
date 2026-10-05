@@ -72,13 +72,15 @@
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
+  Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
   Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
-    scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
+    // only creatures that have really gone are tidied away; a kraken that is resting stays on the list
+    scene.shinies = scene.shinies.filter(e => e.obj !== obj && !(e.temp && e.alive && !e.alive()));
     delete obj.shiny;
-    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive }); }
+    if (Math.random() < shinyChance(key)) { obj.shiny = key; scene.shinies.push({ key, obj, r, get, alive, temp: true }); }
   }
 
   // ---- coming and going ----------------------------------------------------

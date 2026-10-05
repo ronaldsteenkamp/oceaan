@@ -209,10 +209,16 @@
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();
-    for (const [title, allKeys] of logFilter === "album" ? [] : LOG_GROUPS) {
-      const keys = allKeys.filter(k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:")));
-      if (!keys.length) continue;
-      html += `<h3>${groupName(title)}</h3><div class="cards">` + keys.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
+    const show = k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:"));
+    for (const [title, allKeys, subs] of logFilter === "album" ? [] : LOG_GROUPS) {
+      if (!allKeys.some(show)) continue;
+      html += `<h3>${groupName(title)}</h3>`;
+      for (const [nl, en, keys] of subs) {
+        const vis = keys.filter(show);
+        if (!vis.length) continue;
+        const label = title === "Shiny" ? groupName(nl) : L(nl, en);
+        html += `<h4 class="sub">${label} <span>${vis.filter(k => logbook.has(k)).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
+      }
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>
       <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>

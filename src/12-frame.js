@@ -113,7 +113,7 @@
     drawMoreMid(k);
     drawWave2Mid(k);
     if (S.station) drawStation(S.station, k);
-    if (S.giant.active) drawTentacleSet(S.giant, GIANT);
+    if (S.giant.active) shinyDraw(S.giant, () => drawTentacleSet(S.giant, GIANT));
     updateAndDrawSquids(k);
     updateFish(k);
     drawFish();

@@ -348,6 +348,11 @@
     };
     B.att = Array.from({ length: 1 + Math.floor(Math.random() * 4) }, () => mk("dolphin", (70 + Math.random() * 20) * u));
     if (Math.random() < 0.6) B.att.push(mk("sail", 150 * u));
+    for (const a of B.att) maybeShiny(a.type === "sail" ? "swordfish" : "dolphins", a, a.L * 0.3, () => [a.x, a.y], () => scene.bait.active && scene.bait.att.includes(a));
+    for (const f of B.fish) {
+      f.shinyBase = hexHue("#cfd8dc");
+      maybeShiny("fish", f, 5 * u, () => [f.x || -999, f.y || -999], () => scene.bait.active && scene.bait.fish.includes(f));
+    }
     sfxWhistle();
   }
 
@@ -392,17 +397,18 @@
       if (eaten) { B.fish.splice(i, 1); continue; }
       f.ox *= Math.pow(0.95, k); f.oy *= Math.pow(0.95, k);
       f.ph += 0.4 * k;
-      drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false);
+      f.x = x; f.y = y;
+      shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
       const dir = Math.cos(a.ang) >= 0 ? 1 : -1, rel = Math.atan2(Math.sin(a.ang), Math.abs(Math.cos(a.ang)));
-      if (a.type === "dolphin") drawDolphin(a.x, a.y, dir, rel, a.L, a.ph);
-      else {
+      if (a.type === "dolphin") shinyDraw(a, () => drawDolphin(a.x, a.y, dir, rel, a.L, a.ph));
+      else shinyDraw(a, () => {
         ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(dir > 0 ? rel : -rel);
         drawSwordfish({ x: 0, y: 0, yOff: 0, dir, size: a.L, ph: a.ph });
         ctx.restore();
-      }
+      });
     }
   }
 

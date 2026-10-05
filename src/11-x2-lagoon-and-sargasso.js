@@ -476,7 +476,11 @@
         if (claim(18)) {
           const dir = Math.random() < 0.5 ? 1 : -1, cy = H * (0.25 + Math.random() * 0.35);
           E.logged = false;
-          for (let i = 0; i < 40; i++) E.list.push({ x: dir > 0 ? -20 * u - i * 18 * u - Math.random() * 30 * u : W + 20 * u + i * 18 * u + Math.random() * 30 * u, y: cy + (Math.random() - 0.5) * 70 * u, dir, ph: Math.random() * TAU, s: (12 + Math.random() * 6) * u, sp: 1.2 + Math.random() * 0.5 });
+          for (let i = 0; i < 40; i++) {
+            const e = { x: dir > 0 ? -20 * u - i * 18 * u - Math.random() * 30 * u : W + 20 * u + i * 18 * u + Math.random() * 30 * u, y: cy + (Math.random() - 0.5) * 70 * u, dir, ph: Math.random() * TAU, s: (12 + Math.random() * 6) * u, sp: 1.2 + Math.random() * 0.5 };
+            E.list.push(e);
+            maybeShiny("eelmigration", e, 8 * u, () => [e.x, e.y], () => scene.eels.list.includes(e));
+          }
         }
       }
     }
@@ -516,7 +520,11 @@
     }
     if (C.queue.length) {
       C.next -= dtSec;
-      if (C.next <= 0) { const c = C.queue.shift(); c.x = c.dir > 0 ? -30 : W + 30; C.list.push(c); C.next = 0.25 + Math.random() * 0.35; }
+      if (C.next <= 0) {
+        const c = C.queue.shift(); c.x = c.dir > 0 ? -30 : W + 30; C.list.push(c); C.next = 0.25 + Math.random() * 0.35;
+        c.shinyBase = hexHue(c.color);
+        maybeShiny("crab", c, c.s * 0.8, () => [c.x, sandY(c.x) + 5 * u - c.s * 0.45], () => scene.march.list.includes(c));
+      }
     }
 
     // dolphins sometimes blow rings of air that wobble up to the surface
@@ -555,11 +563,13 @@
         const e = E.list[i];
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
         if (!E.logged && e.x > 0 && e.x < W) { E.logged = true; seen("eelmigration"); }
-        ctx.strokeStyle = "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
-        ctx.beginPath();
-        for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
-        ctx.stroke();
-        ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
+        shinyDraw(e, () => {
+          ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
+          ctx.beginPath();
+          for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+          ctx.stroke();
+          ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
+        });
         if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) E.list.splice(i, 1);
       }
     }
@@ -568,7 +578,7 @@
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
       if (!C.logged && c.x > 0 && c.x < W) { C.logged = true; seen("crabmarch"); }
-      drawCrab(c, k);
+      shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
       r.y -= 0.6 * u * k; r.ph += 0.08 * k; r.r += 0.03 * u * k;

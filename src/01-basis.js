@@ -236,14 +236,63 @@
     storm: "Onweer", eruption: "Vulkaanuitbarsting", task: "Alle zeepaardjes gevonden",
     mermaid: "Zeemeermin", kraken: "Kraken", ghost: "Spookschip", whalefall: "Walvisval",
   };
-  const LOG_GROUPS = [
-    ["Wateren", WATERS.map(w => "w:" + w.name)],
-    ["Bodem en vondsten", [...PROP_KEYS.slice(0, 2), "chest", "treasure", ...PROP_KEYS.slice(3)]],
-    ["Dieren", ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"]],
-    ["Bezoekers", VIS_KEYS],
-    ["Momenten", MOMENT_KEYS],
-    ["Zeldzaam", RARE_KEYS],
-  ];
+  // The logbook in a sensible order: each group is split into small families, from warm to cold, from fish to mammals.
+  const LOG_SUBS = {
+    "Wateren": [
+      ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
+      ["Koel en open", "Cool and open", ["w:kelpwoud", "w:noordzee", "w:sargasso"]],
+      ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
+    ],
+    "Bodem en vondsten": [
+      ["Natuur", "Nature", ["rocks", "arch", "canyon", "coral", "anemone", "sponges", "seagrass", "clam", "vent", "volcano", "brine"]],
+      ["Wrakken en scheepsspullen", "Wrecks and ship's gear", ["wreck", "plane", "car", "anchor", "cannon", "wheel", "bell", "helmet", "mine"]],
+      ["Schatten en vondsten", "Treasure and finds", ["chest", "treasure", "bottle", "skull", "amphora", "idol", "phonebox"]],
+      ["Oude beschavingen", "Ancient ruins", ["ruins", "statue", "city"]],
+    ],
+    "Dieren": [
+      ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels"]],
+      ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
+      ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
+      ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
+      ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
+      ["Zeesterren, egels en roggen", "Starfish, urchins and rays", ["starfish", "urchin", "slugs", "ray"]],
+      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "penguins"]],
+    ],
+    "Bezoekers": [
+      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
+      ["Roggen", "Rays", ["manta", "eagleray"]],
+      ["Reptielen", "Reptiles", ["turtle", "crocodile"]],
+      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "beluga", "narwhal", "humpback", "whale", "spermwhale"]],
+      ["Zeeleeuwen en zeekoeien", "Sea lions and manatees", ["sealion", "manatee"]],
+      ["Mensenwerk", "Made by people", ["sub"]],
+    ],
+    "Momenten": [
+      ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
+      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
+      ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
+      ["Speurtochten", "Quests", ["task"]],
+    ],
+    "Zeldzaam": [
+      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
+      ["Spoken", "Ghosts", ["ghost", "ghostdiver"]],
+      ["Wonderen", "Wonders", ["goldpearl", "whalefall", "aurora"]],
+    ],
+  };
+  const LOG_ALL = {
+    "Wateren": WATERS.map(w => "w:" + w.name),
+    "Bodem en vondsten": [...PROP_KEYS, "treasure"],
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"],
+    "Bezoekers": VIS_KEYS,
+    "Momenten": MOMENT_KEYS,
+    "Zeldzaam": RARE_KEYS,
+  };
+  // anything not placed in a family yet still shows, at the end of its group
+  for (const title in LOG_ALL) {
+    const placed = new Set(LOG_SUBS[title].flatMap(s => s[2]));
+    const rest = LOG_ALL[title].filter(k => !placed.has(k));
+    if (rest.length) LOG_SUBS[title].push(["Overig", "Other", rest]);
+  }
+  const LOG_GROUPS = Object.keys(LOG_SUBS).map(title => [title, LOG_SUBS[title].flatMap(s => s[2]), LOG_SUBS[title]]);
 
   // Shinies are rare colour variants with their own page in the logbook. The odds are set per kind of animal:
   // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
@@ -258,6 +307,7 @@
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
     kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
+    hatchlings: 300, eelmigration: 1200, giant: 150,
   };
   // shinies are five times easier to find than the base table above
   const SHINY_EASE = 5;
@@ -268,10 +318,22 @@
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver"];
-  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
+    "hatchlings", "eelmigration", "giant"];
+  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
+    hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
-  LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);
+  // the shinies follow the same order as the animals, visitors, moments and rare things
+  {
+    const subs = ["Dieren", "Bezoekers", "Momenten", "Zeldzaam"].map(title => {
+      const order = LOG_SUBS[title].flatMap(s => s[2]).filter(k => SHINY_KEYS.includes(k));
+      return [title, title, order.map(k => "shiny:" + k)];
+    }).filter(s => s[2].length);
+    const placed = new Set(subs.flatMap(s => s[2]));
+    const rest = SHINY_KEYS.map(k => "shiny:" + k).filter(k => !placed.has(k));
+    if (rest.length) subs.push(["Overig", "Other", rest]);
+    LOG_GROUPS.push(["Shiny", subs.flatMap(s => s[2]), subs]);
+  }
 
   const NAMES_EN = {
     "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest", "w:ijszee": "Polar sea",
@@ -303,7 +365,8 @@
     storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
     mermaid: "Mermaid", kraken: "Kraken", ghost: "Ghost ship", whalefall: "Whale fall",
   };
-  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin" };
+  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
+    hatchlings: "turtle hatchling", eelmigration: "glass eel", giant: "giant squid" };
   for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || NAMES_EN[k].toLowerCase());
   const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
   const groupName = title => L(title, GROUP_EN[title] || title);
