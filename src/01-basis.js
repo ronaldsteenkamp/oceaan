@@ -250,7 +250,10 @@
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
   };
-  const shinyChance = key => 1 / (SHINY_N[key] || 1000);
+  // shinies are five times easier to find than the base table above
+  const SHINY_EASE = 5;
+  for (const k in SHINY_N) SHINY_N[k] = Math.max(20, Math.round(SHINY_N[k] / SHINY_EASE));
+  const shinyChance = key => 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
