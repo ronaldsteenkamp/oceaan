@@ -399,11 +399,13 @@
       f.ox *= Math.pow(0.95, k); f.oy *= Math.pow(0.95, k);
       f.ph += 0.4 * k;
       f.x = x; f.y = y;
+      if (!B.fishSeen && i % 4 === 0 && lit(x, y, 4 * u)) { B.fishSeen = true; sight("fish"); }
       shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
       const dir = Math.cos(a.ang) >= 0 ? 1 : -1, rel = Math.atan2(Math.sin(a.ang), Math.abs(Math.cos(a.ang)));
+      if (lit(a.x, a.y, a.L * 0.3)) sight(a.type === "sail" ? "swordfish" : "dolphins");
       if (a.type === "dolphin") shinyDraw(a, () => drawDolphin(a.x, a.y, dir, rel, a.L, a.ph));
       else shinyDraw(a, () => {
         ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(dir > 0 ? rel : -rel);
@@ -473,7 +475,7 @@
     if (!st.active) {
       st.timer -= dtSec;
       if (st.timer <= 0) {
-        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active ? [diver.x, diver.y] : null); }
+        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active && diverMode ? [diver.x, diver.y] : null); }
         else st.timer = 10 + Math.random() * 10;
       }
     } else {

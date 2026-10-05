@@ -291,6 +291,16 @@
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + Math.cos(th - spr) * len, ly + Math.sin(th - spr) * len); ctx.lineTo(lx + Math.cos(th + spr) * len, ly + Math.sin(th + spr) * len); ctx.closePath(); ctx.fill();
       glow(lx, ly, 10 * u, "255,248,220", 0.7);
     }
+    const sl = subLamp();
+    if (sl) {
+      const strength = 0.07 + 0.25 * Math.max(night, water.glow ? 0.8 : 0);
+      const g3 = ctx.createLinearGradient(sl.x, sl.y, sl.x + Math.cos(sl.th) * sl.len, sl.y + Math.sin(sl.th) * sl.len);
+      g3.addColorStop(0, `rgba(255,244,200,${strength})`);
+      g3.addColorStop(1, "rgba(255,244,200,0)");
+      ctx.fillStyle = g3;
+      ctx.beginPath(); ctx.moveTo(sl.x, sl.y); ctx.lineTo(sl.x + Math.cos(sl.th - sl.half) * sl.len, sl.y + Math.sin(sl.th - sl.half) * sl.len); ctx.lineTo(sl.x + Math.cos(sl.th + sl.half) * sl.len, sl.y + Math.sin(sl.th + sl.half) * sl.len); ctx.closePath(); ctx.fill();
+      glow(sl.x, sl.y, 9 * u, "255,244,200", 0.7);
+    }
     ctx.globalCompositeOperation = "source-over";
   }
 

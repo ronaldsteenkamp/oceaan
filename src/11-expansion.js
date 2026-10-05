@@ -647,7 +647,7 @@
       }
     }
     if (S.jellies.some(j => j.bloom)) {
-      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); }
+      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); sight("jelly"); }
       S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
@@ -656,7 +656,7 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active ? [diver.x, diver.y] : null); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && diverMode ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
         if (G.age > 35) G.active = false;
@@ -772,7 +772,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); }
+      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);

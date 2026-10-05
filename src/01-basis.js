@@ -396,10 +396,27 @@
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
     fresh.add(key); saveFresh();
-    if (LOUD.has(key)) toast(L("Nieuw in je logboek: ", "New in your logbook: ") + nm(key));
+    announceNew(key);
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
     if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderPanel();
+  }
+
+  // Every new find gets a message; finds that come in together share one message, so none get lost.
+  let newBatch = [], newTimer = null;
+  function announceNew(key) {
+    newBatch.push(nm(key));
+    clearTimeout(newTimer);
+    newTimer = setTimeout(() => {
+      const names = newBatch;
+      newBatch = [];
+      if (!names.length) return;
+      let list;
+      if (names.length > 4) list = names.slice(0, 3).join(", ") + L(` en nog ${names.length - 3}`, ` and ${names.length - 3} more`);
+      else if (names.length > 1) list = names.slice(0, -1).join(", ") + L(" en ", " and ") + names[names.length - 1];
+      else list = names[0];
+      toast(L("Nieuw in je logboek: ", "New in your logbook: ") + list);
+    }, 700);
   }
 
   // Milestones unlock small rewards: a coloured book, new fins and a golden tank for the diver.

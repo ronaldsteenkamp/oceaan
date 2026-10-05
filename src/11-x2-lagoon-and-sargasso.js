@@ -494,7 +494,7 @@
       if (Q.timer <= 0) {
         Q.timer = 220 + Math.random() * 200;
         if (claim(8)) {
-          Q.age = 0; watch("quake", () => Q.age >= 0 ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
+          Q.age = 0; watch("quake", () => Q.age >= 0 && diverMode ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
           for (const sp of S.species) for (const f of sp.fish) { f.vx += (Math.random() - 0.5) * 6 * u; f.vy += (Math.random() - 0.5) * 3 * u; }
         }
       }
@@ -578,7 +578,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
-      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); }
+      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {

@@ -717,10 +717,27 @@
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
     fresh.add(key); saveFresh();
-    if (LOUD.has(key)) toast(L("Nieuw in je logboek: ", "New in your logbook: ") + nm(key));
+    announceNew(key);
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
     if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderPanel();
+  }
+
+  // Every new find gets a message; finds that come in together share one message, so none get lost.
+  let newBatch = [], newTimer = null;
+  function announceNew(key) {
+    newBatch.push(nm(key));
+    clearTimeout(newTimer);
+    newTimer = setTimeout(() => {
+      const names = newBatch;
+      newBatch = [];
+      if (!names.length) return;
+      let list;
+      if (names.length > 4) list = names.slice(0, 3).join(", ") + L(` en nog ${names.length - 3}`, ` and ${names.length - 3} more`);
+      else if (names.length > 1) list = names.slice(0, -1).join(", ") + L(" en ", " and ") + names[names.length - 1];
+      else list = names[0];
+      toast(L("Nieuw in je logboek: ", "New in your logbook: ") + list);
+    }, 700);
   }
 
   // Milestones unlock small rewards: a coloured book, new fins and a golden tank for the diver.
@@ -852,14 +869,34 @@
     const big = rewards.has("m75");
     return { len: (big ? 340 : 240) * u, half: big ? 0.62 : 0.46, near: 46 * u };
   }
-  function lit(x, y, r = 0) {
-    if (!diverMode || !isFinite(x) || !isFinite(y)) return false;
-    const dx = x - diver.x, dy = y - diver.y, d = Math.hypot(dx, dy), c = lightCone();
-    if (d < c.near + r) return true;
-    if (d > c.len + r) return false;
-    let a = Math.atan2(dy, dx) - diver.heading;
+  function inBeam(x, y, r, ox, oy, th, len, half, nearR) {
+    const dx = x - ox, dy = y - oy, d = Math.hypot(dx, dy);
+    if (d < nearR + r) return true;
+    if (d > len + r) return false;
+    let a = Math.atan2(dy, dx) - th;
     a = Math.atan2(Math.sin(a), Math.cos(a));
-    return Math.abs(a) < c.half + Math.atan2(r, Math.max(d, 1));
+    return Math.abs(a) < half + Math.atan2(r, Math.max(d, 1));
+  }
+  // A passing submarine shines a searchlight ahead of it, a little downwards.
+  function subLamp() {
+    const v = scene && scene.visitor;
+    if (!v || v.type !== "sub") return null;
+    const L = v.size;
+    return { x: v.x + v.dir * L * 0.46, y: v.y + v.yOff + L * 0.03, th: v.dir > 0 ? 0.3 : Math.PI - 0.3, len: 330 * u, half: 0.3 };
+  }
+  // Is a spot in the diver's lamp, or in the submarine's searchlight?
+  function lit(x, y, r = 0) {
+    if (!isFinite(x) || !isFinite(y)) return false;
+    if (diverMode) { const c = lightCone(); if (inBeam(x, y, r, diver.x, diver.y, diver.heading, c.len, c.half, c.near)) return true; }
+    const s = subLamp();
+    return !!s && inBeam(x, y, r, s.x, s.y, s.th, s.len, s.half, 0);
+  }
+  // Animals seen during a moment go into the logbook as their own kind, once per ocean.
+  function sight(key) {
+    if (!scene.sighted) scene.sighted = new Set();
+    if (scene.sighted.has(key)) return;
+    scene.sighted.add(key);
+    seen(key);
   }
   // Something in the ocean that is waiting for the lamp. get() gives one point or a list of points (or nothing yet).
   function watch(key, get, r = 0) {
@@ -867,7 +904,7 @@
     scene.watch.push({ key, get, r });
   }
   function checkWatch() {
-    if (!diverMode || !scene.watch.length) return;
+    if ((!diverMode && !subLamp()) || !scene.watch.length) return;
     scene.watch = scene.watch.filter(w => {
       let pts;
       try { pts = w.get(); } catch (e) { return false; }
@@ -1207,7 +1244,7 @@
 
     s.watch = [];
     // the water itself is logged as soon as the diver goes in
-    watch("w:" + water.name, () => [diver.x, diver.y]);
+    watch("w:" + water.name, () => diverMode ? [diver.x, diver.y] : null);
     for (const g of s.ground) watch(g.kind, () => [g.x, sandY(g.x) - (g.s || 20 * u) * 0.5], Math.min(g.w * 0.35, 120 * u));
     if (s.canyon) watch("canyon", () => { const x = s.canyon.x0 + s.canyon.side * 150 * u; return [x, sandY(x) - 60 * u]; }, 80 * u);
     const clownHome = s.ground.find(g => g.kind === "anemone" && g.clown);
@@ -1215,7 +1252,7 @@
     watch("fish", () => s.species.filter(sp => !sp.lantern).flatMap(sp => sp.fish.filter((f, i) => i % 3 === 0).map(f => [f.x, f.y])), 6 * u);
     if (s.jellies.length) watch("jelly", () => s.jellies.map(j => [j.x, j.y]), 15 * u);
     const lifeNow = presentLife(s), where = lifePoints(s);
-    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => [diver.x, diver.y]), 14 * u);
+    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => diverMode ? [diver.x, diver.y] : null), 14 * u);
     if (s.station) watch("grouper", () => [s.station.grouper.x, s.station.grouper.y], 20 * u);
     if (s.ghost) watch("ghost", () => [s.ghost.x, s.ghost.y], 90 * u);
     registerShinies(s);
@@ -4283,6 +4320,16 @@
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + Math.cos(th - spr) * len, ly + Math.sin(th - spr) * len); ctx.lineTo(lx + Math.cos(th + spr) * len, ly + Math.sin(th + spr) * len); ctx.closePath(); ctx.fill();
       glow(lx, ly, 10 * u, "255,248,220", 0.7);
     }
+    const sl = subLamp();
+    if (sl) {
+      const strength = 0.07 + 0.25 * Math.max(night, water.glow ? 0.8 : 0);
+      const g3 = ctx.createLinearGradient(sl.x, sl.y, sl.x + Math.cos(sl.th) * sl.len, sl.y + Math.sin(sl.th) * sl.len);
+      g3.addColorStop(0, `rgba(255,244,200,${strength})`);
+      g3.addColorStop(1, "rgba(255,244,200,0)");
+      ctx.fillStyle = g3;
+      ctx.beginPath(); ctx.moveTo(sl.x, sl.y); ctx.lineTo(sl.x + Math.cos(sl.th - sl.half) * sl.len, sl.y + Math.sin(sl.th - sl.half) * sl.len); ctx.lineTo(sl.x + Math.cos(sl.th + sl.half) * sl.len, sl.y + Math.sin(sl.th + sl.half) * sl.len); ctx.closePath(); ctx.fill();
+      glow(sl.x, sl.y, 9 * u, "255,244,200", 0.7);
+    }
     ctx.globalCompositeOperation = "source-over";
   }
 
@@ -4825,11 +4872,13 @@
       f.ox *= Math.pow(0.95, k); f.oy *= Math.pow(0.95, k);
       f.ph += 0.4 * k;
       f.x = x; f.y = y;
+      if (!B.fishSeen && i % 4 === 0 && lit(x, y, 4 * u)) { B.fishSeen = true; sight("fish"); }
       shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
       const dir = Math.cos(a.ang) >= 0 ? 1 : -1, rel = Math.atan2(Math.sin(a.ang), Math.abs(Math.cos(a.ang)));
+      if (lit(a.x, a.y, a.L * 0.3)) sight(a.type === "sail" ? "swordfish" : "dolphins");
       if (a.type === "dolphin") shinyDraw(a, () => drawDolphin(a.x, a.y, dir, rel, a.L, a.ph));
       else shinyDraw(a, () => {
         ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(dir > 0 ? rel : -rel);
@@ -4899,7 +4948,7 @@
     if (!st.active) {
       st.timer -= dtSec;
       if (st.timer <= 0) {
-        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active ? [diver.x, diver.y] : null); }
+        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active && diverMode ? [diver.x, diver.y] : null); }
         else st.timer = 10 + Math.random() * 10;
       }
     } else {
@@ -6199,7 +6248,7 @@
       }
     }
     if (S.jellies.some(j => j.bloom)) {
-      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); }
+      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); sight("jelly"); }
       S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
@@ -6208,7 +6257,7 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active ? [diver.x, diver.y] : null); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && diverMode ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
         if (G.age > 35) G.active = false;
@@ -6324,7 +6373,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); }
+      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
@@ -6972,7 +7021,7 @@
       if (Q.timer <= 0) {
         Q.timer = 220 + Math.random() * 200;
         if (claim(8)) {
-          Q.age = 0; watch("quake", () => Q.age >= 0 ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
+          Q.age = 0; watch("quake", () => Q.age >= 0 && diverMode ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
           for (const sp of S.species) for (const f of sp.fish) { f.vx += (Math.random() - 0.5) * 6 * u; f.vy += (Math.random() - 0.5) * 3 * u; }
         }
       }
@@ -7056,7 +7105,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
-      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); }
+      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
@@ -8563,7 +8612,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=23").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=24").catch(() => {}));
   }
 </script>
 </body>

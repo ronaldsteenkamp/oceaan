@@ -15,14 +15,34 @@
     const big = rewards.has("m75");
     return { len: (big ? 340 : 240) * u, half: big ? 0.62 : 0.46, near: 46 * u };
   }
-  function lit(x, y, r = 0) {
-    if (!diverMode || !isFinite(x) || !isFinite(y)) return false;
-    const dx = x - diver.x, dy = y - diver.y, d = Math.hypot(dx, dy), c = lightCone();
-    if (d < c.near + r) return true;
-    if (d > c.len + r) return false;
-    let a = Math.atan2(dy, dx) - diver.heading;
+  function inBeam(x, y, r, ox, oy, th, len, half, nearR) {
+    const dx = x - ox, dy = y - oy, d = Math.hypot(dx, dy);
+    if (d < nearR + r) return true;
+    if (d > len + r) return false;
+    let a = Math.atan2(dy, dx) - th;
     a = Math.atan2(Math.sin(a), Math.cos(a));
-    return Math.abs(a) < c.half + Math.atan2(r, Math.max(d, 1));
+    return Math.abs(a) < half + Math.atan2(r, Math.max(d, 1));
+  }
+  // A passing submarine shines a searchlight ahead of it, a little downwards.
+  function subLamp() {
+    const v = scene && scene.visitor;
+    if (!v || v.type !== "sub") return null;
+    const L = v.size;
+    return { x: v.x + v.dir * L * 0.46, y: v.y + v.yOff + L * 0.03, th: v.dir > 0 ? 0.3 : Math.PI - 0.3, len: 330 * u, half: 0.3 };
+  }
+  // Is a spot in the diver's lamp, or in the submarine's searchlight?
+  function lit(x, y, r = 0) {
+    if (!isFinite(x) || !isFinite(y)) return false;
+    if (diverMode) { const c = lightCone(); if (inBeam(x, y, r, diver.x, diver.y, diver.heading, c.len, c.half, c.near)) return true; }
+    const s = subLamp();
+    return !!s && inBeam(x, y, r, s.x, s.y, s.th, s.len, s.half, 0);
+  }
+  // Animals seen during a moment go into the logbook as their own kind, once per ocean.
+  function sight(key) {
+    if (!scene.sighted) scene.sighted = new Set();
+    if (scene.sighted.has(key)) return;
+    scene.sighted.add(key);
+    seen(key);
   }
   // Something in the ocean that is waiting for the lamp. get() gives one point or a list of points (or nothing yet).
   function watch(key, get, r = 0) {
@@ -30,7 +50,7 @@
     scene.watch.push({ key, get, r });
   }
   function checkWatch() {
-    if (!diverMode || !scene.watch.length) return;
+    if ((!diverMode && !subLamp()) || !scene.watch.length) return;
     scene.watch = scene.watch.filter(w => {
       let pts;
       try { pts = w.get(); } catch (e) { return false; }
@@ -370,7 +390,7 @@
 
     s.watch = [];
     // the water itself is logged as soon as the diver goes in
-    watch("w:" + water.name, () => [diver.x, diver.y]);
+    watch("w:" + water.name, () => diverMode ? [diver.x, diver.y] : null);
     for (const g of s.ground) watch(g.kind, () => [g.x, sandY(g.x) - (g.s || 20 * u) * 0.5], Math.min(g.w * 0.35, 120 * u));
     if (s.canyon) watch("canyon", () => { const x = s.canyon.x0 + s.canyon.side * 150 * u; return [x, sandY(x) - 60 * u]; }, 80 * u);
     const clownHome = s.ground.find(g => g.kind === "anemone" && g.clown);
@@ -378,7 +398,7 @@
     watch("fish", () => s.species.filter(sp => !sp.lantern).flatMap(sp => sp.fish.filter((f, i) => i % 3 === 0).map(f => [f.x, f.y])), 6 * u);
     if (s.jellies.length) watch("jelly", () => s.jellies.map(j => [j.x, j.y]), 15 * u);
     const lifeNow = presentLife(s), where = lifePoints(s);
-    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => [diver.x, diver.y]), 14 * u);
+    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => diverMode ? [diver.x, diver.y] : null), 14 * u);
     if (s.station) watch("grouper", () => [s.station.grouper.x, s.station.grouper.y], 20 * u);
     if (s.ghost) watch("ghost", () => [s.ghost.x, s.ghost.y], 90 * u);
     registerShinies(s);
