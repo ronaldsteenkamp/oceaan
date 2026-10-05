@@ -67,6 +67,8 @@
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     font-size: 12px; color: var(--text-dim); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55); pointer-events: none;
   }
+  #seed, #clock, #rare { display: none; }
+  #biome { color: var(--text); font-weight: 500; }
   #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
   #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }
   #rare {
@@ -259,6 +261,7 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <p id="sceneDesc" class="sr-only" aria-live="polite"></p>
 <div class="status">
+  <span id="biome"></span>
   <span id="seed"><span id="seedLabel">Oceaan</span> <b>—</b></span>
   <span id="clock"></span>
   <span id="rare" hidden></span>
@@ -310,6 +313,7 @@
   const canvas = document.getElementById("c");
   let ctx = canvas.getContext("2d");
   const seedEl = document.querySelector("#seed b");
+  const biomeEl = document.getElementById("biome");
   const rareEl = document.getElementById("rare");
   const soundBtn = document.getElementById("sound");
   const clockEl = document.getElementById("clock");
@@ -505,6 +509,13 @@
   const W3_RARE = ["aurora", "mobydick", "ghostdiver"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE);
+  // Only a few oceans hold something rare, and every rare thing has its own waters.
+  const RARE_RATE = 0.06;
+  const RARES_BY_WATER = {
+    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
+    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["aurora", "mobydick"],
+    mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
+  };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
     "eelmigration", "quake", "crabmarch", "bubblerings"];
   const NAMES = {
@@ -558,6 +569,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
   };
   // shinies are five times easier to find than the base table above
   const SHINY_EASE = 5;
@@ -567,7 +579,8 @@
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
-    "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale"];
+    "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);
@@ -858,10 +871,9 @@
     }
     if (aquarium) s.rares = RARE_KEYS.filter(k => aquarium.set.has(k));
     else {
-      const rr = rng();
-      s.rares = rr < 0.06 ? ["mermaid"] : rr < 0.12 ? ["kraken"] : rr < 0.18 ? ["ghost"] : rr < 0.23 ? ["whalefall"]
-        : rr < 0.27 ? ["serpent"] : rr < 0.31 ? ["megalodon"] : rr < 0.34 ? ["goldpearl"]
-        : rr < 0.37 ? (water.surface ? ["aurora"] : []) : rr < 0.40 ? ["mobydick"] : rr < 0.43 ? ["ghostdiver"] : [];
+      const rr = rng(), list = RARES_BY_WATER[water.name] || [];
+      s.rares = rr < RARE_RATE && list.length ? [list[Math.min(list.length - 1, Math.floor(rr / RARE_RATE * list.length))]] : [];
+      if (s.rares[0] === "aurora" && !water.surface) s.rares = [];
     }
     s.rare = s.rares[0] || null;
 
@@ -1109,6 +1121,7 @@
     rng = mulberry32(seed);
     buildScene();
     seedEl.textContent = seed + (aquarium ? " · aquarium" : "");
+    biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
     rareEl.hidden = !scene.rare;
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
@@ -4106,7 +4119,7 @@
       glow(lx, ly, v.size * 0.12, "255,245,210", 0.6);
     }
     if (S.boat && night > 0.2) glow(S.boat.x, waveY(S.boat.x) - 2 * u, 40 * u, "255,210,140", 0.5 * night);
-    if (S.ghost) drawGhost(k);
+    if (S.ghost) shinyDraw(S.ghost, () => drawGhost(k));
     if (S.kraken.active && S.kraken.eye) glow(S.kraken.eye.x, S.kraken.eye.y, 90 * u, "255,200,60", 0.35 * S.kraken.reach);
     drawShinies();
     for (const g of S.ground) {
@@ -5158,6 +5171,7 @@
     }
     registerMoreShinies(s, add, tag);
     registerWave2Shinies(s, add);
+    registerRareShinies(s, add);
     s.shinies = list;
   }
 
@@ -5167,6 +5181,23 @@
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
     whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
+  // The rare things can be shiny too; they are rolled with the ocean, so a shared seed keeps them.
+  function registerRareShinies(s, add) {
+    const R = s.rares;
+    if (R.includes("kraken")) add("kraken", s.kraken, 70 * u, () => s.kraken.eye ? [s.kraken.eye.x, s.kraken.eye.y] : [W / 2, H + 100], () => s.kraken.active && s.kraken.reach > 0.4);
+    if (R.includes("ghost") && s.ghost) add("ghost", s.ghost, 90 * u, () => [s.ghost.x, s.ghost.y]);
+    for (const g of s.ground) {
+      if (g.kind === "whalefall") add("whalefall", g, g.w * 0.3, () => [g.x, sandY(g.x) - 15 * u]);
+      if (g.kind === "clam" && g.pearl === "gold") add("goldpearl", g, g.s, () => [g.x, sandY(g.x) - g.s * 0.4], () => g.pearl === "gold");
+    }
+    if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
+    if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
+    if (s.aurora) add("aurora", s.aurora, 80 * u, () => [W / 2, H * 0.12], () => night > 0.5);
+    if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
+    if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
+  }
+  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
+
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
     scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
@@ -5269,13 +5300,21 @@
   }
 
   // A shiny creature is drawn into a spare layer, recoloured there, and then put back.
+  // The spare layers match whatever is being drawn on: the ocean itself, or a small logbook picture.
   let shinyA = null, shinyB = null, shinyMain = null;
+  const shinyBufs = new Map();
   function beginShiny() {
-    if (shinyMain || !canvas.width) return false;
-    if (!shinyA || shinyA.width !== canvas.width || shinyA.height !== canvas.height) {
-      shinyA = document.createElement("canvas"); shinyB = document.createElement("canvas");
-      shinyA.width = shinyB.width = canvas.width; shinyA.height = shinyB.height = canvas.height;
+    const target = ctx.canvas;
+    if (shinyMain || !target || !target.width || !target.height) return false;
+    const key = target.width + "x" + target.height;
+    let bufs = shinyBufs.get(key);
+    if (!bufs) {
+      if (shinyBufs.size > 3) shinyBufs.clear();
+      bufs = [document.createElement("canvas"), document.createElement("canvas")];
+      for (const c of bufs) { c.width = target.width; c.height = target.height; }
+      shinyBufs.set(key, bufs);
     }
+    [shinyA, shinyB] = bufs;
     const a = shinyA.getContext("2d");
     a.setTransform(1, 0, 0, 1, 0, 0);
     a.clearRect(0, 0, shinyA.width, shinyA.height);
@@ -6150,6 +6189,7 @@
     ctx.strokeStyle = belly;
     for (let i = n - 1; i >= 0; i--) { const w = width(i); ctx.lineWidth = w * 0.3; ctx.beginPath(); ctx.moveTo(pts[i][0], pts[i][1] + w * 0.25); ctx.lineTo(pts[i + 1][0], pts[i + 1][1] + w * 0.25); ctx.stroke(); }
     const [hx, hy] = pts[0], ang = Math.atan2(pts[0][1] - pts[1][1], pts[0][0] - pts[1][0]);
+    Sp.hx = hx; Sp.hy = hy;
     ctx.save(); ctx.translate(hx, hy); ctx.rotate(ang); if (Math.cos(ang) < 0) ctx.scale(1, -1);
     ctx.fillStyle = green; ctx.beginPath(); ctx.ellipse(10 * sc, 0, 26 * sc, 15 * sc, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = fin; ctx.beginPath(); ctx.moveTo(-4 * sc, -12 * sc); ctx.lineTo(-18 * sc, -28 * sc); ctx.lineTo(6 * sc, -13 * sc); ctx.fill();
@@ -6855,7 +6895,7 @@
       ctx.beginPath(); ctx.ellipse(r.x, r.y - h * 0.3, w * 0.8, h * 0.6, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
       return true;
     });
-    if (S.ghostDiver) drawGhostDiver(S.ghostDiver, k);
+    if (S.ghostDiver) shinyDraw(S.ghostDiver, () => drawGhostDiver(S.ghostDiver, k));
   }
 
   // Moby Dick: a white sperm whale glides past, far away.
@@ -6890,6 +6930,7 @@
     if (g.x > W + 60 * u) g.x = -60 * u;
     if (g.x < -60 * u) g.x = W + 60 * u;
     const y = g.y + Math.sin(g.ph * 0.8) * 16 * u, a = 0.18 + 0.1 * Math.sin(t * 1.1) + 0.2 * night;
+    g.cy = y;
     ctx.globalCompositeOperation = "lighter";
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
@@ -6911,9 +6952,10 @@
       if (a < 0.01) continue;
       const len = h * (0.5 + 0.5 * Math.sin(x * 0.01 + t * 0.3));
       const g = ctx.createLinearGradient(0, 0, 0, len);
-      g.addColorStop(0, `rgba(120,255,170,${a})`);
-      g.addColorStop(0.6, `rgba(150,120,255,${a * 0.6})`);
-      g.addColorStop(1, "rgba(150,120,255,0)");
+      const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["120,255,170", "150,120,255"];
+      g.addColorStop(0, `rgba(${c1},${a})`);
+      g.addColorStop(0.6, `rgba(${c2},${a * 0.6})`);
+      g.addColorStop(1, `rgba(${c2},0)`);
       ctx.fillStyle = g;
       ctx.fillRect(x, 0, 6 * u, len);
     }
@@ -7062,8 +7104,8 @@
     updateVisitor(k, dtSec);
     const v = S.visitor;
     if (v && v.type === "whale") shinyDraw(v, () => drawWhale(v));
-    drawMegalodon(k);
-    drawMoby(k);
+    shinyDraw(S.megalodon, () => drawMegalodon(k));
+    shinyDraw(S.moby, () => drawMoby(k));
 
     drawSnow(k);
     drawKelp(S.kelpBack, 0.7);
@@ -7071,7 +7113,7 @@
     drawHidden(k);
     drawAbyss(k);
     staticLayer("back");
-    for (const g of S.ground) if (!STATIC.has(g.kind) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") GROUND_DRAW[g.kind](g, k);
+    for (const g of S.ground) if (!STATIC.has(g.kind) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") shinyDraw(g, () => GROUND_DRAW[g.kind](g, k));
     staticLayer("lip");
     for (const g of S.ground) if (g.kind === "brine") drawBrine(g);
     drawTreasureMound();
@@ -7107,13 +7149,13 @@
     updateAndDrawJellies(k);
     drawCombs(k, false);
     drawHatchlings(k);
-    drawSerpent(k);
+    shinyDraw(S.serpent, () => drawSerpent(k));
     drawSongRings(k);
     drawWave2Front(k);
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
-    if (S.kraken.active) drawTentacleSet(S.kraken, KRAKEN);
+    if (S.kraken.active) shinyDraw(S.kraken, () => drawTentacleSet(S.kraken, KRAKEN));
     drawInk(k);
     updateAndDrawFood(k);
     updateAndDrawCoins(k);
@@ -7693,7 +7735,8 @@
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:")
-      ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} of these animals looks like this. `) + (facts[base] || "")
+      ? (RARE_KEYS.includes(base) ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} keer ziet het er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} times it looks like this. `)
+        : L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} of these animals looks like this. `)) + (facts[base] || "")
       : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
@@ -7728,27 +7771,30 @@
     baitball: "gebeurt af en toe, in elk water behalve de diepzee", spawning: "scholen leggen af en toe eitjes",
     coralspawn: "op een volle-maannacht bij het koraal", storm: "trekt af en toe over wateren met een oppervlak",
     eruption: "wacht bij de onderzeese vulkaan", task: "zoek de drie zeepaardjes die in de kelp verstopt zitten",
-    mermaid: "zeldzaam, ongeveer 1 op de 17 oceanen", kraken: "zeldzaam, ongeveer 1 op de 17 oceanen",
-    ghost: "zeldzaam, ongeveer 1 op de 17 oceanen", whalefall: "zeldzaam, ongeveer 1 op de 20 oceanen",
-    serpent: "zeldzaam, ongeveer 1 op de 25 oceanen", megalodon: "zeldzaam, ongeveer 1 op de 25 oceanen",
-    goldpearl: "zeldzaam, ongeveer 1 op de 33 oceanen; tik op de reuzenschelp als hij openstaat",
     jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
     glowtide: "op een donkere nacht in wateren met een oppervlak; beweeg dan je vinger door het water",
     hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
     eelmigration: "trekt af en toe voorbij in de Sargassozee, de Noordzee, het kelpwoud en de mangrove",
     quake: "heel af en toe, in elk water", crabmarch: "steekt af en toe de bodem over, als er geen afgrond is",
     bubblerings: "dolfijnen blazen ze soms als ze langszwemmen",
-    aurora: "zeldzaam, ongeveer 1 op de 33 oceanen, alleen in wateren met een oppervlak",
-    mobydick: "zeldzaam, ongeveer 1 op de 33 oceanen", ghostdiver: "zeldzaam, ongeveer 1 op de 33 oceanen",
     sargassumfish: "verstopt zich in drijvend sargassumwier",
   };
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
       const base = hintFor(key.slice(6));
       const n = SHINY_N[key.slice(6)] || 200;
-      return L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`) + (base ? "; " + base : "");
+      const what = RARE_KEYS.includes(key.slice(6)) ? L(`ongeveer 1 op de ${n} keer is het shiny`, `about 1 in ${n} times it is shiny`) : L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`);
+      return what + (base ? "; " + base : "");
     }
     if (key.startsWith("w:")) return L(`elke oceaan kiest een van de ${WATERS.length} wateren`, `every ocean picks one of the ${WATERS.length} waters`);
+    if (RARE_KEYS.includes(key)) {
+      const parts = WATERS.filter(w => (RARES_BY_WATER[w.name] || []).includes(key)).map(w => {
+        const n = Math.round(RARES_BY_WATER[w.name].length / RARE_RATE);
+        return L(`${nm("w:" + w.name)}: ongeveer 1 op de ${n} oceanen`, `${nm("w:" + w.name)}: about 1 in ${n} oceans`);
+      });
+      const extra = key === "goldpearl" ? L("; tik op de reuzenschelp als hij openstaat", "; tap the giant clam while it is open") : "";
+      return L("heel zeldzaam. ", "very rare. ") + parts.join("; ") + extra;
+    }
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
     if (hints[key]) return hints[key];
     const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name));
@@ -7763,18 +7809,12 @@
     baitball: "happens now and then, in every water except the deep sea", spawning: "schools lay eggs now and then",
     coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
-    mermaid: "rare, about 1 in 17 oceans", kraken: "rare, about 1 in 17 oceans",
-    ghost: "rare, about 1 in 17 oceans", whalefall: "rare, about 1 in 20 oceans",
-    serpent: "rare, about 1 in 25 oceans", megalodon: "rare, about 1 in 25 oceans",
-    goldpearl: "rare, about 1 in 33 oceans; tap the giant clam while it is open",
     jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
     glowtide: "on a dark night in waters with a surface; move your finger through the water",
     hatchlings: "swim past now and then in waters with sea turtles",
     eelmigration: "passes by now and then in the Sargasso Sea, the North Sea, the kelp forest and the mangrove",
     quake: "very now and then, in any water", crabmarch: "crosses the floor now and then, where there is no abyss",
     bubblerings: "dolphins sometimes blow them as they swim past",
-    aurora: "rare, about 1 in 33 oceans, only in waters with a surface",
-    mobydick: "rare, about 1 in 33 oceans", ghostdiver: "rare, about 1 in 33 oceans",
     sargassumfish: "hides in floating sargassum weed",
   };
 
@@ -8089,6 +8129,7 @@
     photoView.setAttribute("aria-label", L("Foto", "Photo"));
     if (scene) {
       rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
+      biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
       updateTask(); updateClock(); describeScene();
     }
   }
@@ -8122,6 +8163,7 @@
         S.megalodon.enabled = true; S.megalodon.timer = 0;
         S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
         if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
+        if (sd % 3 === 0) [S.kraken, S.serpent, S.megalodon, S.moby, S.ghostDiver][(sd / 3) % 5].shiny = "kraken";
         if (water.surface && !S.aurora) S.aurora = { logged: false };
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
@@ -8201,7 +8243,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=14").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=16").catch(() => {}));
   }
 </script>
 </body>

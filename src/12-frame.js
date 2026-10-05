@@ -82,8 +82,8 @@
     updateVisitor(k, dtSec);
     const v = S.visitor;
     if (v && v.type === "whale") shinyDraw(v, () => drawWhale(v));
-    drawMegalodon(k);
-    drawMoby(k);
+    shinyDraw(S.megalodon, () => drawMegalodon(k));
+    shinyDraw(S.moby, () => drawMoby(k));
 
     drawSnow(k);
     drawKelp(S.kelpBack, 0.7);
@@ -91,7 +91,7 @@
     drawHidden(k);
     drawAbyss(k);
     staticLayer("back");
-    for (const g of S.ground) if (!STATIC.has(g.kind) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") GROUND_DRAW[g.kind](g, k);
+    for (const g of S.ground) if (!STATIC.has(g.kind) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") shinyDraw(g, () => GROUND_DRAW[g.kind](g, k));
     staticLayer("lip");
     for (const g of S.ground) if (g.kind === "brine") drawBrine(g);
     drawTreasureMound();
@@ -127,13 +127,13 @@
     updateAndDrawJellies(k);
     drawCombs(k, false);
     drawHatchlings(k);
-    drawSerpent(k);
+    shinyDraw(S.serpent, () => drawSerpent(k));
     drawSongRings(k);
     drawWave2Front(k);
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
-    if (S.kraken.active) drawTentacleSet(S.kraken, KRAKEN);
+    if (S.kraken.active) shinyDraw(S.kraken, () => drawTentacleSet(S.kraken, KRAKEN));
     drawInk(k);
     updateAndDrawFood(k);
     updateAndDrawCoins(k);

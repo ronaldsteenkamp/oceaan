@@ -45,6 +45,8 @@
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     font-size: 12px; color: var(--text-dim); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55); pointer-events: none;
   }
+  #seed, #clock, #rare { display: none; }
+  #biome { color: var(--text); font-weight: 500; }
   #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
   #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }
   #rare {

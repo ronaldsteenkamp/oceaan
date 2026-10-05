@@ -581,7 +581,7 @@
       ctx.beginPath(); ctx.ellipse(r.x, r.y - h * 0.3, w * 0.8, h * 0.6, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
       return true;
     });
-    if (S.ghostDiver) drawGhostDiver(S.ghostDiver, k);
+    if (S.ghostDiver) shinyDraw(S.ghostDiver, () => drawGhostDiver(S.ghostDiver, k));
   }
 
   // Moby Dick: a white sperm whale glides past, far away.
@@ -616,6 +616,7 @@
     if (g.x > W + 60 * u) g.x = -60 * u;
     if (g.x < -60 * u) g.x = W + 60 * u;
     const y = g.y + Math.sin(g.ph * 0.8) * 16 * u, a = 0.18 + 0.1 * Math.sin(t * 1.1) + 0.2 * night;
+    g.cy = y;
     ctx.globalCompositeOperation = "lighter";
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
@@ -637,9 +638,10 @@
       if (a < 0.01) continue;
       const len = h * (0.5 + 0.5 * Math.sin(x * 0.01 + t * 0.3));
       const g = ctx.createLinearGradient(0, 0, 0, len);
-      g.addColorStop(0, `rgba(120,255,170,${a})`);
-      g.addColorStop(0.6, `rgba(150,120,255,${a * 0.6})`);
-      g.addColorStop(1, "rgba(150,120,255,0)");
+      const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["120,255,170", "150,120,255"];
+      g.addColorStop(0, `rgba(${c1},${a})`);
+      g.addColorStop(0.6, `rgba(${c2},${a * 0.6})`);
+      g.addColorStop(1, `rgba(${c2},0)`);
       ctx.fillStyle = g;
       ctx.fillRect(x, 0, 6 * u, len);
     }

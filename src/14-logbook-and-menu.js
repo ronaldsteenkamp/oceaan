@@ -254,7 +254,8 @@
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:")
-      ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} of these animals looks like this. `) + (facts[base] || "")
+      ? (RARE_KEYS.includes(base) ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} keer ziet het er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} times it looks like this. `)
+        : L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} of these animals looks like this. `)) + (facts[base] || "")
       : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
@@ -289,27 +290,30 @@
     baitball: "gebeurt af en toe, in elk water behalve de diepzee", spawning: "scholen leggen af en toe eitjes",
     coralspawn: "op een volle-maannacht bij het koraal", storm: "trekt af en toe over wateren met een oppervlak",
     eruption: "wacht bij de onderzeese vulkaan", task: "zoek de drie zeepaardjes die in de kelp verstopt zitten",
-    mermaid: "zeldzaam, ongeveer 1 op de 17 oceanen", kraken: "zeldzaam, ongeveer 1 op de 17 oceanen",
-    ghost: "zeldzaam, ongeveer 1 op de 17 oceanen", whalefall: "zeldzaam, ongeveer 1 op de 20 oceanen",
-    serpent: "zeldzaam, ongeveer 1 op de 25 oceanen", megalodon: "zeldzaam, ongeveer 1 op de 25 oceanen",
-    goldpearl: "zeldzaam, ongeveer 1 op de 33 oceanen; tik op de reuzenschelp als hij openstaat",
     jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
     glowtide: "op een donkere nacht in wateren met een oppervlak; beweeg dan je vinger door het water",
     hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
     eelmigration: "trekt af en toe voorbij in de Sargassozee, de Noordzee, het kelpwoud en de mangrove",
     quake: "heel af en toe, in elk water", crabmarch: "steekt af en toe de bodem over, als er geen afgrond is",
     bubblerings: "dolfijnen blazen ze soms als ze langszwemmen",
-    aurora: "zeldzaam, ongeveer 1 op de 33 oceanen, alleen in wateren met een oppervlak",
-    mobydick: "zeldzaam, ongeveer 1 op de 33 oceanen", ghostdiver: "zeldzaam, ongeveer 1 op de 33 oceanen",
     sargassumfish: "verstopt zich in drijvend sargassumwier",
   };
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
       const base = hintFor(key.slice(6));
       const n = SHINY_N[key.slice(6)] || 200;
-      return L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`) + (base ? "; " + base : "");
+      const what = RARE_KEYS.includes(key.slice(6)) ? L(`ongeveer 1 op de ${n} keer is het shiny`, `about 1 in ${n} times it is shiny`) : L(`ongeveer 1 op de ${n} van deze dieren is shiny`, `about 1 in ${n} of these animals is shiny`);
+      return what + (base ? "; " + base : "");
     }
     if (key.startsWith("w:")) return L(`elke oceaan kiest een van de ${WATERS.length} wateren`, `every ocean picks one of the ${WATERS.length} waters`);
+    if (RARE_KEYS.includes(key)) {
+      const parts = WATERS.filter(w => (RARES_BY_WATER[w.name] || []).includes(key)).map(w => {
+        const n = Math.round(RARES_BY_WATER[w.name].length / RARE_RATE);
+        return L(`${nm("w:" + w.name)}: ongeveer 1 op de ${n} oceanen`, `${nm("w:" + w.name)}: about 1 in ${n} oceans`);
+      });
+      const extra = key === "goldpearl" ? L("; tik op de reuzenschelp als hij openstaat", "; tap the giant clam while it is open") : "";
+      return L("heel zeldzaam. ", "very rare. ") + parts.join("; ") + extra;
+    }
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
     if (hints[key]) return hints[key];
     const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name));
@@ -324,18 +328,12 @@
     baitball: "happens now and then, in every water except the deep sea", spawning: "schools lay eggs now and then",
     coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
-    mermaid: "rare, about 1 in 17 oceans", kraken: "rare, about 1 in 17 oceans",
-    ghost: "rare, about 1 in 17 oceans", whalefall: "rare, about 1 in 20 oceans",
-    serpent: "rare, about 1 in 25 oceans", megalodon: "rare, about 1 in 25 oceans",
-    goldpearl: "rare, about 1 in 33 oceans; tap the giant clam while it is open",
     jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
     glowtide: "on a dark night in waters with a surface; move your finger through the water",
     hatchlings: "swim past now and then in waters with sea turtles",
     eelmigration: "passes by now and then in the Sargasso Sea, the North Sea, the kelp forest and the mangrove",
     quake: "very now and then, in any water", crabmarch: "crosses the floor now and then, where there is no abyss",
     bubblerings: "dolphins sometimes blow them as they swim past",
-    aurora: "rare, about 1 in 33 oceans, only in waters with a surface",
-    mobydick: "rare, about 1 in 33 oceans", ghostdiver: "rare, about 1 in 33 oceans",
     sargassumfish: "hides in floating sargassum weed",
   };
 

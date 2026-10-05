@@ -47,6 +47,7 @@
     }
     registerMoreShinies(s, add, tag);
     registerWave2Shinies(s, add);
+    registerRareShinies(s, add);
     s.shinies = list;
   }
 
@@ -56,6 +57,23 @@
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
     whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
+  // The rare things can be shiny too; they are rolled with the ocean, so a shared seed keeps them.
+  function registerRareShinies(s, add) {
+    const R = s.rares;
+    if (R.includes("kraken")) add("kraken", s.kraken, 70 * u, () => s.kraken.eye ? [s.kraken.eye.x, s.kraken.eye.y] : [W / 2, H + 100], () => s.kraken.active && s.kraken.reach > 0.4);
+    if (R.includes("ghost") && s.ghost) add("ghost", s.ghost, 90 * u, () => [s.ghost.x, s.ghost.y]);
+    for (const g of s.ground) {
+      if (g.kind === "whalefall") add("whalefall", g, g.w * 0.3, () => [g.x, sandY(g.x) - 15 * u]);
+      if (g.kind === "clam" && g.pearl === "gold") add("goldpearl", g, g.s, () => [g.x, sandY(g.x) - g.s * 0.4], () => g.pearl === "gold");
+    }
+    if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
+    if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
+    if (s.aurora) add("aurora", s.aurora, 80 * u, () => [W / 2, H * 0.12], () => night > 0.5);
+    if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
+    if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
+  }
+  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
+
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
     scene.shinies = scene.shinies.filter(e => e.obj !== obj && (!e.alive || e.alive()));
@@ -158,13 +176,21 @@
   }
 
   // A shiny creature is drawn into a spare layer, recoloured there, and then put back.
+  // The spare layers match whatever is being drawn on: the ocean itself, or a small logbook picture.
   let shinyA = null, shinyB = null, shinyMain = null;
+  const shinyBufs = new Map();
   function beginShiny() {
-    if (shinyMain || !canvas.width) return false;
-    if (!shinyA || shinyA.width !== canvas.width || shinyA.height !== canvas.height) {
-      shinyA = document.createElement("canvas"); shinyB = document.createElement("canvas");
-      shinyA.width = shinyB.width = canvas.width; shinyA.height = shinyB.height = canvas.height;
+    const target = ctx.canvas;
+    if (shinyMain || !target || !target.width || !target.height) return false;
+    const key = target.width + "x" + target.height;
+    let bufs = shinyBufs.get(key);
+    if (!bufs) {
+      if (shinyBufs.size > 3) shinyBufs.clear();
+      bufs = [document.createElement("canvas"), document.createElement("canvas")];
+      for (const c of bufs) { c.width = target.width; c.height = target.height; }
+      shinyBufs.set(key, bufs);
     }
+    [shinyA, shinyB] = bufs;
     const a = shinyA.getContext("2d");
     a.setTransform(1, 0, 0, 1, 0, 0);
     a.clearRect(0, 0, shinyA.width, shinyA.height);

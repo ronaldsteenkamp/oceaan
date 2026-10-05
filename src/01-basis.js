@@ -1,6 +1,7 @@
   const canvas = document.getElementById("c");
   let ctx = canvas.getContext("2d");
   const seedEl = document.querySelector("#seed b");
+  const biomeEl = document.getElementById("biome");
   const rareEl = document.getElementById("rare");
   const soundBtn = document.getElementById("sound");
   const clockEl = document.getElementById("clock");
@@ -196,6 +197,13 @@
   const W3_RARE = ["aurora", "mobydick", "ghostdiver"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE);
+  // Only a few oceans hold something rare, and every rare thing has its own waters.
+  const RARE_RATE = 0.06;
+  const RARES_BY_WATER = {
+    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
+    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["aurora", "mobydick"],
+    mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
+  };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
     "eelmigration", "quake", "crabmarch", "bubblerings"];
   const NAMES = {
@@ -249,6 +257,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
   };
   // shinies are five times easier to find than the base table above
   const SHINY_EASE = 5;
@@ -258,7 +267,8 @@
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
-    "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale"];
+    "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   LOG_GROUPS.push(["Shiny", SHINY_KEYS.map(k => "shiny:" + k)]);

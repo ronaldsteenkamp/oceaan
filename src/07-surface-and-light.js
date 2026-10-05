@@ -262,7 +262,7 @@
       glow(lx, ly, v.size * 0.12, "255,245,210", 0.6);
     }
     if (S.boat && night > 0.2) glow(S.boat.x, waveY(S.boat.x) - 2 * u, 40 * u, "255,210,140", 0.5 * night);
-    if (S.ghost) drawGhost(k);
+    if (S.ghost) shinyDraw(S.ghost, () => drawGhost(k));
     if (S.kraken.active && S.kraken.eye) glow(S.kraken.eye.x, S.kraken.eye.y, 90 * u, "255,200,60", 0.35 * S.kraken.reach);
     drawShinies();
     for (const g of S.ground) {

@@ -113,10 +113,9 @@
     }
     if (aquarium) s.rares = RARE_KEYS.filter(k => aquarium.set.has(k));
     else {
-      const rr = rng();
-      s.rares = rr < 0.06 ? ["mermaid"] : rr < 0.12 ? ["kraken"] : rr < 0.18 ? ["ghost"] : rr < 0.23 ? ["whalefall"]
-        : rr < 0.27 ? ["serpent"] : rr < 0.31 ? ["megalodon"] : rr < 0.34 ? ["goldpearl"]
-        : rr < 0.37 ? (water.surface ? ["aurora"] : []) : rr < 0.40 ? ["mobydick"] : rr < 0.43 ? ["ghostdiver"] : [];
+      const rr = rng(), list = RARES_BY_WATER[water.name] || [];
+      s.rares = rr < RARE_RATE && list.length ? [list[Math.min(list.length - 1, Math.floor(rr / RARE_RATE * list.length))]] : [];
+      if (s.rares[0] === "aurora" && !water.surface) s.rares = [];
     }
     s.rare = s.rares[0] || null;
 
@@ -364,6 +363,7 @@
     rng = mulberry32(seed);
     buildScene();
     seedEl.textContent = seed + (aquarium ? " · aquarium" : "");
+    biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
     rareEl.hidden = !scene.rare;
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}

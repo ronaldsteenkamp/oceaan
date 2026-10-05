@@ -790,6 +790,7 @@
     ctx.strokeStyle = belly;
     for (let i = n - 1; i >= 0; i--) { const w = width(i); ctx.lineWidth = w * 0.3; ctx.beginPath(); ctx.moveTo(pts[i][0], pts[i][1] + w * 0.25); ctx.lineTo(pts[i + 1][0], pts[i + 1][1] + w * 0.25); ctx.stroke(); }
     const [hx, hy] = pts[0], ang = Math.atan2(pts[0][1] - pts[1][1], pts[0][0] - pts[1][0]);
+    Sp.hx = hx; Sp.hy = hy;
     ctx.save(); ctx.translate(hx, hy); ctx.rotate(ang); if (Math.cos(ang) < 0) ctx.scale(1, -1);
     ctx.fillStyle = green; ctx.beginPath(); ctx.ellipse(10 * sc, 0, 26 * sc, 15 * sc, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = fin; ctx.beginPath(); ctx.moveTo(-4 * sc, -12 * sc); ctx.lineTo(-18 * sc, -28 * sc); ctx.lineTo(6 * sc, -13 * sc); ctx.fill();
