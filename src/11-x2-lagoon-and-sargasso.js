@@ -712,7 +712,7 @@
     if (so.echoAt > 0) {
       so.echoAt -= dtSec;
       if (so.echoAt <= 0) {
-        if (S.rares.length) {
+        if (S.rares.some(r => r !== "aurora")) {
           const [sx, sy] = sonarSource(S);
           for (let i = 0; i < 3; i++) so.rings.push({ x: sx, y: sy, r: -i * 40 * u, a: 0.9, gold: true });
           so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = 2.5;

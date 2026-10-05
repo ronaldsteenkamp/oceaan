@@ -394,7 +394,7 @@
   panelBody.addEventListener("keydown", e => { if (e.target.id === "openCode" && e.key === "Enter") document.getElementById("openGo").click(); });
 
   const inLogOrder = (title, keys) => groupKeys(title).filter(k => keys.includes(k)).concat(keys.filter(k => !groupKeys(title).includes(k)));
-  const AQ_GROUPS = [["Bodem en vondsten", inLogOrder("Bodem en vondsten", PROP_KEYS)], ["Dieren", inLogOrder("Dieren", LIFE_KEYS)], ["Bezoekers", inLogOrder("Bezoekers", VIS_KEYS)], ["Zeldzaam", inLogOrder("Zeldzaam", RARE_KEYS)]];
+  const AQ_GROUPS = [["Bodem en vondsten", inLogOrder("Bodem en vondsten", PROP_KEYS)], ["Dieren", inLogOrder("Dieren", LIFE_KEYS)], ["Bezoekers", inLogOrder("Dieren", VIS_KEYS)], ["Zeldzaam", inLogOrder("Zeldzaam", RARE_KEYS)]];
 
   function currentAsDraft() {
     const S = scene, set = new Set();

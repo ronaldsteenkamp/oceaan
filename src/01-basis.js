@@ -251,40 +251,37 @@
     ],
     "Dieren": [
       ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels"]],
+      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
+      ["Roggen", "Rays", ["ray", "manta", "eagleray"]],
       ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
       ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
       ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
       ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
-      ["Zeesterren, egels en roggen", "Starfish, urchins and rays", ["starfish", "urchin", "slugs", "ray"]],
-      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "penguins"]],
-    ],
-    "Bezoekers": [
-      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
-      ["Roggen", "Rays", ["manta", "eagleray"]],
+      ["Zeesterren en egels", "Starfish and urchins", ["starfish", "urchin", "slugs"]],
       ["Reptielen", "Reptiles", ["turtle", "crocodile"]],
       ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "beluga", "narwhal", "humpback", "whale", "spermwhale"]],
-      ["Zeeleeuwen en zeekoeien", "Sea lions and manatees", ["sealion", "manatee"]],
-      ["Mensenwerk", "Made by people", ["sub"]],
+      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "manatee", "penguins"]],
     ],
     "Momenten": [
+      ["Het zeldzaamste moment", "The rarest moment", ["aurora"]],
       ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
       ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
       ["Speurtochten", "Quests", ["treasure", "task"]],
+      ["Mensen op zee", "People at sea", ["sub"]],
     ],
     "Zeldzaam": [
       ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
       ["Spoken", "Ghosts", ["ghost", "ghostdiver"]],
-      ["Wonderen", "Wonders", ["goldpearl", "whalefall", "aurora"]],
+      ["Wonderen", "Wonders", ["goldpearl", "whalefall"]],
     ],
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
     "Bodem en vondsten": PROP_KEYS,
-    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"],
-    "Bezoekers": VIS_KEYS,
-    "Momenten": [...MOMENT_KEYS, "treasure"],
-    "Zeldzaam": RARE_KEYS,
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", ...VIS_KEYS.filter(k => k !== "sub")],
+    "Momenten": [...MOMENT_KEYS, "treasure", "sub", "aurora"],
+    "Zeldzaam": RARE_KEYS.filter(k => k !== "aurora"),
   };
   // anything not placed in a family yet still shows, at the end of its group
   for (const title in LOG_ALL) {
@@ -325,7 +322,7 @@
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   // the shinies follow the same order as the animals, visitors, moments and rare things
   {
-    const subs = ["Dieren", "Bezoekers", "Momenten", "Zeldzaam"].map(title => {
+    const subs = ["Dieren", "Momenten", "Zeldzaam"].map(title => {
       const order = LOG_SUBS[title].flatMap(s => s[2]).filter(k => SHINY_KEYS.includes(k));
       return [title, title, order.map(k => "shiny:" + k)];
     }).filter(s => s[2].length);
@@ -440,7 +437,7 @@
     allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
     allOf("gb", "Schatzoeker", "Treasure seeker", "Bodem en vondsten", "vondsten op de bodem", "finds on the seabed"),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
-    allOf("gv", "Gastvrij", "Welcoming host", "Bezoekers", "bezoekers", "visitors"),
+    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: null },
     allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),
     allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things"),
     { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: null },
