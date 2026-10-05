@@ -48,6 +48,10 @@
   #seed, #clock, #rare { display: none; }
   .tool[hidden] { display: none; }
   .tool.cooling { opacity: 0.45; }
+  #next { position: relative; }
+  #next.locked svg { opacity: 0.4; }
+  #nextTime { position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%); font-family: var(--mono); font-size: 9.5px; line-height: 1; color: var(--text); background: rgba(4, 20, 34, 0.85); padding: 1px 4px; border-radius: 6px; pointer-events: none; }
+  .toolbar.labels #nextTime { bottom: 18px; }
   #biome { color: var(--text); font-weight: 500; }
   #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
   #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }

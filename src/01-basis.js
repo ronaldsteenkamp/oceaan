@@ -246,7 +246,7 @@
     "Bodem en vondsten": [
       ["Natuur", "Nature", ["rocks", "arch", "canyon", "coral", "anemone", "sponges", "seagrass", "clam", "vent", "volcano", "brine"]],
       ["Wrakken en scheepsspullen", "Wrecks and ship's gear", ["wreck", "plane", "car", "anchor", "cannon", "wheel", "bell", "helmet", "mine"]],
-      ["Schatten en vondsten", "Treasure and finds", ["chest", "treasure", "bottle", "skull", "amphora", "idol", "phonebox"]],
+      ["Schatten en vondsten", "Treasure and finds", ["chest", "bottle", "skull", "amphora", "idol", "phonebox"]],
       ["Oude beschavingen", "Ancient ruins", ["ruins", "statue", "city"]],
     ],
     "Dieren": [
@@ -270,7 +270,7 @@
       ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
       ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
-      ["Speurtochten", "Quests", ["task"]],
+      ["Speurtochten", "Quests", ["treasure", "task"]],
     ],
     "Zeldzaam": [
       ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
@@ -280,10 +280,10 @@
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
-    "Bodem en vondsten": [...PROP_KEYS, "treasure"],
+    "Bodem en vondsten": PROP_KEYS,
     "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"],
     "Bezoekers": VIS_KEYS,
-    "Momenten": MOMENT_KEYS,
+    "Momenten": [...MOMENT_KEYS, "treasure"],
     "Zeldzaam": RARE_KEYS,
   };
   // anything not placed in a family yet still shows, at the end of its group
@@ -409,6 +409,16 @@
   const BASE_LOG_KEYS = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
+  // How long the wait for a new ocean is, depending on how many finds are in the logbook.
+  const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [100, 20]];
+  function lockSeconds() {
+    const n = foundCount();
+    if (n >= BASE_LOG_KEYS.length) return 10;
+    let sec = 600;
+    for (const [need, s] of LOCK_STEPS) if (n >= need) sec = s;
+    return sec;
+  }
+  const durationText = sec => sec >= 60 ? (sec === 60 ? L("minuut", "minute") : L(`${sec / 60} minuten`, `${sec / 60} minutes`)) : L(`${sec} seconden`, `${sec} seconds`);
   const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
   const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
   // Each milestone says how far along you are; the ones with a reward change something you can see.
@@ -416,12 +426,12 @@
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje", "a bronze logbook"),
-    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen voor je duiker", "green fins for your diver"),
-    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje", "a silver logbook"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker", "a lamp on your diver's helmet"),
-    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek", "golden edges in your logbook"),
-    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje en elke 5 minuten een nieuwe oceaan", "a bronze logbook and a new ocean every 5 minutes"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen en elke 2 minuten een nieuwe oceaan", "green fins and a new ocean every 2 minutes"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje en elke minuut een nieuwe oceaan", "a silver logbook and a new ocean every minute"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker en elke 30 seconden een nieuwe oceaan", "a lamp on your diver's helmet and a new ocean every 30 seconds"),
+    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje, een gouden duikfles en elke 10 seconden een nieuwe oceaan", "a golden logbook, a golden air tank and a new ocean every 10 seconds"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "gouden zwemvliezen voor je duiker", "golden fins for your diver"),
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"),

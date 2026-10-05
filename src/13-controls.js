@@ -32,6 +32,8 @@
       hid.found = true; hid.flash = 1;
       sfxChest();
       updateTask();
+      const nf = S.hidden.filter(h => h.found).length;
+      toast(nf < S.hidden.length ? L(`Verstopt zeepaardje gevonden! ${nf} van ${S.hidden.length}`, `Hidden seahorse found! ${nf} of ${S.hidden.length}`) : L("Alle verstopte zeepaardjes gevonden!", "All hidden seahorses found!"));
       if (S.hidden.every(h => h.found)) {
         seen("task");
         buzz([40, 50, 40, 50, 80]);
@@ -63,6 +65,7 @@
     }
     if (S.treasure && !S.treasure.dug) spots.push([S.treasure.x, sandY(S.treasure.x)]);
     for (const h of S.hidden) if (!h.found && h.x !== undefined) spots.push([h.x, h.y - 5 * u]);
+    for (const g of S.ground) if (g.kind === "clam") spots.push([g.x, sandY(g.x) - g.s * 0.35]);
     let best = null, bd = 90 * u;
     for (const p of spots) { const d = Math.hypot(p[0] - diver.x, p[1] - diver.y); if (d < bd) { bd = d; best = p; } }
     if (best) handleTap(best[0], best[1]);
@@ -84,13 +87,9 @@
       if (!diverMode) diverBtn.click();
       return;
     }
-    if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
-    if (e.key === " " || e.key === "Enter") {
-      const tag = document.activeElement && document.activeElement.tagName;
-      if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
-      e.preventDefault(); newVariant(randomSeed(), true);
-    }
+    if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
   });
 
   addEventListener("hashchange", () => {
@@ -113,7 +112,36 @@
   taskEl.addEventListener("click", explainTask);
 
   // ---- new ocean, diver, menu and photo buttons --------------------------
-  document.getElementById("next").addEventListener("click", () => newVariant(randomSeed(), true));
+  document.getElementById("next").addEventListener("click", tryNewOcean);
+
+  // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from ten minutes down to ten seconds.
+  const LOCK_KEY = "oceaan-gewisseld";
+  const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
+  if (!store.get(LOCK_KEY, 0)) store.set(LOCK_KEY, Date.now());
+  function lockLeft() { return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now()); }
+  function clockText(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
+  function tryNewOcean() {
+    const left = lockLeft();
+    if (left > 0) {
+      toast(L(`Een nieuwe oceaan kan over ${clockText(left)}. Hoe meer je vindt, hoe korter je wacht: nu elke ${durationText(lockSeconds())}.`,
+        `A new ocean is possible in ${clockText(left)}. The more you find, the shorter the wait: now every ${durationText(lockSeconds())}.`));
+      buzz(15);
+      return;
+    }
+    store.set(LOCK_KEY, Date.now());
+    newVariant(randomSeed(), true);
+    updateLockBadge();
+  }
+  function updateLockBadge() {
+    const left = lockLeft();
+    nextTimeEl.hidden = left <= 0;
+    nextTimeEl.textContent = left > 0 ? clockText(left) : "";
+    nextBtn.classList.toggle("locked", left > 0);
+    const tip = left > 0 ? L(`Nieuwe oceaan over ${clockText(left)}`, `New ocean in ${clockText(left)}`) : L("Nieuwe oceaan (R)", "New ocean (R)");
+    nextBtn.dataset.tip = tip; nextBtn.setAttribute("aria-label", tip);
+  }
+  setInterval(updateLockBadge, 1000);
+  updateLockBadge();
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
@@ -203,6 +231,7 @@
     }
     html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
+    html += `<p class="sum small">${L(`Je kunt nu elke ${durationText(lockSeconds())} een nieuwe oceaan kiezen. Elke mijlpaal van vondsten maakt dat korter.`, `You can now pick a new ocean every ${durationText(lockSeconds())}. Every milestone of finds makes that shorter.`)}</p>`;
     html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
     html += `<div class="badges">` + MILESTONES.map(m => {
       const [have, need] = m.prog(), done = have >= need;

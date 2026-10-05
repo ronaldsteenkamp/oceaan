@@ -48,7 +48,7 @@
       for (let i = 1; i <= kp.segs; i++) {
         ang += Math.sin(t * 0.7 + kp.ph + i * 0.28) * 0.045 + 0.004 + current * 0.02;
         const n = near(x, y, 90 * u);
-        if (n) ang += Math.sign(x - pointer.x || 1) * 0.12 * n;
+        if (n) ang += Math.sign(x - diver.x || 1) * 0.12 * n;
         x += Math.cos(ang) * seg;
         y += Math.sin(ang) * seg;
         if (water.surface) {
@@ -624,7 +624,7 @@
       const a = -Math.PI + (i / 21) * Math.PI;
       const bx = x + Math.cos(a) * s * 0.5, by = y - s * 0.35;
       const len = s * (0.9 + (i % 3) * 0.15);
-      const sw = Math.sin(t * 1.3 + i * 0.4) * 0.3 + near(x, y - s, 110 * u) * Math.sign(x - pointer.x || 1) * 0.6;
+      const sw = Math.sin(t * 1.3 + i * 0.4) * 0.3 + near(x, y - s, 110 * u) * Math.sign(x - diver.x || 1) * 0.6;
       const ex = bx + Math.cos(a * 0.7 - Math.PI * 0.15 + sw) * len, ey = by + Math.sin(a * 0.7 - Math.PI * 0.15) * len * 0.9 - len * 0.3;
       ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx + sw * s * 0.4, by - len * 0.5, ex, ey); ctx.stroke();
     }

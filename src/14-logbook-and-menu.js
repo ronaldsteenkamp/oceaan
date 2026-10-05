@@ -368,7 +368,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, space gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, E roept de duiker, R geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, E calls the diver, R gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -476,7 +476,7 @@
     if (b.dataset.water) { aqDraft.water = Number(b.dataset.water); renderMake(); }
     else if (b.dataset.key) { const k = b.dataset.key; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
-    else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(randomSeed(), true); renderMake(); }
+    else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });
 
   function aqCode() {

@@ -400,7 +400,7 @@
       if (q.pulse <= 0 || (threat && q.pulse < 0.8)) {
         // squid move in jets: a quick push, then a glide
         q.pulse = 1.2 + Math.random() * 1.2;
-        const a = threat ? Math.atan2(q.y - pointer.y, q.x - pointer.x)
+        const a = threat ? Math.atan2(q.y - diver.y, q.x - diver.x)
           : Math.atan2(cy - q.y + (Math.random() - 0.5) * 80 * u, cx - q.x + (Math.random() - 0.5) * 120 * u + q.dir * 60 * u);
         const f = (threat ? 4 : 2) * u;
         q.vx += Math.cos(a) * f; q.vy += Math.sin(a) * f * 0.6;

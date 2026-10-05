@@ -40,7 +40,6 @@
 
   function fearSources() {
     const list = [];
-    if (pointer.active && !feeding && !diverMode) list.push([pointer.x, pointer.y, 140 * u]);
     if (diverMode) list.push([diver.x, diver.y, 90 * u]);
     const v = scene.visitor;
     if (v) {
@@ -181,8 +180,8 @@
       j.y -= thrust * 0.75 * u * j.sp * k;
       j.y += 0.14 * u * k;
       j.x += (Math.sin(t * 0.18 + j.drift) * 0.18 + current * 0.5) * u * k;
-      if (pointer.active) {
-        const dx = j.x - pointer.x, dy = j.y - pointer.y;
+      if (diverMode) {
+        const dx = j.x - diver.x, dy = j.y - diver.y;
         const d = Math.hypot(dx, dy), R = 110 * u;
         if (d < R && d > 0.01) { j.x += dx / d * (1 - d / R) * 1.1 * u * k; j.y += dy / d * (1 - d / R) * 1.1 * u * k; }
       }
@@ -248,7 +247,7 @@
   // ---- bottom dwellers ---------------------------------------------------
   function drawCrab(c, k) {
     const flee = near(c.x, sandY(c.x), 110 * u);
-    if (flee && !c.leaving) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
+    if (flee && !c.leaving) { c.dir = Math.sign(c.x - diver.x) || 1; c.pause = 0; }
     if (c.pause > 0 && !c.leaving) c.pause -= k / 60;
     else {
       c.x += c.dir * c.speed * u * k * (1 + flee * 3);
@@ -338,7 +337,7 @@
     if (threat && o.cool <= 0) {
       o.cool = 6;
       o.dash = 1;
-      o.dir = Math.sign(o.x - pointer.x) || 1;
+      o.dir = Math.sign(o.x - diver.x) || 1;
       for (let i = 0; i < 45; i++) {
         const a = Math.random() * TAU, v = Math.random() * 1.6 * u;
         ink.push({ x: o.x, y: y - s * 0.9, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 0.4 * u, r: (3 + Math.random() * 7) * u, a: 0.7 });

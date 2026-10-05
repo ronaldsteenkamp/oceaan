@@ -13,10 +13,10 @@
   const pick = arr => arr[Math.floor(rng() * arr.length)];
   const range = (a, b) => a + rng() * (b - a);
   const chance = p => rng() < p;
-  // In diver mode the creatures react to the diver instead of the pointer.
+  // The creatures only react to the diver, never to the mouse or a finger.
   const near = (x, y, R) => {
-    if (!diverMode && !pointer.active) return 0;
-    const d = diverMode ? Math.hypot(x - diver.x, y - diver.y) : Math.hypot(x - pointer.x, y - pointer.y);
+    if (!diverMode) return 0;
+    const d = Math.hypot(x - diver.x, y - diver.y);
     return d < R ? 1 - d / R : 0;
   };
 

@@ -173,7 +173,7 @@
     });
   }
 
-  function poke() { return diverMode ? { x: diver.x, y: diver.y, on: true } : { x: pointer.x, y: pointer.y, on: pointer.active }; }
+  function poke() { return diverMode ? { x: diver.x, y: diver.y, on: true } : { x: 0, y: 0, on: false }; }
 
   function drawMantis(m, k) {
     const s = m.s, x = m.x, y = sandY(x) + 6 * u, p = poke();
@@ -248,15 +248,16 @@
 
   function drawArcher(a, k) {
     const sy = waveY(a.x) + 28 * u;
-    const still = pointer.active && !feeding && !diverMode && performance.now() - (pointer.moved || 0) > 1100 && pointer.y > sy + 30 * u;
+    if (diverMode && Math.hypot(diver.vx, diver.vy) < 0.25 * u) a.stillT = (a.stillT || 0) + k / 60; else a.stillT = 0;
+    const still = diverMode && a.stillT > 1.1 && diver.y > sy + 30 * u;
     a.cool -= k / 60;
     if (still) {
-      const dx = pointer.x - a.x;
+      const dx = diver.x - a.x;
       a.face = Math.sign(dx) || a.face;
       if (Math.abs(dx) > 160 * u) a.x += Math.sign(dx) * 1.2 * u * k;
       else if (a.cool <= 0) {
         a.cool = 2.5;
-        jets.push({ x0: a.x + a.face * a.s, y0: sy, x1: pointer.x, y1: pointer.y, p: 0, hit: false });
+        jets.push({ x0: a.x + a.face * a.s, y0: sy, x1: diver.x, y1: diver.y - 10 * u, p: 0, hit: false });
         sfxSquirt();
       }
     } else {
@@ -266,7 +267,7 @@
       a.face = Math.sign(a.vx);
     }
     const y = sy + Math.sin(t * 1.5) * 3 * u;
-    const ang = still ? Math.atan2(pointer.y - y, Math.abs(pointer.x - a.x)) * 0.5 : 0;
+    const ang = still ? Math.atan2(diver.y - y, Math.abs(diver.x - a.x)) * 0.5 : 0;
     drawFishShape(a.x, y, a.face > 0 ? ang : Math.PI - ang, a.s, sh("#d9dfe0"), sh("#2a2e30"), t * 8, false);
     ctx.save(); ctx.translate(a.x, y); ctx.scale(a.face, 1); ctx.rotate(ang);
     ctx.fillStyle = "rgba(30,34,36,0.8)";
@@ -738,6 +739,8 @@
   // The search task shows for a while, then steps aside; finding one brings it back briefly.
   let taskTimer;
   function updateTask() {
+    taskEl.hidden = true; // the search bar is gone; finding a seahorse gives a short message instead
+    return;
     const h = scene.hidden;
     taskEl.hidden = !h.length || restMode;
     if (taskEl.hidden) return;

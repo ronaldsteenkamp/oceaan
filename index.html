@@ -70,6 +70,10 @@
   #seed, #clock, #rare { display: none; }
   .tool[hidden] { display: none; }
   .tool.cooling { opacity: 0.45; }
+  #next { position: relative; }
+  #next.locked svg { opacity: 0.4; }
+  #nextTime { position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%); font-family: var(--mono); font-size: 9.5px; line-height: 1; color: var(--text); background: rgba(4, 20, 34, 0.85); padding: 1px 4px; border-radius: 6px; pointer-events: none; }
+  .toolbar.labels #nextTime { bottom: 18px; }
   #biome { color: var(--text); font-weight: 500; }
   #seed b { font-family: var(--mono); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
   #clock:not(:empty)::before { content: "·"; margin-right: 10px; opacity: .6; }
@@ -271,7 +275,7 @@
   <span id="rare" hidden></span>
 </div>
 <nav class="toolbar" aria-label="Bediening">
-  <button id="next" class="tool" data-short="Nieuw" type="button" aria-label="Nieuwe oceaan" data-tip="Nieuwe oceaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3.5v3.7h-3.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="next" class="tool" data-short="Nieuw" type="button" aria-label="Nieuwe oceaan" data-tip="Nieuwe oceaan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3.5v3.7h-3.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="nextTime" hidden></span></button>
   <span class="divider" aria-hidden="true"></span>
   <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -293,7 +297,7 @@
     <h2 id="welcomeTitle">Welkom in de oceaan</h2>
     <p class="lead" id="welcomeLead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
     <ul class="howto">
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span id="howto0">De <b>pijltjesknop</b> geeft een nieuwe oceaan.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span id="howto0">De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan.</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span id="howto1"><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="howto2"><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="howto3">Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
@@ -563,7 +567,7 @@
     "Bodem en vondsten": [
       ["Natuur", "Nature", ["rocks", "arch", "canyon", "coral", "anemone", "sponges", "seagrass", "clam", "vent", "volcano", "brine"]],
       ["Wrakken en scheepsspullen", "Wrecks and ship's gear", ["wreck", "plane", "car", "anchor", "cannon", "wheel", "bell", "helmet", "mine"]],
-      ["Schatten en vondsten", "Treasure and finds", ["chest", "treasure", "bottle", "skull", "amphora", "idol", "phonebox"]],
+      ["Schatten en vondsten", "Treasure and finds", ["chest", "bottle", "skull", "amphora", "idol", "phonebox"]],
       ["Oude beschavingen", "Ancient ruins", ["ruins", "statue", "city"]],
     ],
     "Dieren": [
@@ -587,7 +591,7 @@
       ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
       ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
-      ["Speurtochten", "Quests", ["task"]],
+      ["Speurtochten", "Quests", ["treasure", "task"]],
     ],
     "Zeldzaam": [
       ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
@@ -597,10 +601,10 @@
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
-    "Bodem en vondsten": [...PROP_KEYS, "treasure"],
+    "Bodem en vondsten": PROP_KEYS,
     "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper"],
     "Bezoekers": VIS_KEYS,
-    "Momenten": MOMENT_KEYS,
+    "Momenten": [...MOMENT_KEYS, "treasure"],
     "Zeldzaam": RARE_KEYS,
   };
   // anything not placed in a family yet still shows, at the end of its group
@@ -726,6 +730,16 @@
   const BASE_LOG_KEYS = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
+  // How long the wait for a new ocean is, depending on how many finds are in the logbook.
+  const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [100, 20]];
+  function lockSeconds() {
+    const n = foundCount();
+    if (n >= BASE_LOG_KEYS.length) return 10;
+    let sec = 600;
+    for (const [need, s] of LOCK_STEPS) if (n >= need) sec = s;
+    return sec;
+  }
+  const durationText = sec => sec >= 60 ? (sec === 60 ? L("minuut", "minute") : L(`${sec / 60} minuten`, `${sec / 60} minutes`)) : L(`${sec} seconden`, `${sec} seconds`);
   const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
   const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
   // Each milestone says how far along you are; the ones with a reward change something you can see.
@@ -733,12 +747,12 @@
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje", "a bronze logbook"),
-    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen voor je duiker", "green fins for your diver"),
-    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje", "a silver logbook"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker", "a lamp on your diver's helmet"),
-    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek", "golden edges in your logbook"),
-    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje en een gouden duikfles", "a golden logbook and a golden air tank"] },
+    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje en elke 5 minuten een nieuwe oceaan", "a bronze logbook and a new ocean every 5 minutes"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen en elke 2 minuten een nieuwe oceaan", "green fins and a new ocean every 2 minutes"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje en elke minuut een nieuwe oceaan", "a silver logbook and a new ocean every minute"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker en elke 30 seconden een nieuwe oceaan", "a lamp on your diver's helmet and a new ocean every 30 seconds"),
+    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje, een gouden duikfles en elke 10 seconden een nieuwe oceaan", "a golden logbook, a golden air tank and a new ocean every 10 seconds"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "gouden zwemvliezen voor je duiker", "golden fins for your diver"),
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"),
@@ -839,10 +853,10 @@
   const pick = arr => arr[Math.floor(rng() * arr.length)];
   const range = (a, b) => a + rng() * (b - a);
   const chance = p => rng() < p;
-  // In diver mode the creatures react to the diver instead of the pointer.
+  // The creatures only react to the diver, never to the mouse or a finger.
   const near = (x, y, R) => {
-    if (!diverMode && !pointer.active) return 0;
-    const d = diverMode ? Math.hypot(x - diver.x, y - diver.y) : Math.hypot(x - pointer.x, y - pointer.y);
+    if (!diverMode) return 0;
+    const d = Math.hypot(x - diver.x, y - diver.y);
     return d < R ? 1 - d / R : 0;
   };
 
@@ -1281,7 +1295,7 @@
       for (let i = 1; i <= kp.segs; i++) {
         ang += Math.sin(t * 0.7 + kp.ph + i * 0.28) * 0.045 + 0.004 + current * 0.02;
         const n = near(x, y, 90 * u);
-        if (n) ang += Math.sign(x - pointer.x || 1) * 0.12 * n;
+        if (n) ang += Math.sign(x - diver.x || 1) * 0.12 * n;
         x += Math.cos(ang) * seg;
         y += Math.sin(ang) * seg;
         if (water.surface) {
@@ -1857,7 +1871,7 @@
       const a = -Math.PI + (i / 21) * Math.PI;
       const bx = x + Math.cos(a) * s * 0.5, by = y - s * 0.35;
       const len = s * (0.9 + (i % 3) * 0.15);
-      const sw = Math.sin(t * 1.3 + i * 0.4) * 0.3 + near(x, y - s, 110 * u) * Math.sign(x - pointer.x || 1) * 0.6;
+      const sw = Math.sin(t * 1.3 + i * 0.4) * 0.3 + near(x, y - s, 110 * u) * Math.sign(x - diver.x || 1) * 0.6;
       const ex = bx + Math.cos(a * 0.7 - Math.PI * 0.15 + sw) * len, ey = by + Math.sin(a * 0.7 - Math.PI * 0.15) * len * 0.9 - len * 0.3;
       ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx + sw * s * 0.4, by - len * 0.5, ex, ey); ctx.stroke();
     }
@@ -1946,7 +1960,6 @@
 
   function fearSources() {
     const list = [];
-    if (pointer.active && !feeding && !diverMode) list.push([pointer.x, pointer.y, 140 * u]);
     if (diverMode) list.push([diver.x, diver.y, 90 * u]);
     const v = scene.visitor;
     if (v) {
@@ -2087,8 +2100,8 @@
       j.y -= thrust * 0.75 * u * j.sp * k;
       j.y += 0.14 * u * k;
       j.x += (Math.sin(t * 0.18 + j.drift) * 0.18 + current * 0.5) * u * k;
-      if (pointer.active) {
-        const dx = j.x - pointer.x, dy = j.y - pointer.y;
+      if (diverMode) {
+        const dx = j.x - diver.x, dy = j.y - diver.y;
         const d = Math.hypot(dx, dy), R = 110 * u;
         if (d < R && d > 0.01) { j.x += dx / d * (1 - d / R) * 1.1 * u * k; j.y += dy / d * (1 - d / R) * 1.1 * u * k; }
       }
@@ -2154,7 +2167,7 @@
   // ---- bottom dwellers ---------------------------------------------------
   function drawCrab(c, k) {
     const flee = near(c.x, sandY(c.x), 110 * u);
-    if (flee && !c.leaving) { c.dir = Math.sign(c.x - pointer.x) || 1; c.pause = 0; }
+    if (flee && !c.leaving) { c.dir = Math.sign(c.x - diver.x) || 1; c.pause = 0; }
     if (c.pause > 0 && !c.leaving) c.pause -= k / 60;
     else {
       c.x += c.dir * c.speed * u * k * (1 + flee * 3);
@@ -2244,7 +2257,7 @@
     if (threat && o.cool <= 0) {
       o.cool = 6;
       o.dash = 1;
-      o.dir = Math.sign(o.x - pointer.x) || 1;
+      o.dir = Math.sign(o.x - diver.x) || 1;
       for (let i = 0; i < 45; i++) {
         const a = Math.random() * TAU, v = Math.random() * 1.6 * u;
         ink.push({ x: o.x, y: y - s * 0.9, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 0.4 * u, r: (3 + Math.random() * 7) * u, a: 0.7 });
@@ -3136,7 +3149,7 @@
       if (q.pulse <= 0 || (threat && q.pulse < 0.8)) {
         // squid move in jets: a quick push, then a glide
         q.pulse = 1.2 + Math.random() * 1.2;
-        const a = threat ? Math.atan2(q.y - pointer.y, q.x - pointer.x)
+        const a = threat ? Math.atan2(q.y - diver.y, q.x - diver.x)
           : Math.atan2(cy - q.y + (Math.random() - 0.5) * 80 * u, cx - q.x + (Math.random() - 0.5) * 120 * u + q.dir * 60 * u);
         const f = (threat ? 4 : 2) * u;
         q.vx += Math.cos(a) * f; q.vy += Math.sin(a) * f * 0.6;
@@ -4527,7 +4540,7 @@
     });
   }
 
-  function poke() { return diverMode ? { x: diver.x, y: diver.y, on: true } : { x: pointer.x, y: pointer.y, on: pointer.active }; }
+  function poke() { return diverMode ? { x: diver.x, y: diver.y, on: true } : { x: 0, y: 0, on: false }; }
 
   function drawMantis(m, k) {
     const s = m.s, x = m.x, y = sandY(x) + 6 * u, p = poke();
@@ -4602,15 +4615,16 @@
 
   function drawArcher(a, k) {
     const sy = waveY(a.x) + 28 * u;
-    const still = pointer.active && !feeding && !diverMode && performance.now() - (pointer.moved || 0) > 1100 && pointer.y > sy + 30 * u;
+    if (diverMode && Math.hypot(diver.vx, diver.vy) < 0.25 * u) a.stillT = (a.stillT || 0) + k / 60; else a.stillT = 0;
+    const still = diverMode && a.stillT > 1.1 && diver.y > sy + 30 * u;
     a.cool -= k / 60;
     if (still) {
-      const dx = pointer.x - a.x;
+      const dx = diver.x - a.x;
       a.face = Math.sign(dx) || a.face;
       if (Math.abs(dx) > 160 * u) a.x += Math.sign(dx) * 1.2 * u * k;
       else if (a.cool <= 0) {
         a.cool = 2.5;
-        jets.push({ x0: a.x + a.face * a.s, y0: sy, x1: pointer.x, y1: pointer.y, p: 0, hit: false });
+        jets.push({ x0: a.x + a.face * a.s, y0: sy, x1: diver.x, y1: diver.y - 10 * u, p: 0, hit: false });
         sfxSquirt();
       }
     } else {
@@ -4620,7 +4634,7 @@
       a.face = Math.sign(a.vx);
     }
     const y = sy + Math.sin(t * 1.5) * 3 * u;
-    const ang = still ? Math.atan2(pointer.y - y, Math.abs(pointer.x - a.x)) * 0.5 : 0;
+    const ang = still ? Math.atan2(diver.y - y, Math.abs(diver.x - a.x)) * 0.5 : 0;
     drawFishShape(a.x, y, a.face > 0 ? ang : Math.PI - ang, a.s, sh("#d9dfe0"), sh("#2a2e30"), t * 8, false);
     ctx.save(); ctx.translate(a.x, y); ctx.scale(a.face, 1); ctx.rotate(ang);
     ctx.fillStyle = "rgba(30,34,36,0.8)";
@@ -5092,6 +5106,8 @@
   // The search task shows for a while, then steps aside; finding one brings it back briefly.
   let taskTimer;
   function updateTask() {
+    taskEl.hidden = true; // the search bar is gone; finding a seahorse gives a short message instead
+    return;
     const h = scene.hidden;
     taskEl.hidden = !h.length || restMode;
     if (taskEl.hidden) return;
@@ -7420,6 +7436,8 @@
       hid.found = true; hid.flash = 1;
       sfxChest();
       updateTask();
+      const nf = S.hidden.filter(h => h.found).length;
+      toast(nf < S.hidden.length ? L(`Verstopt zeepaardje gevonden! ${nf} van ${S.hidden.length}`, `Hidden seahorse found! ${nf} of ${S.hidden.length}`) : L("Alle verstopte zeepaardjes gevonden!", "All hidden seahorses found!"));
       if (S.hidden.every(h => h.found)) {
         seen("task");
         buzz([40, 50, 40, 50, 80]);
@@ -7451,6 +7469,7 @@
     }
     if (S.treasure && !S.treasure.dug) spots.push([S.treasure.x, sandY(S.treasure.x)]);
     for (const h of S.hidden) if (!h.found && h.x !== undefined) spots.push([h.x, h.y - 5 * u]);
+    for (const g of S.ground) if (g.kind === "clam") spots.push([g.x, sandY(g.x) - g.s * 0.35]);
     let best = null, bd = 90 * u;
     for (const p of spots) { const d = Math.hypot(p[0] - diver.x, p[1] - diver.y); if (d < bd) { bd = d; best = p; } }
     if (best) handleTap(best[0], best[1]);
@@ -7472,13 +7491,9 @@
       if (!diverMode) diverBtn.click();
       return;
     }
-    if ((e.key === "e" || e.key === "E") && diverMode && focusTag !== "INPUT") { e.preventDefault(); diverInteract(); return; }
+    if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
-    if (e.key === " " || e.key === "Enter") {
-      const tag = document.activeElement && document.activeElement.tagName;
-      if (tag === "BUTTON" || tag === "INPUT" || !photoView.hidden) return;
-      e.preventDefault(); newVariant(randomSeed(), true);
-    }
+    if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
   });
 
   addEventListener("hashchange", () => {
@@ -7501,7 +7516,36 @@
   taskEl.addEventListener("click", explainTask);
 
   // ---- new ocean, diver, menu and photo buttons --------------------------
-  document.getElementById("next").addEventListener("click", () => newVariant(randomSeed(), true));
+  document.getElementById("next").addEventListener("click", tryNewOcean);
+
+  // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from ten minutes down to ten seconds.
+  const LOCK_KEY = "oceaan-gewisseld";
+  const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
+  if (!store.get(LOCK_KEY, 0)) store.set(LOCK_KEY, Date.now());
+  function lockLeft() { return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now()); }
+  function clockText(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
+  function tryNewOcean() {
+    const left = lockLeft();
+    if (left > 0) {
+      toast(L(`Een nieuwe oceaan kan over ${clockText(left)}. Hoe meer je vindt, hoe korter je wacht: nu elke ${durationText(lockSeconds())}.`,
+        `A new ocean is possible in ${clockText(left)}. The more you find, the shorter the wait: now every ${durationText(lockSeconds())}.`));
+      buzz(15);
+      return;
+    }
+    store.set(LOCK_KEY, Date.now());
+    newVariant(randomSeed(), true);
+    updateLockBadge();
+  }
+  function updateLockBadge() {
+    const left = lockLeft();
+    nextTimeEl.hidden = left <= 0;
+    nextTimeEl.textContent = left > 0 ? clockText(left) : "";
+    nextBtn.classList.toggle("locked", left > 0);
+    const tip = left > 0 ? L(`Nieuwe oceaan over ${clockText(left)}`, `New ocean in ${clockText(left)}`) : L("Nieuwe oceaan (R)", "New ocean (R)");
+    nextBtn.dataset.tip = tip; nextBtn.setAttribute("aria-label", tip);
+  }
+  setInterval(updateLockBadge, 1000);
+  updateLockBadge();
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
@@ -7591,6 +7635,7 @@
     }
     html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
+    html += `<p class="sum small">${L(`Je kunt nu elke ${durationText(lockSeconds())} een nieuwe oceaan kiezen. Elke mijlpaal van vondsten maakt dat korter.`, `You can now pick a new ocean every ${durationText(lockSeconds())}. Every milestone of finds makes that shorter.`)}</p>`;
     html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
     html += `<div class="badges">` + MILESTONES.map(m => {
       const [have, need] = m.prog(), done = have >= need;
@@ -8047,7 +8092,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, de spatiebalk geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, space gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, E roept de duiker, R geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, E calls the diver, R gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -8155,7 +8200,7 @@
     if (b.dataset.water) { aqDraft.water = Number(b.dataset.water); renderMake(); }
     else if (b.dataset.key) { const k = b.dataset.key; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
-    else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(randomSeed(), true); renderMake(); }
+    else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });
 
   function aqCode() {
@@ -8293,8 +8338,8 @@
   function applyLang() {
     document.documentElement.lang = LANG;
     const tools = {
-      next: [L("Nieuwe oceaan", "New ocean"), L("Nieuw", "New")],
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
+      next: [L("Nieuwe oceaan (R)", "New ocean (R)"), L("Nieuw", "New")],
       diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
       sonar: [L("Sonar: zoek naar iets zeldzaams", "Sonar: search for something rare"), L("Sonar", "Sonar")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
@@ -8312,8 +8357,8 @@
     document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
-      L("De <b>pijltjesknop</b> onderaan geeft een nieuwe oceaan.", "The <b>arrow button</b> at the bottom gives a new ocean."),
-      L("<b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.", "<b>Drag</b> to startle the animals, and <b>press and hold</b> to feed them."),
+      L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
+      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (E) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (E) you swim among the animals; they react to the diver."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
@@ -8445,7 +8490,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=18").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=19").catch(() => {}));
   }
 </script>
 </body>
