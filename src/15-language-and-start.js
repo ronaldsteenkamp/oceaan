@@ -5,8 +5,8 @@
     const tools = {
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
       next: [L("Nieuwe oceaan (R)", "New ocean (R)"), L("Nieuw", "New")],
-      diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
-      sonar: [L("Sonar: zoek naar iets zeldzaams", "Sonar: search for something rare"), L("Sonar", "Sonar")],
+      diver: [L("Duiker (D)", "Diver (D)"), L("Duiker", "Diver")],
+      sonar: [L("Sonar (Q): zoek naar iets zeldzaams", "Sonar (Q): search for something rare"), L("Sonar", "Sonar")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
       book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
@@ -23,7 +23,7 @@
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
-      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (E) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (E) you swim among the animals; they react to the diver."),
+      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (D) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (D) you swim among the animals; they react to the diver."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),

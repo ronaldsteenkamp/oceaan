@@ -87,6 +87,8 @@
       if (!diverMode) diverBtn.click();
       return;
     }
+    // D calls the diver, or sends it away again
+    if ((e.key === "d" || e.key === "D") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); diverBtn.click(); return; }
     if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
@@ -146,7 +148,7 @@
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams; D stuurt hem weer weg.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare; D sends the diver away."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
     sonarBtn.hidden = !diverMode;

@@ -279,7 +279,7 @@
   <span class="divider" aria-hidden="true"></span>
   <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-  <button id="sonar" class="tool" data-short="Sonar" type="button" hidden aria-label="Sonar" data-tip="Sonar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.8" fill="currentColor"/><path d="M10 8.5a5 5 0 0 1 0 7M13.5 6a8.5 8.5 0 0 1 0 12M17 3.5a12 12 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="sonar" class="tool" data-short="Sonar" type="button" hidden aria-label="Sonar (Q): zoek naar iets zeldzaams" data-tip="Sonar (Q): zoek naar iets zeldzaams"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.8" fill="currentColor"/><path d="M10 8.5a5 5 0 0 1 0 7M13.5 6a8.5 8.5 0 0 1 0 12M17 3.5a12 12 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="photo" class="tool" data-short="Foto" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
   <span class="divider" aria-hidden="true"></span>
   <button id="book" class="tool" data-short="Logboek" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
@@ -7488,6 +7488,8 @@
       if (!diverMode) diverBtn.click();
       return;
     }
+    // D calls the diver, or sends it away again
+    if ((e.key === "d" || e.key === "D") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); diverBtn.click(); return; }
     if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
@@ -7547,7 +7549,7 @@
     diverMode = !diverMode;
     if (diverMode) {
       diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare."));
+      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams; D stuurt hem weer weg.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare; D sends the diver away."));
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
     sonarBtn.hidden = !diverMode;
@@ -8089,7 +8091,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, E roept de duiker, R geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, E calls the diver, R gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -8337,8 +8339,8 @@
     const tools = {
       sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
       next: [L("Nieuwe oceaan (R)", "New ocean (R)"), L("Nieuw", "New")],
-      diver: [L("Duiker", "Diver"), L("Duiker", "Diver")],
-      sonar: [L("Sonar: zoek naar iets zeldzaams", "Sonar: search for something rare"), L("Sonar", "Sonar")],
+      diver: [L("Duiker (D)", "Diver (D)"), L("Duiker", "Diver")],
+      sonar: [L("Sonar (Q): zoek naar iets zeldzaams", "Sonar (Q): search for something rare"), L("Sonar", "Sonar")],
       photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
       book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
@@ -8355,7 +8357,7 @@
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
-      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (E) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (E) you swim among the animals; they react to the diver."),
+      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (D) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (D) you swim among the animals; they react to the diver."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
@@ -8487,7 +8489,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=20").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=21").catch(() => {}));
   }
 </script>
 </body>
