@@ -426,7 +426,7 @@
     tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje en elke 5 minuten een nieuwe oceaan", "a bronze logbook and a new ocean every 5 minutes"),
     tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen en elke 2 minuten een nieuwe oceaan", "green fins and a new ocean every 2 minutes"),
     tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje en elke minuut een nieuwe oceaan", "a silver logbook and a new ocean every minute"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker en elke 30 seconden een nieuwe oceaan", "a lamp on your diver's helmet and a new ocean every 30 seconds"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje, een gouden duikfles en elke 10 seconden een nieuwe oceaan", "a golden logbook, a golden air tank and a new ocean every 10 seconds"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),

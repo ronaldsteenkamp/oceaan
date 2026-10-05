@@ -6,7 +6,7 @@
     if (g.timer <= 0) {
       g.timer = 15 + Math.random() * 20;
       g.erupt = 1;
-      seen("eruption");
+      watch("eruption", () => g.erupt > 0.05 ? [g.x, sandY(g.x) - g.s] : null, g.s);
       sfxRumble(0.6);
       for (let i = 0; i < 18; i++) {
         const a = -Math.PI / 2 + (Math.random() - 0.5) * 0.9, v = (2 + Math.random() * 3) * u;
@@ -332,7 +332,7 @@
   function startBait() {
     const B = scene.bait;
     B.active = true; B.age = 0;
-    seen("baitball");
+    watch("baitball", () => B.active ? [B.cx, B.cy] : null, B.R);
     B.R = Math.min(W, H) * 0.14;
     B.cx = W * (0.35 + Math.random() * 0.3); B.cy = H * (0.3 + Math.random() * 0.15);
     B.rot = Math.random() < 0.5 ? 1 : -1;
@@ -426,7 +426,7 @@
         for (const f of sp.fish) { cx += f.x; cy += f.y; }
         cx /= sp.fish.length; cy /= sp.fish.length;
         for (let i = 0; i < 24; i++) eggs.push({ x: cx + (Math.random() - 0.5) * 40 * u, y: cy + (Math.random() - 0.5) * 30 * u, life: 8 + Math.random() * 3, sp });
-        seen("spawning");
+        watch("spawning", () => eggs.length ? eggs.map(e => [e.x, e.y]) : null, 10 * u);
       }
     }
     ctx.fillStyle = "rgba(255,240,200,0.75)";
@@ -456,7 +456,7 @@
         const g = corals[Math.floor(Math.random() * corals.length)], p = g.parts[Math.floor(Math.random() * g.parts.length)];
         coralSpawn.push({ x: g.x + p.dx + (Math.random() - 0.5) * 20 * u, y: sandY(g.x + p.dx) - 15 * u, vy: -(0.3 + Math.random() * 0.4) * u, r: (1.2 + Math.random() * 1.5) * u, ph: Math.random() * TAU });
       }
-      if (!scene.coralLogged) { scene.coralLogged = true; seen("coralspawn"); }
+      if (!scene.coralLogged && coralSpawn.some(p => lit(p.x, p.y, 10 * u))) { scene.coralLogged = true; seen("coralspawn"); }
     }
     ctx.fillStyle = "rgba(255,170,200,0.85)";
     coralSpawn = coralSpawn.filter(p => {
@@ -473,7 +473,7 @@
     if (!st.active) {
       st.timer -= dtSec;
       if (st.timer <= 0) {
-        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; seen("storm"); }
+        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active ? [diver.x, diver.y] : null); }
         else st.timer = 10 + Math.random() * 10;
       }
     } else {
@@ -569,7 +569,7 @@
         maybeShiny("flyingfish", f, f.s * 0.7, () => [f.x, f.y], () => F.fish.includes(f));
         F.fish.push(f);
       }
-      seen("flyingfish");
+      watch("flyingfish", () => F.fish.map(f => [f.x, f.y]), 12 * u);
       return;
     }
     for (let i = F.fish.length - 1; i >= 0; i--) {
@@ -627,6 +627,12 @@
   }
 
   // ---- the diver ---------------------------------------------------------
+  function keepDiverInWater(d) {
+    d.x = Math.max(10, Math.min(W - 10, d.x));
+    const top = water.surface ? waveY(d.x) + 30 * u : scene.cave ? roofY(d.x) + 30 * u : 20 * u;
+    d.y = Math.max(top, Math.min(Math.min(sandY(d.x), H) - 25 * u, d.y));
+  }
+
   function updateAndDrawDiver(k) {
     if (!diverMode) return;
     const d = diver;
@@ -638,25 +644,30 @@
     if (dist > 4) { d.vx += (dx / dist * want - d.vx) * 0.06 * k; d.vy += (dy / dist * want - d.vy) * 0.06 * k; }
     else { d.vx *= 0.9; d.vy *= 0.9; }
     d.x += d.vx * k; d.y += d.vy * k + Math.sin(t * 0.8) * 0.05 * u;
-    d.x = Math.max(10, Math.min(W - 10, d.x));
-    d.y = Math.max(water.surface ? waveY(d.x) + 30 * u : 20 * u, Math.min(Math.min(sandY(d.x), H) - 25 * u, d.y));
-    if (Math.abs(d.vx) > 0.15 * u) d.face = Math.sign(d.vx);
+    keepDiverInWater(d);
     const speed = Math.hypot(d.vx, d.vy);
+    // the diver turns smoothly towards where it swims, all the way round; when it stops it levels out again
+    const target = speed > 0.25 * u ? Math.atan2(d.vy, d.vx) : (Math.cos(d.heading) >= 0 ? 0 : Math.PI);
+    const turn = Math.atan2(Math.sin(target - d.heading), Math.cos(target - d.heading));
+    d.heading += turn * Math.min(1, (speed > 0.25 * u ? 0.09 : 0.03) * k);
+    d.face = Math.cos(d.heading) >= 0 ? 1 : -1;
+    // when it turns past straight up or down it rolls over, so its tank stays on top
+    d.roll += (d.face - d.roll) * Math.min(1, 0.1 * k);
     d.kick += (0.08 + speed * 0.08 / u) * k;
     d.bub -= k / 60;
     if (d.bub <= 0) {
       d.bub = 2.5 + Math.random();
-      for (let i = 0; i < 5; i++) bubbles.push({ x: d.x + d.face * 14 * u, y: d.y - 10 * u - i * 5 * u, r: (1.5 + Math.random() * 2.5) * u, ph: Math.random() * TAU });
+      for (let i = 0; i < 5; i++) bubbles.push({ x: d.x + Math.cos(d.heading) * 14 * u, y: d.y + Math.sin(d.heading) * 14 * u - 10 * u - i * 5 * u, r: (1.5 + Math.random() * 2.5) * u, ph: Math.random() * TAU });
       sfxBubble();
     }
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
-    d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
+
     const L = 46 * u, suit = "#1d2228";
     if (rewards.has("s30")) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
       if (!d.trail) d.trail = [];
-      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - d.face * 22 * u, y: d.y + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
+      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - Math.cos(d.heading) * 26 * u, y: d.y - Math.sin(d.heading) * 26 * u + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
       ctx.globalCompositeOperation = "lighter";
       d.trail = d.trail.filter(p => {
         p.a -= 0.012 * k; p.y -= 0.1 * u * k;
@@ -669,8 +680,8 @@
     }
     ctx.save();
     ctx.translate(d.x, d.y);
-    ctx.scale(d.face, 1);
-    ctx.rotate(d.ang);
+    ctx.rotate(d.heading);
+    ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
     for (const off of [0, 1]) {
       ctx.save();
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
@@ -691,17 +702,8 @@
     ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.03, L * 0.07, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(170,220,240,0.85)";
     ctx.beginPath(); ctx.ellipse(L * 0.38, -L * 0.04, L * 0.035, L * 0.03, 0, 0, TAU); ctx.fill();
-    if (rewards.has("m75")) {
-      // a helmet lamp lights the way, brighter at night
-      ctx.globalCompositeOperation = "lighter";
-      const g = ctx.createRadialGradient(L * 0.4, -L * 0.06, 0, L * 0.4, -L * 0.06, L * 2.2);
-      g.addColorStop(0, `rgba(255,245,210,${0.12 + 0.25 * night})`);
-      g.addColorStop(1, "rgba(255,245,210,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.moveTo(L * 0.4, -L * 0.06); ctx.lineTo(L * 2.6, -L * 0.7); ctx.lineTo(L * 2.6, L * 0.6); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
-      ctx.globalCompositeOperation = "source-over";
-    }
+    // the lamp on the helmet; its beam is drawn with the other lights
+    ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
     ctx.restore();
   }
 

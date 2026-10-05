@@ -7,7 +7,8 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 ## Bediening
 
 - De pijltjesknop onderaan (of R) geeft een nieuwe oceaan. In het begin kan dat elke tien minuten; elke mijlpaal van vondsten maakt dat korter, tot tien seconden.
-- Houd ingedrukt om de vissen te voeren. De dieren reageren alleen op de duiker (D roept hem op).
+- Roep de duiker met D; hij verschijnt bij je cursor. Alles wat in het licht van zijn lamp komt, gaat in je logboek. De dieren reageren alleen op de duiker.
+- Houd ingedrukt om de vissen te voeren.
 - Tik op een schatkist, een fles, een reuzenschelp of een verstopt zeepaardje. Tik op de zoekopdracht bovenin voor uitleg.
 - Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan.
 - Met de duiker zoek je met de sonarknop (of Q) naar iets zeldzaams: een gouden echo wijst de richting.

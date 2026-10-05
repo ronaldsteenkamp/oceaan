@@ -298,7 +298,7 @@
     <p class="lead" id="welcomeLead">Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.</p>
     <ul class="howto">
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55"/></svg><span id="howto0">De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan.</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span id="howto1"><b>Sleep</b> om de dieren te laten schrikken, en <b>houd ingedrukt</b> om ze te voeren.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 17c3-4 6 4 9 0s6 4 9 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.5"/></svg><span id="howto1">Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek.</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="howto2"><b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b></span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="howto3">Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span id="howto4">Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.</span></li>
@@ -747,7 +747,7 @@
     tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje en elke 5 minuten een nieuwe oceaan", "a bronze logbook and a new ocean every 5 minutes"),
     tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen en elke 2 minuten een nieuwe oceaan", "green fins and a new ocean every 2 minutes"),
     tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje en elke minuut een nieuwe oceaan", "a silver logbook and a new ocean every minute"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een lamp op de helm van je duiker en elke 30 seconden een nieuwe oceaan", "a lamp on your diver's helmet and a new ocean every 30 seconds"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje, een gouden duikfles en elke 10 seconden een nieuwe oceaan", "a golden logbook, a golden air tank and a new ocean every 10 seconds"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
@@ -845,7 +845,38 @@
   let day = 1, night = 0, glowF = 0, current = 0, feeding = false;
   let eggs = [], dust = [], rings = [], jets = [], coralSpawn = [], abyssGlows = [], ripples = [];
   let frameNo = 0, paused = false, diverMode = false, aquarium = null, mapT = 0, panelTab = "log", aqDraft = null;
-  const diver = { x: 0, y: 0, vx: 0, vy: 0, face: 1, kick: 0, bub: 1, ang: 0 };
+  const diver = { x: 0, y: 0, vx: 0, vy: 0, face: 1, kick: 0, bub: 1, ang: 0, heading: 0, roll: 1 };
+
+  // The diver's lamp: only what comes into its beam goes into the logbook. A brighter lamp reaches further.
+  function lightCone() {
+    const big = rewards.has("m75");
+    return { len: (big ? 340 : 240) * u, half: big ? 0.62 : 0.46, near: 46 * u };
+  }
+  function lit(x, y, r = 0) {
+    if (!diverMode || !isFinite(x) || !isFinite(y)) return false;
+    const dx = x - diver.x, dy = y - diver.y, d = Math.hypot(dx, dy), c = lightCone();
+    if (d < c.near + r) return true;
+    if (d > c.len + r) return false;
+    let a = Math.atan2(dy, dx) - diver.heading;
+    a = Math.atan2(Math.sin(a), Math.cos(a));
+    return Math.abs(a) < c.half + Math.atan2(r, Math.max(d, 1));
+  }
+  // Something in the ocean that is waiting for the lamp. get() gives one point or a list of points (or nothing yet).
+  function watch(key, get, r = 0) {
+    if (!scene || !scene.watch || scene.watch.some(w => w.key === key)) return;
+    scene.watch.push({ key, get, r });
+  }
+  function checkWatch() {
+    if (!diverMode || !scene.watch.length) return;
+    scene.watch = scene.watch.filter(w => {
+      let pts;
+      try { pts = w.get(); } catch (e) { return false; }
+      if (!pts || !pts.length) return true;
+      if (!Array.isArray(pts[0])) pts = [pts];
+      for (const p of pts) if (p && lit(p[0], p[1], w.r)) { seen(w.key); return false; }
+      return true;
+    });
+  }
 
   const pick = arr => arr[Math.floor(rng() * arr.length)];
   const range = (a, b) => a + rng() * (b - a);
@@ -1174,16 +1205,19 @@
     buildMore(s, Lf, clumps, remap);
     buildWave2(s, Lf, remap);
 
-    seen("w:" + water.name);
-    for (const g of s.ground) seen(g.kind);
-    if (s.canyon) seen("canyon");
-    if (s.ground.some(g => g.kind === "anemone" && g.clown)) seen("clown");
-    seen("fish");
-    if (s.jellies.length) seen("jelly");
-    const lifeNow = presentLife(s);
-    for (const key in lifeNow) if (lifeNow[key]) seen(key);
-    if (s.station) seen("grouper");
-    if (s.ghost) seen("ghost");
+    s.watch = [];
+    // the water itself is logged as soon as the diver goes in
+    watch("w:" + water.name, () => [diver.x, diver.y]);
+    for (const g of s.ground) watch(g.kind, () => [g.x, sandY(g.x) - (g.s || 20 * u) * 0.5], Math.min(g.w * 0.35, 120 * u));
+    if (s.canyon) watch("canyon", () => { const x = s.canyon.x0 + s.canyon.side * 150 * u; return [x, sandY(x) - 60 * u]; }, 80 * u);
+    const clownHome = s.ground.find(g => g.kind === "anemone" && g.clown);
+    if (clownHome) watch("clown", () => [clownHome.x, sandY(clownHome.x) - clownHome.s], clownHome.s);
+    watch("fish", () => s.species.filter(sp => !sp.lantern).flatMap(sp => sp.fish.filter((f, i) => i % 3 === 0).map(f => [f.x, f.y])), 6 * u);
+    if (s.jellies.length) watch("jelly", () => s.jellies.map(j => [j.x, j.y]), 15 * u);
+    const lifeNow = presentLife(s), where = lifePoints(s);
+    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => [diver.x, diver.y]), 14 * u);
+    if (s.station) watch("grouper", () => [s.station.grouper.x, s.station.grouper.y], 20 * u);
+    if (s.ghost) watch("ghost", () => [s.ghost.x, s.ghost.y], 90 * u);
     registerShinies(s);
 
     bgGrad = ctx.createLinearGradient(0, 0, 0, H);
@@ -2575,7 +2609,7 @@
         if (i >= 0) { s.fish.splice(i, 1); break; }
       }
     }
-    if (!v.logged && v.x > 0 && v.x < W) { v.logged = true; seen(v.type); }
+    if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type); }
     if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
       scene.visitor = null;
       scene.visitorTimer = 8 + Math.random() * 14;
@@ -2798,6 +2832,29 @@
       cassiopea: S.cassio.length, lionfish: !!S.lionfish, cuttlefish: !!S.cuttle, lobster: S.lobsters.length, nautilus: !!S.nautilus,
       isopod: S.isopods.length, seadragon: !!S.dragon,
       parrotfish: !!S.parrot, boxfish: !!S.boxfish, pistol: !!S.pistol, sargassumfish: !!S.frogfish, spidercrab: !!S.spider,
+    };
+  }
+
+  // Where each kind of animal can be seen, so the diver's lamp can find it.
+  function lifePoints(S) {
+    const fy = x => sandY(x) + 2 * u, one = o => o ? [o] : null;
+    return {
+      crab: () => S.crabs.map(c => [c.x, fy(c.x) - c.s * 0.4]), starfish: () => S.starfish.map(f => [f.x, fy(f.x)]),
+      urchin: () => S.urchins.map(o => [o.x, fy(o.x)]), octopus: () => S.octopus && [S.octopus.x, fy(S.octopus.x) - 20 * u],
+      ray: () => S.ray && [S.ray.x, fy(S.ray.x) - S.ray.lift], eels: () => S.ground.filter(g => g.kind === "eels").map(g => [g.x, fy(g.x) - 30 * u]),
+      seahorse: () => S.seahorses.map(h => [h.x, fy(h.x) - h.lift]), puffer: () => S.puffer && [S.puffer.x, S.puffer.y],
+      angler: () => S.angler && [S.angler.x, S.angler.y], moray: () => S.wreck && [S.wreck.x, fy(S.wreck.x) - 40 * u],
+      squid: () => S.squids.map(q => [q.x, q.y]), hermit: () => S.hermits.map(h => [h.x, fy(h.x)]), slugs: () => S.slugs.map(o => [o.x, fy(o.x)]),
+      comb: () => S.combs.map(c => [c.x, c.y]), lantern: () => S.species.filter(sp => sp.lantern).flatMap(sp => sp.fish.map(f => [f.x, f.y])),
+      otters: () => S.otters.map(o => [o.x, waveY(o.x)]), seal: () => S.seal && [S.seal.x, S.seal.y !== undefined ? S.seal.y : S.seal.y0],
+      penguins: () => S.penguins.map(p => [p.x, waveY(p.x) + p.depth * 0.5]), mantis: () => S.mantis && [S.mantis.x, fy(S.mantis.x) - 10 * u],
+      archer: () => S.archer && [S.archer.x, waveY(S.archer.x) + 28 * u], cleaners: () => S.station && [S.station.x, fy(S.station.x) - 55 * u],
+      cassiopea: () => S.cassio.map(c => [c.x, fy(c.x)]), lionfish: () => S.lionfish && [S.lionfish.x, S.lionfish.cy || S.lionfish.y],
+      cuttlefish: () => S.cuttle && [S.cuttle.x, S.cuttle.cy || S.cuttle.y], lobster: () => S.lobsters.map(l => [l.x, fy(l.x)]),
+      nautilus: () => S.nautilus && [S.nautilus.x, S.nautilus.cy || S.nautilus.y], isopod: () => S.isopods.map(o => [o.x, fy(o.x)]),
+      seadragon: () => S.dragon && [S.dragon.x, S.dragon.cy || S.dragon.y], parrotfish: () => S.parrot && [S.parrot.x, S.parrot.cy || fy(S.parrot.x) - 40 * u],
+      boxfish: () => S.boxfish && [S.boxfish.x, S.boxfish.cy || S.boxfish.y], pistol: () => S.pistol && [S.pistol.x, fy(S.pistol.x)],
+      sargassumfish: () => S.frogfish && S.frogfish.cx !== undefined && [S.frogfish.cx, S.frogfish.cy], spidercrab: () => S.spider && [S.spider.x, fy(S.spider.x) - 20 * u],
     };
   }
 
@@ -3570,7 +3627,7 @@
         if (!claim(O.rise * 2 + O.hold)) { T.timer = 8 + Math.random() * 10; return; }
         T.active = true; T.age = 0; T.list = O.make(T);
         sfxRumble(O === KRAKEN ? 1 : 0.5);
-        seen(O === KRAKEN ? "kraken" : "giant");
+        watch(O === KRAKEN ? "kraken" : "giant", () => T.active ? T.list.map(tt => [tt.bx + Math.cos(tt.ang) * tt.len * 0.4 * T.reach, tt.by + Math.sin(tt.ang) * tt.len * 0.4 * T.reach]) : null, 30 * u);
       }
       return;
     }
@@ -4215,10 +4272,10 @@
     });
     if (water.surface && night > 0.05) glow(S.moon.x, waveY(S.moon.x) + 34 * u, 70 * u, "240,240,220", 0.22 * night);
     if (diverMode) {
-      // the diver's torch
-      const d = diver, th = d.face > 0 ? d.ang + 0.12 : Math.PI - d.ang - 0.12;
-      const lx = d.x + Math.cos(th) * 18 * u, ly = d.y + 3 * u, len = Math.min(W, H) * 0.45, spr = 0.3;
-      const strength = 0.07 + 0.3 * Math.max(night, water.glow ? 0.8 : 0);
+      // the diver's lamp turns with the diver; its beam is exactly the part of the ocean that goes into the logbook
+      const d = diver, th = d.heading, c = lightCone(), big = rewards.has("m75");
+      const lx = d.x + Math.cos(th) * 18 * u, ly = d.y + Math.sin(th) * 18 * u, len = c.len, spr = c.half;
+      const strength = (big ? 0.12 : 0.08) + (big ? 0.32 : 0.26) * Math.max(night, water.glow ? 0.8 : 0);
       const g2 = ctx.createLinearGradient(lx, ly, lx + Math.cos(th) * len, ly + Math.sin(th) * len);
       g2.addColorStop(0, `rgba(255,248,215,${strength})`);
       g2.addColorStop(1, "rgba(255,248,215,0)");
@@ -4375,7 +4432,7 @@
     if (g.timer <= 0) {
       g.timer = 15 + Math.random() * 20;
       g.erupt = 1;
-      seen("eruption");
+      watch("eruption", () => g.erupt > 0.05 ? [g.x, sandY(g.x) - g.s] : null, g.s);
       sfxRumble(0.6);
       for (let i = 0; i < 18; i++) {
         const a = -Math.PI / 2 + (Math.random() - 0.5) * 0.9, v = (2 + Math.random() * 3) * u;
@@ -4701,7 +4758,7 @@
   function startBait() {
     const B = scene.bait;
     B.active = true; B.age = 0;
-    seen("baitball");
+    watch("baitball", () => B.active ? [B.cx, B.cy] : null, B.R);
     B.R = Math.min(W, H) * 0.14;
     B.cx = W * (0.35 + Math.random() * 0.3); B.cy = H * (0.3 + Math.random() * 0.15);
     B.rot = Math.random() < 0.5 ? 1 : -1;
@@ -4795,7 +4852,7 @@
         for (const f of sp.fish) { cx += f.x; cy += f.y; }
         cx /= sp.fish.length; cy /= sp.fish.length;
         for (let i = 0; i < 24; i++) eggs.push({ x: cx + (Math.random() - 0.5) * 40 * u, y: cy + (Math.random() - 0.5) * 30 * u, life: 8 + Math.random() * 3, sp });
-        seen("spawning");
+        watch("spawning", () => eggs.length ? eggs.map(e => [e.x, e.y]) : null, 10 * u);
       }
     }
     ctx.fillStyle = "rgba(255,240,200,0.75)";
@@ -4825,7 +4882,7 @@
         const g = corals[Math.floor(Math.random() * corals.length)], p = g.parts[Math.floor(Math.random() * g.parts.length)];
         coralSpawn.push({ x: g.x + p.dx + (Math.random() - 0.5) * 20 * u, y: sandY(g.x + p.dx) - 15 * u, vy: -(0.3 + Math.random() * 0.4) * u, r: (1.2 + Math.random() * 1.5) * u, ph: Math.random() * TAU });
       }
-      if (!scene.coralLogged) { scene.coralLogged = true; seen("coralspawn"); }
+      if (!scene.coralLogged && coralSpawn.some(p => lit(p.x, p.y, 10 * u))) { scene.coralLogged = true; seen("coralspawn"); }
     }
     ctx.fillStyle = "rgba(255,170,200,0.85)";
     coralSpawn = coralSpawn.filter(p => {
@@ -4842,7 +4899,7 @@
     if (!st.active) {
       st.timer -= dtSec;
       if (st.timer <= 0) {
-        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; seen("storm"); }
+        if (claim(22)) { st.active = true; st.age = 0; st.nextFlash = 1.5; watch("storm", () => st.active ? [diver.x, diver.y] : null); }
         else st.timer = 10 + Math.random() * 10;
       }
     } else {
@@ -4938,7 +4995,7 @@
         maybeShiny("flyingfish", f, f.s * 0.7, () => [f.x, f.y], () => F.fish.includes(f));
         F.fish.push(f);
       }
-      seen("flyingfish");
+      watch("flyingfish", () => F.fish.map(f => [f.x, f.y]), 12 * u);
       return;
     }
     for (let i = F.fish.length - 1; i >= 0; i--) {
@@ -4996,6 +5053,12 @@
   }
 
   // ---- the diver ---------------------------------------------------------
+  function keepDiverInWater(d) {
+    d.x = Math.max(10, Math.min(W - 10, d.x));
+    const top = water.surface ? waveY(d.x) + 30 * u : scene.cave ? roofY(d.x) + 30 * u : 20 * u;
+    d.y = Math.max(top, Math.min(Math.min(sandY(d.x), H) - 25 * u, d.y));
+  }
+
   function updateAndDrawDiver(k) {
     if (!diverMode) return;
     const d = diver;
@@ -5007,25 +5070,30 @@
     if (dist > 4) { d.vx += (dx / dist * want - d.vx) * 0.06 * k; d.vy += (dy / dist * want - d.vy) * 0.06 * k; }
     else { d.vx *= 0.9; d.vy *= 0.9; }
     d.x += d.vx * k; d.y += d.vy * k + Math.sin(t * 0.8) * 0.05 * u;
-    d.x = Math.max(10, Math.min(W - 10, d.x));
-    d.y = Math.max(water.surface ? waveY(d.x) + 30 * u : 20 * u, Math.min(Math.min(sandY(d.x), H) - 25 * u, d.y));
-    if (Math.abs(d.vx) > 0.15 * u) d.face = Math.sign(d.vx);
+    keepDiverInWater(d);
     const speed = Math.hypot(d.vx, d.vy);
+    // the diver turns smoothly towards where it swims, all the way round; when it stops it levels out again
+    const target = speed > 0.25 * u ? Math.atan2(d.vy, d.vx) : (Math.cos(d.heading) >= 0 ? 0 : Math.PI);
+    const turn = Math.atan2(Math.sin(target - d.heading), Math.cos(target - d.heading));
+    d.heading += turn * Math.min(1, (speed > 0.25 * u ? 0.09 : 0.03) * k);
+    d.face = Math.cos(d.heading) >= 0 ? 1 : -1;
+    // when it turns past straight up or down it rolls over, so its tank stays on top
+    d.roll += (d.face - d.roll) * Math.min(1, 0.1 * k);
     d.kick += (0.08 + speed * 0.08 / u) * k;
     d.bub -= k / 60;
     if (d.bub <= 0) {
       d.bub = 2.5 + Math.random();
-      for (let i = 0; i < 5; i++) bubbles.push({ x: d.x + d.face * 14 * u, y: d.y - 10 * u - i * 5 * u, r: (1.5 + Math.random() * 2.5) * u, ph: Math.random() * TAU });
+      for (let i = 0; i < 5; i++) bubbles.push({ x: d.x + Math.cos(d.heading) * 14 * u, y: d.y + Math.sin(d.heading) * 14 * u - 10 * u - i * 5 * u, r: (1.5 + Math.random() * 2.5) * u, ph: Math.random() * TAU });
       sfxBubble();
     }
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
-    d.ang = Math.atan2(d.vy, Math.abs(d.vx) + 0.6 * u) * 0.7;
+
     const L = 46 * u, suit = "#1d2228";
     if (rewards.has("s30")) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
       if (!d.trail) d.trail = [];
-      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - d.face * 22 * u, y: d.y + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
+      if (d.trailT <= 0) { d.trailT = 4; d.trail.push({ x: d.x - Math.cos(d.heading) * 26 * u, y: d.y - Math.sin(d.heading) * 26 * u + (Math.random() - 0.5) * 10 * u, a: 1, ph: Math.random() * TAU }); }
       ctx.globalCompositeOperation = "lighter";
       d.trail = d.trail.filter(p => {
         p.a -= 0.012 * k; p.y -= 0.1 * u * k;
@@ -5038,8 +5106,8 @@
     }
     ctx.save();
     ctx.translate(d.x, d.y);
-    ctx.scale(d.face, 1);
-    ctx.rotate(d.ang);
+    ctx.rotate(d.heading);
+    ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
     for (const off of [0, 1]) {
       ctx.save();
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
@@ -5060,17 +5128,8 @@
     ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.03, L * 0.07, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(170,220,240,0.85)";
     ctx.beginPath(); ctx.ellipse(L * 0.38, -L * 0.04, L * 0.035, L * 0.03, 0, 0, TAU); ctx.fill();
-    if (rewards.has("m75")) {
-      // a helmet lamp lights the way, brighter at night
-      ctx.globalCompositeOperation = "lighter";
-      const g = ctx.createRadialGradient(L * 0.4, -L * 0.06, 0, L * 0.4, -L * 0.06, L * 2.2);
-      g.addColorStop(0, `rgba(255,245,210,${0.12 + 0.25 * night})`);
-      g.addColorStop(1, "rgba(255,245,210,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.moveTo(L * 0.4, -L * 0.06); ctx.lineTo(L * 2.6, -L * 0.7); ctx.lineTo(L * 2.6, L * 0.6); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
-      ctx.globalCompositeOperation = "source-over";
-    }
+    // the lamp on the helmet; its beam is drawn with the other lights
+    ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -5466,7 +5525,7 @@
       const [x, y] = e.get();
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
-      if (!e.told && x > 0 && x < W && y > 0 && y < H) {
+      if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
         const key = "shiny:" + e.key, isNew = !logbook.has(key);
@@ -6140,7 +6199,7 @@
       }
     }
     if (S.jellies.some(j => j.bloom)) {
-      if (!B.logged && S.jellies.some(j => j.bloom && j.x > 0 && j.x < W)) { B.logged = true; seen("jellybloom"); }
+      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); }
       S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
@@ -6149,7 +6208,7 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; seen("glowtide"); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
         if (G.age > 35) G.active = false;
@@ -6210,7 +6269,7 @@
     const v = S.visitor;
     if (v && v.type === "humpback" && v.song === undefined && v.x > W * 0.25 && v.x < W * 0.75) {
       v.song = Math.random() < 0.7 ? 7 : 0;
-      if (v.song) { seen("whalesong"); whaleSong(); }
+      if (v.song) { watch("whalesong", () => v.song > 0 && scene.visitor === v ? [v.x, v.y + v.yOff] : null, v.size * 0.4); whaleSong(); }
     }
     if (v && v.song > 0) {
       v.song -= dtSec;
@@ -6265,7 +6324,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && h.x > 0 && h.x < W) { Hh.logged = true; seen("hatchlings"); }
+      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
@@ -6302,7 +6361,7 @@
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(18.5 * sc, -5 * sc, 1 * sc, 3 * sc, 0, 0, TAU); ctx.fill();
     ctx.strokeStyle = sh("#1a3a28"); ctx.lineWidth = 1.5 * sc; ctx.beginPath(); ctx.moveTo(34 * sc, 4 * sc); ctx.lineTo(16 * sc, 6 * sc); ctx.stroke();
     ctx.restore();
-    if (!Sp.logged && hx > 0 && hx < W) { Sp.logged = true; seen("serpent"); }
+    if (!Sp.logged && pts.some((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc))) { Sp.logged = true; seen("serpent"); }
     if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) Sp.active = false;
   }
 
@@ -6319,7 +6378,7 @@
     ctx.rotate(Math.sin(M.ph) * 0.03);
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
-    if (!M.logged && M.x > 0 && M.x < W) { M.logged = true; seen("megalodon"); }
+    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon"); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
   }
 
@@ -6913,7 +6972,7 @@
       if (Q.timer <= 0) {
         Q.timer = 220 + Math.random() * 200;
         if (claim(8)) {
-          Q.age = 0; seen("quake"); sfxRumble(1); buzz([200, 80, 300]);
+          Q.age = 0; watch("quake", () => Q.age >= 0 ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
           for (const sp of S.species) for (const f of sp.fish) { f.vx += (Math.random() - 0.5) * 6 * u; f.vy += (Math.random() - 0.5) * 3 * u; }
         }
       }
@@ -6956,7 +7015,7 @@
         v.ringT = 1.3; v.ringsLeft--;
         const d = v.pod[0];
         S.bubbleRings.push({ x: v.x + d.dx * v.dir + v.dir * v.size * 0.4, y: v.y + d.dy, r: 14 * u, ph: Math.random() * TAU });
-        seen("bubblerings");
+        watch("bubblerings", () => S.bubbleRings.map(r => [r.x, r.y]), 12 * u);
       }
     }
 
@@ -6982,7 +7041,7 @@
       for (let i = E.list.length - 1; i >= 0; i--) {
         const e = E.list[i];
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
-        if (!E.logged && e.x > 0 && e.x < W) { E.logged = true; seen("eelmigration"); }
+        if (!E.logged && lit(e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration"); }
         shinyDraw(e, () => {
           ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
           ctx.beginPath();
@@ -6997,7 +7056,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
-      if (!C.logged && c.x > 0 && c.x < W) { C.logged = true; seen("crabmarch"); }
+      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
@@ -7022,7 +7081,7 @@
     ctx.save(); ctx.globalAlpha = 0.85;
     drawSpermWhaleShape(M.x, M.y + Math.sin(M.ph * 0.7) * 8 * u, M.dir, M.size, M.ph, sh("#eceae4"), sh("#a8a6a0"));
     ctx.restore();
-    if (!M.logged && M.x > 0 && M.x < W) { M.logged = true; seen("mobydick"); }
+    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick"); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
   }
 
@@ -7050,7 +7109,7 @@
     ctx.globalCompositeOperation = "lighter";
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
-    if (!g.logged && g.x > 0 && g.x < W) { g.logged = true; seen("ghostdiver"); }
+    if (!g.logged && lit(g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver"); }
   }
 
   // The northern lights shimmer through the surface in green and violet curtains.
@@ -7059,7 +7118,7 @@
     if (!A) return;
     const lv = Math.max(0, night - 0.2) / 0.8;
     if (lv <= 0) return;
-    if (!A.logged && lv > 0.5) { A.logged = true; seen("aurora"); }
+    if (!A.logged && lv > 0.5 && diverMode) { A.logged = true; seen("aurora"); }
     ctx.globalCompositeOperation = "lighter";
     const h = H * 0.38;
     for (let x = 0; x < W; x += 6 * u) {
@@ -7362,6 +7421,7 @@
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
+    checkWatch();
     updateAndDrawSonar(k, dtSec);
     if (S.kraken.active) shinyDraw(S.kraken, () => drawTentacleSet(S.kraken, KRAKEN));
     drawInk(k);
@@ -7409,13 +7469,13 @@
   // A tap starts a new ocean (or opens the chest), a long press feeds the fish, a drag stirs the water.
   let down = null, feedTimer = null;
   canvas.addEventListener("pointermove", e => {
-    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.moved = performance.now();
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.moved = performance.now(); pointer.known = true;
     if (down && !feeding && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10) clearTimeout(feedTimer);
   });
   canvas.addEventListener("pointerleave", () => { pointer.active = false; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("pointerdown", e => {
     down = { x: e.clientX, y: e.clientY, time: performance.now() };
-    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.known = true;
     clearTimeout(feedTimer);
     feedTimer = setTimeout(() => { if (down) feeding = true; }, 450);
   });
@@ -7554,8 +7614,10 @@
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
-      diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams; D stuurt hem weer weg.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare; D sends the diver away."));
+      // the diver appears where the cursor is, or at the nearest spot in the water
+      diver.x = pointer.known ? pointer.x : W * 0.5; diver.y = pointer.known ? pointer.y : H * 0.45;
+      keepDiverInWater(diver);
+      diver.vx = diver.vy = 0; diver.heading = 0; diver.roll = 1;
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
     sonarBtn.hidden = !diverMode;
@@ -8363,7 +8425,7 @@
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
-      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (D) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (D) you swim among the animals; they react to the diver."),
+      L("Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek. <b>Houd ingedrukt</b> om de vissen te voeren.", "Call the <b>diver</b> (D) and swim around: everything that comes into the light of its lamp goes into your logbook. <b>Press and hold</b> to feed the fish."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
@@ -8421,6 +8483,7 @@
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
         diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
+        diver.x = W * 0.5; diver.y = H * 0.5; diver.vx = 1.5 * u; diver.vy = -0.5 * u; checkWatch();
         if (audio.next) audio.next.note = 0;
         try { audioStep(); } catch (e) { errors.push(`geluid in oceaan ${sd} (${water.name}): ${e.message}`); }
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
@@ -8500,7 +8563,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=22").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=23").catch(() => {}));
   }
 </script>
 </body>

@@ -250,7 +250,7 @@
       const [x, y] = e.get();
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
-      if (!e.told && x > 0 && x < W && y > 0 && y < H) {
+      if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
         const key = "shiny:" + e.key, isNew = !logbook.has(key);

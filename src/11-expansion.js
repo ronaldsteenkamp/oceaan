@@ -647,7 +647,7 @@
       }
     }
     if (S.jellies.some(j => j.bloom)) {
-      if (!B.logged && S.jellies.some(j => j.bloom && j.x > 0 && j.x < W)) { B.logged = true; seen("jellybloom"); }
+      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); }
       S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
@@ -656,7 +656,7 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; seen("glowtide"); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
         if (G.age > 35) G.active = false;
@@ -717,7 +717,7 @@
     const v = S.visitor;
     if (v && v.type === "humpback" && v.song === undefined && v.x > W * 0.25 && v.x < W * 0.75) {
       v.song = Math.random() < 0.7 ? 7 : 0;
-      if (v.song) { seen("whalesong"); whaleSong(); }
+      if (v.song) { watch("whalesong", () => v.song > 0 && scene.visitor === v ? [v.x, v.y + v.yOff] : null, v.size * 0.4); whaleSong(); }
     }
     if (v && v.song > 0) {
       v.song -= dtSec;
@@ -772,7 +772,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && h.x > 0 && h.x < W) { Hh.logged = true; seen("hatchlings"); }
+      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
@@ -809,7 +809,7 @@
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(18.5 * sc, -5 * sc, 1 * sc, 3 * sc, 0, 0, TAU); ctx.fill();
     ctx.strokeStyle = sh("#1a3a28"); ctx.lineWidth = 1.5 * sc; ctx.beginPath(); ctx.moveTo(34 * sc, 4 * sc); ctx.lineTo(16 * sc, 6 * sc); ctx.stroke();
     ctx.restore();
-    if (!Sp.logged && hx > 0 && hx < W) { Sp.logged = true; seen("serpent"); }
+    if (!Sp.logged && pts.some((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc))) { Sp.logged = true; seen("serpent"); }
     if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) Sp.active = false;
   }
 
@@ -826,7 +826,7 @@
     ctx.rotate(Math.sin(M.ph) * 0.03);
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
-    if (!M.logged && M.x > 0 && M.x < W) { M.logged = true; seen("megalodon"); }
+    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon"); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
   }
 

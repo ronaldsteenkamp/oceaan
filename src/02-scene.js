@@ -8,7 +8,38 @@
   let day = 1, night = 0, glowF = 0, current = 0, feeding = false;
   let eggs = [], dust = [], rings = [], jets = [], coralSpawn = [], abyssGlows = [], ripples = [];
   let frameNo = 0, paused = false, diverMode = false, aquarium = null, mapT = 0, panelTab = "log", aqDraft = null;
-  const diver = { x: 0, y: 0, vx: 0, vy: 0, face: 1, kick: 0, bub: 1, ang: 0 };
+  const diver = { x: 0, y: 0, vx: 0, vy: 0, face: 1, kick: 0, bub: 1, ang: 0, heading: 0, roll: 1 };
+
+  // The diver's lamp: only what comes into its beam goes into the logbook. A brighter lamp reaches further.
+  function lightCone() {
+    const big = rewards.has("m75");
+    return { len: (big ? 340 : 240) * u, half: big ? 0.62 : 0.46, near: 46 * u };
+  }
+  function lit(x, y, r = 0) {
+    if (!diverMode || !isFinite(x) || !isFinite(y)) return false;
+    const dx = x - diver.x, dy = y - diver.y, d = Math.hypot(dx, dy), c = lightCone();
+    if (d < c.near + r) return true;
+    if (d > c.len + r) return false;
+    let a = Math.atan2(dy, dx) - diver.heading;
+    a = Math.atan2(Math.sin(a), Math.cos(a));
+    return Math.abs(a) < c.half + Math.atan2(r, Math.max(d, 1));
+  }
+  // Something in the ocean that is waiting for the lamp. get() gives one point or a list of points (or nothing yet).
+  function watch(key, get, r = 0) {
+    if (!scene || !scene.watch || scene.watch.some(w => w.key === key)) return;
+    scene.watch.push({ key, get, r });
+  }
+  function checkWatch() {
+    if (!diverMode || !scene.watch.length) return;
+    scene.watch = scene.watch.filter(w => {
+      let pts;
+      try { pts = w.get(); } catch (e) { return false; }
+      if (!pts || !pts.length) return true;
+      if (!Array.isArray(pts[0])) pts = [pts];
+      for (const p of pts) if (p && lit(p[0], p[1], w.r)) { seen(w.key); return false; }
+      return true;
+    });
+  }
 
   const pick = arr => arr[Math.floor(rng() * arr.length)];
   const range = (a, b) => a + rng() * (b - a);
@@ -337,16 +368,19 @@
     buildMore(s, Lf, clumps, remap);
     buildWave2(s, Lf, remap);
 
-    seen("w:" + water.name);
-    for (const g of s.ground) seen(g.kind);
-    if (s.canyon) seen("canyon");
-    if (s.ground.some(g => g.kind === "anemone" && g.clown)) seen("clown");
-    seen("fish");
-    if (s.jellies.length) seen("jelly");
-    const lifeNow = presentLife(s);
-    for (const key in lifeNow) if (lifeNow[key]) seen(key);
-    if (s.station) seen("grouper");
-    if (s.ghost) seen("ghost");
+    s.watch = [];
+    // the water itself is logged as soon as the diver goes in
+    watch("w:" + water.name, () => [diver.x, diver.y]);
+    for (const g of s.ground) watch(g.kind, () => [g.x, sandY(g.x) - (g.s || 20 * u) * 0.5], Math.min(g.w * 0.35, 120 * u));
+    if (s.canyon) watch("canyon", () => { const x = s.canyon.x0 + s.canyon.side * 150 * u; return [x, sandY(x) - 60 * u]; }, 80 * u);
+    const clownHome = s.ground.find(g => g.kind === "anemone" && g.clown);
+    if (clownHome) watch("clown", () => [clownHome.x, sandY(clownHome.x) - clownHome.s], clownHome.s);
+    watch("fish", () => s.species.filter(sp => !sp.lantern).flatMap(sp => sp.fish.filter((f, i) => i % 3 === 0).map(f => [f.x, f.y])), 6 * u);
+    if (s.jellies.length) watch("jelly", () => s.jellies.map(j => [j.x, j.y]), 15 * u);
+    const lifeNow = presentLife(s), where = lifePoints(s);
+    for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => [diver.x, diver.y]), 14 * u);
+    if (s.station) watch("grouper", () => [s.station.grouper.x, s.station.grouper.y], 20 * u);
+    if (s.ghost) watch("ghost", () => [s.ghost.x, s.ghost.y], 90 * u);
     registerShinies(s);
 
     bgGrad = ctx.createLinearGradient(0, 0, 0, H);

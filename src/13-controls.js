@@ -2,13 +2,13 @@
   // A tap starts a new ocean (or opens the chest), a long press feeds the fish, a drag stirs the water.
   let down = null, feedTimer = null;
   canvas.addEventListener("pointermove", e => {
-    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.moved = performance.now();
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.moved = performance.now(); pointer.known = true;
     if (down && !feeding && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10) clearTimeout(feedTimer);
   });
   canvas.addEventListener("pointerleave", () => { pointer.active = false; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("pointerdown", e => {
     down = { x: e.clientX, y: e.clientY, time: performance.now() };
-    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; pointer.known = true;
     clearTimeout(feedTimer);
     feedTimer = setTimeout(() => { if (down) feeding = true; }, 450);
   });
@@ -147,8 +147,10 @@
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode) {
-      diver.x = W * 0.5; diver.y = H * 0.45; diver.vx = diver.vy = 0;
-      toast(L("Stuur de duiker met je vinger, je muis of de pijltjes. Druk op E om te openen wat hij aanraakt. Met de sonarknop of Q zoek je naar iets zeldzaams; D stuurt hem weer weg.", "Steer the diver with your finger, mouse or arrow keys. Press E to open what the diver touches. Use the sonar button or Q to search for something rare; D sends the diver away."));
+      // the diver appears where the cursor is, or at the nearest spot in the water
+      diver.x = pointer.known ? pointer.x : W * 0.5; diver.y = pointer.known ? pointer.y : H * 0.45;
+      keepDiverInWater(diver);
+      diver.vx = diver.vy = 0; diver.heading = 0; diver.roll = 1;
     }
     diverBtn.setAttribute("aria-pressed", String(diverMode));
     sonarBtn.hidden = !diverMode;

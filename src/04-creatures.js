@@ -658,7 +658,7 @@
         if (i >= 0) { s.fish.splice(i, 1); break; }
       }
     }
-    if (!v.logged && v.x > 0 && v.x < W) { v.logged = true; seen(v.type); }
+    if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type); }
     if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
       scene.visitor = null;
       scene.visitorTimer = 8 + Math.random() * 14;

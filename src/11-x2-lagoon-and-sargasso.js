@@ -494,7 +494,7 @@
       if (Q.timer <= 0) {
         Q.timer = 220 + Math.random() * 200;
         if (claim(8)) {
-          Q.age = 0; seen("quake"); sfxRumble(1); buzz([200, 80, 300]);
+          Q.age = 0; watch("quake", () => Q.age >= 0 ? [diver.x, diver.y] : null); sfxRumble(1); buzz([200, 80, 300]);
           for (const sp of S.species) for (const f of sp.fish) { f.vx += (Math.random() - 0.5) * 6 * u; f.vy += (Math.random() - 0.5) * 3 * u; }
         }
       }
@@ -537,7 +537,7 @@
         v.ringT = 1.3; v.ringsLeft--;
         const d = v.pod[0];
         S.bubbleRings.push({ x: v.x + d.dx * v.dir + v.dir * v.size * 0.4, y: v.y + d.dy, r: 14 * u, ph: Math.random() * TAU });
-        seen("bubblerings");
+        watch("bubblerings", () => S.bubbleRings.map(r => [r.x, r.y]), 12 * u);
       }
     }
 
@@ -563,7 +563,7 @@
       for (let i = E.list.length - 1; i >= 0; i--) {
         const e = E.list[i];
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
-        if (!E.logged && e.x > 0 && e.x < W) { E.logged = true; seen("eelmigration"); }
+        if (!E.logged && lit(e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration"); }
         shinyDraw(e, () => {
           ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
           ctx.beginPath();
@@ -578,7 +578,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
-      if (!C.logged && c.x > 0 && c.x < W) { C.logged = true; seen("crabmarch"); }
+      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
@@ -603,7 +603,7 @@
     ctx.save(); ctx.globalAlpha = 0.85;
     drawSpermWhaleShape(M.x, M.y + Math.sin(M.ph * 0.7) * 8 * u, M.dir, M.size, M.ph, sh("#eceae4"), sh("#a8a6a0"));
     ctx.restore();
-    if (!M.logged && M.x > 0 && M.x < W) { M.logged = true; seen("mobydick"); }
+    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick"); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
   }
 
@@ -631,7 +631,7 @@
     ctx.globalCompositeOperation = "lighter";
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
-    if (!g.logged && g.x > 0 && g.x < W) { g.logged = true; seen("ghostdiver"); }
+    if (!g.logged && lit(g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver"); }
   }
 
   // The northern lights shimmer through the surface in green and violet curtains.
@@ -640,7 +640,7 @@
     if (!A) return;
     const lv = Math.max(0, night - 0.2) / 0.8;
     if (lv <= 0) return;
-    if (!A.logged && lv > 0.5) { A.logged = true; seen("aurora"); }
+    if (!A.logged && lv > 0.5 && diverMode) { A.logged = true; seen("aurora"); }
     ctx.globalCompositeOperation = "lighter";
     const h = H * 0.38;
     for (let x = 0; x < W; x += 6 * u) {

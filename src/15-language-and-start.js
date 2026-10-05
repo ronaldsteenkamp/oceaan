@@ -23,7 +23,7 @@
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
-      L("<b>Houd ingedrukt</b> om de vissen te voeren. Met de <b>duiker</b> (D) zwem je tussen de dieren; zij reageren op hem.", "<b>Press and hold</b> to feed the fish. With the <b>diver</b> (D) you swim among the animals; they react to the diver."),
+      L("Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek. <b>Houd ingedrukt</b> om de vissen te voeren.", "Call the <b>diver</b> (D) and swim around: everything that comes into the light of its lamp goes into your logbook. <b>Press and hold</b> to feed the fish."),
       L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
@@ -81,6 +81,7 @@
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
         diverMode = true; sonarPing(); S.sonar.echoAt = 0.05;
+        diver.x = W * 0.5; diver.y = H * 0.5; diver.vx = 1.5 * u; diver.vy = -0.5 * u; checkWatch();
         if (audio.next) audio.next.note = 0;
         try { audioStep(); } catch (e) { errors.push(`geluid in oceaan ${sd} (${water.name}): ${e.message}`); }
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }

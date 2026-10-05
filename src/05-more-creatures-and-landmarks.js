@@ -55,6 +55,29 @@
     };
   }
 
+  // Where each kind of animal can be seen, so the diver's lamp can find it.
+  function lifePoints(S) {
+    const fy = x => sandY(x) + 2 * u, one = o => o ? [o] : null;
+    return {
+      crab: () => S.crabs.map(c => [c.x, fy(c.x) - c.s * 0.4]), starfish: () => S.starfish.map(f => [f.x, fy(f.x)]),
+      urchin: () => S.urchins.map(o => [o.x, fy(o.x)]), octopus: () => S.octopus && [S.octopus.x, fy(S.octopus.x) - 20 * u],
+      ray: () => S.ray && [S.ray.x, fy(S.ray.x) - S.ray.lift], eels: () => S.ground.filter(g => g.kind === "eels").map(g => [g.x, fy(g.x) - 30 * u]),
+      seahorse: () => S.seahorses.map(h => [h.x, fy(h.x) - h.lift]), puffer: () => S.puffer && [S.puffer.x, S.puffer.y],
+      angler: () => S.angler && [S.angler.x, S.angler.y], moray: () => S.wreck && [S.wreck.x, fy(S.wreck.x) - 40 * u],
+      squid: () => S.squids.map(q => [q.x, q.y]), hermit: () => S.hermits.map(h => [h.x, fy(h.x)]), slugs: () => S.slugs.map(o => [o.x, fy(o.x)]),
+      comb: () => S.combs.map(c => [c.x, c.y]), lantern: () => S.species.filter(sp => sp.lantern).flatMap(sp => sp.fish.map(f => [f.x, f.y])),
+      otters: () => S.otters.map(o => [o.x, waveY(o.x)]), seal: () => S.seal && [S.seal.x, S.seal.y !== undefined ? S.seal.y : S.seal.y0],
+      penguins: () => S.penguins.map(p => [p.x, waveY(p.x) + p.depth * 0.5]), mantis: () => S.mantis && [S.mantis.x, fy(S.mantis.x) - 10 * u],
+      archer: () => S.archer && [S.archer.x, waveY(S.archer.x) + 28 * u], cleaners: () => S.station && [S.station.x, fy(S.station.x) - 55 * u],
+      cassiopea: () => S.cassio.map(c => [c.x, fy(c.x)]), lionfish: () => S.lionfish && [S.lionfish.x, S.lionfish.cy || S.lionfish.y],
+      cuttlefish: () => S.cuttle && [S.cuttle.x, S.cuttle.cy || S.cuttle.y], lobster: () => S.lobsters.map(l => [l.x, fy(l.x)]),
+      nautilus: () => S.nautilus && [S.nautilus.x, S.nautilus.cy || S.nautilus.y], isopod: () => S.isopods.map(o => [o.x, fy(o.x)]),
+      seadragon: () => S.dragon && [S.dragon.x, S.dragon.cy || S.dragon.y], parrotfish: () => S.parrot && [S.parrot.x, S.parrot.cy || fy(S.parrot.x) - 40 * u],
+      boxfish: () => S.boxfish && [S.boxfish.x, S.boxfish.cy || S.boxfish.y], pistol: () => S.pistol && [S.pistol.x, fy(S.pistol.x)],
+      sargassumfish: () => S.frogfish && S.frogfish.cx !== undefined && [S.frogfish.cx, S.frogfish.cy], spidercrab: () => S.spider && [S.spider.x, fy(S.spider.x) - 20 * u],
+    };
+  }
+
   // ---- more landmarks ----------------------------------------------------
   function drawPlane(g) {
     const L = g.w, y0 = sandY(g.x) + L * 0.05;
@@ -824,7 +847,7 @@
         if (!claim(O.rise * 2 + O.hold)) { T.timer = 8 + Math.random() * 10; return; }
         T.active = true; T.age = 0; T.list = O.make(T);
         sfxRumble(O === KRAKEN ? 1 : 0.5);
-        seen(O === KRAKEN ? "kraken" : "giant");
+        watch(O === KRAKEN ? "kraken" : "giant", () => T.active ? T.list.map(tt => [tt.bx + Math.cos(tt.ang) * tt.len * 0.4 * T.reach, tt.by + Math.sin(tt.ang) * tt.len * 0.4 * T.reach]) : null, 30 * u);
       }
       return;
     }
