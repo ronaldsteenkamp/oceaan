@@ -3,12 +3,12 @@
   function applyLang() {
     document.documentElement.lang = LANG;
     const tools = {
-      sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
+      sound: audio.on ? [L("Geluid uitzetten (G)", "Turn sound off (G)"), L("Geluid", "Sound")] : [L("Geluid aanzetten (G)", "Turn sound on (G)"), L("Geluid", "Sound")],
       next: [L("Nieuwe oceaan (R)", "New ocean (R)"), L("Nieuw", "New")],
       diver: [L("Duiker (D)", "Diver (D)"), L("Duiker", "Diver")],
       sonar: [L("Sonar (Q): zoek naar iets zeldzaams", "Sonar (Q): search for something rare"), L("Sonar", "Sonar")],
-      photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
-      book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
+      photo: [L("Foto maken (F)", "Take a photo (F)"), L("Foto", "Photo")],
+      book: [L("Logboek (L)", "Logbook (L)"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
     };
     for (const [id, [tip, short]] of Object.entries(tools)) {

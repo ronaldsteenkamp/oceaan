@@ -192,8 +192,9 @@
       else if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; renewJelly(j); }
       if (j.y > H * 0.85) j.y -= 0.5 * u * k;
       // jellies in a swarm just drift on through; the others come back as new jellies
-      if (!j.bloom && j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
-      if (!j.bloom && j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
+      if (j.shiny && (j.x < j.r * 1.5 || j.x > W - j.r * 1.5)) { j.hd = Math.abs(j.hd || 0.1) * (j.x < W / 2 ? 1 : -1); j.bloom = 0; }
+      else if (!j.bloom && j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
+      else if (!j.bloom && j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
@@ -659,9 +660,12 @@
       }
     }
     if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type); }
-    if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
-      scene.visitor = null;
-      scene.visitorTimer = 8 + Math.random() * 14;
+    // a shiny visitor turns round as soon as its head reaches the edge, so it stays in view
+    // (a pod of dolphins turns just out of view, so the pod does not jump)
+    if (v.shiny && !v.pod && ((v.dir > 0 && v.x > W - v.size * 0.35) || (v.dir < 0 && v.x < v.size * 0.35))) v.dir *= -1;
+    else if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
+      if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
+      else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
     }
   }
 

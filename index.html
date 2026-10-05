@@ -2180,8 +2180,9 @@
       else if (j.y < -j.r * 5) { j.y = H * 0.8; j.x = Math.random() * W; renewJelly(j); }
       if (j.y > H * 0.85) j.y -= 0.5 * u * k;
       // jellies in a swarm just drift on through; the others come back as new jellies
-      if (!j.bloom && j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
-      if (!j.bloom && j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
+      if (j.shiny && (j.x < j.r * 1.5 || j.x > W - j.r * 1.5)) { j.hd = Math.abs(j.hd || 0.1) * (j.x < W / 2 ? 1 : -1); j.bloom = 0; }
+      else if (!j.bloom && j.x < -j.r * 3) { j.x = W + j.r * 2; renewJelly(j); }
+      else if (!j.bloom && j.x > W + j.r * 3) { j.x = -j.r * 2; renewJelly(j); }
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
@@ -2647,9 +2648,12 @@
       }
     }
     if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type); }
-    if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
-      scene.visitor = null;
-      scene.visitorTimer = 8 + Math.random() * 14;
+    // a shiny visitor turns round as soon as its head reaches the edge, so it stays in view
+    // (a pod of dolphins turns just out of view, so the pod does not jump)
+    if (v.shiny && !v.pod && ((v.dir > 0 && v.x > W - v.size * 0.35) || (v.dir < 0 && v.x < v.size * 0.35))) v.dir *= -1;
+    else if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
+      if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
+      else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
     }
   }
 
@@ -3326,10 +3330,11 @@
   function drawSeal(se, k) {
     se.ph += 0.018 * k;
     se.x += se.dir * 1.1 * u * k;
-    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) {
+    const turnAt = se.shiny ? -se.s * 0.4 : se.s; // a shiny seal turns before it leaves the screen
+    if ((se.dir > 0 && se.x > W + turnAt) || (se.dir < 0 && se.x < -turnAt)) {
       // a seal that has swum off comes back as a different seal
       se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3);
-      maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
+      if (!se.shiny) maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
     }
     let y = se.y0 + Math.sin(se.ph) * 70 * u;
     if (water.surface) y = Math.max(y, waveY(se.x) + se.s * 0.25);
@@ -3371,8 +3376,9 @@
       const vx = (1.2 + depthF * 0.8) * u;
       p.x += p.dir * vx * k;
       const pgGet = () => [p.x, waveY(p.x) + 6 * u + Math.max(0, Math.sin((p.ph % TAU) * 0.5)) * p.depth];
-      if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
-      if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      if (p.shiny) { if ((p.dir < 0 && p.x < 30 * u) || (p.dir > 0 && p.x > W - 30 * u)) p.dir *= -1; }
+      else if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      else if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;
@@ -4464,7 +4470,7 @@
     audio.on = !audio.on;
     audio.ac.resume();
     audio.master.gain.setTargetAtTime(audio.on ? volume : 0, audio.ac.currentTime, 0.3);
-    const label = audio.on ? L("Geluid uitzetten", "Turn sound off") : L("Geluid aanzetten", "Turn sound on");
+    const label = audio.on ? L("Geluid uitzetten (G)", "Turn sound off (G)") : L("Geluid aanzetten (G)", "Turn sound on (G)");
     soundBtn.classList.toggle("is-on", audio.on);
     soundBtn.dataset.tip = label;
     soundBtn.setAttribute("aria-label", label);
@@ -4830,6 +4836,22 @@
     sfxWhistle();
   }
 
+  // A shiny dolphin or sailfish from the bait ball becomes a visitor that keeps swimming here.
+  function shinyHunterStays(a) {
+    const dir = Math.cos(a.ang) >= 0 ? 1 : -1, sail = a.type === "sail";
+    const v = { type: sail ? "swordfish" : "dolphins", dir, size: a.L, ph: 0, yOff: 0, y: a.y, x: a.x, speed: VISITOR_SPEED[sail ? "swordfish" : "dolphins"] * u, logged: true };
+    const alive = () => scene.visitor === v;
+    if (sail) {
+      v.shiny = "swordfish"; v.margin = a.L * 1.3;
+      scene.shinies.push({ key: "swordfish", obj: v, temp: true, r: a.L * 0.3, alive, get: () => [v.x, v.y + v.yOff], told: true });
+    } else {
+      const d = { dx: 0, dy: 0, ph: 0, sc: 1, shiny: "dolphins" };
+      v.pod = [d]; v.margin = a.L * 2.5;
+      scene.shinies.push({ key: "dolphins", obj: d, temp: true, r: a.L * 0.3, alive, get: () => [v.x, v.y + Math.sin(v.ph * 1.5) * 35 * u], told: true });
+    }
+    scene.visitor = v;
+  }
+
   function updateAndDrawBait(k, dtSec) {
     const B = scene.bait;
     if (!B.enabled) return;
@@ -4840,8 +4862,14 @@
     }
     B.age += dtSec;
     // the moment ends once the ball has broken up and every hunter has swum out of view
-    const hunted = B.att.every(a => a.x < -a.L * 1.2 || a.x > W + a.L * 1.2);
-    if (B.age > 31 && hunted) { B.active = false; B.timer = 100 + Math.random() * 60; return; }
+    const hunted = B.att.every(a => a.shiny || a.x < -a.L * 1.2 || a.x > W + a.L * 1.2);
+    for (const a of B.att) if (a.shiny && (a.x < -a.L * 1.2 || a.x > W + a.L * 1.2)) { a.ang = Math.PI - a.ang; a.x = Math.max(-a.L * 1.1, Math.min(W + a.L * 1.1, a.x)); }
+    if (B.age > 31 && hunted) {
+      const sa = B.att.find(a => a.shiny);
+      if (sa && scene.visitor) return; // wait until the sea is free for it
+      if (sa) shinyHunterStays(sa);
+      B.active = false; B.timer = 100 + Math.random() * 60; return;
+    }
     const inF = smooth(Math.min(1, B.age / 4)), outF = B.age > 26 ? Math.min(1, (B.age - 26) / 5) : 0;
     const spread = 1 + (1 - inF) * 3 + outF * 3;
     B.cx += (Math.sin(t * 0.2) * 0.2 + current * 0.3) * u * k;
@@ -5066,7 +5094,10 @@
         if (!f.launched) f.y = Math.max(f.y, surf + f.s * 0.6);
       }
       shinyDraw(f, () => drawFlyingFish(f));
-      if (f.x < -80 * u || f.x > W + 80 * u) { if (f.launched) F.fish.splice(i, 1); }
+      if (f.x < -80 * u || f.x > W + 80 * u) {
+        if (f.shiny && f.launched && !f.air) { f.dir = f.x < 0 ? 1 : -1; f.launched = false; f.vy = 0; f.launchX = W * (0.15 + Math.random() * 0.7); }
+        else if (f.launched) F.fish.splice(i, 1);
+      }
     }
   }
 
@@ -5414,11 +5445,12 @@
     S.turnTimer -= dtSec;
     if (S.turnTimer > 0) return;
     S.turnTimer = 14 + Math.random() * 18;
-    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length);
+    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length && !sp.fish.some(f => f.shiny));
     const crabExit = S.floorL <= 0 || S.floorR >= W;
     const options = [];
     if (schools.length) options.push("school");
-    if (S.crabs.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
+    const leavers = S.crabs.filter(c => !c.shiny);
+    if (leavers.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
     if (!options.length) return;
     if (options[Math.floor(Math.random() * options.length)] === "school") {
       const sp = schools[Math.floor(Math.random() * schools.length)];
@@ -5426,7 +5458,7 @@
       for (const f of sp.fish) cx += f.x;
       sp.leaving = cx / sp.fish.length < W / 2 ? -1 : 1;
     } else {
-      const c = S.crabs[Math.floor(Math.random() * S.crabs.length)];
+      const c = leavers[Math.floor(Math.random() * leavers.length)];
       const leftOk = S.floorL <= 0, rightOk = S.floorR >= W;
       c.leaving = leftOk && (!rightOk || c.x < W / 2) ? -1 : 1;
       c.dir = c.leaving; c.pause = 0;
@@ -6249,7 +6281,7 @@
     }
     if (S.jellies.some(j => j.bloom)) {
       if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); sight("jelly"); }
-      S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
+      S.jellies = S.jellies.filter(j => !j.bloom || j.shiny || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
     // on a dark night the water starts to sparkle
@@ -6376,7 +6408,7 @@
       if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
-      if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
+      if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) { if (h.shiny) h.dir *= -1; else Hh.list.splice(i, 1); }
     }
   }
 
@@ -6411,7 +6443,10 @@
     ctx.strokeStyle = sh("#1a3a28"); ctx.lineWidth = 1.5 * sc; ctx.beginPath(); ctx.moveTo(34 * sc, 4 * sc); ctx.lineTo(16 * sc, 6 * sc); ctx.stroke();
     ctx.restore();
     if (!Sp.logged && pts.some((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc))) { Sp.logged = true; seen("serpent"); }
-    if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) Sp.active = false;
+    if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) {
+      if (Sp.shiny) { Sp.dir *= -1; Sp.x = Sp.dir > 0 ? -40 * u : W + 40 * u; }
+      else Sp.active = false;
+    }
   }
 
   // The megalodon is only ever a huge dark shape, far behind everything else.
@@ -6428,7 +6463,7 @@
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
     if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon"); }
-    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
+    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
   // The shark shape is drawn once and darkened, then reused every frame.
@@ -7098,13 +7133,13 @@
           ctx.stroke();
           ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
         });
-        if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) E.list.splice(i, 1);
+        if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) { if (e.shiny) e.dir *= -1; else E.list.splice(i, 1); }
       }
     }
     const C = S.march;
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
-      if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
+      if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { if (c.shiny) { c.dir *= -1; c.leaving = c.dir; } else { C.list.splice(i, 1); continue; } }
       if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
@@ -7131,7 +7166,7 @@
     drawSpermWhaleShape(M.x, M.y + Math.sin(M.ph * 0.7) * 8 * u, M.dir, M.size, M.ph, sh("#eceae4"), sh("#a8a6a0"));
     ctx.restore();
     if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick"); }
-    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
+    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
   // The ghost of an old helmet diver drifts through the water and waves.
@@ -7605,6 +7640,12 @@
     }
     // D calls the diver, or sends it away again
     if ((e.key === "d" || e.key === "D") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); diverBtn.click(); return; }
+    if (focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const k = e.key.toLowerCase();
+      if (k === "l") { e.preventDefault(); bookBtn.click(); return; }
+      if (k === "f" && photoView.hidden) { e.preventDefault(); photoBtn.click(); return; }
+      if (k === "g") { e.preventDefault(); if (!soundBtn.disabled) soundBtn.click(); return; }
+    }
     if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
@@ -8208,7 +8249,7 @@
       </div>
       <h3>${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan, L opent het logboek, F maakt een foto, G zet het geluid aan of uit en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean, L opens the logbook, F takes a photo, G switches sound on or off and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -8454,12 +8495,12 @@
   function applyLang() {
     document.documentElement.lang = LANG;
     const tools = {
-      sound: audio.on ? [L("Geluid uitzetten", "Turn sound off"), L("Geluid", "Sound")] : [L("Geluid aanzetten", "Turn sound on"), L("Geluid", "Sound")],
+      sound: audio.on ? [L("Geluid uitzetten (G)", "Turn sound off (G)"), L("Geluid", "Sound")] : [L("Geluid aanzetten (G)", "Turn sound on (G)"), L("Geluid", "Sound")],
       next: [L("Nieuwe oceaan (R)", "New ocean (R)"), L("Nieuw", "New")],
       diver: [L("Duiker (D)", "Diver (D)"), L("Duiker", "Diver")],
       sonar: [L("Sonar (Q): zoek naar iets zeldzaams", "Sonar (Q): search for something rare"), L("Sonar", "Sonar")],
-      photo: [L("Foto maken", "Take a photo"), L("Foto", "Photo")],
-      book: [L("Logboek", "Logbook"), L("Logboek", "Logbook")],
+      photo: [L("Foto maken (F)", "Take a photo (F)"), L("Foto", "Photo")],
+      book: [L("Logboek (L)", "Logbook (L)"), L("Logboek", "Logbook")],
       menu: [L("Maken en delen", "Create and share"), L("Menu", "Menu")],
     };
     for (const [id, [tip, short]] of Object.entries(tools)) {
@@ -8612,7 +8653,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=24").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=25").catch(() => {}));
   }
 </script>
 </body>

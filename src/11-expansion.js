@@ -648,7 +648,7 @@
     }
     if (S.jellies.some(j => j.bloom)) {
       if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); sight("jelly"); }
-      S.jellies = S.jellies.filter(j => !j.bloom || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
+      S.jellies = S.jellies.filter(j => !j.bloom || j.shiny || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
     // on a dark night the water starts to sparkle
@@ -775,7 +775,7 @@
       if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle"); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
-      if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) Hh.list.splice(i, 1);
+      if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) { if (h.shiny) h.dir *= -1; else Hh.list.splice(i, 1); }
     }
   }
 
@@ -810,7 +810,10 @@
     ctx.strokeStyle = sh("#1a3a28"); ctx.lineWidth = 1.5 * sc; ctx.beginPath(); ctx.moveTo(34 * sc, 4 * sc); ctx.lineTo(16 * sc, 6 * sc); ctx.stroke();
     ctx.restore();
     if (!Sp.logged && pts.some((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc))) { Sp.logged = true; seen("serpent"); }
-    if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) Sp.active = false;
+    if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) {
+      if (Sp.shiny) { Sp.dir *= -1; Sp.x = Sp.dir > 0 ? -40 * u : W + 40 * u; }
+      else Sp.active = false;
+    }
   }
 
   // The megalodon is only ever a huge dark shape, far behind everything else.
@@ -827,7 +830,7 @@
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
     if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon"); }
-    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
+    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
   // The shark shape is drawn once and darkened, then reused every frame.

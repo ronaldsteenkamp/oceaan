@@ -90,11 +90,12 @@
     S.turnTimer -= dtSec;
     if (S.turnTimer > 0) return;
     S.turnTimer = 14 + Math.random() * 18;
-    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length);
+    const schools = S.species.filter(sp => !sp.leaving && sp.fish.length && !sp.fish.some(f => f.shiny));
     const crabExit = S.floorL <= 0 || S.floorR >= W;
     const options = [];
     if (schools.length) options.push("school");
-    if (S.crabs.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
+    const leavers = S.crabs.filter(c => !c.shiny);
+    if (leavers.length && crabExit && !S.crabs.some(c => c.leaving)) options.push("crab");
     if (!options.length) return;
     if (options[Math.floor(Math.random() * options.length)] === "school") {
       const sp = schools[Math.floor(Math.random() * schools.length)];
@@ -102,7 +103,7 @@
       for (const f of sp.fish) cx += f.x;
       sp.leaving = cx / sp.fish.length < W / 2 ? -1 : 1;
     } else {
-      const c = S.crabs[Math.floor(Math.random() * S.crabs.length)];
+      const c = leavers[Math.floor(Math.random() * leavers.length)];
       const leftOk = S.floorL <= 0, rightOk = S.floorR >= W;
       c.leaving = leftOk && (!rightOk || c.x < W / 2) ? -1 : 1;
       c.dir = c.leaving; c.pause = 0;

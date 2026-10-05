@@ -357,6 +357,22 @@
     sfxWhistle();
   }
 
+  // A shiny dolphin or sailfish from the bait ball becomes a visitor that keeps swimming here.
+  function shinyHunterStays(a) {
+    const dir = Math.cos(a.ang) >= 0 ? 1 : -1, sail = a.type === "sail";
+    const v = { type: sail ? "swordfish" : "dolphins", dir, size: a.L, ph: 0, yOff: 0, y: a.y, x: a.x, speed: VISITOR_SPEED[sail ? "swordfish" : "dolphins"] * u, logged: true };
+    const alive = () => scene.visitor === v;
+    if (sail) {
+      v.shiny = "swordfish"; v.margin = a.L * 1.3;
+      scene.shinies.push({ key: "swordfish", obj: v, temp: true, r: a.L * 0.3, alive, get: () => [v.x, v.y + v.yOff], told: true });
+    } else {
+      const d = { dx: 0, dy: 0, ph: 0, sc: 1, shiny: "dolphins" };
+      v.pod = [d]; v.margin = a.L * 2.5;
+      scene.shinies.push({ key: "dolphins", obj: d, temp: true, r: a.L * 0.3, alive, get: () => [v.x, v.y + Math.sin(v.ph * 1.5) * 35 * u], told: true });
+    }
+    scene.visitor = v;
+  }
+
   function updateAndDrawBait(k, dtSec) {
     const B = scene.bait;
     if (!B.enabled) return;
@@ -367,8 +383,14 @@
     }
     B.age += dtSec;
     // the moment ends once the ball has broken up and every hunter has swum out of view
-    const hunted = B.att.every(a => a.x < -a.L * 1.2 || a.x > W + a.L * 1.2);
-    if (B.age > 31 && hunted) { B.active = false; B.timer = 100 + Math.random() * 60; return; }
+    const hunted = B.att.every(a => a.shiny || a.x < -a.L * 1.2 || a.x > W + a.L * 1.2);
+    for (const a of B.att) if (a.shiny && (a.x < -a.L * 1.2 || a.x > W + a.L * 1.2)) { a.ang = Math.PI - a.ang; a.x = Math.max(-a.L * 1.1, Math.min(W + a.L * 1.1, a.x)); }
+    if (B.age > 31 && hunted) {
+      const sa = B.att.find(a => a.shiny);
+      if (sa && scene.visitor) return; // wait until the sea is free for it
+      if (sa) shinyHunterStays(sa);
+      B.active = false; B.timer = 100 + Math.random() * 60; return;
+    }
     const inF = smooth(Math.min(1, B.age / 4)), outF = B.age > 26 ? Math.min(1, (B.age - 26) / 5) : 0;
     const spread = 1 + (1 - inF) * 3 + outF * 3;
     B.cx += (Math.sin(t * 0.2) * 0.2 + current * 0.3) * u * k;
@@ -593,7 +615,10 @@
         if (!f.launched) f.y = Math.max(f.y, surf + f.s * 0.6);
       }
       shinyDraw(f, () => drawFlyingFish(f));
-      if (f.x < -80 * u || f.x > W + 80 * u) { if (f.launched) F.fish.splice(i, 1); }
+      if (f.x < -80 * u || f.x > W + 80 * u) {
+        if (f.shiny && f.launched && !f.air) { f.dir = f.x < 0 ? 1 : -1; f.launched = false; f.vy = 0; f.launchX = W * (0.15 + Math.random() * 0.7); }
+        else if (f.launched) F.fish.splice(i, 1);
+      }
     }
   }
 

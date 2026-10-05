@@ -129,7 +129,7 @@
     audio.on = !audio.on;
     audio.ac.resume();
     audio.master.gain.setTargetAtTime(audio.on ? volume : 0, audio.ac.currentTime, 0.3);
-    const label = audio.on ? L("Geluid uitzetten", "Turn sound off") : L("Geluid aanzetten", "Turn sound on");
+    const label = audio.on ? L("Geluid uitzetten (G)", "Turn sound off (G)") : L("Geluid aanzetten (G)", "Turn sound on (G)");
     soundBtn.classList.toggle("is-on", audio.on);
     soundBtn.dataset.tip = label;
     soundBtn.setAttribute("aria-label", label);

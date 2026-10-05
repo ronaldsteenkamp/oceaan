@@ -89,6 +89,12 @@
     }
     // D calls the diver, or sends it away again
     if ((e.key === "d" || e.key === "D") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); diverBtn.click(); return; }
+    if (focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const k = e.key.toLowerCase();
+      if (k === "l") { e.preventDefault(); bookBtn.click(); return; }
+      if (k === "f" && photoView.hidden) { e.preventDefault(); photoBtn.click(); return; }
+      if (k === "g") { e.preventDefault(); if (!soundBtn.disabled) soundBtn.click(); return; }
+    }
     if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
     if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }

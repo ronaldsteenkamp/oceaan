@@ -509,10 +509,11 @@
   function drawSeal(se, k) {
     se.ph += 0.018 * k;
     se.x += se.dir * 1.1 * u * k;
-    if ((se.dir > 0 && se.x > W + se.s) || (se.dir < 0 && se.x < -se.s)) {
+    const turnAt = se.shiny ? -se.s * 0.4 : se.s; // a shiny seal turns before it leaves the screen
+    if ((se.dir > 0 && se.x > W + turnAt) || (se.dir < 0 && se.x < -turnAt)) {
       // a seal that has swum off comes back as a different seal
       se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3);
-      maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
+      if (!se.shiny) maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
     }
     let y = se.y0 + Math.sin(se.ph) * 70 * u;
     if (water.surface) y = Math.max(y, waveY(se.x) + se.s * 0.25);
@@ -554,8 +555,9 @@
       const vx = (1.2 + depthF * 0.8) * u;
       p.x += p.dir * vx * k;
       const pgGet = () => [p.x, waveY(p.x) + 6 * u + Math.max(0, Math.sin((p.ph % TAU) * 0.5)) * p.depth];
-      if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
-      if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      if (p.shiny) { if ((p.dir < 0 && p.x < 30 * u) || (p.dir > 0 && p.x > W - 30 * u)) p.dir *= -1; }
+      else if (p.x < -40) { p.x = W + 30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
+      else if (p.x > W + 40) { p.x = -30; maybeShiny("penguins", p, p.s * 0.7, pgGet); }
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;

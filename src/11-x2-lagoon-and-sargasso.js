@@ -571,13 +571,13 @@
           ctx.stroke();
           ctx.fillStyle = "#101820"; ctx.beginPath(); ctx.arc(e.x, e.y, 1 * u, 0, TAU); ctx.fill();
         });
-        if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) E.list.splice(i, 1);
+        if (e.dir > 0 ? e.x > W + 30 * u : e.x < -30 * u) { if (e.shiny) e.dir *= -1; else E.list.splice(i, 1); }
       }
     }
     const C = S.march;
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
-      if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { C.list.splice(i, 1); continue; }
+      if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { if (c.shiny) { c.dir *= -1; c.leaving = c.dir; } else { C.list.splice(i, 1); continue; } }
       if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab"); }
       shinyDraw(c, () => drawCrab(c, k));
     }
@@ -604,7 +604,7 @@
     drawSpermWhaleShape(M.x, M.y + Math.sin(M.ph * 0.7) * 8 * u, M.dir, M.size, M.ph, sh("#eceae4"), sh("#a8a6a0"));
     ctx.restore();
     if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick"); }
-    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) M.active = false;
+    if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
   // The ghost of an old helmet diver drifts through the water and waves.
