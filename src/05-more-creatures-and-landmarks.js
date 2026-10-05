@@ -421,7 +421,7 @@
       ctx.translate(q.x, q.y);
       ctx.scale(face, 1);
       ctx.rotate(Math.atan2(q.vy, Math.abs(q.vx) + 0.5) * 0.6);
-      const col = `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.85)`;
+      const col = `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.95)`;
       ctx.strokeStyle = col; ctx.lineWidth = Math.max(0.8, s * 0.06); ctx.lineCap = "round";
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
@@ -430,14 +430,26 @@
         ctx.quadraticCurveTo(-s * 0.7, oy + Math.sin(t * 4 + i) * s * 0.08, -s * (1.0 + (i % 2) * 0.25), oy * 1.6 + Math.sin(t * 3 + i) * s * 0.1);
       }
       ctx.stroke();
+      // two long hunting tentacles with clubs at the end
+      ctx.lineWidth = Math.max(0.7, s * 0.035);
+      ctx.beginPath();
+      for (const sd of [-1, 1]) {
+        const ex = -s * 1.45, ey = sd * s * 0.12 + Math.sin(t * 2.5 + sd) * s * 0.06;
+        ctx.moveTo(-s * 0.3, sd * s * 0.03); ctx.quadraticCurveTo(-s * 0.9, sd * s * 0.1, ex, ey);
+      }
+      ctx.stroke();
       ctx.fillStyle = col;
+      for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(-s * 1.45, sd * s * 0.12 + Math.sin(t * 2.5 + sd) * s * 0.06, s * 0.09, s * 0.04, 0, 0, TAU); ctx.fill(); }
       ctx.beginPath(); ctx.ellipse(s * 0.25, 0, s * 0.6, s * 0.16, 0, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(-s * 0.28, 0, s * 0.12, s * 0.1, 0, 0, TAU); ctx.fill();
       const flap = Math.sin(t * 6) * s * 0.04;
       ctx.beginPath(); ctx.moveTo(s * 0.85, 0); ctx.lineTo(s * 0.6, -s * 0.22 - flap); ctx.lineTo(s * 0.55, 0); ctx.lineTo(s * 0.6, s * 0.22 + flap); ctx.closePath(); ctx.fill();
       ctx.fillStyle = "rgba(120,30,40,0.35)";
       for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(s * i * 0.12, ((i * 7) % 3 - 1) * s * 0.05, s * 0.03, 0, TAU); ctx.fill(); }
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.beginPath(); ctx.arc(-s * 0.25, -s * 0.03, s * 0.075, 0, TAU); ctx.fill();
       ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(-s * 0.25, -s * 0.03, s * 0.05, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(-s * 0.26, -s * 0.03, s * 0.05, 0, TAU); ctx.fill();
       ctx.restore();
       if (recolor) endShiny(q.shiny, q);
     }

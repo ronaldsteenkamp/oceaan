@@ -224,21 +224,42 @@
     p.out = Math.max(0, Math.min(1, p.out + (Math.sin(p.ph * 0.3) > -0.2 ? 0.03 : -0.05) * k));
     if (p.cool <= 0) {
       p.cool = 4 + Math.random() * 6; p.snap = 1;
-      rings.push({ x: p.x + 14 * u, y: sandY(p.x) - 2 * u, r: 2 * u, a: 0.9 });
+      rings.push({ x: p.x + 22 * u, y: sandY(p.x) - 4 * u, r: 2 * u, a: 0.9 });
       sfxClick();
     }
     p.snap = Math.max(0, p.snap - 0.05 * k);
     const x = p.x, y = sandY(x) + 5 * u;
     ctx.save(); ctx.translate(x, y);
-    ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.beginPath(); ctx.ellipse(0, 0, 9 * u, 3.5 * u, 0, 0, TAU); ctx.fill();
-    // the goby, half out of the hole
-    drawFishShape(-2 * u, -8 * u, -0.25, 14 * u, sh("#e8d8b0"), sh("#8a6a3a"), p.ph, false);
-    // the shrimp pushes out sand with its big claw
-    const sx = 6 * u + p.out * 10 * u;
-    ctx.fillStyle = sh("#e86a3a");
-    ctx.beginPath(); ctx.ellipse(sx, -2 * u, 6 * u, 2.6 * u, 0, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(sx + 7 * u, -3 * u, 4.5 * u, 2.6 * u, -0.2 - p.snap * 0.6, 0, TAU); ctx.fill();
-    if (p.snap > 0.5) { ctx.fillStyle = `rgba(255,255,255,${p.snap})`; ctx.beginPath(); ctx.arc(sx + 13 * u, -4 * u, 4 * u * p.snap, 0, TAU); ctx.fill(); }
+    // a small mound of sand around the burrow
+    ctx.fillStyle = sh(water.sand[0], 0.05);
+    ctx.beginPath(); ctx.ellipse(0, 0, 16 * u, 5 * u, 0, Math.PI, TAU); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.55)"; ctx.beginPath(); ctx.ellipse(0, 0, 7 * u, 3 * u, 0, 0, TAU); ctx.fill();
+    // the goby keeps watch at the entrance
+    drawFishShape(-5 * u, -9 * u, -0.15, 11 * u, sh("#e8d8b0"), sh("#8a6a3a"), p.ph, false);
+    ctx.fillStyle = sh("#c8783a");
+    for (const dx of [-8, -4, 0]) { ctx.beginPath(); ctx.arc((dx - 5) * u, -9 * u, 0.9 * u, 0, TAU); ctx.fill(); }
+    // the shrimp comes out to push sand
+    const sx = 4 * u + p.out * 9 * u, body = sh("#e8603a"), stripe = sh("#f2d0a0");
+    ctx.save(); ctx.translate(sx, -2.5 * u);
+    ctx.strokeStyle = body; ctx.lineWidth = 0.7 * u; ctx.lineCap = "round";
+    for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo((-2 + i * 2) * u, 1 * u); ctx.lineTo((-2.5 + i * 2) * u, 3 * u); ctx.stroke(); }
+    ctx.fillStyle = body;
+    ctx.beginPath(); ctx.moveTo(-7 * u, 0); ctx.lineTo(-9.5 * u, -2 * u); ctx.lineTo(-9.5 * u, 2 * u); ctx.closePath(); ctx.fill();
+    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse((-5.5 + i * 2.6) * u, 0, 1.8 * u, 2.2 * u, 0, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = stripe; ctx.lineWidth = 0.6 * u;
+    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo((-5.5 + i * 2.6) * u, -2 * u); ctx.lineTo((-5.5 + i * 2.6) * u, 2 * u); ctx.stroke(); }
+    // one claw is much bigger than the other: that is the one that snaps
+    ctx.fillStyle = body;
+    ctx.save(); ctx.translate(4 * u, -0.5 * u); ctx.rotate(-0.15);
+    ctx.beginPath(); ctx.ellipse(3.5 * u, 0, 4.2 * u, 2.4 * u, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = stripe;
+    ctx.beginPath(); ctx.moveTo(6.5 * u, -1 * u); ctx.lineTo(9 * u, -1.6 * u - (1 - p.snap) * 1.5 * u); ctx.lineTo(7.5 * u, 0.3 * u); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = sh("#f0a070"); ctx.lineWidth = 0.5 * u;
+    ctx.beginPath(); ctx.moveTo(3 * u, -1.5 * u); ctx.quadraticCurveTo(8 * u, -7 * u, 13 * u, -5 * u); ctx.moveTo(3 * u, -1.5 * u); ctx.quadraticCurveTo(7 * u, -8 * u, 11 * u, -8.5 * u); ctx.stroke();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(2.6 * u, -1.6 * u, 0.6 * u, 0, TAU); ctx.fill();
+    ctx.restore();
+    if (p.snap > 0.5) { ctx.fillStyle = `rgba(255,255,255,${p.snap})`; ctx.beginPath(); ctx.arc(sx + 15 * u, -4.5 * u, 4 * u * p.snap, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 
@@ -394,12 +415,22 @@
     ctx.quadraticCurveTo(-L * 0.12, L * 0.08, -L * 0.05, L * (0.25 * (0.6 - 0.4 * flap)));
     ctx.quadraticCurveTo(L * 0.1, L * 0.08, L * 0.3, 0);
     ctx.fill();
-    ctx.beginPath(); ctx.ellipse(L * 0.32, 0, L * 0.07, L * 0.03, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(L * 0.32, 0, L * 0.07, L * 0.03, 0, 0, TAU); ctx.fill(); ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(L * 0.3, 0);
+    ctx.quadraticCurveTo(L * 0.1, -L * 0.1, -L * 0.05, -L * (0.4 * (0.6 + 0.4 * flap)));
+    ctx.quadraticCurveTo(-L * 0.12, -L * 0.1, -L * 0.22, 0);
+    ctx.quadraticCurveTo(-L * 0.12, L * 0.08, -L * 0.05, L * (0.25 * (0.6 - 0.4 * flap)));
+    ctx.quadraticCurveTo(L * 0.1, L * 0.08, L * 0.3, 0);
+    // white spots, kept inside the body and the wings
+    ctx.save(); ctx.clip();
     ctx.fillStyle = spot;
-    for (let i = 0; i < 18; i++) {
-      const a = i * 2.4, r = (i % 6) * 0.05 + 0.05, x = L * (0.05 - r * 0.6 + Math.cos(a) * 0.05), y = -L * r * (0.6 + 0.4 * flap) * (i % 2 ? 1 : 0.5) * Math.sign(Math.sin(a) + 0.01);
-      ctx.beginPath(); ctx.arc(x, y, L * 0.009, 0, TAU); ctx.fill();
+    for (let i = 0; i < 26; i++) {
+      const fx = ((i * 37) % 100) / 100, fy = ((i * 61) % 100) / 100;
+      const x = L * (0.25 - fx * 0.45), top = -L * 0.38 * (0.6 + 0.4 * flap), bot = L * 0.23 * (0.6 - 0.4 * flap);
+      ctx.beginPath(); ctx.arc(x, top + (bot - top) * fy, L * 0.01, 0, TAU); ctx.fill();
     }
+    ctx.restore();
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.24, -L * 0.03, L * 0.01, 0, TAU); ctx.fill();
     ctx.restore();
   }
@@ -625,7 +656,7 @@
   Object.assign(THUMBS, {
     wheel: () => drawWheel({ x: 60, s: 32, tilt: 0.2, spin: 0.3 }),
     idol: () => drawIdol({ x: 60, s: 26, ph: Math.PI / 6 }, 0),
-    phonebox: () => drawPhonebox({ x: 66, s: 22, tilt: 0.9 }),
+    phonebox: () => drawPhonebox({ x: 46, s: 20, tilt: 0.9 }),
     sponges: () => drawSponges({ x: 60, parts: [{ dx: -26, h: 50, w: 16, color: "#d8743a", type: "barrel" }, { dx: 18, h: 44, w: 14, color: "#9a5ab8", type: "tube" }, { dx: 40, h: 26, w: 10, color: "#e0b83a", type: "barrel" }] }),
     parrotfish: () => { scene.parrot = null; drawParrot({ x: 60, dir: 1, s: 60, ph: 1, tx: 1000, nibble: 0, cool: 1e9, hue: "#3fbfa8" }, 0); },
     boxfish: () => drawBoxfish({ x: 60, y: 42, dir: 1, s: 40, ph: 1, tx: 1000 }, 0),
@@ -640,7 +671,7 @@
     whaleshark: () => drawWhaleshark({ x: 60, y: 42, dir: 1, size: 116, ph: 0, yOff: 0 }),
     sealion: () => drawSealion({ x: 60, y: 42, dir: 1, size: 100, ph: 0, yOff: 0 }),
     eagleray: () => drawEagleray({ x: 64, y: 44, dir: 1, size: 80, ph: 0.5, yOff: 0 }),
-    spermwhale: () => drawSpermwhale({ x: 62, y: 44, dir: 1, size: 116, ph: 0, yOff: 0 }),
+    spermwhale: () => drawSpermwhale({ x: 58, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     eelmigration: () => {
       ctx.strokeStyle = "rgba(220,240,255,0.7)"; ctx.lineWidth = 2; ctx.lineCap = "round";
       for (let i = 0; i < 14; i++) {
@@ -670,6 +701,6 @@
       }
       ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.beginPath(); ctx.moveTo(0, 10); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 10 + Math.sin(x * 0.12) * 1.5); ctx.stroke();
     },
-    mobydick: () => drawSpermWhaleShape(62, 44, 1, 116, 0, "#eceae4", "#a8a6a0"),
+    mobydick: () => drawSpermWhaleShape(58, 44, 1, 100, 0, "#eceae4", "#a8a6a0"),
     ghostdiver: () => drawGhostDiverShape(60, 40, 1, 26, 1, 0.8),
   });

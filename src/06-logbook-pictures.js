@@ -104,17 +104,17 @@
     starfish: () => drawStarfish({ x: 60, s: 22, rot: 0.25, color: "#e8743b" }),
     urchin: () => drawUrchin({ x: 60, s: 15, color: "#3b2340" }),
     octopus: () => drawOctopus({ x: 60, dir: 1, s: 30, hue: 18, cool: 1e9, dash: 0, scare: 0 }, 0),
-    ray: () => drawRay({ x: 72, dir: 1, s: 42, speed: 0, ph: 0, lift: 22 }, 0),
+    ray: () => drawRay({ x: 66, dir: 1, s: 58, speed: 0, ph: 0, lift: 26 }, 0),
     seahorse: () => drawSeahorse({ px: 60, py: 52, s: 32, dir: 1, ph: 0, color: "#f2b134" }),
     puffer: () => drawPuffer({ x: 60, y: 42, vx: 0.35, s: 17, inflate: 0.6, ph: 0 }, 0),
     angler: () => drawAngler({ x: 50, y: 50, dir: 1, s: 30, ph: 0 }, 0),
-    squid: () => { scene.squids = [{ x: 64, y: 42, vx: 0.5, vy: 0, dir: 1, s: 24, pulse: 1e9, hue: 340, face: 1 }]; updateAndDrawSquids(0); },
+    squid: () => { scene.squids = [{ x: 74, y: 42, vx: 0.5, vy: 0, dir: 1, s: 34, pulse: 1e9, hue: 340, face: 1 }]; updateAndDrawSquids(0); },
     hermit: () => drawHermit({ x: 62, dir: 1, s: 24, hide: 0, leg: 0, shell: "#d8b48a" }, 0),
     slugs: () => drawSlug({ x: 60, dir: 1, s: 26, type: "nudi", ph: 1, body: "#7b4fd6", tip: "#ff9a3c", color: "#7a3b2e" }, 0),
     comb: () => { scene.combs = [{ x: 60, y: 42, r: 24, ph: 0, drift: 0 }]; drawCombs(0, false); drawCombs(0, true); },
     otters: () => { ctx.translate(0, 26); scene.otters = [{ x: 60, vx: 0, s: 50, ph: 0, shell: true }]; drawSurface(0, 0); },
     seal: () => drawSeal({ x: 60, y0: -28, ph: Math.PI / 2, dir: 1, s: 80 }, 0),
-    penguins: () => { scene.penguins = [{ ph: 2.2, x: 60, depth: 30, sp: 0, s: 24, dir: 1 }]; drawPenguins(0); },
+    penguins: () => { scene.penguins = [{ ph: 2.2, x: 60, depth: 30, sp: 0, s: 36, dir: 1 }]; drawPenguins(0); },
     clown: () => drawFishShape(60, 42, 0.1, 22, "#f07c1e", "#1d1d1d", 0.5, true),
     moray: () => {
       drawRocks({ x: 60, stones: [[-6, 46, 34]] });
@@ -132,19 +132,25 @@
       ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(-6.3, -2.5, 0.8, 0, TAU); ctx.fill();
       ctx.restore();
     },
-    mantis: () => drawMantis({ x: 60, s: 30, cool: 1e9, strike: 0 }, 0),
+    mantis: () => drawMantis({ x: 56, s: 40, cool: 1e9, strike: 0, face: 1 }, 0),
     archer: () => drawArcher({ x: 60, vx: 0.5, s: 24, cool: 1e9, face: 1 }, 0),
     flyingfish: () => drawFlyingFish({ x: 60, y: 44, dir: 1, vx: 3, vy: -0.6, air: true, ph: 1, s: 30 }),
     cleaners: () => {
-      drawFishShape(44, 36, 0.3, 14, sh("#58b4f2"), sh("#10202e"), 0.5, false);
-      drawFishShape(76, 50, -0.2, 14, sh("#58b4f2"), sh("#10202e"), 1.5, false);
+      drawCleaner(42, 34, 0.3, 18, 0.5);
+      drawCleaner(78, 52, -0.2, 18, 1.5);
     },
     grouper: () => {
       drawFishShape(60, 42, 0, 32, sh("#7a5a3a"), sh("#3e2c1c"), 0.5, false);
       ctx.fillStyle = sh("#5a3f26");
       for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(60 + ((i % 4) * 0.3 - 0.45) * 32, 42 + (Math.floor(i / 4) * 0.2 - 0.12) * 32, 1.6, 0, TAU); ctx.fill(); }
     },
-    whale: () => drawWhale({ x: 66, y: 42, dir: 1, size: 100, ph: 0, yOff: 0 }),
+    whale: () => {
+      // in the ocean the whale is a far-off shadow; in the logbook it gets a clearer colour
+      water = Object.assign({}, water, { whale: "70,110,150" });
+      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
+      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
+      ctx.fillStyle = "#0c1a26"; ctx.beginPath(); ctx.arc(100, 42, 1.4, 0, TAU); ctx.fill();
+    },
     humpback: () => drawHumpback({ x: 64, y: 38, dir: 1, size: 100, ph: 0, yOff: 0 }),
     shark: () => drawShark({ x: 62, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     turtle: () => drawTurtle({ x: 56, y: 44, dir: 1, size: 70, ph: 0, yOff: 0 }),

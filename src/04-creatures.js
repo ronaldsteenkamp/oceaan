@@ -470,9 +470,18 @@
     ctx.lineWidth = 0.08 * s;
     ctx.beginPath(); ctx.moveTo(0.12 * s, -0.9 * s); ctx.lineTo(0.42 * s, -0.84 * s); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(-0.05 * s, -1.02 * s); ctx.lineTo(-0.02 * s, -1.14 * s); ctx.lineTo(0.06 * s, -1.03 * s); ctx.fill();
-    ctx.globalAlpha = 0.5;
-    ctx.beginPath(); ctx.ellipse(-0.12 * s, -0.3 * s, 0.1 * s * (0.7 + 0.3 * Math.sin(t * 14)), 0.16 * s, 0, 0, TAU); ctx.fill();
+    // the little dorsal fin flutters on its back
+    const fl = 0.7 + 0.3 * Math.sin(t * 14);
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath(); ctx.moveTo(0.07 * s, -0.47 * s); ctx.quadraticCurveTo(-0.16 * fl * s, -0.32 * s, 0.08 * s, -0.12 * s); ctx.closePath(); ctx.fill();
     ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.lineWidth = Math.max(0.5, 0.015 * s);
+    ctx.beginPath(); for (let i = 0; i < 4; i++) { const yy = (-0.42 + i * 0.09) * s; ctx.moveTo(0.07 * s, yy); ctx.lineTo((0.07 - 0.12 * fl) * s, yy + 0.02 * s); } ctx.stroke();
+    // a lighter belly and a little crown on the head
+    ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = 0.08 * s;
+    ctx.beginPath(); ctx.moveTo(0.3 * s, -0.6 * s); ctx.quadraticCurveTo(0.42 * s, -0.3 * s, 0.25 * s, -0.02 * s); ctx.stroke();
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.moveTo(-0.1 * s, -1.0 * s); ctx.lineTo(-0.12 * s, -1.12 * s); ctx.lineTo(-0.02 * s, -1.06 * s); ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.2)"; ctx.lineWidth = Math.max(0.6, 0.03 * s);
     ctx.beginPath();
     for (let i = 1; i < 6; i++) { const p = pts[i]; ctx.moveTo((p[0] + 0.1) * s, p[1] * s); ctx.lineTo((p[0] + 0.18) * s, p[1] * s); }

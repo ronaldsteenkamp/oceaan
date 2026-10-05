@@ -185,30 +185,65 @@
       rings.push({ x: p.x, y: p.y, r: 2 * u, a: 0.9 });
     }
     m.strike = Math.max(0, m.strike - 0.08 * k);
-    ctx.fillStyle = "rgba(0,0,0,0.45)";
-    ctx.beginPath(); ctx.ellipse(x, y - 2 * u, s * 0.7, s * 0.2, 0, 0, TAU); ctx.fill();
-    const segs = ["#3fa86b", "#57c27c", "#f08a3c", "#3a7fd0"];
-    for (let i = 0; i < 4; i++) {
+    if (p.on) m.face = Math.sign(p.x - x) || 1;
+    const face = m.face || 1;
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.beginPath(); ctx.ellipse(x, y - 1 * u, s * 0.95, s * 0.16, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(x, y); ctx.scale(face, 1);
+    // tail fan with blue and orange blades
+    for (const [a, c] of [[-0.5, "#3a7fd0"], [0, "#f08a3c"], [0.5, "#3a7fd0"]]) {
+      ctx.fillStyle = sh(c);
+      ctx.save(); ctx.translate(-s * 0.72, -s * 0.12); ctx.rotate(Math.PI + a * 0.8);
+      ctx.beginPath(); ctx.ellipse(s * 0.16, 0, s * 0.17, s * 0.07, 0, 0, TAU); ctx.fill(); ctx.restore();
+    }
+    // little walking legs
+    ctx.strokeStyle = sh("#e8553a"); ctx.lineWidth = Math.max(0.8, s * 0.035); ctx.lineCap = "round";
+    for (let i = 0; i < 4; i++) { const lx = s * (0.05 + i * 0.1), sw = Math.sin(t * 6 + i) * s * 0.02; ctx.beginPath(); ctx.moveTo(lx, -s * 0.12); ctx.lineTo(lx + sw + s * 0.03, -s * 0.01); ctx.stroke(); }
+    // segmented body, curving up towards the head
+    const segs = ["#2f8f5a", "#3fa86b", "#2f8f5a", "#3fa86b", "#2f8f5a", "#57c27c", "#3fa86b"];
+    for (let i = 0; i < segs.length; i++) {
+      const f = i / (segs.length - 1), sx = -s * 0.62 + f * s * 0.95, sy = -s * (0.15 + f * f * 0.22);
       ctx.fillStyle = sh(segs[i]);
-      ctx.beginPath(); ctx.ellipse(x, y - s * (0.25 + i * 0.22), s * (0.32 - i * 0.03), s * 0.14, Math.sin(t + i) * 0.1, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(sx, sy, s * 0.11, s * (0.13 + f * 0.03), -f * 0.6, 0, TAU); ctx.fill();
+      ctx.strokeStyle = sh("#f08a3c"); ctx.lineWidth = Math.max(0.6, s * 0.025);
+      ctx.beginPath(); ctx.ellipse(sx, sy, s * 0.11, s * (0.13 + f * 0.03), -f * 0.6, -1.2, 1.2); ctx.stroke();
     }
-    const look = p.on ? Math.atan2(p.y - y, p.x - x) : Math.sin(t * 0.7) * 1.2 - Math.PI / 2;
-    for (const sx of [-1, 1]) {
-      const ex = x + sx * s * 0.15 + Math.cos(look) * s * 0.08, ey = y - s * 1.15;
-      ctx.strokeStyle = sh("#57c27c"); ctx.lineWidth = Math.max(1, s * 0.07);
-      ctx.beginPath(); ctx.moveTo(x + sx * s * 0.1, y - s * 0.95); ctx.lineTo(ex, ey); ctx.stroke();
+    // head with orange antennal scales
+    ctx.fillStyle = sh("#57c27c");
+    ctx.beginPath(); ctx.ellipse(s * 0.42, -s * 0.42, s * 0.12, s * 0.1, -0.5, 0, TAU); ctx.fill();
+    ctx.fillStyle = sh("#f08a3c");
+    ctx.beginPath(); ctx.ellipse(s * 0.56, -s * 0.5, s * 0.1, s * 0.035, -0.6, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#e8b03c"); ctx.lineWidth = Math.max(0.6, s * 0.02);
+    ctx.beginPath(); ctx.moveTo(s * 0.5, -s * 0.48); ctx.quadraticCurveTo(s * 0.8, -s * 0.75, s * 1.0, -s * 0.6); ctx.stroke();
+    // stalked eyes that look around
+    const look = p.on ? Math.atan2(p.y - (y - s * 0.6), (p.x - x) * face) : Math.sin(t * 0.7) * 0.8;
+    for (const off of [-0.04, 0.05]) {
+      const bx = s * (0.44 + off), ex = bx + Math.cos(look) * s * 0.05, ey = -s * 0.66 + Math.sin(look) * s * 0.03;
+      ctx.strokeStyle = sh("#57c27c"); ctx.lineWidth = Math.max(1, s * 0.05);
+      ctx.beginPath(); ctx.moveTo(bx, -s * 0.48); ctx.lineTo(ex, ey); ctx.stroke();
       ctx.fillStyle = sh("#6fd3e0");
-      ctx.beginPath(); ctx.ellipse(ex, ey, s * 0.09, s * 0.06, look, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111"; ctx.fillRect(ex - s * 0.06, ey - s * 0.01, s * 0.12, s * 0.02);
+      ctx.beginPath(); ctx.ellipse(ex, ey, s * 0.07, s * 0.05, look, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#111"; ctx.save(); ctx.translate(ex, ey); ctx.rotate(look); ctx.fillRect(-s * 0.05, -s * 0.008, s * 0.1, s * 0.016); ctx.restore();
     }
-    const ext = m.strike;
-    ctx.strokeStyle = sh("#e8553a"); ctx.lineWidth = Math.max(1.5, s * 0.12); ctx.lineCap = "round";
-    for (const sx of [-1, 1]) {
-      ctx.beginPath(); ctx.moveTo(x + sx * s * 0.2, y - s * 0.75);
-      if (ext > 0.05) ctx.lineTo(x + (m.tx - x) * ext * 0.9 + sx * 2 * u, y - s * 0.8 + (m.ty - (y - s * 0.8)) * ext * 0.9);
-      else { ctx.lineTo(x + sx * s * 0.45, y - s * 0.95); ctx.lineTo(x + sx * s * 0.35, y - s * 0.6); }
-      ctx.stroke();
-    }
+    // the folded clubs, ready to strike
+    ctx.strokeStyle = sh("#e8553a"); ctx.lineWidth = Math.max(1.5, s * 0.08); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(s * 0.4, -s * 0.32);
+    if (m.strike > 0.05) {
+      const lx = (m.tx - x) * face, ly = m.ty - y;
+      ctx.lineTo(s * 0.4 + (lx - s * 0.4) * m.strike * 0.9, -s * 0.32 + (ly + s * 0.32) * m.strike * 0.9);
+    } else { ctx.lineTo(s * 0.62, -s * 0.24); ctx.lineTo(s * 0.52, -s * 0.08); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // A cleaner wrasse: a slim blue fish with a black stripe from snout to tail.
+  function drawCleaner(x, y, ang, L, ph) {
+    drawFishShape(x, y, ang, L, sh("#58b4f2"), sh("#10202e"), ph, false);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+    if (Math.cos(ang) < 0) ctx.scale(1, -1);
+    ctx.strokeStyle = "#0e1418"; ctx.lineWidth = Math.max(0.6, L * 0.14); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(L * 0.85, 0); ctx.quadraticCurveTo(0, L * 0.02, -L * 0.9, L * 0.04); ctx.stroke();
+    ctx.restore();
   }
 
   function drawArcher(a, k) {
@@ -288,7 +323,7 @@
       const cy = gp.state === "clean" ? gp.y + Math.sin(t * 3.2 + i * 2.1) * L * 0.35 : sy + Math.sin(t * 1.9 + i * 2.1) * 10 * u;
       const prev = st["c" + i] || [cx - 1, cy];
       st["c" + i] = [cx, cy];
-      shinyDraw(st.cleanObjs && st.cleanObjs[i], () => drawFishShape(cx, cy, Math.atan2(cy - prev[1], cx - prev[0] || 0.01), 5 * u, sh("#58b4f2"), sh("#10202e"), t * 12 + i, false));
+      shinyDraw(st.cleanObjs && st.cleanObjs[i], () => drawCleaner(cx, cy, Math.atan2(cy - prev[1], cx - prev[0] || 0.01), 5 * u, t * 12 + i));
     }
   }
 
