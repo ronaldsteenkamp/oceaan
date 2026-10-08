@@ -295,7 +295,7 @@
   // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
   // so that every kind of shiny turns up about as often.
   const SHINY_N = {
-    fish: 60000, lantern: 9000, jelly: 6000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
+    fish: 10000, lantern: 9000, jelly: 6000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
     seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
     penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
     whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
