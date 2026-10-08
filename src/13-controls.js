@@ -248,7 +248,7 @@
       const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
       return `<span class="badge ${done ? "on" : ""}" title="${tip}">${L(m.name[0], m.name[1])} · ${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}${m.reward ? ` <i class="gift" aria-label="${tip}">★</i>` : ""}</span>`;
     }).join("") + `</div>`;
-    if (MILESTONES.some(m => m.reward)) html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt: een ander boekje, zwemvliezen of iets voor je duiker.", "A ★ means you get something for it: a different logbook, fins or something for your diver.")}</p>`;
+    html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`;
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();

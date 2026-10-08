@@ -281,9 +281,9 @@
     if (water.surface && night > 0.05) glow(S.moon.x, waveY(S.moon.x) + 34 * u, 70 * u, "240,240,220", 0.22 * night);
     if (diverMode) {
       // the diver's lamp turns with the diver; its beam is exactly the part of the ocean that goes into the logbook
-      const d = diver, th = d.heading, c = lightCone(), big = rewards.has("m75");
+      const d = diver, th = d.heading, c = lightCone();
       const lx = d.x + Math.cos(th) * 18 * u, ly = d.y + Math.sin(th) * 18 * u, len = c.len, spr = c.half;
-      const strength = (big ? 0.12 : 0.08) + (big ? 0.32 : 0.26) * Math.max(night, water.glow ? 0.8 : 0);
+      const strength = [0, 0.06, 0.08, 0.12][c.level] + [0, 0.2, 0.26, 0.32][c.level] * Math.max(night, water.glow ? 0.8 : 0);
       const g2 = ctx.createLinearGradient(lx, ly, lx + Math.cos(th) * len, ly + Math.sin(th) * len);
       g2.addColorStop(0, `rgba(255,248,215,${strength})`);
       g2.addColorStop(1, "rgba(255,248,215,0)");
