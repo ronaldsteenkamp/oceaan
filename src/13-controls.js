@@ -173,11 +173,16 @@
     dcThumb.src = thumbURL(d.key, true, 3);
     dcName.textContent = nm(d.key);
     discoverBusy = true;
-    playDiscovery(x0, y0, w, h).catch(() => {}).finally(() => { discoverEl.hidden = true; discoverPause = false; discoverBusy = false; });
+    playDiscovery(x0, y0, w, h).catch(() => {}).finally(() => {
+      discoverEl.hidden = true; discoverPause = false; discoverBusy = false;
+      for (const el of [discoverEl, dcFrame, dcShot, dcThumb, dcName]) for (const a of el.getAnimations()) a.cancel();
+    });
   }
 
   // One smooth movement from the spot in the ocean to the middle, then into the book.
   async function playDiscovery(x0, y0, w, h) {
+    // start every picture fresh: the end of the previous one (small and faded, in the book) must not stick
+    for (const el of [discoverEl, dcFrame, dcShot, dcThumb, dcName, bookBtn]) for (const a of el.getAnimations()) a.cancel();
     const tw = Math.min(W * 0.8, 440), th = tw * 0.92 * 0.7 + tw * 0.16;
     const fx = (W - tw) / 2, fy = (H - th) / 2 - 20;
     Object.assign(dcFrame.style, { left: fx + "px", top: fy + "px", width: tw + "px", height: th + "px", transform: "", opacity: "1" });
@@ -193,8 +198,8 @@
     discoverEl.animate([{ background: "rgba(2,8,18,0)" }, { background: "rgba(2,8,18,0.28)" }], { duration: 500, fill: "forwards" });
     dcFrame.animate([{ opacity: 0.35, offset: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 1 }], { duration: 300 }); // a little flash
     await dcFrame.animate([
-      { transform: start, backgroundColor: "rgba(244,239,226,0)", boxShadow: "0 0 0 rgba(0,0,0,0)" },
-      { transform: "translate(0,0) scale(1) rotate(-2deg)", backgroundColor: "rgba(244,239,226,1)", boxShadow: "0 18px 50px rgba(0,0,0,0.5)" },
+      { transform: start, opacity: 1, backgroundColor: "rgba(244,239,226,0)", boxShadow: "0 0 0 rgba(0,0,0,0)" },
+      { transform: "translate(0,0) scale(1) rotate(-2deg)", opacity: 1, backgroundColor: "rgba(244,239,226,1)", boxShadow: "0 18px 50px rgba(0,0,0,0.5)" },
     ], { duration: 850, easing: ease, fill: "forwards" }).finished;
     dcName.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 400, fill: "forwards" });
     // the photo slowly zooms in a touch, then melts into the logbook picture
