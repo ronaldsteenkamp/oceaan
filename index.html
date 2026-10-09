@@ -117,16 +117,9 @@
 
   /* the snapshot of a new animal that turns into its logbook picture */
   #discover { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
-  #discover .dc-frame { position: fixed; background: #f4efe2; border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; }
-  #discover .dc-frame.move { transition: left 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s, opacity 0.6s; }
-  #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; transition: opacity 0.6s; }
-  #discover .dc-thumb { opacity: 0; }
-  #discover .dc-frame.swap .dc-thumb { opacity: 1; }
-  #discover .dc-frame.swap .dc-shot { opacity: 0; }
-  #discover .dc-name { position: absolute; left: 0; right: 0; bottom: 4%; margin: 0; text-align: center; color: #1a2a33; font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.4s; }
-  #discover .dc-frame.named .dc-name { opacity: 1; }
-  #discover .dc-frame.flash::after { content: ""; position: absolute; inset: 0; background: #fff; animation: dcflash 0.5s ease-out forwards; }
-  @keyframes dcflash { from { opacity: 0.9; } to { opacity: 0; } }
+  #discover .dc-frame { position: fixed; background: #f4efe2; border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; will-change: transform, opacity; }
+  #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; will-change: opacity, transform; }
+  #discover .dc-name { position: absolute; left: 0; right: 0; bottom: 4%; margin: 0; text-align: center; color: #1a2a33; font-size: 14px; font-weight: 600; }
   /* search task and messages */
   #task {
     position: fixed; top: calc(28px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
@@ -7496,7 +7489,7 @@
     if (!once) requestAnimationFrame(frame);
     const dtMs = Math.min(50, now - last);
     last = now;
-    if (paused || document.hidden) return;
+    if (paused || discoverPause || document.hidden) return;
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();
@@ -7753,7 +7746,7 @@
   const discoverEl = document.getElementById("discover"), dcFrame = discoverEl.querySelector(".dc-frame");
   const dcShot = discoverEl.querySelector(".dc-shot"), dcThumb = discoverEl.querySelector(".dc-thumb"), dcName = discoverEl.querySelector(".dc-name");
   const discoverQueue = [];
-  let discoverBusy = false;
+  let discoverBusy = false, discoverPause = false;
   function queueDiscovery(key, pos) {
     const base = key.startsWith("shiny:") ? key.slice(6) : key;
     if (!groupKeys("Dieren").includes(base) || reduceMotion || restMode) return;
@@ -7763,7 +7756,8 @@
   }
   // runs at the end of a frame, when the picture of the ocean is complete
   function flushDiscoveries() {
-    if (discoverBusy || !discoverQueue.length || !canvas.width) return;
+    // wait until a new ocean has fully faded in, so the picture is never dark
+    if (discoverBusy || !discoverQueue.length || !canvas.width || fade > 0.02) return;
     const d = discoverQueue.shift(), [ax, ay] = d.pos;
     const withDiver = diverMode, span = withDiver ? Math.hypot(ax - diver.x, ay - diver.y) : 0;
     const cx = withDiver ? (ax + diver.x) / 2 : ax, cy = withDiver ? (ay + diver.y) / 2 : ay;
@@ -7776,30 +7770,51 @@
     dcThumb.src = thumbURL(d.key, true, 3);
     dcName.textContent = nm(d.key);
     discoverBusy = true;
-    const place = (left, top, width, extra) => {
-      dcFrame.style.left = left + "px"; dcFrame.style.top = top + "px";
-      dcFrame.style.width = width + "px"; dcFrame.style.height = (width * 0.92 * 0.7 + width * 0.16) + "px";
-      dcFrame.style.transform = extra || "";
-    };
-    dcFrame.className = "dc-frame flash";
-    dcFrame.style.opacity = "1";
-    place(x0 - w * 0.04, y0 - h * 0.04, w * 1.087);
-    discoverEl.hidden = false;
-    sfxClick();
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      const tw = Math.min(W * 0.8, 440);
-      dcFrame.classList.add("move", "named");
-      place((W - tw) / 2, (H - tw * 0.8) / 2 - 20, tw, "rotate(-2deg)");
-    }));
-    setTimeout(() => dcFrame.classList.add("swap"), 1300);
-    setTimeout(() => {
-      const r = bookBtn.getBoundingClientRect();
-      place(r.left + r.width / 2 - 22, r.top + r.height / 2 - 18, 44, "rotate(8deg)");
-      dcFrame.style.opacity = "0.15";
-      dcFrame.classList.remove("named");
-    }, 2900);
-    setTimeout(() => { discoverEl.hidden = true; discoverBusy = false; buzz(15); }, 3650);
+    playDiscovery(x0, y0, w, h).catch(() => {}).finally(() => { discoverEl.hidden = true; discoverPause = false; discoverBusy = false; });
   }
+
+  // One smooth movement from the spot in the ocean to the middle, then into the book.
+  async function playDiscovery(x0, y0, w, h) {
+    const tw = Math.min(W * 0.8, 440), th = tw * 0.92 * 0.7 + tw * 0.16;
+    const fx = (W - tw) / 2, fy = (H - th) / 2 - 20;
+    Object.assign(dcFrame.style, { left: fx + "px", top: fy + "px", width: tw + "px", height: th + "px", transform: "", opacity: "1" });
+    dcFrame.className = "dc-frame";
+    dcShot.style.opacity = "1"; dcThumb.style.opacity = "0"; dcName.style.opacity = "0";
+    discoverEl.style.background = "rgba(2,8,18,0)";
+    discoverEl.hidden = false;
+    // the ocean holds still while the picture is taken and filed
+    discoverPause = true;
+    sfxClick();
+    const sw = w * 1.087, start = `translate(${x0 + w / 2 - (fx + tw / 2)}px, ${y0 + h / 2 - (fy + th / 2)}px) scale(${sw / tw})`;
+    const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+    discoverEl.animate([{ background: "rgba(2,8,18,0)" }, { background: "rgba(2,8,18,0.45)" }], { duration: 500, fill: "forwards" });
+    dcFrame.animate([{ opacity: 0.35, offset: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 1 }], { duration: 300 }); // a little flash
+    await dcFrame.animate([
+      { transform: start, backgroundColor: "rgba(244,239,226,0)", boxShadow: "0 0 0 rgba(0,0,0,0)" },
+      { transform: "translate(0,0) scale(1) rotate(-2deg)", backgroundColor: "rgba(244,239,226,1)", boxShadow: "0 18px 50px rgba(0,0,0,0.5)" },
+    ], { duration: 850, easing: ease, fill: "forwards" }).finished;
+    dcName.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 400, fill: "forwards" });
+    // the photo slowly zooms in a touch, then melts into the logbook picture
+    dcShot.animate([{ transform: "scale(1)" }, { transform: "scale(1.05)" }], { duration: 1700, easing: "ease-out", fill: "forwards" });
+    await wait(700);
+    dcShot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 800, easing: "ease-in-out", fill: "forwards" });
+    await dcThumb.animate([{ opacity: 0, transform: "scale(1.04)" }, { opacity: 1, transform: "scale(1)" }], { duration: 800, easing: "ease-in-out", fill: "forwards" }).finished;
+    await wait(650);
+    // off into the book; the ocean starts moving again
+    discoverPause = false;
+    const r = bookBtn.getBoundingClientRect();
+    const bx = r.left + r.width / 2 - (fx + tw / 2), by = r.top + r.height / 2 - (fy + th / 2);
+    discoverEl.animate([{ background: "rgba(2,8,18,0.45)" }, { background: "rgba(2,8,18,0)" }], { duration: 500, fill: "forwards" });
+    dcName.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" });
+    await dcFrame.animate([
+      { transform: "translate(0,0) scale(1) rotate(-2deg)", opacity: 1 },
+      { transform: `translate(${bx * 0.45}px, ${by * 0.3 - 40}px) scale(0.55) rotate(4deg)`, opacity: 1, offset: 0.45 },
+      { transform: `translate(${bx}px, ${by}px) scale(${44 / tw}) rotate(10deg)`, opacity: 0.2 },
+    ], { duration: 700, easing: "cubic-bezier(0.55, 0, 0.75, 0.2)", fill: "forwards" }).finished;
+    bookBtn.animate([{ transform: "scale(1)" }, { transform: "scale(1.25)" }, { transform: "scale(1)" }], { duration: 380, easing: "ease-out" });
+    buzz(15);
+  }
+  const wait = ms => new Promise(r => setTimeout(r, ms));
 
   // ---- new ocean, diver, menu and photo buttons --------------------------
   document.getElementById("next").addEventListener("click", tryNewOcean);
@@ -8784,7 +8799,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=28").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=29").catch(() => {}));
   }
 </script>
 </body>

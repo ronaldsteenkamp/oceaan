@@ -1,2 +1,4 @@
 checks/
 __pycache__/
+.claude/
+_animtest.html

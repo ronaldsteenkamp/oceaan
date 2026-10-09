@@ -50,7 +50,7 @@
     if (!once) requestAnimationFrame(frame);
     const dtMs = Math.min(50, now - last);
     last = now;
-    if (paused || document.hidden) return;
+    if (paused || discoverPause || document.hidden) return;
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();
