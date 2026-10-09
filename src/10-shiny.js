@@ -255,7 +255,7 @@
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
         const key = "shiny:" + e.key, isNew = !logbook.has(key);
-        seen(key);
+        seen(key, [x, y]);
         if (!isNew) toast(L(`Er is een ${nm(key).toLowerCase()} in de buurt!`, `There is a ${nm(key).toLowerCase()} nearby!`));
         sfxShiny();
         buzz([30, 40, 30]);

@@ -659,7 +659,7 @@
         if (i >= 0) { s.fish.splice(i, 1); break; }
       }
     }
-    if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type); }
+    if (!v.logged && lit(v.x, v.y + v.yOff, v.size * 0.35)) { v.logged = true; seen(v.type, [v.x, v.y + v.yOff]); }
     // a shiny visitor turns round as soon as its head reaches the edge, so it stays in view
     // (a pod of dolphins turns just out of view, so the pod does not jump)
     if (v.shiny && !v.pod && ((v.dir > 0 && v.x > W - v.size * 0.35) || (v.dir < 0 && v.x < v.size * 0.35))) v.dir *= -1;

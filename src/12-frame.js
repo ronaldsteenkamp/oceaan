@@ -70,7 +70,6 @@
     }
     current += (S.currentTarget - current) * 0.01 * k;
     updateTentacles(S.kraken, dtSec, KRAKEN);
-    updateTentacles(S.giant, dtSec, GIANT);
     updateStorm(dtSec);
     updateTurnover(dtSec);
     updateMore(k, dtSec);
@@ -115,7 +114,7 @@
     drawMoreMid(k);
     drawWave2Mid(k);
     if (S.station) drawStation(S.station, k);
-    if (S.giant.active) shinyDraw(S.giant, () => drawTentacleSet(S.giant, GIANT));
+    if (S.giant.enabled) shinyDraw(S.giant, () => updateAndDrawGiant(k, dtSec));
     updateAndDrawSquids(k);
     updateFish(k);
     drawFish();
@@ -166,6 +165,7 @@
     drawMoon();
     drawLights(k);
     drawGlowtide(k);
+    drawAurora();
     if (S.storm.flash > 0) { ctx.fillStyle = `rgba(225,235,255,${S.storm.flash * 0.4})`; ctx.fillRect(0, 0, W, H); }
     drawMap(k);
 
@@ -176,6 +176,7 @@
       ctx.globalAlpha = 1;
       fade = Math.max(0, fade - 0.025 * k);
     }
+    flushDiscoveries();
     audioTick();
   }
 

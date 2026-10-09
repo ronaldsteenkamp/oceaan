@@ -119,6 +119,60 @@
 
   taskEl.addEventListener("click", explainTask);
 
+  // ---- a snapshot when a new animal is found -------------------------------
+  // The moment a new animal comes into the light, a picture is taken of the diver and the animal together.
+  // It moves to the middle of the screen, turns into the logbook picture and flies into the book.
+  const discoverEl = document.getElementById("discover"), dcFrame = discoverEl.querySelector(".dc-frame");
+  const dcShot = discoverEl.querySelector(".dc-shot"), dcThumb = discoverEl.querySelector(".dc-thumb"), dcName = discoverEl.querySelector(".dc-name");
+  const discoverQueue = [];
+  let discoverBusy = false;
+  function queueDiscovery(key, pos) {
+    const base = key.startsWith("shiny:") ? key.slice(6) : key;
+    if (!groupKeys("Dieren").includes(base) || reduceMotion || restMode) return;
+    if (!pos && diverMode) pos = [diver.x, diver.y];
+    if (!pos || discoverQueue.length > 5) return;
+    discoverQueue.push({ key, pos });
+  }
+  // runs at the end of a frame, when the picture of the ocean is complete
+  function flushDiscoveries() {
+    if (discoverBusy || !discoverQueue.length || !canvas.width) return;
+    const d = discoverQueue.shift(), [ax, ay] = d.pos;
+    const withDiver = diverMode, span = withDiver ? Math.hypot(ax - diver.x, ay - diver.y) : 0;
+    const cx = withDiver ? (ax + diver.x) / 2 : ax, cy = withDiver ? (ay + diver.y) / 2 : ay;
+    let w = Math.min(W, Math.max(240, span * 1.4 + 180)), h = w * 0.7;
+    if (h > H) { h = H; w = h / 0.7; }
+    const x0 = Math.max(0, Math.min(W - w, cx - w / 2)), y0 = Math.max(0, Math.min(H - h, cy - h / 2));
+    const shot = document.createElement("canvas");
+    shot.width = 480; shot.height = 336;
+    try { shot.getContext("2d").drawImage(canvas, x0 * dpr, y0 * dpr, w * dpr, h * dpr, 0, 0, 480, 336); dcShot.src = shot.toDataURL("image/jpeg", 0.85); } catch (e) { return; }
+    dcThumb.src = thumbURL(d.key, true, 3);
+    dcName.textContent = nm(d.key);
+    discoverBusy = true;
+    const place = (left, top, width, extra) => {
+      dcFrame.style.left = left + "px"; dcFrame.style.top = top + "px";
+      dcFrame.style.width = width + "px"; dcFrame.style.height = (width * 0.92 * 0.7 + width * 0.16) + "px";
+      dcFrame.style.transform = extra || "";
+    };
+    dcFrame.className = "dc-frame flash";
+    dcFrame.style.opacity = "1";
+    place(x0 - w * 0.04, y0 - h * 0.04, w * 1.087);
+    discoverEl.hidden = false;
+    sfxClick();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const tw = Math.min(W * 0.8, 440);
+      dcFrame.classList.add("move", "named");
+      place((W - tw) / 2, (H - tw * 0.8) / 2 - 20, tw, "rotate(-2deg)");
+    }));
+    setTimeout(() => dcFrame.classList.add("swap"), 1300);
+    setTimeout(() => {
+      const r = bookBtn.getBoundingClientRect();
+      place(r.left + r.width / 2 - 22, r.top + r.height / 2 - 18, 44, "rotate(8deg)");
+      dcFrame.style.opacity = "0.15";
+      dcFrame.classList.remove("named");
+    }, 2900);
+    setTimeout(() => { discoverEl.hidden = true; discoverBusy = false; buzz(15); }, 3650);
+  }
+
   // ---- new ocean, diver, menu and photo buttons --------------------------
   document.getElementById("next").addEventListener("click", tryNewOcean);
 

@@ -160,10 +160,7 @@
     sub: () => drawSub({ x: 62, y: 46, dir: 1, size: 90, ph: 0, yOff: 0 }),
     narwhal: () => drawNarwhal({ x: 42, y: 48, dir: 1, size: 70, ph: 0, yOff: 0 }),
     mermaid: () => drawMermaid({ x: 70, y: 42, dir: 1, size: 90, ph: 0, yOff: 0 }),
-    giant: () => {
-      drawTentacle({ bx: -6, by: 72, ang: -0.6, len: 110, w: 13, ph: 0, curl: 1.6, side: 1 }, 1, sh("#7a2a2a"), sh("#d08a7a"), 1);
-      drawTentacle({ bx: 126, by: 64, ang: Math.PI + 0.5, len: 90, w: 10, ph: 2, curl: -1.4, side: -1 }, 1, sh("#7a2a2a"), sh("#d08a7a"), 1);
-    },
+    giant: () => drawGiantSquid(72, 40, 1, 92, 0.8),
     kraken: () => {
       [[22, 0.25, 1.5], [60, -0.1, -1.6], [98, -0.3, 1.4]].forEach(([bx, a, c], i) => drawTentacle({ bx, by: 92, ang: -Math.PI / 2 + a, len: 82, w: 16, ph: i, curl: c, side: Math.sign(c) }, 1, sh("#6a1f2e"), sh("#e0a0a0"), 1));
       ctx.fillStyle = "#e8c23a"; ctx.beginPath(); ctx.ellipse(60, 80, 14, 8, 0, 0, TAU); ctx.fill();

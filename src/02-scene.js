@@ -39,11 +39,11 @@
     return !!s && inBeam(x, y, r, s.x, s.y, s.th, s.len, s.half, 0);
   }
   // Animals seen during a moment go into the logbook as their own kind, once per ocean.
-  function sight(key) {
+  function sight(key, pos) {
     if (!scene.sighted) scene.sighted = new Set();
     if (scene.sighted.has(key)) return;
     scene.sighted.add(key);
-    seen(key);
+    seen(key, pos);
   }
   // Something in the ocean that is waiting for the lamp. get() gives one point or a list of points (or nothing yet).
   function watch(key, get, r = 0) {
@@ -57,7 +57,7 @@
       try { pts = w.get(); } catch (e) { return false; }
       if (!pts || !pts.length) return true;
       if (!Array.isArray(pts[0])) pts = [pts];
-      for (const p of pts) if (p && lit(p[0], p[1], w.r)) { seen(w.key); return false; }
+      for (const p of pts) if (p && lit(p[0], p[1], w.r)) { seen(w.key, p); return false; }
       return true;
     });
   }

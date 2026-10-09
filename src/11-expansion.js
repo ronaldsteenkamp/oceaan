@@ -622,6 +622,68 @@
     sunfish: () => (90 + Math.random() * 40) * u, beluga: () => (120 + Math.random() * 40) * u,
   };
 
+  // ---- the giant squid ---------------------------------------------------------
+  // It swims across the deep sea tail first, with its arms and two long hunting tentacles trailing behind.
+  function updateAndDrawGiant(k, dtSec) {
+    const G = scene.giant;
+    if (!G.active) {
+      G.timer -= dtSec;
+      if (G.timer <= 0) {
+        if (!claim(16)) { G.timer = 8 + Math.random() * 10; return; }
+        G.active = true; G.dir = Math.random() < 0.5 ? 1 : -1; G.L = Math.min(W * 0.8, 620 * u);
+        G.x = G.dir > 0 ? -G.L * 0.6 : W + G.L * 0.6; G.y0 = H * (0.35 + Math.random() * 0.25); G.y = G.y0; G.ph = 0;
+        sfxRumble(0.4);
+        watch("giant", () => G.active ? [[G.x, G.y], [G.x - G.dir * G.L * 0.3, G.y]] : null, 40 * u);
+      }
+      return;
+    }
+    G.ph += 0.03 * k;
+    const surge = Math.max(0, Math.sin(G.ph * 2));
+    G.x += G.dir * (0.7 + 2.2 * surge) * u * k;
+    G.y = G.y0 + Math.sin(G.ph * 0.7) * 14 * u;
+    drawGiantSquid(G.x, G.y, G.dir, G.L, G.ph);
+    const back = G.x - G.dir * G.L * 0.95;
+    if (G.dir > 0 ? back > W + 20 * u : back < -20 * u) {
+      if (G.shiny) G.dir *= -1;
+      else { G.active = false; G.timer = 40 + Math.random() * 40; }
+    }
+  }
+
+  function drawGiantSquid(x, y, dir, L, ph) {
+    const body = sh("#8a2e2a"), dark = sh("#5a1a18"), light = sh("#c86a5a"), pulse = 1 + Math.sin(ph * 2) * 0.07;
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
+    ctx.strokeStyle = body; ctx.lineCap = "round";
+    // two long hunting tentacles with clubs at the end
+    for (const sd of [-1, 1]) {
+      const ey = sd * L * 0.05 + Math.sin(ph * 1.6 + sd) * L * 0.06;
+      ctx.lineWidth = L * 0.011;
+      ctx.beginPath(); ctx.moveTo(-L * 0.08, sd * L * 0.02);
+      ctx.bezierCurveTo(-L * 0.4, sd * L * 0.06 + Math.sin(ph + sd) * L * 0.05, -L * 0.7, sd * L * 0.02 + Math.sin(ph * 1.3 + sd) * L * 0.07, -L * 0.92, ey); ctx.stroke();
+      ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(-L * 0.92, ey, L * 0.05, L * 0.017, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = light; for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(-L * (0.89 + i * 0.018), ey + L * 0.006, L * 0.004, 0, TAU); ctx.fill(); }
+    }
+    // eight arms, thick at the base and waving
+    for (let i = 0; i < 8; i++) {
+      const off = (i - 3.5) * L * 0.011;
+      ctx.lineWidth = L * (0.024 - (i % 2) * 0.005);
+      ctx.beginPath(); ctx.moveTo(-L * 0.06, off);
+      ctx.quadraticCurveTo(-L * 0.25, off * 1.8 + Math.sin(ph * 1.5 + i) * L * 0.04, -L * (0.42 + (i % 3) * 0.03), off * 2.6 + Math.sin(ph * 2 + i) * L * 0.05);
+      ctx.stroke();
+    }
+    // head with the biggest eye in the animal world
+    ctx.fillStyle = body;
+    ctx.beginPath(); ctx.ellipse(-L * 0.02, 0, L * 0.075, L * 0.058, 0, 0, TAU); ctx.fill();
+    // the long mantle; it squeezes to push water out and shoot forward
+    ctx.beginPath(); ctx.moveTo(0, -L * 0.062 * pulse); ctx.quadraticCurveTo(L * 0.3, -L * 0.078 * pulse, L * 0.56, 0); ctx.quadraticCurveTo(L * 0.3, L * 0.078 * pulse, 0, L * 0.062 * pulse); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = dark;
+    ctx.beginPath(); ctx.moveTo(L * 0.36, 0); ctx.lineTo(L * 0.5, -L * 0.075); ctx.lineTo(L * 0.57, 0); ctx.lineTo(L * 0.5, L * 0.075); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = light;
+    for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.arc(L * (0.05 + ((i * 0.037) % 0.42)), ((i * 7) % 5 - 2) * L * 0.012, L * 0.006, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = "#f2e8c8"; ctx.beginPath(); ctx.arc(-L * 0.025, -L * 0.02, L * 0.024, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#0a0a0a"; ctx.beginPath(); ctx.arc(-L * 0.03, -L * 0.02, L * 0.014, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+
   // ---- moments and rare things ----------------------------------------------
   function updateMore(k, dtSec) {
     const S = scene;
@@ -709,7 +771,7 @@
     const Gs = S.giant;
     if (Gs.active && !Gs.rolled) {
       Gs.rolled = true;
-      maybeShiny("giant", Gs, 70 * u, () => { const T = Gs.list[1] || Gs.list[0]; return T ? [T.bx + Math.cos(T.ang) * T.len * 0.35 * Gs.reach, T.by + Math.sin(T.ang) * T.len * 0.35 * Gs.reach] : [-999, -999]; }, () => Gs.active && Gs.reach > 0.4);
+      maybeShiny("giant", Gs, 70 * u, () => [Gs.x, Gs.y], () => Gs.active);
     }
     if (!Gs.active) Gs.rolled = false;
 
@@ -772,7 +834,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle"); }
+      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle", [h.x, h.cy || h.y]); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) { if (h.shiny) h.dir *= -1; else Hh.list.splice(i, 1); }

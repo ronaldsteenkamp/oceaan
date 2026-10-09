@@ -243,12 +243,6 @@
       ["Koel en open", "Cool and open", ["w:kelpwoud", "w:noordzee", "w:sargasso"]],
       ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
     ],
-    "Bodem en vondsten": [
-      ["Natuur", "Nature", ["rocks", "arch", "canyon", "coral", "anemone", "sponges", "seagrass", "clam", "vent", "volcano", "brine"]],
-      ["Wrakken en scheepsspullen", "Wrecks and ship's gear", ["wreck", "plane", "car", "anchor", "cannon", "wheel", "bell", "helmet", "mine"]],
-      ["Schatten en vondsten", "Treasure and finds", ["chest", "bottle", "skull", "amphora", "idol", "phonebox"]],
-      ["Oude beschavingen", "Ancient ruins", ["ruins", "statue", "city"]],
-    ],
     "Dieren": [
       ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels"]],
       ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
@@ -258,13 +252,13 @@
       ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
       ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
       ["Zeesterren en egels", "Starfish and urchins", ["starfish", "urchin", "slugs"]],
+      ["Koralen, sponzen en schelpen", "Corals, sponges and clams", ["coral", "anemone", "sponges", "clam"]],
       ["Reptielen", "Reptiles", ["turtle", "crocodile"]],
       ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "beluga", "narwhal", "humpback", "whale", "spermwhale"]],
       ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "manatee", "penguins"]],
     ],
     "Momenten": [
-      ["Het zeldzaamste moment", "The rarest moment", ["aurora"]],
-      ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide"]],
+      ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide", "aurora"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
       ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
       ["Speurtochten", "Quests", ["treasure", "task"]],
@@ -278,8 +272,7 @@
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
-    "Bodem en vondsten": PROP_KEYS,
-    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", ...VIS_KEYS.filter(k => k !== "sub")],
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
     "Momenten": [...MOMENT_KEYS, "treasure", "sub", "aurora"],
     "Zeldzaam": RARE_KEYS.filter(k => k !== "aurora"),
   };
@@ -331,6 +324,7 @@
     if (rest.length) subs.push(["Overig", "Other", rest]);
     LOG_GROUPS.push(["Shiny", subs.flatMap(s => s[2]), subs]);
   }
+  const LOGGABLE = new Set(LOG_GROUPS.flatMap(g => g[1]));
 
   const NAMES_EN = {
     "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest", "w:ijszee": "Polar sea",
@@ -387,8 +381,8 @@
   function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(Object.fromEntries(logbook))); } catch (e) {} }
 
   let rebuilding = false;
-  function seen(key) {
-    if (!NAMES[key] || rebuilding) return;
+  function seen(key, pos) {
+    if (!NAMES[key] || rebuilding || !LOGGABLE.has(key)) return;
     const entry = logbook.get(key);
     if (entry) { entry.n++; saveLog(); return; }
     const before = reached();
@@ -397,6 +391,7 @@
     saveLog();
     fresh.add(key); saveFresh();
     announceNew(key);
+    queueDiscovery(key, pos);
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);
     if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderPanel();
@@ -424,7 +419,7 @@
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
   // How long the wait for a new ocean is, depending on how many finds are in the logbook.
-  const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [100, 20]];
+  const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [90, 20]];
   function lockSeconds() {
     const n = foundCount();
     if (n >= BASE_LOG_KEYS.length) return 1;
@@ -444,7 +439,7 @@
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 2 minuten een nieuwe oceaan", "a new ocean every 2 minutes"),
     tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke minuut een nieuwe oceaan", "a proper torch for your diver and a new ocean every minute"),
     tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
-    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
+    tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
@@ -452,7 +447,6 @@
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
     { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: null },
     allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
-    allOf("gb", "Schatzoeker", "Treasure seeker", "Bodem en vondsten", "vondsten op de bodem", "finds on the seabed"),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
     { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: null },
     allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),

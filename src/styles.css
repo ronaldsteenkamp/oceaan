@@ -93,6 +93,18 @@
   #book[data-rank="gold"] { color: var(--gold); }
   #book.glitter svg { filter: drop-shadow(0 0 3px rgba(255, 230, 150, 0.9)); }
 
+  /* the snapshot of a new animal that turns into its logbook picture */
+  #discover { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+  #discover .dc-frame { position: fixed; background: #f4efe2; border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; }
+  #discover .dc-frame.move { transition: left 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s, opacity 0.6s; }
+  #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; transition: opacity 0.6s; }
+  #discover .dc-thumb { opacity: 0; }
+  #discover .dc-frame.swap .dc-thumb { opacity: 1; }
+  #discover .dc-frame.swap .dc-shot { opacity: 0; }
+  #discover .dc-name { position: absolute; left: 0; right: 0; bottom: 4%; margin: 0; text-align: center; color: #1a2a33; font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.4s; }
+  #discover .dc-frame.named .dc-name { opacity: 1; }
+  #discover .dc-frame.flash::after { content: ""; position: absolute; inset: 0; background: #fff; animation: dcflash 0.5s ease-out forwards; }
+  @keyframes dcflash { from { opacity: 0.9; } to { opacity: 0; } }
   /* search task and messages */
   #task {
     position: fixed; top: calc(28px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);

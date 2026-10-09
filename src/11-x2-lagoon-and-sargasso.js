@@ -578,7 +578,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { if (c.shiny) { c.dir *= -1; c.leaving = c.dir; } else { C.list.splice(i, 1); continue; } }
-      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab"); }
+      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab", [c.x, sandY(c.x)]); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
@@ -638,31 +638,40 @@
   function drawAurora() {
     const A = scene.aurora;
     if (!A) return;
-    const lv = Math.max(0, night - 0.2) / 0.8;
+    const lv = Math.min(1, Math.max(0, night - 0.1) / 0.6);
     if (lv <= 0) return;
     if (!A.logged && lv > 0.5 && diverMode) { A.logged = true; seen("aurora"); }
+    const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["110,255,170", "170,120,255"];
     ctx.globalCompositeOperation = "lighter";
-    const h = H * 0.38;
-    for (let x = 0; x < W; x += 6 * u) {
-      const wave = 0.5 + 0.5 * Math.sin(x * 0.006 + t * 0.4) * Math.sin(x * 0.017 - t * 0.25);
-      const a = 0.13 * lv * wave;
-      if (a < 0.01) continue;
-      const len = h * (0.5 + 0.5 * Math.sin(x * 0.01 + t * 0.3));
-      const g = ctx.createLinearGradient(0, 0, 0, len);
-      const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["120,255,170", "150,120,255"];
-      g.addColorStop(0, `rgba(${c1},${a})`);
-      g.addColorStop(0.6, `rgba(${c2},${a * 0.6})`);
-      g.addColorStop(1, `rgba(${c2},0)`);
-      ctx.fillStyle = g;
-      ctx.fillRect(x, 0, 6 * u, len);
+    // a soft glow of colour over the upper water
+    const wash = ctx.createLinearGradient(0, 0, 0, H * 0.75);
+    wash.addColorStop(0, `rgba(${c1},${0.22 * lv})`);
+    wash.addColorStop(0.5, `rgba(${c2},${0.08 * lv})`);
+    wash.addColorStop(1, `rgba(${c2},0)`);
+    ctx.fillStyle = wash; ctx.fillRect(0, 0, W, H * 0.75);
+    // waving curtains of light that hang down through the surface
+    const h = H * 0.6, g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, `rgba(${c1},1)`);
+    g.addColorStop(0.45, `rgba(${c1},0.6)`);
+    g.addColorStop(0.75, `rgba(${c2},0.35)`);
+    g.addColorStop(1, `rgba(${c2},0)`);
+    ctx.fillStyle = g;
+    const step = 5 * u;
+    for (let x = 0; x < W; x += step) {
+      const w1 = 0.5 + 0.5 * Math.sin(x * 0.0045 + t * 0.35), w2 = 0.5 + 0.5 * Math.sin(x * 0.012 - t * 0.7 + 1.3);
+      const a = 0.42 * lv * (0.15 + 0.85 * w1 * w2);
+      if (a < 0.02) continue;
+      const lift = (1 - (0.45 + 0.55 * w1)) * h; // shorter curtains sit higher up
+      ctx.globalAlpha = a;
+      ctx.save(); ctx.translate(x + Math.sin(t * 0.5 + x * 0.01) * 3 * u, -lift); ctx.fillRect(0, 0, step + 1, h); ctx.restore();
     }
+    ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
   }
 
   function drawWave2Top(k) {
     drawSargassum(k);
     if (scene.frogfish) shinyDraw(scene.frogfish, () => drawFrog(scene.frogfish, k));
-    drawAurora();
   }
 
   // ---- the diver's sonar ------------------------------------------------------
