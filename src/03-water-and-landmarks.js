@@ -22,19 +22,23 @@
     ctx.globalCompositeOperation = "source-over";
   }
 
+  const SNOW_LEVELS = 6;
   function drawSnow(k) {
     ctx.fillStyle = `rgb(${water.snow})`;
+    const paths = [];
     for (const p of scene.snow) {
       p.y += p.sp * u * k;
       p.x += Math.sin(t * 0.6 + p.ph) * 0.12 * k + current * 1.2 * k;
       if (p.y > H + 4) { p.y = -4; p.x = Math.random() * W; }
       if (p.x > W + 4) p.x = -4;
       if (p.x < -4) p.x = W + 4;
-      ctx.globalAlpha = p.a;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, TAU);
-      ctx.fill();
+      // specks are grouped by brightness, so each group is filled in one go
+      const lv = Math.min(SNOW_LEVELS - 1, Math.round(p.a * SNOW_LEVELS));
+      const path = paths[lv] || (paths[lv] = new Path2D());
+      path.moveTo(p.x + p.r, p.y);
+      path.arc(p.x, p.y, p.r, 0, TAU);
     }
+    paths.forEach((path, lv) => { if (path) { ctx.globalAlpha = Math.max(0.04, lv / SNOW_LEVELS); ctx.fill(path); } });
     ctx.globalAlpha = 1;
   }
 
@@ -69,18 +73,16 @@
         ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
       }
       ctx.stroke();
+      ctx.beginPath();
       for (let i = 2; i < pts.length; i += 2) {
         const [px, py, a] = pts[i];
         const side = (i / 2) % 2 ? 1 : -1;
         const leaf = seg * 1.1 * (1 - i / pts.length * 0.4);
-        ctx.save();
-        ctx.translate(px, py);
-        ctx.rotate(a + side * 0.9 + Math.sin(t + i) * 0.1);
-        ctx.beginPath();
-        ctx.ellipse(leaf * 0.5, 0, leaf * 0.6, leaf * 0.22, 0, 0, TAU);
-        ctx.fill();
-        ctx.restore();
+        const rot = a + side * 0.9 + Math.sin(t + i) * 0.1, cx = px + Math.cos(rot) * leaf * 0.5, cy = py + Math.sin(rot) * leaf * 0.5;
+        ctx.moveTo(cx + Math.cos(rot) * leaf * 0.6, cy + Math.sin(rot) * leaf * 0.6);
+        ctx.ellipse(cx, cy, leaf * 0.6, leaf * 0.22, rot, 0, TAU);
       }
+      ctx.fill();
     }
     ctx.globalAlpha = 1;
   }

@@ -167,10 +167,48 @@
     }
   }
 
+  // Fish in schools are stamped from small pictures, drawn once per colour and size in eight tail positions.
+  // Stamping a picture is far cheaper than drawing every outline in every frame.
+  const FISH_STAMPS = new Map(), STAMP_STEP = Math.log(1.25);
+  function fishStamps(main, dark, Ldev) {
+    const b = Math.ceil(Math.log(Math.max(2, Ldev)) / STAMP_STEP), key = main + "|" + dark + "|" + b;
+    let st = FISH_STAMPS.get(key);
+    if (!st) {
+      if (FISH_STAMPS.size > 160) FISH_STAMPS.clear();
+      const L0 = Math.exp(b * STAMP_STEP), frames = [], saved = ctx;
+      try {
+        for (let i = 0; i < 8; i++) {
+          const c = document.createElement("canvas");
+          c.width = Math.ceil(L0 * 2.7); c.height = Math.ceil(L0 * 1.7);
+          ctx = c.getContext("2d");
+          drawFishShape(L0 * 1.45, L0 * 0.85, 0, L0, main, dark, (i / 8) * TAU, false);
+          frames.push(c);
+        }
+      } finally { ctx = saved; }
+      st = { L0, frames };
+      FISH_STAMPS.set(key, st);
+    }
+    return st;
+  }
+  // m is the current transform; passing it in saves a save/restore for every fish
+  function stampFish(x, y, ang, L, main, dark, ph, m) {
+    const st = fishStamps(main, dark, L * dpr), r = L / st.L0;
+    const img = st.frames[((Math.floor((ph / TAU) * 8) % 8) + 8) % 8];
+    const c = Math.cos(ang) * r, s = Math.sin(ang) * r, fl = c < 0 ? -1 : 1;
+    const base = m || ctx.getTransform();
+    ctx.setTransform(base.a * c + base.c * s, base.b * c + base.d * s, -(base.a * s - base.c * c) * fl, -(base.b * s - base.d * c) * fl, base.a * x + base.c * y + base.e, base.b * x + base.d * y + base.f);
+    ctx.drawImage(img, -st.L0 * 1.45, -st.L0 * 0.85);
+    ctx.setTransform(base);
+  }
+
   function drawFish() {
+    const m = ctx.getTransform();
     for (const sp of scene.species)
-      for (const f of sp.fish)
-        shinyDraw(f, () => drawFishShape(f.x, f.y, Math.atan2(f.vy, f.vx), sp.size * u * f.scale, sp.main, sp.dark, f.ph, false));
+      for (const f of sp.fish) {
+        const ang = Math.atan2(f.vy, f.vx), L = sp.size * u * f.scale;
+        if (f.shiny) shinyDraw(f, () => drawFishShape(f.x, f.y, ang, L, sp.main, sp.dark, f.ph, false));
+        else stampFish(f.x, f.y, ang, L, sp.main, sp.dark, f.ph, m);
+      }
   }
 
   // ---- jellyfish ---------------------------------------------------------

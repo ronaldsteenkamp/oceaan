@@ -1409,19 +1409,23 @@
     ctx.globalCompositeOperation = "source-over";
   }
 
+  const SNOW_LEVELS = 6;
   function drawSnow(k) {
     ctx.fillStyle = `rgb(${water.snow})`;
+    const paths = [];
     for (const p of scene.snow) {
       p.y += p.sp * u * k;
       p.x += Math.sin(t * 0.6 + p.ph) * 0.12 * k + current * 1.2 * k;
       if (p.y > H + 4) { p.y = -4; p.x = Math.random() * W; }
       if (p.x > W + 4) p.x = -4;
       if (p.x < -4) p.x = W + 4;
-      ctx.globalAlpha = p.a;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, TAU);
-      ctx.fill();
+      // specks are grouped by brightness, so each group is filled in one go
+      const lv = Math.min(SNOW_LEVELS - 1, Math.round(p.a * SNOW_LEVELS));
+      const path = paths[lv] || (paths[lv] = new Path2D());
+      path.moveTo(p.x + p.r, p.y);
+      path.arc(p.x, p.y, p.r, 0, TAU);
     }
+    paths.forEach((path, lv) => { if (path) { ctx.globalAlpha = Math.max(0.04, lv / SNOW_LEVELS); ctx.fill(path); } });
     ctx.globalAlpha = 1;
   }
 
@@ -1456,18 +1460,16 @@
         ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
       }
       ctx.stroke();
+      ctx.beginPath();
       for (let i = 2; i < pts.length; i += 2) {
         const [px, py, a] = pts[i];
         const side = (i / 2) % 2 ? 1 : -1;
         const leaf = seg * 1.1 * (1 - i / pts.length * 0.4);
-        ctx.save();
-        ctx.translate(px, py);
-        ctx.rotate(a + side * 0.9 + Math.sin(t + i) * 0.1);
-        ctx.beginPath();
-        ctx.ellipse(leaf * 0.5, 0, leaf * 0.6, leaf * 0.22, 0, 0, TAU);
-        ctx.fill();
-        ctx.restore();
+        const rot = a + side * 0.9 + Math.sin(t + i) * 0.1, cx = px + Math.cos(rot) * leaf * 0.5, cy = py + Math.sin(rot) * leaf * 0.5;
+        ctx.moveTo(cx + Math.cos(rot) * leaf * 0.6, cy + Math.sin(rot) * leaf * 0.6);
+        ctx.ellipse(cx, cy, leaf * 0.6, leaf * 0.22, rot, 0, TAU);
       }
+      ctx.fill();
     }
     ctx.globalAlpha = 1;
   }
@@ -2227,10 +2229,48 @@
     }
   }
 
+  // Fish in schools are stamped from small pictures, drawn once per colour and size in eight tail positions.
+  // Stamping a picture is far cheaper than drawing every outline in every frame.
+  const FISH_STAMPS = new Map(), STAMP_STEP = Math.log(1.25);
+  function fishStamps(main, dark, Ldev) {
+    const b = Math.ceil(Math.log(Math.max(2, Ldev)) / STAMP_STEP), key = main + "|" + dark + "|" + b;
+    let st = FISH_STAMPS.get(key);
+    if (!st) {
+      if (FISH_STAMPS.size > 160) FISH_STAMPS.clear();
+      const L0 = Math.exp(b * STAMP_STEP), frames = [], saved = ctx;
+      try {
+        for (let i = 0; i < 8; i++) {
+          const c = document.createElement("canvas");
+          c.width = Math.ceil(L0 * 2.7); c.height = Math.ceil(L0 * 1.7);
+          ctx = c.getContext("2d");
+          drawFishShape(L0 * 1.45, L0 * 0.85, 0, L0, main, dark, (i / 8) * TAU, false);
+          frames.push(c);
+        }
+      } finally { ctx = saved; }
+      st = { L0, frames };
+      FISH_STAMPS.set(key, st);
+    }
+    return st;
+  }
+  // m is the current transform; passing it in saves a save/restore for every fish
+  function stampFish(x, y, ang, L, main, dark, ph, m) {
+    const st = fishStamps(main, dark, L * dpr), r = L / st.L0;
+    const img = st.frames[((Math.floor((ph / TAU) * 8) % 8) + 8) % 8];
+    const c = Math.cos(ang) * r, s = Math.sin(ang) * r, fl = c < 0 ? -1 : 1;
+    const base = m || ctx.getTransform();
+    ctx.setTransform(base.a * c + base.c * s, base.b * c + base.d * s, -(base.a * s - base.c * c) * fl, -(base.b * s - base.d * c) * fl, base.a * x + base.c * y + base.e, base.b * x + base.d * y + base.f);
+    ctx.drawImage(img, -st.L0 * 1.45, -st.L0 * 0.85);
+    ctx.setTransform(base);
+  }
+
   function drawFish() {
+    const m = ctx.getTransform();
     for (const sp of scene.species)
-      for (const f of sp.fish)
-        shinyDraw(f, () => drawFishShape(f.x, f.y, Math.atan2(f.vy, f.vx), sp.size * u * f.scale, sp.main, sp.dark, f.ph, false));
+      for (const f of sp.fish) {
+        const ang = Math.atan2(f.vy, f.vx), L = sp.size * u * f.scale;
+        if (f.shiny) shinyDraw(f, () => drawFishShape(f.x, f.y, ang, L, sp.main, sp.dark, f.ph, false));
+        else stampFish(f.x, f.y, ang, L, sp.main, sp.dark, f.ph, m);
+      }
   }
 
   // ---- jellyfish ---------------------------------------------------------
@@ -4298,13 +4338,25 @@
   }
 
   // ---- everything that gives off light, drawn after the night falls -----
+  // A soft round glow. The fading disc is drawn once per colour and then stamped with the wanted strength.
+  const GLOWS = new Map();
+  function glowSprite(rgb) {
+    let c = GLOWS.get(rgb);
+    if (!c) {
+      c = document.createElement("canvas"); c.width = c.height = 128;
+      const g2 = c.getContext("2d"), g = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, `rgba(${rgb},1)`); g.addColorStop(1, `rgba(${rgb},0)`);
+      g2.fillStyle = g; g2.fillRect(0, 0, 128, 128);
+      GLOWS.set(rgb, c);
+    }
+    return c;
+  }
   function glow(x, y, r, rgb, a) {
-    if (a <= 0.005) return;
-    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0, `rgba(${rgb},${a})`);
-    g.addColorStop(1, `rgba(${rgb},0)`);
-    ctx.fillStyle = g;
-    ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    if (a <= 0.005 || !(r > 0)) return;
+    const was = ctx.globalAlpha;
+    ctx.globalAlpha = was * Math.min(1, a);
+    ctx.drawImage(glowSprite(rgb), x - r, y - r, r * 2, r * 2);
+    ctx.globalAlpha = was;
   }
 
   function drawLights(k) {
@@ -4312,11 +4364,14 @@
     ctx.globalCompositeOperation = "lighter";
     if (glowF > 0.05) {
       ctx.fillStyle = "rgb(120,240,255)";
+      // glowing specks, grouped by brightness so each group is one fill
+      const paths = [];
       for (let i = 0; i < S.snow.length; i += 2) {
-        const p = S.snow[i];
-        ctx.globalAlpha = glowF * 0.6 * (0.5 + 0.5 * Math.sin(t * 3 + p.ph * 5));
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 1.4, 0, TAU); ctx.fill();
+        const p = S.snow[i], lv = Math.round((0.5 + 0.5 * Math.sin(t * 3 + p.ph * 5)) * 5);
+        const path = paths[lv] || (paths[lv] = new Path2D());
+        path.moveTo(p.x + p.r * 1.4, p.y); path.arc(p.x, p.y, p.r * 1.4, 0, TAU);
       }
+      paths.forEach((path, lv) => { if (path) { ctx.globalAlpha = glowF * 0.6 * (lv / 5); ctx.fill(path); } });
       ctx.globalAlpha = 1;
     }
     if (glowF > 0.1) for (const j of S.jellies) glow(j.x, j.y - j.r * 0.3, j.r * 2.4, j.col, 0.3 * glowF);
@@ -4324,10 +4379,12 @@
     for (const sp of S.species) {
       if (!sp.lantern) continue;
       ctx.fillStyle = `rgba(140,230,255,${0.45 + 0.5 * glowF})`;
+      ctx.beginPath();
       for (const f of sp.fish) {
-        const L = sp.size * u * f.scale, a = Math.atan2(f.vy, f.vx), c = Math.cos(a), s = Math.sin(a);
-        for (const o of [-0.5, 0, 0.5]) { ctx.beginPath(); ctx.arc(f.x + c * L * o, f.y + s * L * o + L * 0.22, Math.max(0.8, L * 0.09), 0, TAU); ctx.fill(); }
+        const L = sp.size * u * f.scale, a = Math.atan2(f.vy, f.vx), c = Math.cos(a), s = Math.sin(a), r = Math.max(0.8, L * 0.09);
+        for (const o of [-0.5, 0, 0.5]) { const x = f.x + c * L * o, y = f.y + s * L * o + L * 0.22; ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU); }
       }
+      ctx.fill();
     }
     if (S.angler && S.angler.lx !== undefined) glow(S.angler.lx, S.angler.ly, S.angler.s * 1.6, "150,255,235", 0.25 + 0.4 * glowF);
     for (const g of S.ground) {
@@ -4957,7 +5014,7 @@
       f.ph += 0.4 * k;
       f.x = x; f.y = y;
       if (!B.fishSeen && i % 4 === 0 && lit(x, y, 4 * u)) { B.fishSeen = true; sight("fish", [x, y]); }
-      shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
+      if (f.shiny) shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false)); else stampFish(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph);
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
@@ -9857,7 +9914,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=34").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=35").catch(() => {}));
   }
 </script>
 </body>

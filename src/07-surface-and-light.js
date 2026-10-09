@@ -207,13 +207,25 @@
   }
 
   // ---- everything that gives off light, drawn after the night falls -----
+  // A soft round glow. The fading disc is drawn once per colour and then stamped with the wanted strength.
+  const GLOWS = new Map();
+  function glowSprite(rgb) {
+    let c = GLOWS.get(rgb);
+    if (!c) {
+      c = document.createElement("canvas"); c.width = c.height = 128;
+      const g2 = c.getContext("2d"), g = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, `rgba(${rgb},1)`); g.addColorStop(1, `rgba(${rgb},0)`);
+      g2.fillStyle = g; g2.fillRect(0, 0, 128, 128);
+      GLOWS.set(rgb, c);
+    }
+    return c;
+  }
   function glow(x, y, r, rgb, a) {
-    if (a <= 0.005) return;
-    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0, `rgba(${rgb},${a})`);
-    g.addColorStop(1, `rgba(${rgb},0)`);
-    ctx.fillStyle = g;
-    ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    if (a <= 0.005 || !(r > 0)) return;
+    const was = ctx.globalAlpha;
+    ctx.globalAlpha = was * Math.min(1, a);
+    ctx.drawImage(glowSprite(rgb), x - r, y - r, r * 2, r * 2);
+    ctx.globalAlpha = was;
   }
 
   function drawLights(k) {
@@ -221,11 +233,14 @@
     ctx.globalCompositeOperation = "lighter";
     if (glowF > 0.05) {
       ctx.fillStyle = "rgb(120,240,255)";
+      // glowing specks, grouped by brightness so each group is one fill
+      const paths = [];
       for (let i = 0; i < S.snow.length; i += 2) {
-        const p = S.snow[i];
-        ctx.globalAlpha = glowF * 0.6 * (0.5 + 0.5 * Math.sin(t * 3 + p.ph * 5));
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 1.4, 0, TAU); ctx.fill();
+        const p = S.snow[i], lv = Math.round((0.5 + 0.5 * Math.sin(t * 3 + p.ph * 5)) * 5);
+        const path = paths[lv] || (paths[lv] = new Path2D());
+        path.moveTo(p.x + p.r * 1.4, p.y); path.arc(p.x, p.y, p.r * 1.4, 0, TAU);
       }
+      paths.forEach((path, lv) => { if (path) { ctx.globalAlpha = glowF * 0.6 * (lv / 5); ctx.fill(path); } });
       ctx.globalAlpha = 1;
     }
     if (glowF > 0.1) for (const j of S.jellies) glow(j.x, j.y - j.r * 0.3, j.r * 2.4, j.col, 0.3 * glowF);
@@ -233,10 +248,12 @@
     for (const sp of S.species) {
       if (!sp.lantern) continue;
       ctx.fillStyle = `rgba(140,230,255,${0.45 + 0.5 * glowF})`;
+      ctx.beginPath();
       for (const f of sp.fish) {
-        const L = sp.size * u * f.scale, a = Math.atan2(f.vy, f.vx), c = Math.cos(a), s = Math.sin(a);
-        for (const o of [-0.5, 0, 0.5]) { ctx.beginPath(); ctx.arc(f.x + c * L * o, f.y + s * L * o + L * 0.22, Math.max(0.8, L * 0.09), 0, TAU); ctx.fill(); }
+        const L = sp.size * u * f.scale, a = Math.atan2(f.vy, f.vx), c = Math.cos(a), s = Math.sin(a), r = Math.max(0.8, L * 0.09);
+        for (const o of [-0.5, 0, 0.5]) { const x = f.x + c * L * o, y = f.y + s * L * o + L * 0.22; ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU); }
       }
+      ctx.fill();
     }
     if (S.angler && S.angler.lx !== undefined) glow(S.angler.lx, S.angler.ly, S.angler.s * 1.6, "150,255,235", 0.25 + 0.4 * glowF);
     for (const g of S.ground) {

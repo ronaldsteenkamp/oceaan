@@ -422,7 +422,7 @@
       f.ph += 0.4 * k;
       f.x = x; f.y = y;
       if (!B.fishSeen && i % 4 === 0 && lit(x, y, 4 * u)) { B.fishSeen = true; sight("fish", [x, y]); }
-      shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false));
+      if (f.shiny) shinyDraw(f, () => drawFishShape(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph, false)); else stampFish(x, y, f.a + B.rot * Math.PI / 2, 5 * u, main, dark, f.ph);
     }
     ctx.globalAlpha = 1;
     for (const a of B.att) {
