@@ -7740,6 +7740,10 @@
 
   taskEl.addEventListener("click", explainTask);
 
+  // If the browser takes the drawing surface away (it can, when memory is short), clear the saved layers so everything is drawn fresh.
+  canvas.addEventListener("contextlost", e => { e.preventDefault(); discoverPause = false; });
+  canvas.addEventListener("contextrestored", () => { if (scene) scene.layers = {}; shinyBufs.clear(); thumbCache.clear(); });
+
   // ---- a snapshot when a new animal is found -------------------------------
   // The moment a new animal comes into the light, a picture is taken of the diver and the animal together.
   // It moves to the middle of the screen, turns into the logbook picture and flies into the book.
@@ -7766,7 +7770,27 @@
     const x0 = Math.max(0, Math.min(W - w, cx - w / 2)), y0 = Math.max(0, Math.min(H - h, cy - h / 2));
     const shot = document.createElement("canvas");
     shot.width = 480; shot.height = 336;
-    try { shot.getContext("2d").drawImage(canvas, x0 * dpr, y0 * dpr, w * dpr, h * dpr, 0, 0, 480, 336); dcShot.src = shot.toDataURL("image/jpeg", 0.85); } catch (e) { return; }
+    try {
+      const sc = shot.getContext("2d");
+      sc.fillStyle = water.bottom; sc.fillRect(0, 0, 480, 336);
+      sc.drawImage(canvas, x0 * dpr, y0 * dpr, w * dpr, h * dpr, 0, 0, 480, 336);
+      // how bright is the picture? dark water gets a camera flash, an empty picture is skipped
+      const px = sc.getImageData(0, 0, 480, 336).data;
+      let sum = 0, n = 0;
+      for (let i = 0; i < px.length; i += 4 * 37) { sum += px[i] * 0.3 + px[i + 1] * 0.59 + px[i + 2] * 0.11; n++; }
+      const mean = sum / n;
+      if (mean < 70 && mean > 3) {
+        const copy = document.createElement("canvas"); copy.width = 480; copy.height = 336; copy.getContext("2d").drawImage(shot, 0, 0);
+        if ("filter" in sc) { sc.filter = `brightness(${Math.min(2.8, 85 / mean).toFixed(2)}) saturate(1.15)`; sc.drawImage(copy, 0, 0); sc.filter = "none"; }
+        else { sc.globalCompositeOperation = "screen"; for (let k = 0; k < 2; k++) sc.drawImage(copy, 0, 0); sc.globalCompositeOperation = "source-over"; }
+      }
+      // the flash lights up the animal itself a little more
+      const fxp = (ax - x0) / w * 480, fyp = (ay - y0) / h * 336;
+      const fl = sc.createRadialGradient(fxp, fyp, 0, fxp, fyp, 170);
+      fl.addColorStop(0, "rgba(255,255,245,0.28)"); fl.addColorStop(1, "rgba(255,255,245,0)");
+      sc.globalCompositeOperation = "lighter"; sc.fillStyle = fl; sc.fillRect(0, 0, 480, 336); sc.globalCompositeOperation = "source-over";
+      dcShot.src = mean > 3 ? shot.toDataURL("image/jpeg", 0.88) : thumbURL(d.key, true, 3);
+    } catch (e) { return; }
     dcThumb.src = thumbURL(d.key, true, 3);
     dcName.textContent = nm(d.key);
     discoverBusy = true;
@@ -7787,7 +7811,7 @@
     sfxClick();
     const sw = w * 1.087, start = `translate(${x0 + w / 2 - (fx + tw / 2)}px, ${y0 + h / 2 - (fy + th / 2)}px) scale(${sw / tw})`;
     const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
-    discoverEl.animate([{ background: "rgba(2,8,18,0)" }, { background: "rgba(2,8,18,0.45)" }], { duration: 500, fill: "forwards" });
+    discoverEl.animate([{ background: "rgba(2,8,18,0)" }, { background: "rgba(2,8,18,0.28)" }], { duration: 500, fill: "forwards" });
     dcFrame.animate([{ opacity: 0.35, offset: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 1 }], { duration: 300 }); // a little flash
     await dcFrame.animate([
       { transform: start, backgroundColor: "rgba(244,239,226,0)", boxShadow: "0 0 0 rgba(0,0,0,0)" },
@@ -7804,7 +7828,7 @@
     discoverPause = false;
     const r = bookBtn.getBoundingClientRect();
     const bx = r.left + r.width / 2 - (fx + tw / 2), by = r.top + r.height / 2 - (fy + th / 2);
-    discoverEl.animate([{ background: "rgba(2,8,18,0.45)" }, { background: "rgba(2,8,18,0)" }], { duration: 500, fill: "forwards" });
+    discoverEl.animate([{ background: "rgba(2,8,18,0.28)" }, { background: "rgba(2,8,18,0)" }], { duration: 500, fill: "forwards" });
     dcName.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" });
     await dcFrame.animate([
       { transform: "translate(0,0) scale(1) rotate(-2deg)", opacity: 1 },
@@ -8799,7 +8823,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=29").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=30").catch(() => {}));
   }
 </script>
 </body>
