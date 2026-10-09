@@ -186,6 +186,18 @@
   .badge .gift { font-style: normal; color: var(--gold); opacity: 0.8; }
   .sum.small { font-size: 11.5px; margin-top: 8px; }
   #panel.gilded .card.on:not(.new) { border-color: rgba(255, 212, 121, 0.55); }
+  .card .shinymark { position: absolute; top: 9px; right: 9px; display: inline-flex; align-items: baseline; gap: 3px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 1.5; background: rgba(255, 212, 121, 0.92); color: #3a2604; }
+  .card .shinymark small { font-family: var(--mono); font-size: 9.5px; font-weight: 400; }
+  .card.hasshiny.on:not(.new) { border-color: rgba(255, 212, 121, 0.55); }
+  .shinymark.inline { display: inline-block; vertical-align: middle; padding: 0 8px; border-radius: 999px; font-size: 14px; background: rgba(255, 212, 121, 0.92); color: #3a2604; }
+  .dtabs { display: flex; gap: 6px; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); align-self: flex-start; }
+  .dtabs button { padding: 7px 16px; border-radius: 9px; border: 0; background: transparent; color: var(--text-dim); font-size: 13px; font-weight: 500; }
+  .dtabs button:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+  .dtabs button.on { color: var(--text); background: var(--accent-soft); }
+  .dtabs button.got { color: #ffd479; }
+  .dtabs button.on.got { background: rgba(255, 212, 121, 0.18); }
+  .dtabs .tick { font-size: 11px; opacity: 0.85; }
+  .detail .big.shinybig { box-shadow: 0 0 0 2px rgba(255, 212, 121, 0.75); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
   .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
   .detail #detailBack { align-self: flex-start; }

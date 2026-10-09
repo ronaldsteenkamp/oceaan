@@ -336,14 +336,17 @@
     const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
     const got = all.filter(k => logbook.has(k)).length;
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    const card = (k, isNew) => {
-      const e = logbook.get(k);
-      return `<button type="button" class="card ${e ? "on" : "off"}${k.startsWith("shiny:") ? " shiny" : ""}${isNew ? " new" : ""}" data-detail="${k}"><img alt="" data-thumb="${k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${e && e.n > 1 && k.startsWith("shiny:") ? `<span class="count">${e.n > 99 ? "99+" : e.n + "×"}</span>` : ""}</button>`;
+    // A card is always the animal itself. Its shiny shows as a golden sparkle on the card;
+    // in shiny mode (the Shiny filter, or a new shiny) the card shows the shiny picture instead.
+    const card = (k, isNew, shinyMode) => {
+      const sk = "shiny:" + k, e = logbook.get(shinyMode ? sk : k), se = logbook.get(sk);
+      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦${se.n > 1 ? `<small>${se.n > 99 ? "99+" : se.n + "×"}</small>` : ""}</span>` : "";
+      return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${shinyMode ? nm(sk) : nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
     };
     const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
     let html = "";
     if (news.length && logFilter !== "album") {
-      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => card(k, true)).join("") + `</div>`;
+      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => k.startsWith("shiny:") ? card(k.slice(6), true, true) : card(k, true)).join("") + `</div>`;
     }
     html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
     html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
@@ -358,15 +361,17 @@
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
     html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     if (logFilter === "album") html += albumHTML();
-    const show = k => logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k)) || (logFilter === "shiny" && k.startsWith("shiny:"));
+    // the Shiny filter shows every animal that has a shiny, in its shiny colours; the shinies have no group of their own
+    const shinyMode = logFilter === "shiny";
+    const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
+    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k));
     for (const [title, allKeys, subs] of logFilter === "album" ? [] : LOG_GROUPS) {
-      if (!allKeys.some(show)) continue;
+      if (title === "Shiny" || !allKeys.some(show)) continue;
       html += `<h3>${groupName(title)}</h3>`;
       for (const [nl, en, keys] of subs) {
         const vis = keys.filter(show);
         if (!vis.length) continue;
-        const label = title === "Shiny" ? groupName(nl) : L(nl, en);
-        html += `<h4 class="sub">${label} <span>${vis.filter(k => logbook.has(k)).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(k) && logbook.has(k))).join("") + `</div>`;
+        html += `<h4 class="sub">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)).join("") + `</div>`;
       }
     }
     html += `<h3>${L("Bewaren", "Keep")}</h3>

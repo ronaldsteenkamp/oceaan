@@ -320,8 +320,8 @@
   };
 
   let detailOpen = false, logScroll = 0;
-  function openDetail(key) {
-    logScroll = panelBody.scrollTop;
+  function openDetail(key, sameAnimal) {
+    if (!sameAnimal) logScroll = panelBody.scrollTop;
     detailOpen = true;
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
@@ -331,11 +331,18 @@
       : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
+    // an animal with a shiny gets two tabs: the ordinary one and its shiny
+    const isShiny = key.startsWith("shiny:"), se = logbook.get("shiny:" + base);
+    const tabs = SHINY_KEYS.includes(base) ? `<div class="dtabs" role="tablist" aria-label="${L("Kleur", "Colour")}">
+        <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
+        <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny${se ? ` <span class="tick">${L("gevonden", "found")}</span>` : ""}</button>
+      </div>` : "";
     panelBody.innerHTML = `
       <div class="detail">
         <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
-        <img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
-        <h2>${nm(key)}</h2>
+        ${tabs}
+        <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
+        <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
         <p class="fact">${fact}</p>
         <dl>
           <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
@@ -345,7 +352,8 @@
         </dl>
       </div>`;
     panelBody.scrollTop = 0;
-    document.getElementById("detailBack").focus();
+    const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
+    (tabBtn || document.getElementById("detailBack")).focus();
   }
   function closeDetail() {
     detailOpen = false;
@@ -496,6 +504,7 @@
     const b = e.target.closest("button");
     if (!b) return;
     if (b.dataset.detail) { openDetail(b.dataset.detail); return; }
+    if (b.dataset.dtab) { openDetail(b.dataset.dtab, true); return; }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }

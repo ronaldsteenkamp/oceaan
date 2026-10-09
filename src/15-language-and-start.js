@@ -92,9 +92,9 @@
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
     }
     try {
-      panelTab = "log"; panelEl.hidden = false; renderPanel(); openDetail("shiny:crab"); closeDetail();
+      panelTab = "log"; panelEl.hidden = false; renderPanel(); openDetail("shiny:crab"); openDetail("crab", true); closeDetail();
       panelTab = "set"; renderPanel();
-      for (const f of ["missing", "found", "shiny", "album"]) { panelTab = "log"; logFilter = f; renderPanel(); }
+      for (const f of ["missing", "found", "shiny", "album", "all"]) { panelTab = "log"; logFilter = f; renderPanel(); }
       logFilter = "all";
       setLang(LANG === "nl" ? "en" : "nl"); panelTab = "log"; renderPanel(); openDetail("octopus"); panelTab = "set"; renderPanel();
       setLang(LANG === "nl" ? "en" : "nl");
