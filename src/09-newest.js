@@ -714,11 +714,11 @@
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
       ctx.rotate(Math.sin(d.kick + off * Math.PI) * 0.35);
       ctx.fillStyle = suit; ctx.fillRect(-L * 0.35, -L * 0.035, L * 0.35, L * 0.07);
-      ctx.fillStyle = rewards.has("s15") ? `hsl(${(t * 80 + off * 60) % 360} 80% 55%)` : rewards.has("s5") ? "#e8c040" : rewards.has("m25") ? sh("#2fb37a") : sh("#2f6fe0");
+      ctx.fillStyle = sh("#2f6fe0");
       ctx.beginPath(); ctx.moveTo(-L * 0.33, -L * 0.04); ctx.lineTo(-L * 0.6, -L * 0.09); ctx.lineTo(-L * 0.6, L * 0.06); ctx.lineTo(-L * 0.33, L * 0.04); ctx.fill();
       ctx.restore();
     }
-    ctx.fillStyle = rewards.has("sall") ? `hsl(${(t * 60) % 360} 80% 60%)` : rewards.has("mall") ? "#ffd479" : sh("#e8b52a", -0.1);
+    ctx.fillStyle = sh("#e8b52a", -0.1);
     ctx.beginPath(); ctx.roundRect(-L * 0.2, -L * 0.13, L * 0.36, L * 0.08, L * 0.04); ctx.fill();
     ctx.fillStyle = suit;
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.27, L * 0.07, 0, 0, TAU); ctx.fill();

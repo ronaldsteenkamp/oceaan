@@ -427,12 +427,12 @@
   const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [100, 20]];
   function lockSeconds() {
     const n = foundCount();
-    if (n >= BASE_LOG_KEYS.length) return 10;
+    if (n >= BASE_LOG_KEYS.length) return 1;
     let sec = 600;
     for (const [need, s] of LOCK_STEPS) if (n >= need) sec = s;
     return sec;
   }
-  const durationText = sec => sec >= 60 ? (sec === 60 ? L("minuut", "minute") : L(`${sec / 60} minuten`, `${sec / 60} minutes`)) : L(`${sec} seconden`, `${sec} seconds`);
+  const durationText = sec => sec >= 60 ? (sec === 60 ? L("minuut", "minute") : L(`${sec / 60} minuten`, `${sec / 60} minutes`)) : sec === 1 ? L("seconde", "second") : L(`${sec} seconden`, `${sec} seconds`);
   const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
   const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
   // Each milestone says how far along you are; the ones with a reward change something you can see.
@@ -440,17 +440,17 @@
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    tier("m10", "Ontdekker", "Explorer", 10, "een bronzen boekje en elke 5 minuten een nieuwe oceaan", "a bronze logbook and a new ocean every 5 minutes"),
-    tier("m25", "Zeekenner", "Sea expert", 25, "groene zwemvliezen en elke 2 minuten een nieuwe oceaan", "green fins and a new ocean every 2 minutes"),
-    tier("m50", "Oceanograaf", "Oceanographer", 50, "een zilveren boekje en elke minuut een nieuwe oceaan", "a silver logbook and a new ocean every minute"),
+    tier("m10", "Ontdekker", "Explorer", 10, "elke 5 minuten een nieuwe oceaan", "a new ocean every 5 minutes"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "elke 2 minuten een nieuwe oceaan", "a new ocean every 2 minutes"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke minuut een nieuwe oceaan", "a proper torch for your diver and a new ocean every minute"),
     tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
-    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["een gouden boekje, een gouden duikfles en elke 10 seconden een nieuwe oceaan", "a golden logbook, a golden air tank and a new ocean every 10 seconds"] },
-    shinyTier("s1", "Eerste shiny", "First shiny", 1, "een glinsterend boekje", "a glittering logbook"),
-    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "gouden zwemvliezen voor je duiker", "golden fins for your diver"),
-    shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "regenboogzwemvliezen voor je duiker", "rainbow fins for your diver"),
+    { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
+    shinyTier("s1", "Eerste shiny", "First shiny", 1),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
+    shinyTier("s15", "Shinyjager", "Shiny hunter", 15),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
-    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een regenboogduikfles", "a rainbow air tank"] },
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: null },
     allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
     allOf("gb", "Schatzoeker", "Treasure seeker", "Bodem en vondsten", "vondsten op de bodem", "finds on the seabed"),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
@@ -464,8 +464,8 @@
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
   function applyRewards() {
     rewards = new Set(reached());
-    bookBtn.dataset.rank = rewards.has("mall") ? "gold" : rewards.has("m50") ? "silver" : rewards.has("m10") ? "bronze" : "";
-    bookBtn.classList.toggle("glitter", rewards.has("s1"));
+    bookBtn.dataset.rank = MILESTONES.every(m => rewards.has(m.id)) ? "gold" : "";
+    bookBtn.classList.remove("glitter");
     panelEl.classList.toggle("gilded", rewards.has("m100"));
   }
   function checkMilestones(before) {

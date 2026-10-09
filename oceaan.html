@@ -1,21 +1,3 @@
-<!doctype html>
-<html lang="nl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#06182a">
-<meta name="description" content="Een levende onderwaterwereld vol zeedieren, wrakken en schatten, die elke keer anders is.">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Oceaan">
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; }
-  img { max-width: 100%; }
-  [hidden] { display: none !important; }
-</style>
 <title>Oceaan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
@@ -260,9 +242,6 @@
   @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
 </style>
-</head>
-<body>
-
 
 <canvas id="c" aria-label="Generatief kunstwerk: een onderwaterwereld met een gezonken piratenschip, schatkist, scholen vissen, kwallen, krabben, een octopus en andere zeedieren"></canvas>
 <button id="task" type="button" hidden></button>
@@ -8625,37 +8604,3 @@
   requestAnimationFrame(now => { last = now; frame(now); });
 })();
 </script>
-
-<style>
-  .update-bar {
-    position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 10;
-    display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
-    padding: 8px 8px 8px 16px; border-radius: 12px; font: 13px "Figtree", system-ui, sans-serif;
-    color: #eaf4f6; background: rgba(7, 24, 39, 0.94); border: 1px solid rgba(220, 236, 240, 0.28); box-shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
-  }
-  .update-bar button { font: inherit; font-weight: 600; color: #05221f; background: #7fd8c9; border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; }
-</style>
-<script>
-  // maakt de oceaan installeerbaar en speelbaar zonder internet, en meldt een nieuwe versie
-  if ("serviceWorker" in navigator) {
-    const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (!hadController || document.querySelector(".update-bar")) return;
-      const nl = document.documentElement.lang !== "en";
-      const bar = document.createElement("div");
-      bar.className = "update-bar";
-      bar.setAttribute("role", "status");
-      const text = document.createElement("span");
-      text.textContent = nl ? "Er is een nieuwe versie van de oceaan." : "A new version of the ocean is ready.";
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = nl ? "Vernieuwen" : "Refresh";
-      btn.addEventListener("click", () => location.reload());
-      bar.append(text, btn);
-      document.body.appendChild(bar);
-    });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=26").catch(() => {}));
-  }
-</script>
-</body>
-</html>
