@@ -48,6 +48,7 @@
     registerMoreShinies(s, add, tag);
     registerWave2Shinies(s, add);
     registerRareShinies(s, add);
+    registerFaunaShinies(s, add);
     s.shinies = list;
   }
 

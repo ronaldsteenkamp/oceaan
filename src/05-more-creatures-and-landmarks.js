@@ -43,7 +43,7 @@
     return { kind: "city", w, s, houses };
   }
   function presentLife(S) {
-    return {
+    return Object.assign({
       crab: S.crabs.length, starfish: S.starfish.length, urchin: S.urchins.length, octopus: !!S.octopus, ray: !!S.ray,
       eels: S.ground.some(g => g.kind === "eels"), seahorse: S.seahorses.length, puffer: !!S.puffer, angler: !!S.angler,
       moray: !!(S.wreck && S.wreck.moray), squid: S.squids.length, hermit: S.hermits.length, slugs: S.slugs.length,
@@ -52,13 +52,13 @@
       cassiopea: S.cassio.length, lionfish: !!S.lionfish, cuttlefish: !!S.cuttle, lobster: S.lobsters.length, nautilus: !!S.nautilus,
       isopod: S.isopods.length, seadragon: !!S.dragon,
       parrotfish: !!S.parrot, boxfish: !!S.boxfish, pistol: !!S.pistol, sargassumfish: !!S.frogfish, spidercrab: !!S.spider,
-    };
+    }, faunaPresent(S));
   }
 
   // Where each kind of animal can be seen, so the diver's lamp can find it.
   function lifePoints(S) {
     const fy = x => sandY(x) + 2 * u, one = o => o ? [o] : null;
-    return {
+    return Object.assign({
       crab: () => S.crabs.map(c => [c.x, fy(c.x) - c.s * 0.4]), starfish: () => S.starfish.map(f => [f.x, fy(f.x)]),
       urchin: () => S.urchins.map(o => [o.x, fy(o.x)]), octopus: () => S.octopus && [S.octopus.x, fy(S.octopus.x) - 20 * u],
       ray: () => S.ray && [S.ray.x, fy(S.ray.x) - S.ray.lift], eels: () => S.ground.filter(g => g.kind === "eels").map(g => [g.x, fy(g.x) - 30 * u]),
@@ -75,7 +75,7 @@
       seadragon: () => S.dragon && [S.dragon.x, S.dragon.cy || S.dragon.y], parrotfish: () => S.parrot && [S.parrot.x, S.parrot.cy || fy(S.parrot.x) - 40 * u],
       boxfish: () => S.boxfish && [S.boxfish.x, S.boxfish.cy || S.boxfish.y], pistol: () => S.pistol && [S.pistol.x, fy(S.pistol.x)],
       sargassumfish: () => S.frogfish && S.frogfish.cx !== undefined && [S.frogfish.cx, S.frogfish.cy], spidercrab: () => S.spider && [S.spider.x, fy(S.spider.x) - 20 * u],
-    };
+    }, faunaPoints(S));
   }
 
   // ---- more landmarks ----------------------------------------------------

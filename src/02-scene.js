@@ -315,7 +315,7 @@
       shell: pick(["#d8b48a", "#c98f6b", "#e6d2b0", "#b9a6c9"]),
     })) : [];
     s.slugs = chance(Lf.slugs) ? Array.from({ length: 2 + Math.floor(rng() * 3) }, () => ({
-      x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(10, 16) * u, type: chance(0.5) ? "cucumber" : "nudi", ph: range(0, TAU),
+      x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(10, 16) * u, type: chance(0.5) ? "nudi" : "nudi", ph: range(0, TAU),
       color: pick(["#7a3b2e", "#5a3a2a", "#8a5a3a"]), body: pick(["#7b4fd6", "#2f6fe0", "#e8e0f0", "#f05a8a"]), tip: pick(["#ff9a3c", "#ffd23c", "#ff5a5a"]),
     })) : [];
     s.combs = chance(Lf.comb) ? Array.from({ length: 2 + Math.floor(rng() * 3) }, () => ({
@@ -388,6 +388,7 @@
     if (s.mantis) s.mantis.x = remap(s.mantis.x);
     buildMore(s, Lf, clumps, remap);
     buildWave2(s, Lf, remap);
+    buildFauna(s, Lf, remap);
 
     s.watch = [];
     // the water itself is logged as soon as the diver goes in

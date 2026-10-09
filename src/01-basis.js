@@ -180,6 +180,29 @@
       visitors: ["whale", "humpback", "sunfish", "dolphins", "spermwhale", "shark", "turtle", "swordfish"] },
   );
 
+  // The fourth wave: thirty-six more animals.
+  const WAVE4 = {
+    rif: { life: { triggerfish: 0.6, wrasse: 0.7, surgeonfish: 0.7, mandarinfish: 0.35, frogfish: 0.3, scorpionfish: 0.4, stonefish: 0.3, blenny: 0.5, goby: 0.5, needlefish: 0.3, electricray: 0.25, guitarfish: 0.25, brittlestar: 0.3, seacucumber: 0.4, featherstar: 0.4, seasnake: 0.3, seakrait: 0.25 },
+      visitors: ["thresher", "whitetip", "marlin", "tuna", "barracuda", "falsekiller"] },
+    lagune: { life: { triggerfish: 0.6, wrasse: 0.5, surgeonfish: 0.6, mandarinfish: 0.3, frogfish: 0.25, stonefish: 0.35, blenny: 0.5, goby: 0.6, needlefish: 0.5, electricray: 0.2, guitarfish: 0.4, sanddollar: 0.6, seacucumber: 0.4, seasnake: 0.3, seakrait: 0.3, iguana: 0.25, pelican: 0.4 },
+      visitors: ["whitetip", "barracuda", "sawfish"] },
+    mangrove: { life: { triggerfish: 0.2, mandarinfish: 0.2, stonefish: 0.3, goby: 0.5, needlefish: 0.4, guitarfish: 0.3, seasnake: 0.4, iguana: 0.15, cormorant: 0.3, pelican: 0.5 },
+      visitors: ["whitetip", "barracuda", "sawfish"] },
+    noordzee: { life: { wrasse: 0.3, scorpionfish: 0.3, blenny: 0.3, goby: 0.3, electricray: 0.3, sanddollar: 0.3, brittlestar: 0.4, seacucumber: 0.3, cormorant: 0.5 },
+      visitors: ["thresher", "greatwhite", "tuna", "finwhale", "pilotwhale"] },
+    kelpwoud: { life: { wrasse: 0.3, scorpionfish: 0.2, blenny: 0.3, sanddollar: 0.3, cormorant: 0.4, albatross: 0.2 },
+      visitors: ["greatwhite", "pilotwhale"] },
+    sargasso: { life: { needlefish: 0.3, albatross: 0.5 },
+      visitors: ["thresher", "greatwhite", "marlin", "tuna", "bluewhale", "finwhale", "pilotwhale", "falsekiller"] },
+    ijszee: { life: { brittlestar: 0.4, walrus: 0.6, polarbear: 0.4, albatross: 0.3 },
+      visitors: ["bluewhale", "finwhale"] },
+    diepzee: { life: { electricray: 0.2, brittlestar: 0.6, seacucumber: 0.5, featherstar: 0.3 },
+      visitors: ["coelacanth", "bluewhale"] },
+    grot: { life: { frogfish: 0.2, scorpionfish: 0.3, brittlestar: 0.5, seacucumber: 0.3, featherstar: 0.3 },
+      visitors: ["coelacanth"] },
+  };
+  WATERS.forEach(w => { const e = WAVE4[w.name]; if (!e) return; Object.assign(w.life, e.life); w.visitors.push(...e.visitors); });
+
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon"];
   const LIFE_KEYS = ["crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish"];
@@ -195,8 +218,10 @@
   const W3_LIFE = ["parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab"];
   const W3_VIS = ["crocodile", "whaleshark", "sealion", "eagleray", "spermwhale"];
   const W3_RARE = ["aurora", "mobydick", "ghostdiver"];
-  PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
-  AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE);
+  const W4_LIFE = ["triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear"];
+  const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
+  PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
+  AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.06;
   const RARES_BY_WATER = {
@@ -221,13 +246,21 @@
     crocodile: "Zeekrokodil", whaleshark: "Walvishaai", sealion: "Zeeleeuw", eagleray: "Adelaarsrog", spermwhale: "Potvis",
     eelmigration: "Palingtrek", quake: "Zeebeving", crabmarch: "Krabbentrek", bubblerings: "Bellenringen",
     aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker",
+    triggerfish: "Trekkersvis", wrasse: "Lipvis", surgeonfish: "Doktersvis", mandarinfish: "Mandarijnvis", frogfish: "Kikvorsvis",
+    scorpionfish: "Schorpioenvis", stonefish: "Steenvis", blenny: "Slijmvis", goby: "Grondel", needlefish: "Naaldvis",
+    thresher: "Voshaai", whitetip: "Witpuntrifhaai", greatwhite: "Witte haai", marlin: "Marlijn", tuna: "Tonijn", barracuda: "Barracuda", coelacanth: "Coelacant",
+    electricray: "Sidderrog", guitarfish: "Vioolrog", sawfish: "Zaagvis",
+    sanddollar: "Zanddollar", brittlestar: "Slangster", seacucumber: "Zeekomkommer", featherstar: "Haarster",
+    seasnake: "Geelbuikzeeslang", seakrait: "Zeekrait", iguana: "Zeeleguaan",
+    bluewhale: "Blauwe vinvis", finwhale: "Gewone vinvis", pilotwhale: "Griend", falsekiller: "Zwarte zwaardwalvis",
+    albatross: "Albatros", cormorant: "Aalscholver", pelican: "Pelikaan", walrus: "Walrus", polarbear: "IJsbeer",
     wreck: "Piratenwrak", plane: "Vliegtuigwrak", chest: "Schatkist", treasure: "Opgegraven schat", anchor: "Anker", cannon: "Kanon",
     ruins: "Zuilen", statue: "Atlantis", city: "Gezonken stad", arch: "Rotsboog", helmet: "Duikerhelm", mine: "Zeemijn",
     bottle: "Flessenpost", skull: "Doodshoofd", coral: "Koraaltuin", anemone: "Anemoon", vent: "Heetwaterbron",
     volcano: "Onderzeese vulkaan", brine: "Pekelmeer", rocks: "Rotsblokken", canyon: "Afgrond",
     fish: "Scholen vissen", jelly: "Kwal", crab: "Krab", starfish: "Zeester", urchin: "Zee-egel", octopus: "Octopus",
     ray: "Pijlstaartrog", eels: "Zandalen", seahorse: "Zeepaardje", puffer: "Kogelvis", angler: "Hengelvis", moray: "Murene",
-    squid: "Inktvisjes", hermit: "Heremietkreeft", slugs: "Zeekomkommer", comb: "Ribkwal", lantern: "Lantaarnvis",
+    squid: "Inktvisjes", hermit: "Heremietkreeft", slugs: "Zeenaaktslak", comb: "Ribkwal", lantern: "Lantaarnvis",
     otters: "Zeeotter", seal: "Zeehond", penguins: "Pinguïns", clown: "Clownvis", mantis: "Bidsprinkhaankreeft",
     archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars", flyingfish: "Vliegende vis",
     whale: "Walvis", humpback: "Bultrug", shark: "Haai", turtle: "Zeeschildpad", manta: "Manta", dolphins: "Dolfijnen",
@@ -244,18 +277,19 @@
       ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
     ],
     "Dieren": [
-      ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels"]],
-      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "swordfish", "sunfish"]],
-      ["Roggen", "Rays", ["ray", "manta", "eagleray"]],
+      ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels",
+        "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish"]],
+      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "thresher", "whitetip", "greatwhite", "swordfish", "marlin", "tuna", "barracuda", "sunfish", "coelacanth"]],
+      ["Roggen", "Rays", ["ray", "manta", "eagleray", "electricray", "guitarfish", "sawfish"]],
       ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
       ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
       ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
       ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
-      ["Zeesterren en egels", "Starfish and urchins", ["starfish", "urchin", "slugs"]],
+      ["Zeesterren, egels en slakken", "Starfish, urchins and slugs", ["starfish", "brittlestar", "featherstar", "urchin", "sanddollar", "seacucumber", "slugs"]],
       ["Koralen, sponzen en schelpen", "Corals, sponges and clams", ["coral", "anemone", "sponges", "clam"]],
-      ["Reptielen", "Reptiles", ["turtle", "crocodile"]],
-      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "beluga", "narwhal", "humpback", "whale", "spermwhale"]],
-      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "manatee", "penguins"]],
+      ["Reptielen", "Reptiles", ["turtle", "crocodile", "seasnake", "seakrait", "iguana"]],
+      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "falsekiller", "pilotwhale", "beluga", "narwhal", "humpback", "whale", "spermwhale", "finwhale", "bluewhale"]],
+      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "walrus", "manatee", "polarbear", "penguins", "albatross", "cormorant", "pelican"]],
     ],
     "Momenten": [
       ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide", "aurora"]],
@@ -298,6 +332,10 @@
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
     kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150,
+    triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, frogfish: 150, scorpionfish: 150, stonefish: 150, blenny: 300, goby: 450, needlefish: 150,
+    electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
+    albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
+    thresher: 450, whitetip: 450, greatwhite: 450, marlin: 450, tuna: 450, barracuda: 450, coelacanth: 300, sawfish: 450, bluewhale: 450, finwhale: 450, pilotwhale: 450, falsekiller: 450,
   };
   // shinies are five times easier to find than the base table above
   const SHINY_EASE = 5;
@@ -309,8 +347,10 @@
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
     "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
-    "hatchlings", "eelmigration", "giant"];
-  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeekomkommer", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
+    "hatchlings", "eelmigration", "giant",
+    "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
+    "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
+  const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeenaaktslak", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
     hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   // the shinies follow the same order as the animals, visitors, moments and rare things
@@ -341,13 +381,21 @@
     crocodile: "Saltwater crocodile", whaleshark: "Whale shark", sealion: "Sea lion", eagleray: "Spotted eagle ray", spermwhale: "Sperm whale",
     eelmigration: "Eel migration", quake: "Seaquake", crabmarch: "Crab march", bubblerings: "Bubble rings",
     aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver",
+    triggerfish: "Triggerfish", wrasse: "Wrasse", surgeonfish: "Surgeonfish", mandarinfish: "Mandarinfish", frogfish: "Frogfish",
+    scorpionfish: "Scorpionfish", stonefish: "Stonefish", blenny: "Blenny", goby: "Goby", needlefish: "Needlefish",
+    thresher: "Thresher shark", whitetip: "Whitetip reef shark", greatwhite: "Great white shark", marlin: "Marlin", tuna: "Tuna", barracuda: "Barracuda", coelacanth: "Coelacanth",
+    electricray: "Electric ray", guitarfish: "Guitarfish", sawfish: "Sawfish",
+    sanddollar: "Sand dollar", brittlestar: "Brittle star", seacucumber: "Sea cucumber", featherstar: "Feather star",
+    seasnake: "Sea snake", seakrait: "Sea krait", iguana: "Marine iguana",
+    bluewhale: "Blue whale", finwhale: "Fin whale", pilotwhale: "Pilot whale", falsekiller: "False killer whale",
+    albatross: "Albatross", cormorant: "Cormorant", pelican: "Pelican", walrus: "Walrus", polarbear: "Polar bear",
     wreck: "Pirate wreck", plane: "Plane wreck", chest: "Treasure chest", treasure: "Dug-up treasure", anchor: "Anchor", cannon: "Cannon",
     ruins: "Columns", statue: "Atlantis", city: "Sunken town", arch: "Rock arch", helmet: "Diving helmet", mine: "Sea mine",
     bottle: "Message in a bottle", skull: "Skull", coral: "Coral garden", anemone: "Anemone", vent: "Hydrothermal vent",
     volcano: "Undersea volcano", brine: "Brine pool", rocks: "Boulders", canyon: "Abyss",
     fish: "Fish schools", jelly: "Jellyfish", crab: "Crab", starfish: "Starfish", urchin: "Sea urchin", octopus: "Octopus",
     ray: "Stingray", eels: "Garden eels", seahorse: "Seahorse", puffer: "Pufferfish", angler: "Anglerfish", moray: "Moray eel",
-    squid: "Squid", hermit: "Hermit crab", slugs: "Sea cucumber", comb: "Comb jelly", lantern: "Lanternfish",
+    squid: "Squid", hermit: "Hermit crab", slugs: "Sea slug", comb: "Comb jelly", lantern: "Lanternfish",
     otters: "Sea otter", seal: "Seal", penguins: "Penguins", clown: "Clownfish", mantis: "Mantis shrimp",
     archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper", flyingfish: "Flying fish",
     whale: "Whale", humpback: "Humpback whale", shark: "Shark", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
@@ -356,7 +404,7 @@
     storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
     mermaid: "Mermaid", kraken: "Kraken", ghost: "Ghost ship", whalefall: "Whale fall",
   };
-  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea cucumber", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
+  const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea slug", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
     hatchlings: "turtle hatchling", eelmigration: "glass eel", giant: "giant squid" };
   for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || NAMES_EN[k].toLowerCase());
   const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };

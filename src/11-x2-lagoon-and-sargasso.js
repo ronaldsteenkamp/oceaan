@@ -321,12 +321,14 @@
 
   function drawWave2Floor(k) {
     const S = scene;
+    drawFauna(k, "floor");
     if (S.pistol) shinyDraw(S.pistol, () => drawPistol(S.pistol, k));
     if (S.spider) shinyDraw(S.spider, () => drawSpider(S.spider, k));
     if (S.parrot) shinyDraw(S.parrot, () => drawParrot(S.parrot, k));
   }
   function drawWave2Mid(k) {
     const S = scene;
+    drawFauna(k, "mid");
     if (S.boxfish) shinyDraw(S.boxfish, () => drawBoxfish(S.boxfish, k));
   }
 
@@ -670,6 +672,7 @@
   }
 
   function drawWave2Top(k) {
+    drawFauna(k, "top");
     drawSargassum(k);
     if (scene.frogfish) shinyDraw(scene.frogfish, () => drawFrog(scene.frogfish, k));
   }
