@@ -1,40 +1,42 @@
   // ---- fish --------------------------------------------------------------
+  // A fish with a proper outline: a rounded head, a narrow tail stalk, a forked tail and fins.
+  // L is half its body length; the shapes are drawn in units where L = 100.
+  const FISH_BODY = "M 100 6 C 92 -22 56 -40 6 -40 C -36 -40 -66 -24 -84 -9 L -84 9 C -66 22 -36 36 6 36 C 56 36 92 22 100 6 Z";
+  const FISH_BELLY = "M 96 14 C 70 30 34 36 6 36 C -36 36 -66 22 -84 9 C -50 16 20 20 96 14 Z";
+  const FISH_TAIL = "M 8 0 C -10 -12 -30 -30 -54 -42 C -42 -14 -42 14 -54 42 C -30 30 -10 12 8 0 Z";
+  const FISH_DORSAL = "M -42 -36 C -22 -68 24 -66 44 -34 Z";
+  const FISH_ANAL = "M -34 31 C -24 50 -4 50 6 34 Z";
+  const FISH_PEC = "M 34 8 C 22 14 12 22 10 30 C 22 28 32 20 38 10 Z";
+  const CLOWN_BANDS = "M 34 -60 L 54 -60 L 54 60 L 34 60 Z M -24 -60 L -2 -60 C -10 -20 -10 20 -2 60 L -24 60 C -32 20 -32 -20 -24 -60 Z";
   function drawFishShape(x, y, ang, L, main, dark, ph, stripes) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(ang);
     if (Math.cos(ang) < 0) ctx.scale(1, -1);
+    const k = L / 100, big = L > 9;
+    ctx.scale(k, k * (stripes ? 1.2 : 1));
     ctx.fillStyle = dark;
-    ctx.save();
-    ctx.translate(-L * 0.78, 0);
-    ctx.rotate(Math.sin(ph) * 0.4);
-    ctx.beginPath();
-    ctx.moveTo(L * 0.1, 0);
-    ctx.lineTo(-L * 0.55, -L * 0.4);
-    ctx.quadraticCurveTo(-L * 0.4, 0, -L * 0.55, L * 0.4);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    ctx.beginPath();
-    ctx.moveTo(-L * 0.2, -L * 0.3);
-    ctx.quadraticCurveTo(L * 0.05, -L * 0.62, L * 0.25, -L * 0.3);
-    ctx.fill();
-    ctx.fillStyle = main;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, L, L * (stripes ? 0.45 : 0.36), 0, 0, TAU);
-    ctx.fill();
+    ctx.save(); ctx.translate(-80, 0); ctx.rotate(Math.sin(ph) * 0.4); ctx.fill(P(FISH_TAIL)); ctx.restore();
+    ctx.fill(P(FISH_DORSAL)); ctx.fill(P(FISH_ANAL));
+    ctx.fillStyle = main; ctx.fill(P(FISH_BODY));
     if (stripes) {
-      ctx.save();
-      ctx.clip();
-      ctx.fillStyle = "#fbfbf6";
-      ctx.fillRect(L * 0.25, -L, L * 0.2, L * 2);
-      ctx.fillRect(-L * 0.3, -L, L * 0.2, L * 2);
+      // a clownfish: white bands edged in black
+      ctx.save(); ctx.clip(P(FISH_BODY));
+      ctx.strokeStyle = dark; ctx.lineWidth = 9; ctx.stroke(P(CLOWN_BANDS));
+      ctx.fillStyle = "#fbfbf6"; ctx.fill(P(CLOWN_BANDS));
       ctx.restore();
+    } else {
+      ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.fill(P(FISH_BELLY));
+    }
+    if (big) {
+      ctx.strokeStyle = "rgba(0,0,0,0.16)"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(52, -26); ctx.quadraticCurveTo(42, 0, 52, 24); ctx.stroke();
+      ctx.save(); ctx.translate(30, 10); ctx.rotate(Math.sin(ph * 1.3) * 0.3); ctx.translate(-30, -10);
+      ctx.fillStyle = dark; ctx.globalAlpha *= 0.7; ctx.fill(P(FISH_PEC)); ctx.restore();
+      ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.beginPath(); ctx.arc(60, -9, 11, 0, TAU); ctx.fill();
     }
     ctx.fillStyle = dark;
-    ctx.beginPath();
-    ctx.arc(L * 0.58, -L * 0.07, Math.max(0.7, L * 0.07), 0, TAU);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(61, -9, Math.max(0.7 / k, 7), 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -416,6 +418,9 @@
     });
   }
 
+  const RAY_DISC = "M 66 0 C 52 -6 26 -18 -4 -24 C -20 -22 -40 -13 -54 -4 L -54 4 C -40 13 -20 22 -4 24 C 26 18 52 6 66 0 Z";
+  const RAY_TAIL = "M 0 -2.6 C -40 -1.8 -80 -0.6 -100 0 C -80 0.8 -40 2 0 2.6 Z";
+  const RAY_PELVIC = "M -46 -5 C -54 -10 -62 -8 -62 -2 L -50 0 Z";
   function drawRay(r, k) {
     r.x += r.dir * r.speed * u * k;
     r.ph += 0.05 * k;
@@ -428,24 +433,23 @@
     ctx.beginPath(); ctx.ellipse(r.x, gy, s * 0.8, s * 0.12, 0, 0, TAU); ctx.fill();
     ctx.save();
     ctx.translate(r.x, y);
-    ctx.scale(r.dir, 1);
+    ctx.scale(r.dir * s / 100, s / 100);
     const col = sh("#7c6a55"), spot = sh("#3e342a");
-    ctx.strokeStyle = col; ctx.lineWidth = Math.max(1, s * 0.03);
-    ctx.beginPath(); ctx.moveTo(-s * 0.5, 0); ctx.quadraticCurveTo(-s * 1.0, Math.sin(r.ph) * s * 0.08, -s * 1.5, Math.sin(r.ph + 1) * s * 0.05); ctx.stroke();
     ctx.fillStyle = col;
-    ctx.beginPath();
-    for (let i = 0; i <= 40; i++) {
-      const a = (i / 40) * TAU;
-      const wave = Math.sin(a * 2 + r.ph * 3) * s * 0.06 * Math.abs(Math.sin(a));
-      const px = Math.cos(a) * s * 0.6 * (Math.cos(a) > 0 ? 1.05 : 0.9);
-      const py = Math.sin(a) * s * 0.22 + wave;
-      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-    }
-    ctx.closePath(); ctx.fill();
+    ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(r.ph) * 0.06); ctx.scale(1, 1); ctx.fill(P(RAY_TAIL));
+    ctx.fillStyle = sh("#4a3e30"); ctx.beginPath(); ctx.moveTo(-34, -1); ctx.lineTo(-44, -4); ctx.lineTo(-40, 0); ctx.fill(); ctx.restore();
+    ctx.fillStyle = col; ctx.fill(P(RAY_PELVIC)); ctx.save(); ctx.scale(1, -1); ctx.fill(P(RAY_PELVIC)); ctx.restore();
+    // the wings ripple as it glides
+    ctx.save(); ctx.scale(1, 1 + Math.sin(r.ph * 3) * 0.12);
+    ctx.fill(P(RAY_DISC));
+    ctx.save(); ctx.clip(P(RAY_DISC));
+    ctx.fillStyle = "rgba(255,240,210,0.12)"; ctx.beginPath(); ctx.ellipse(10, 0, 30, 8, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = spot;
-    for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.arc(((i * 37) % 80 - 40) / 100 * s, ((i * 23) % 20 - 12) / 100 * s, s * 0.025, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = sh("#5a4c3d");
-    ctx.beginPath(); ctx.arc(s * 0.38, -s * 0.07, s * 0.04, 0, TAU); ctx.arc(s * 0.38, s * 0.03, s * 0.04, 0, TAU); ctx.fill();
+    for (let i = 0; i < 11; i++) { ctx.beginPath(); ctx.arc((i * 37) % 90 - 44, (i * 23) % 30 - 15, 2.4, 0, TAU); ctx.fill(); }
+    ctx.restore();
+    ctx.restore();
+    ctx.fillStyle = sh("#4a3e30");
+    ctx.beginPath(); ctx.ellipse(36, -5, 3.4, 2.2, 0, 0, TAU); ctx.ellipse(36, 5, 3.4, 2.2, 0, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -669,38 +673,20 @@
     }
   }
 
+  const WHALE_BODY = "M 50 1 C 49 -5 42 -9 30 -10.5 C 10 -12 -20 -9 -38 -4 C -44 -2.4 -50 -1 -53 0 C -46 2 -38 4 -22 6.5 C 2 10 30 10 44 6 C 48 4.5 50 3 50 1 Z";
+  const WHALE_FLUKE = "M 2 0 C -4 -3 -9 -7 -13 -11 C -12 -6 -10 -2 -9 0 C -10 2 -12 6 -13 11 C -9 7 -4 3 2 0 Z";
+  const WHALE_FLIPPER = "M 0 0 C -4 4 -14 9 -24 10 C -20 6 -10 2 0 -1 Z";
   function drawWhale(v) {
     const L = v.size;
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.02);
     ctx.fillStyle = `rgba(${water.whale},0.5)`;
-    ctx.beginPath();
-    ctx.moveTo(L * 0.5, 0);
-    ctx.bezierCurveTo(L * 0.47, -L * 0.11, L * 0.1, -L * 0.15, -L * 0.3, -L * 0.06);
-    ctx.quadraticCurveTo(-L * 0.45, -L * 0.02, -L * 0.55, 0);
-    ctx.quadraticCurveTo(-L * 0.42, L * 0.035, -L * 0.15, L * 0.075);
-    ctx.bezierCurveTo(L * 0.15, L * 0.12, L * 0.46, L * 0.09, L * 0.5, 0);
-    ctx.fill();
-    ctx.save();
-    ctx.translate(-L * 0.53, 0);
-    ctx.rotate(Math.sin(v.ph * 2) * 0.18);
-    ctx.beginPath();
-    ctx.moveTo(L * 0.02, 0);
-    ctx.quadraticCurveTo(-L * 0.06, -L * 0.04, -L * 0.13, -L * 0.1);
-    ctx.quadraticCurveTo(-L * 0.09, -L * 0.01, -L * 0.1, 0);
-    ctx.quadraticCurveTo(-L * 0.09, L * 0.01, -L * 0.13, L * 0.1);
-    ctx.quadraticCurveTo(-L * 0.06, L * 0.04, L * 0.02, 0);
-    ctx.fill();
-    ctx.restore();
-    ctx.save();
-    ctx.translate(L * 0.18, L * 0.07);
-    ctx.rotate(0.5 + Math.sin(v.ph * 1.5) * 0.12);
-    ctx.beginPath();
-    ctx.ellipse(-L * 0.1, 0, L * 0.14, L * 0.025, 0, 0, TAU);
-    ctx.fill();
-    ctx.restore();
+    ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.18); ctx.fill(P(WHALE_FLUKE)); ctx.restore();
+    ctx.fill(P(WHALE_BODY));
+    ctx.beginPath(); ctx.moveTo(-26, -6.5); ctx.quadraticCurveTo(-30, -9.5, -34, -10); ctx.lineTo(-32, -5.5); ctx.fill();
+    ctx.save(); ctx.translate(22, 6); ctx.rotate(0.15 + Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(WHALE_FLIPPER)); ctx.restore();
     ctx.restore();
   }
 

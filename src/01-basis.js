@@ -573,3 +573,25 @@
     };
   }
 
+  // ---- drawing helpers -------------------------------------------------------
+  // Hand-drawn outlines (SVG path data, 100 units = f.s), cached as Path2D.
+  const PATHS = {};
+  const P = d => PATHS[d] || (PATHS[d] = new Path2D(d));
+  // Everything below the waterline (y > 0) gets a veil of water, so it looks submerged.
+  function underVeil(path) {
+    ctx.save(); ctx.clip(path);
+    ctx.fillStyle = "rgba(30,80,120,0.42)"; ctx.fillRect(-200, 0, 400, 200);
+    ctx.restore();
+  }
+  // a part that is fully under water: its colour, then the same veil on top
+  function fillUnder(path, col) { ctx.fillStyle = col; ctx.fill(path); ctx.fillStyle = "rgba(30,80,120,0.42)"; ctx.fill(path); }
+  function ripple(x0, x1, ph) {
+    ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(x0, 1); ctx.quadraticCurveTo((x0 + x1) / 2, -2 + Math.sin(ph * 3) * 1.2, x1, 1); ctx.stroke();
+  }
+
+  // fill a part, then lay a second colour over the region inside a clip shape (white fin tips, a pale belly)
+  function fillWith(path, col) { ctx.fillStyle = col; ctx.fill(path); }
+  function paintInside(path, col, region) { ctx.save(); ctx.clip(path); ctx.fillStyle = col; ctx.fill(region); ctx.restore(); }
+  // a soft shadow on the sand under something that hovers
+  function sandShadow(f, w) { if (!f.lift) return; ctx.fillStyle = "rgba(0,0,0,0.13)"; ctx.beginPath(); ctx.ellipse(f.x, f.cy + f.lift, w, w * 0.18, 0, 0, TAU); ctx.fill(); }

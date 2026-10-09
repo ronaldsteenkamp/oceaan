@@ -547,6 +547,12 @@
     ctx.restore();
   }
 
+  const PENG_BODY = "M 100 -6 C 96 -22 72 -32 34 -32 C -16 -32 -66 -22 -98 -6 C -103 -2 -103 4 -98 6 C -66 22 -16 30 34 28 C 72 26 96 12 100 -6 Z";
+  const PENG_FRONT = "M 110 -4 C 90 2 60 4 30 2 C -10 0 -60 2 -110 6 L -110 40 L 110 40 Z";
+  const PENG_NECK = "M 84 -2 C 76 2 66 4 56 3 C 60 10 70 12 80 8 Z";
+  const PENG_FLIPPER = "M 0 0 C -14 -4 -40 -2 -60 4 C -40 8 -14 8 0 6 Z";
+  const PENG_BEAK = "M 98 -10 C 108 -9 118 -6 124 -4 C 118 -2 108 -1 98 -2 Z";
+  const PENG_FOOT = "M 0 -4 L -22 -10 C -20 -2 -20 4 -22 10 L 0 4 Z";
   function drawPenguins(k) {
     for (const p of scene.penguins) {
       p.ph += 0.012 * p.sp * k;
@@ -566,21 +572,16 @@
       ctx.translate(p.x, y);
       ctx.scale(p.dir, 1);
       ctx.rotate(Math.atan2(vy, vx));
-      ctx.fillStyle = "#15181c";
-      ctx.beginPath(); ctx.ellipse(0, 0, s, s * 0.32, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#f2f2ec";
-      ctx.beginPath(); ctx.ellipse(s * 0.05, s * 0.1, s * 0.8, s * 0.2, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#15181c";
-      ctx.save(); ctx.translate(s * 0.2, 0); ctx.rotate(0.4 + Math.sin(t * 9 + p.ph) * 0.5);
-      ctx.beginPath(); ctx.ellipse(-s * 0.25, 0, s * 0.35, s * 0.07, 0, 0, TAU); ctx.fill();
-      ctx.restore();
+      ctx.scale(s / 100, s / 100);
       ctx.fillStyle = "#f29a2e";
-      ctx.beginPath(); ctx.moveTo(s * 0.95, -s * 0.05); ctx.lineTo(s * 1.25, 0); ctx.lineTo(s * 0.95, s * 0.06); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-s * 0.95, s * 0.05); ctx.lineTo(-s * 1.15, -s * 0.05); ctx.lineTo(-s * 1.15, s * 0.12); ctx.fill();
-      ctx.fillStyle = "#fff";
-      ctx.beginPath(); ctx.arc(s * 0.75, -s * 0.1, s * 0.06, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(s * 0.77, -s * 0.1, s * 0.03, 0, TAU); ctx.fill();
+      ctx.save(); ctx.translate(-92, 4); ctx.rotate(Math.sin(t * 9 + p.ph) * 0.3); ctx.fill(P(PENG_FOOT)); ctx.restore();
+      ctx.fillStyle = "#15181c"; ctx.fill(P(PENG_BODY));
+      ctx.save(); ctx.clip(P(PENG_BODY)); ctx.fillStyle = "#f2f2ec"; ctx.fill(P(PENG_FRONT)); ctx.fillStyle = "rgba(242,190,60,0.85)"; ctx.fill(P(PENG_NECK)); ctx.restore();
+      ctx.fillStyle = "#15181c";
+      ctx.save(); ctx.translate(34, 4); ctx.rotate(-0.4 - Math.sin(t * 9 + p.ph) * 0.45); ctx.fill(P(PENG_FLIPPER)); ctx.restore();
+      ctx.fillStyle = "#f29a2e"; ctx.fill(P(PENG_BEAK));
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(80, -12, 5.5, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(81.5, -12, 3, 0, TAU); ctx.fill();
       ctx.restore();
       if (recolor) endShiny(p.shiny, p);
       if (depthF > 0.05 && Math.random() < 0.05 * k) bubbles.push({ x: p.x - p.dir * s, y, r: (1 + Math.random() * 1.5) * u, ph: Math.random() * TAU });

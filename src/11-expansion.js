@@ -344,6 +344,8 @@
   }
 
   // Colour waves roll over the cuttlefish; come too close and it flashes pale and backs away.
+  const CUTTLE_MANTLE = "M 46 0 C 46 -16 30 -22 0 -22 C -28 -22 -48 -14 -52 0 C -48 14 -28 22 0 22 C 30 22 46 16 46 0 Z";
+  const CUTTLE_HEAD = "M 44 -12 C 54 -14 62 -10 64 -4 L 64 4 C 62 10 54 14 44 12 Z";
   function drawCuttle(c, k) {
     c.ph += 0.06 * k;
     const p = poke(), d = p.on ? Math.hypot(p.x - c.x, p.y - (c.cy || c.y)) : 1e9;
@@ -356,28 +358,29 @@
     if (!back && Math.abs(dx) > 5 * u) c.dir = Math.sign(dx); // it backs away without turning round
     const y = c.y + Math.sin(c.ph * 0.3) * 8 * u, s = c.s;
     c.cy = y;
-    ctx.save(); ctx.translate(c.x, y); ctx.scale(c.dir, 1);
-    ctx.fillStyle = sh("#c8a888");
-    ctx.beginPath();
-    for (let i = 0; i <= 20; i++) ctx.lineTo(-s * 0.5 + i * s * 0.05, -s * 0.25 - Math.sin(c.ph * 3 + i * 0.8) * s * 0.03);
-    for (let i = 20; i >= 0; i--) ctx.lineTo(-s * 0.5 + i * s * 0.05, s * 0.25 + Math.sin(c.ph * 3 + i * 0.8) * s * 0.03);
-    ctx.closePath(); ctx.fill();
-    ctx.fillStyle = sh(c.flash > 0.3 ? "#ece6dc" : "#a07850");
-    ctx.beginPath(); ctx.ellipse(-s * 0.02, 0, s * 0.5, s * 0.2, 0, 0, TAU); ctx.fill();
-    ctx.save(); ctx.clip();
-    for (let i = 0; i < 9; i++) {
-      const x = -s * 0.6 + ((i * s * 0.16 + c.ph * s * 0.08) % (s * 1.3));
-      ctx.fillStyle = c.flash > 0.3 ? `rgba(40,20,10,${0.45 * c.flash})` : "rgba(60,35,20,0.35)";
-      ctx.beginPath(); ctx.ellipse(x, Math.sin(i) * s * 0.05, s * 0.05, s * 0.2, 0.3, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(c.x, y); ctx.scale(c.dir * s / 100, s / 100);
+    const pale = c.flash > 0.3, skin = sh(pale ? "#ece6dc" : "#a07850"), fin = sh("#c8a888");
+    // the thin fin around the mantle ripples in a wave
+    ctx.fillStyle = fin; ctx.beginPath();
+    for (let i = 0; i <= 48; i++) {
+      const a = (i / 48) * TAU, w = 1 + Math.sin(a * 9 + c.ph * 3) * 0.05;
+      const px = Math.cos(a) * 52 * w - 4, py = Math.sin(a) * 26 * w;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
     }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = skin; ctx.fill(P(CUTTLE_MANTLE));
+    ctx.save(); ctx.clip(P(CUTTLE_MANTLE));
+    ctx.strokeStyle = pale ? `rgba(40,20,10,${0.5 * c.flash})` : "rgba(60,35,20,0.4)"; ctx.lineWidth = 4; ctx.lineCap = "round";
+    for (let i = 0; i < 9; i++) { const px = -48 + ((i * 12 + c.ph * 8) % 108); ctx.beginPath(); ctx.moveTo(px, -22); ctx.quadraticCurveTo(px + 6, 0, px, 22); ctx.stroke(); }
+    ctx.fillStyle = "rgba(255,240,220,0.18)"; ctx.beginPath(); ctx.ellipse(0, -8, 36, 6, 0, 0, TAU); ctx.fill();
     ctx.restore();
-    ctx.fillStyle = sh("#b08860");
-    ctx.beginPath(); ctx.ellipse(s * 0.5, 0, s * 0.13, s * 0.12, 0, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#b08860"); ctx.lineWidth = s * 0.05; ctx.lineCap = "round";
-    for (let i = 0; i < 4; i++) { const yy = (i - 1.5) * s * 0.04; ctx.beginPath(); ctx.moveTo(s * 0.58, yy); ctx.quadraticCurveTo(s * 0.72, yy + Math.sin(c.ph + i) * s * 0.04, s * 0.82, yy * 1.8); ctx.stroke(); }
-    ctx.fillStyle = "#e8d8a0"; ctx.beginPath(); ctx.arc(s * 0.5, -s * 0.05, s * 0.05, 0, TAU); ctx.fill();
-    ctx.strokeStyle = "#1a1208"; ctx.lineWidth = Math.max(0.8, s * 0.018);
-    ctx.beginPath(); ctx.moveTo(s * 0.47, -s * 0.06); ctx.lineTo(s * 0.49, -s * 0.04); ctx.lineTo(s * 0.5, -s * 0.055); ctx.lineTo(s * 0.51, -s * 0.04); ctx.lineTo(s * 0.53, -s * 0.06); ctx.stroke();
+    // head and the arms held together in a point
+    ctx.fillStyle = sh("#b08860"); ctx.fill(P(CUTTLE_HEAD));
+    ctx.strokeStyle = sh("#b08860"); ctx.lineWidth = 4; ctx.lineCap = "round";
+    for (let i = 0; i < 4; i++) { const yy = (i - 1.5) * 3.4; ctx.beginPath(); ctx.moveTo(62, yy); ctx.quadraticCurveTo(74, yy + Math.sin(c.ph + i) * 3, 84, yy * 1.6); ctx.stroke(); }
+    ctx.fillStyle = "#e8d8a0"; ctx.beginPath(); ctx.arc(52, -5, 5, 0, TAU); ctx.fill();
+    ctx.strokeStyle = "#1a1208"; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(49, -6); ctx.lineTo(51, -4); ctx.lineTo(52, -5.5); ctx.lineTo(53, -4); ctx.lineTo(55, -6); ctx.stroke();
     ctx.restore();
   }
 
