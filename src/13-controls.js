@@ -132,9 +132,10 @@
   let discoverBusy = false, discoverPause = false;
   function queueDiscovery(key, pos) {
     const base = key.startsWith("shiny:") ? key.slice(6) : key;
-    if (!groupKeys("Dieren").includes(base) || reduceMotion || restMode) return;
-    if (!pos && diverMode) pos = [diver.x, diver.y];
-    if (!pos || discoverQueue.length > 5) return;
+    // every find gets its photo: animals, legends, ghosts, wonders and moments; only the waters themselves do not
+    if (base.startsWith("w:") || reduceMotion || restMode) return;
+    if (!pos) pos = diverMode ? [diver.x, diver.y] : [W / 2, H / 2];
+    if (discoverQueue.some(d => d.key === key) || discoverQueue.length > 14) return;
     discoverQueue.push({ key, pos });
   }
   // runs at the end of a frame, when the picture of the ocean is complete

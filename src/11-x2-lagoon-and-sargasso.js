@@ -163,6 +163,11 @@
 
   // ---- animals ----------------------------------------------------------------
   // A parrotfish bites at the coral now and then and leaves a puff of fine white sand.
+  const PARROT_BODY = "M 50 2 C 48 -12 36 -22 14 -23 C -10 -24 -30 -16 -42 -5 L -42 5 C -30 15 -10 22 12 22 C 34 21 46 14 50 2 Z";
+  const PARROT_DORSAL = "M 32 -18 C 12 -36 -24 -32 -43 -5 L -36 -7 C -22 -20 6 -24 32 -18 Z";
+  const PARROT_ANAL = "M 14 20 C -4 32 -28 26 -43 6 L -36 7 C -24 17 -4 21 14 20 Z";
+  const PARROT_TAIL = "M 2 0 C -6 -8 -12 -16 -20 -20 C -15 -8 -15 8 -20 20 C -12 16 -6 8 2 0 Z";
+  const PARROT_BEAK = "M 47 -5 C 55 -5 60 -1 60 2 C 60 5 55 8 47 7 C 49 3 49 -1 47 -5 Z";
   function drawParrot(p, k) {
     p.ph += 0.06 * k;
     p.cool -= k / 60;
@@ -175,17 +180,26 @@
     const y = floor - 46 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
     p.cy = y;
     if (dip > 0.95 && k > 0 && Math.random() < 0.3) puff(p.x + p.dir * s * 0.5, floor + 2 * u, 2);
-    ctx.save(); ctx.translate(p.x, y); ctx.scale(p.dir, 1); ctx.rotate(dip * 0.5);
-    const body = sh(p.hue), dark = sh(p.hue, 0.3);
+    ctx.save(); ctx.translate(p.x, y); ctx.scale(p.dir * s / 100, s / 100); ctx.rotate(dip * 0.5);
+    const body = sh(p.hue), dark = sh(p.hue, 0.3), pink = sh("#f08ab0");
+    // a parrotfish: a deep body with a long low dorsal and anal fin, scales outlined in pink,
+    // a lyre-shaped tail and the fused white teeth that make its beak
     ctx.fillStyle = dark;
-    ctx.save(); ctx.translate(-s * 0.45, 0); ctx.rotate(Math.sin(p.ph) * 0.3);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-s * 0.25, -s * 0.18); ctx.quadraticCurveTo(-s * 0.18, 0, -s * 0.25, s * 0.18); ctx.closePath(); ctx.fill(); ctx.restore();
-    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(0, 0, s * 0.5, s * 0.24, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = dark; ctx.beginPath(); ctx.moveTo(-s * 0.3, -s * 0.2); ctx.quadraticCurveTo(0, -s * 0.36, s * 0.25, -s * 0.2); ctx.fill();
-    ctx.strokeStyle = sh("#f08ab0"); ctx.lineWidth = Math.max(0.6, s * 0.02);
-    for (let i = -3; i <= 2; i++) { ctx.beginPath(); ctx.arc(i * s * 0.11, 0, s * 0.08, -1, 1); ctx.stroke(); }
-    ctx.fillStyle = sh("#f2eee0"); ctx.beginPath(); ctx.moveTo(s * 0.45, -s * 0.06); ctx.quadraticCurveTo(s * 0.62, 0, s * 0.45, s * 0.08); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.34, -s * 0.07, s * 0.035, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(-44, 0); ctx.rotate(Math.sin(p.ph) * 0.3); ctx.fill(P(PARROT_TAIL)); ctx.restore();
+    ctx.fill(P(PARROT_DORSAL)); ctx.fill(P(PARROT_ANAL));
+    ctx.fillStyle = body; ctx.fill(P(PARROT_BODY));
+    ctx.save(); ctx.clip(P(PARROT_BODY));
+    ctx.strokeStyle = pink; ctx.lineWidth = 1.6;
+    for (let r = -1; r <= 1; r++) for (let i = -3; i <= 2; i++) { ctx.beginPath(); ctx.arc(i * 10 + (r & 1) * 5, r * 9, 5, -1.1, 1.1); ctx.stroke(); }
+    // the head is a different colour, with pink lines around the eye
+    ctx.fillStyle = sh("#f2c060", 0.05); ctx.globalAlpha *= 0.55; ctx.beginPath(); ctx.ellipse(40, -2, 14, 20, 0, 0, TAU); ctx.fill(); ctx.globalAlpha /= 0.55;
+    ctx.beginPath(); ctx.moveTo(48, -4); ctx.lineTo(28, -10); ctx.moveTo(48, 4); ctx.lineTo(28, 8); ctx.stroke();
+    ctx.restore();
+    ctx.save(); ctx.translate(6, 1); ctx.scale(0.55, 0.55); ctx.translate(34, 8); ctx.rotate(Math.sin(p.ph * 2) * 0.3); ctx.translate(-34, -8); ctx.fillStyle = dark; ctx.globalAlpha *= 0.8; ctx.fill(P(FISH_PEC)); ctx.restore();
+    ctx.fillStyle = sh("#f2eee0"); ctx.fill(P(PARROT_BEAK));
+    ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(48, 1.5); ctx.lineTo(57, 1.5); ctx.stroke();
+    ctx.fillStyle = "#fff8e0"; ctx.beginPath(); ctx.arc(36, -7, 4.2, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(36.6, -7, 2.8, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -333,28 +347,46 @@
   }
 
   // ---- visitors -----------------------------------------------------------
+  // A crocodile: a heavy body, a long snout with a raised eye bump and nostrils, bent legs held close,
+  // a thick tail that sweeps from side to side, and rows of scutes along the back.
+  const CROC_BODY = "M 46 -1 C 44 -3.5 36 -4.5 27 -5 C 24 -7.5 19 -8 15 -6.5 C 6 -7.5 -6 -7.5 -14 -5.5 L -14 5.5 C -6 7.5 6 7.5 14 6.5 C 24 5.5 36 4 46 1.5 Z";
+  const CROC_FRONTLEG = "M 0 0 C 3 4 2 8 -3 10 L -9 10.5 C -9 9 -6 8.5 -4 7 C -3 5 -4 3 -4 0 Z";
+  const CROC_HINDLEG = "M 0 0 C 4 4 2 9 -5 11 L -12 11 C -12 9.5 -8 9 -6 7.5 C -5 5 -6 2.5 -6 0 Z";
   function drawCrocodile(v) {
     const L = v.size, skin = sh("#5a6a3a"), dark = sh("#3a4628"), belly = sh("#b8b088");
     const y = water.surface ? waveY(v.x) + L * 0.04 : v.y + v.yOff;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir, 1);
-    // the long tail sweeps from side to side
-    ctx.fillStyle = skin;
-    ctx.beginPath(); ctx.moveTo(-L * 0.1, -L * 0.04);
-    for (let i = 0; i <= 10; i++) { const f = i / 10; ctx.lineTo(-L * (0.1 + f * 0.45), -L * 0.04 * (1 - f) + Math.sin(v.ph * 3 - f * 3) * L * 0.04 * f); }
-    for (let i = 10; i >= 0; i--) { const f = i / 10; ctx.lineTo(-L * (0.1 + f * 0.45), L * 0.04 * (1 - f) + Math.sin(v.ph * 3 - f * 3) * L * 0.04 * f); }
-    ctx.fill();
-    ctx.beginPath(); ctx.ellipse(0, 0, L * 0.18, L * 0.055, 0, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.15, -L * 0.035); ctx.lineTo(L * 0.45, -L * 0.012); ctx.lineTo(L * 0.45, L * 0.015); ctx.lineTo(L * 0.15, L * 0.04); ctx.fill();
-    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, L * 0.03, L * 0.15, L * 0.018, 0, 0, TAU); ctx.fill();
-    // ridges along the back
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100);
+    // the far legs, a shade darker
     ctx.fillStyle = dark;
-    for (let i = 0; i < 14; i++) { const x = L * (0.14 - i * 0.04); ctx.beginPath(); ctx.moveTo(x - L * 0.012, -L * 0.04 * (i < 5 ? 1 : 1 - (i - 5) / 10)); ctx.lineTo(x, -L * (0.065 - i * 0.002)); ctx.lineTo(x + L * 0.012, -L * 0.04 * (i < 5 ? 1 : 1 - (i - 5) / 10)); ctx.fill(); }
+    ctx.save(); ctx.translate(10, 4); ctx.rotate(0.3 + Math.sin(v.ph * 2 + 1) * 0.2); ctx.fill(P(CROC_FRONTLEG)); ctx.restore();
+    ctx.save(); ctx.translate(-10, 4); ctx.rotate(0.3 + Math.sin(v.ph * 2) * 0.2); ctx.fill(P(CROC_HINDLEG)); ctx.restore();
+    // the thick tail, tapering, sweeping in a wave
     ctx.fillStyle = skin;
-    for (const lx of [0.1, -0.08]) { ctx.save(); ctx.translate(L * lx, L * 0.04); ctx.rotate(0.9 + Math.sin(v.ph * 2 + lx * 10) * 0.2); ctx.beginPath(); ctx.ellipse(0, L * 0.03, L * 0.012, L * 0.04, 0, 0, TAU); ctx.fill(); ctx.restore(); }
-    ctx.fillStyle = "#e8d870"; ctx.beginPath(); ctx.arc(L * 0.24, -L * 0.04, L * 0.012, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(L * 0.24, -L * 0.04, L * 0.003, L * 0.009, 0, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#f0f0e0"); ctx.lineWidth = Math.max(0.8, L * 0.004);
-    ctx.beginPath(); for (let i = 0; i < 8; i++) { const x = L * (0.2 + i * 0.03); ctx.moveTo(x, L * 0.008); ctx.lineTo(x + L * 0.008, L * 0.018); } ctx.stroke();
+    const tail = [];
+    for (let i = 0; i <= 14; i++) { const f = i / 14; tail.push([-12 - f * 44, Math.sin(v.ph * 3 - f * 3) * 4 * f, 5.5 * (1 - f * 0.9)]); }
+    ctx.beginPath(); tail.forEach(([tx, ty, w], i) => i ? ctx.lineTo(tx, ty - w) : ctx.moveTo(tx, ty - w));
+    for (let i = tail.length - 1; i >= 0; i--) ctx.lineTo(tail[i][0], tail[i][1] + tail[i][2]);
+    ctx.closePath(); ctx.fill();
+    ctx.fill(P(CROC_BODY));
+    ctx.save(); ctx.clip(P(CROC_BODY)); ctx.fillStyle = belly; ctx.fillRect(-20, 3.2, 70, 6); ctx.restore();
+    // scutes along the back and the top of the tail
+    ctx.fillStyle = dark;
+    for (let i = 0; i < 9; i++) { const sx = 12 - i * 3.2; ctx.beginPath(); ctx.moveTo(sx - 1.2, -6.5); ctx.lineTo(sx, -9); ctx.lineTo(sx + 1.2, -6.5); ctx.fill(); }
+    for (let i = 1; i < 12; i++) { const [tx, ty, w] = tail[i]; ctx.beginPath(); ctx.moveTo(tx - 1.1, ty - w); ctx.lineTo(tx, ty - w - 2.4 * (1 - i / 14)); ctx.lineTo(tx + 1.1, ty - w); ctx.fill(); }
+    ctx.globalAlpha *= 0.35;
+    for (let i = 0; i < 10; i++) { ctx.beginPath(); ctx.arc(10 - i * 2.6, -3 + (i % 2) * 2.4, 0.9, 0, TAU); ctx.fill(); }
+    ctx.globalAlpha /= 0.35;
+    // near legs, eye on its bump, nostrils and the teeth along the jaw
+    ctx.fillStyle = skin;
+    ctx.save(); ctx.translate(8, 5); ctx.rotate(0.3 + Math.sin(v.ph * 2) * 0.2); ctx.fill(P(CROC_FRONTLEG)); ctx.restore();
+    ctx.save(); ctx.translate(-12, 5); ctx.rotate(0.3 + Math.sin(v.ph * 2 + 1) * 0.2); ctx.fill(P(CROC_HINDLEG)); ctx.restore();
+    ctx.beginPath(); ctx.ellipse(44, -2.4, 2, 1.4, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#e8d870"; ctx.beginPath(); ctx.arc(21, -7, 1.6, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(21, -7, 0.45, 1.3, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(45, -3, 0.5, 0, TAU); ctx.fill();
+    ctx.strokeStyle = dark; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(46, 0.2); ctx.lineTo(22, 1.2); ctx.quadraticCurveTo(19, 1.4, 17, 0); ctx.stroke();
+    ctx.strokeStyle = sh("#f0f0e0"); ctx.lineWidth = 0.6;
+    ctx.beginPath(); for (let i = 0; i < 9; i++) { const tx = 22 + i * 2.6; ctx.moveTo(tx, 0.4); ctx.lineTo(tx + 0.6, i % 2 ? 2 : -1.2); } ctx.stroke();
     ctx.restore();
   }
 
@@ -384,24 +416,28 @@
   }
 
   // A sea lion loops and rolls as it swims.
+  // A sea lion looping through the water: a sleek body with a pointed snout and a tiny ear flap,
+  // long front flippers that it "flies" with, and hind flippers trailing behind.
+  const SL_BODY = "M 46 -1.5 C 44 -6.5 38 -9 32 -9 C 26 -9 22 -7.5 18 -8 C 4 -10 -16 -9.5 -30 -4.5 C -38 -1.5 -42 -0.5 -44 0 C -38 3 -28 6.5 -10 8.5 C 10 10.5 26 8.5 34 4.5 C 40 3 44 1.5 46 -1.5 Z";
+  const SL_FLIPPER = "M 0 -2 C -2 8 -6 18 -14 26 C -16.5 28 -19.5 26 -18 23 C -14 14 -10 6 -6 -2.5 Z";
+  const SL_HIND = "M 0 -2 L -15 -7.5 C -13 -2.5 -13 2.5 -15 7.5 L 0 2 Z";
   function drawSealion(v) {
-    const L = v.size, skin = sh("#7a5a3a"), light = sh("#a88a64");
+    const L = v.size, skin = sh("#7a5a3a"), light = sh("#a88a64"), dark = sh("#5a4028");
     const loop = Math.sin(v.ph * 1.5), y = v.y + v.yOff + loop * 50 * u;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir, 1); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
+    const beat = Math.sin(v.ph * 4);
+    ctx.fillStyle = dark;
+    ctx.save(); ctx.translate(14, 3); ctx.rotate(0.5 - beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
+    ctx.save(); ctx.translate(-42, 0); ctx.rotate(beat * 0.3); ctx.fill(P(SL_HIND)); ctx.restore();
+    ctx.fillStyle = skin; ctx.fill(P(SL_BODY));
+    ctx.save(); ctx.clip(P(SL_BODY)); ctx.fillStyle = light; ctx.beginPath(); ctx.ellipse(4, 9, 40, 5, 0.04, 0, TAU); ctx.fill(); ctx.restore();
+    ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(28, -8.6, 1.6, 1, -0.5, 0, TAU); ctx.fill();
     ctx.fillStyle = skin;
-    ctx.beginPath(); ctx.moveTo(L * 0.42, 0);
-    ctx.bezierCurveTo(L * 0.35, -L * 0.12, -L * 0.1, -L * 0.12, -L * 0.4, -L * 0.02);
-    ctx.lineTo(-L * 0.4, L * 0.02);
-    ctx.bezierCurveTo(-L * 0.1, L * 0.1, L * 0.35, L * 0.1, L * 0.42, 0); ctx.fill();
-    ctx.save(); ctx.translate(-L * 0.4, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.3);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-L * 0.12, -L * 0.05); ctx.lineTo(-L * 0.12, L * 0.05); ctx.fill(); ctx.restore();
-    ctx.save(); ctx.translate(L * 0.12, L * 0.06); ctx.rotate(0.8 + Math.sin(v.ph * 4) * 0.4);
-    ctx.beginPath(); ctx.ellipse(0, L * 0.07, L * 0.03, L * 0.09, 0, 0, TAU); ctx.fill(); ctx.restore();
-    ctx.fillStyle = light; ctx.beginPath(); ctx.ellipse(L * 0.05, L * 0.04, L * 0.25, L * 0.03, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.04, L * 0.015, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.arc(L * 0.42, -L * 0.005, L * 0.01, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#d8c8a8"); ctx.lineWidth = Math.max(0.6, L * 0.003);
-    for (const dy of [-0.01, 0.01]) { ctx.beginPath(); ctx.moveTo(L * 0.4, L * dy); ctx.lineTo(L * 0.47, L * dy * 2.5); ctx.stroke(); }
+    ctx.save(); ctx.translate(18, 4); ctx.rotate(0.3 + beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34, -4.5, 1.6, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(45.5, -1.6, 0.9, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#d8c8a8"); ctx.lineWidth = 0.4;
+    for (const dy of [-1, 0.5, 2]) { ctx.beginPath(); ctx.moveTo(43, dy); ctx.lineTo(50, dy * 2.4); ctx.stroke(); }
     ctx.restore();
   }
 

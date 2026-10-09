@@ -631,34 +631,31 @@
     }
   }
 
+  // A swordfish: a dark bronze back and silver belly, a tall sickle-shaped dorsal fin (no sail),
+  // long sickle flippers, a big crescent tail and the long, flat sword.
+  const SWORD_BODY = "M 30 0 C 26 -6 16 -9 4 -9.5 C -14 -9.5 -30 -5 -40 -1.5 L -40 1.5 C -30 4.5 -14 8.5 4 8.5 C 16 8 26 5 30 0 Z";
+  const SWORD_DORSAL = "M 15 -8.6 C 13 -18 9 -24 2 -28 C 4 -20 2 -13 -3 -8.8 Z";
+  const SWORD_PEC = "M 0 0 C -4 5 -10 9 -17 11.5 C -12 6 -6 2 0 -1.5 Z";
+  const SWORD_TAIL = "M 2 0 C -4 -6 -10 -14 -15 -21 C -12 -8 -12 8 -15 21 C -10 14 -4 6 2 0 Z";
+  const SWORD_BLADE = "M 28 -2.6 L 64 -1.1 C 65 -0.6 65 0 64 0.4 L 28 2.2 Z";
   function drawSwordfish(v) {
-    const L = v.size, body = sh("#2d4f8a"), belly = sh("#c9d4dc"), sail = sh("#3a5fa8");
+    const L = v.size, body = sh("#3e3a56"), belly = sh("#c9d0d8"), fin = sh("#2c2940");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 2) * 0.03);
-    ctx.fillStyle = sail;
-    ctx.globalAlpha = 0.9;
-    ctx.beginPath(); ctx.moveTo(L * 0.22, -L * 0.05); ctx.quadraticCurveTo(L * 0.1, -L * 0.32, -L * 0.15, -L * 0.28); ctx.quadraticCurveTo(-L * 0.25, -L * 0.15, -L * 0.3, -L * 0.04); ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = sh("#1e335a");
-    for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(L * (0.1 - i * 0.06), -L * (0.14 + Math.sin(i) * 0.03), L * 0.01, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = body;
-    ctx.save(); ctx.translate(-L * 0.42, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2);
-    ctx.beginPath(); ctx.moveTo(L * 0.03, 0); ctx.quadraticCurveTo(-L * 0.06, -L * 0.08, -L * 0.12, -L * 0.17); ctx.quadraticCurveTo(-L * 0.06, 0, -L * 0.12, L * 0.17); ctx.quadraticCurveTo(-L * 0.06, L * 0.08, L * 0.03, 0); ctx.fill();
-    ctx.restore();
-    const hull = new Path2D();
-    hull.moveTo(L * 0.3, 0);
-    hull.bezierCurveTo(L * 0.2, -L * 0.08, -L * 0.2, -L * 0.07, -L * 0.42, 0);
-    hull.bezierCurveTo(-L * 0.2, L * 0.06, L * 0.2, L * 0.07, L * 0.3, 0);
-    ctx.fill(hull);
-    ctx.save(); ctx.clip(hull);
-    ctx.fillStyle = belly; ctx.fillRect(-L * 0.5, L * 0.01, L, L * 0.1);
-    ctx.restore();
-    ctx.strokeStyle = body; ctx.lineWidth = Math.max(1.5, L * 0.012); ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(L * 0.28, -L * 0.005); ctx.lineTo(L * 0.62, -L * 0.01); ctx.stroke();
-    ctx.fillStyle = "#0c1220";
-    ctx.beginPath(); ctx.arc(L * 0.22, -L * 0.015, L * 0.012, 0, TAU); ctx.fill();
+    ctx.fillStyle = fin;
+    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2); ctx.fill(P(SWORD_TAIL)); ctx.restore();
+    ctx.fill(P(SWORD_DORSAL));
+    ctx.beginPath(); ctx.moveTo(-33, -3); ctx.lineTo(-36.5, -6.5); ctx.lineTo(-37.5, -2.4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-33, 3); ctx.lineTo(-36.5, 6.5); ctx.lineTo(-37.5, 2.4); ctx.fill();
+    ctx.fillStyle = sh("#5a5670"); ctx.fill(P(SWORD_BLADE));
+    ctx.fillStyle = body; ctx.fill(P(SWORD_BODY));
+    ctx.save(); ctx.clip(P(SWORD_BODY)); ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill(); ctx.restore();
+    ctx.fillStyle = fin;
+    ctx.save(); ctx.translate(18, 5); ctx.rotate(Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(SWORD_PEC)); ctx.restore();
+    ctx.fillStyle = sh("#d8dce4"); ctx.beginPath(); ctx.arc(22, -2.6, 2.2, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(22.4, -2.6, 1.4, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -690,78 +687,70 @@
     if (Math.random() < 0.3) bubbles.push({ x: v.x - v.dir * L * 0.58, y: v.y + v.yOff + (Math.random() - 0.5) * L * 0.1, r: (1 + Math.random() * 2) * u, ph: Math.random() * TAU });
   }
 
+  // A humpback: a long dark body with throat grooves, a knobbly head, a small hump for a dorsal fin,
+  // and enormous pale flippers along its sides with a bumpy front edge.
+  const HUMP_BODY = "M 50 1 C 48 -5 40 -8 26 -9.5 C 6 -11 -20 -8 -38 -3.5 C -45 -1.5 -50 -0.5 -52 0 C -44 2.5 -34 5 -16 8.5 C 6 12 34 11 46 6 C 49 4.5 50 2.5 50 1 Z";
+  const HUMP_THROAT = "M 52 2.5 C 40 7 20 10 -2 9.5 L -2 20 L 60 20 Z";
+  const HUMP_HUMP = "M -17 -7.6 C -19 -10 -23 -11.2 -27 -10.8 L -28 -6 Z";
+  const HUMP_FLIPPER = "M 0 -2 C -8 0 -20 6 -32 12.5 C -36.5 14.5 -36 18 -31.5 17.5 C -20 13.5 -8 7.5 2 3 Z";
+  const HUMP_FLUKE = "M 2 0 C -4 -3 -9 -7 -14 -10.5 C -12 -4 -11 -1 -11 0 C -11 1 -12 4 -14 10.5 C -9 7 -4 3 2 0 Z";
   function drawHumpback(v) {
     const L = v.size, back = sh("#26313b"), belly = sh("#c9cfd2"), fin = sh("#dfe3e2");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.03);
-    ctx.fillStyle = sh("#9aa3a8");
-    ctx.save(); ctx.translate(L * 0.18, L * 0.04); ctx.rotate(0.9 + Math.sin(v.ph * 1.3 + 1) * 0.15);
-    ctx.beginPath(); ctx.ellipse(-L * 0.14, 0, L * 0.16, L * 0.02, 0, 0, TAU); ctx.fill();
-    ctx.restore();
+    const sweep = Math.sin(v.ph * 1.3);
+    // the far flipper, in shadow behind the body
+    ctx.fillStyle = sh("#8a949a");
+    ctx.save(); ctx.translate(16, 5); ctx.rotate(-0.05 - sweep * 0.15); ctx.fill(P(HUMP_FLIPPER)); ctx.restore();
     ctx.fillStyle = back;
-    ctx.save(); ctx.translate(-L * 0.5, -L * 0.01); ctx.rotate(Math.sin(v.ph * 2) * 0.2);
-    ctx.beginPath(); ctx.moveTo(L * 0.03, 0); ctx.quadraticCurveTo(-L * 0.05, -L * 0.04, -L * 0.12, -L * 0.1); ctx.quadraticCurveTo(-L * 0.09, -L * 0.02, -L * 0.11, 0); ctx.quadraticCurveTo(-L * 0.09, L * 0.02, -L * 0.12, L * 0.1); ctx.quadraticCurveTo(-L * 0.05, L * 0.04, L * 0.03, 0); ctx.fill();
+    ctx.save(); ctx.translate(-50, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.2); ctx.fill(P(HUMP_FLUKE)); ctx.restore();
+    ctx.fill(P(HUMP_BODY)); ctx.fill(P(HUMP_HUMP));
+    ctx.save(); ctx.clip(P(HUMP_BODY));
+    ctx.fillStyle = belly; ctx.fill(P(HUMP_THROAT));
+    ctx.strokeStyle = sh("#7d878c"); ctx.lineWidth = 0.5;
+    ctx.beginPath(); for (let i = 0; i < 7; i++) { const yy = 4.5 + i * 1.1; ctx.moveTo(48, yy - 2); ctx.quadraticCurveTo(26, yy + 1.5, 2, yy + 0.5); } ctx.stroke();
+    // knobs on the head
+    ctx.fillStyle = "rgba(255,255,255,0.16)";
+    for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(47 - (i % 4) * 3.2, -4 + Math.floor(i / 4) * 2.2, 0.7, 0, TAU); ctx.fill(); }
     ctx.restore();
-    const hull = new Path2D();
-    hull.moveTo(L * 0.5, L * 0.01);
-    hull.bezierCurveTo(L * 0.46, -L * 0.07, L * 0.2, -L * 0.1, -L * 0.1, -L * 0.07);
-    hull.quadraticCurveTo(-L * 0.4, -L * 0.04, -L * 0.52, -L * 0.01);
-    hull.quadraticCurveTo(-L * 0.35, L * 0.04, -L * 0.05, L * 0.09);
-    hull.bezierCurveTo(L * 0.2, L * 0.12, L * 0.45, L * 0.09, L * 0.5, L * 0.01);
-    ctx.fillStyle = back;
-    ctx.fill(hull);
-    ctx.save(); ctx.clip(hull);
-    ctx.fillStyle = belly;
-    ctx.beginPath(); ctx.ellipse(L * 0.2, L * 0.1, L * 0.32, L * 0.05, 0.03, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#7d878c"); ctx.lineWidth = Math.max(1, L * 0.003);
-    ctx.beginPath();
-    for (let i = 0; i < 9; i++) { const yy = L * (0.05 + i * 0.006); ctx.moveTo(L * 0.46, yy - L * 0.03); ctx.quadraticCurveTo(L * 0.25, yy + L * 0.01, L * 0.02, yy); }
-    ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,0.12)";
-    for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(L * (0.47 - (i % 4) * 0.03), L * (-0.04 + Math.floor(i / 4) * 0.02), L * 0.006, 0, TAU); ctx.fill(); }
-    ctx.restore();
-    ctx.fillStyle = back;
-    ctx.beginPath(); ctx.moveTo(-L * 0.12, -L * 0.07); ctx.quadraticCurveTo(-L * 0.15, -L * 0.1, -L * 0.2, -L * 0.1); ctx.lineTo(-L * 0.19, -L * 0.065); ctx.fill();
-    ctx.fillStyle = "#0b0e12";
-    ctx.beginPath(); ctx.arc(L * 0.34, L * 0.035, L * 0.007, 0, TAU); ctx.fill();
-    // the long pale pectoral fin that gives the humpback its name in Latin
-    ctx.fillStyle = fin;
-    ctx.save(); ctx.translate(L * 0.22, L * 0.06); ctx.rotate(0.7 + Math.sin(v.ph * 1.3) * 0.2);
-    ctx.beginPath(); ctx.moveTo(0, -L * 0.02);
-    for (let i = 0; i <= 6; i++) ctx.lineTo(-L * 0.05 * i, -L * 0.022 + (i % 2) * L * 0.004);
-    ctx.quadraticCurveTo(-L * 0.36, 0, -L * 0.3, L * 0.02);
-    ctx.lineTo(0, L * 0.02);
-    ctx.fill();
+    ctx.fillStyle = "#0b0e12"; ctx.beginPath(); ctx.arc(33, 2.5, 0.8, 0, TAU); ctx.fill();
+    // the near flipper: very long and pale, its front edge bumpy
+    ctx.save(); ctx.translate(20, 6); ctx.rotate(0.05 + sweep * 0.18);
+    ctx.fillStyle = fin; ctx.fill(P(HUMP_FLIPPER));
+    for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.arc(-i * 5.6, -1.2 + i * 2.4, 1, 0, TAU); ctx.fill(); }
     ctx.restore();
     ctx.restore();
   }
 
+  // A narwhal: a round head without a beak, a mottled grey back fading to a pale belly,
+  // short upturned flippers, and the long spiral tusk.
+  const NAR_BODY = "M 42 1 C 42 -9 34 -13 20 -13 C 0 -13 -24 -9 -40 -3 C -44 -1.5 -46 -0.5 -48 0 C -42 3 -26 8 -6 10 C 14 12 34 10 40 6 C 42 4 42 2.5 42 1 Z";
+  const NAR_FLUKE = "M 2 0 C -4 -3 -9 -7 -13 -11 C -11 -4 -10 -1 -10 0 C -10 1 -11 4 -13 11 C -9 7 -4 3 2 0 Z";
+  const NAR_FLIPPER = "M 0 0 C -3 3 -8 6 -13 6.5 C -11 3.5 -6 1 0 -1.5 Z";
   function drawNarwhal(v) {
     const L = v.size, body = sh("#8e969a"), spot = sh("#4a5256");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.04);
     ctx.fillStyle = body;
-    ctx.save(); ctx.translate(-L * 0.45, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25);
-    ctx.beginPath(); ctx.moveTo(L * 0.03, 0); ctx.quadraticCurveTo(-L * 0.05, -L * 0.05, -L * 0.12, -L * 0.1); ctx.quadraticCurveTo(-L * 0.08, 0, -L * 0.12, L * 0.1); ctx.quadraticCurveTo(-L * 0.05, L * 0.05, L * 0.03, 0); ctx.fill();
-    ctx.restore();
-    ctx.beginPath(); ctx.moveTo(L * 0.42, 0); ctx.bezierCurveTo(L * 0.4, -L * 0.13, -L * 0.2, -L * 0.12, -L * 0.46, 0); ctx.bezierCurveTo(-L * 0.2, L * 0.1, L * 0.38, L * 0.13, L * 0.42, 0); ctx.fill();
+    ctx.save(); ctx.translate(-46, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25); ctx.fill(P(NAR_FLUKE)); ctx.restore();
+    ctx.fill(P(NAR_BODY));
+    ctx.save(); ctx.clip(P(NAR_BODY));
+    ctx.fillStyle = sh("#c8ccce"); ctx.beginPath(); ctx.ellipse(6, 11, 44, 7, 0.03, 0, TAU); ctx.fill();
     ctx.fillStyle = spot;
-    for (let i = 0; i < 22; i++) { ctx.beginPath(); ctx.arc(L * (0.3 - (i * 0.031) % 0.7), L * (-0.07 + ((i * 7) % 5) * 0.025), L * 0.012, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = body;
-    ctx.save(); ctx.translate(L * 0.2, L * 0.05); ctx.rotate(0.6 + Math.sin(v.ph * 1.5) * 0.2);
-    ctx.beginPath(); ctx.ellipse(-L * 0.06, 0, L * 0.08, L * 0.02, 0, 0, TAU); ctx.fill();
+    for (let i = 0; i < 30; i++) { const sx = 34 - ((i * 23) % 76), sy = -11 + ((i * 7) % 6) * 2.6; ctx.beginPath(); ctx.ellipse(sx, sy, 1.6, 1.1, 0.4, 0, TAU); ctx.fill(); }
     ctx.restore();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.01, L * 0.012, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#ece4cc"); ctx.lineWidth = Math.max(1.5, L * 0.016); ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(L * 0.4, -L * 0.03); ctx.lineTo(L * 1.0, -L * 0.1); ctx.stroke();
-    ctx.strokeStyle = sh("#a89e84"); ctx.lineWidth = Math.max(0.8, L * 0.005);
+    ctx.fillStyle = sh("#6e767a");
+    ctx.save(); ctx.translate(24, 6); ctx.rotate(0.3 + Math.sin(v.ph * 1.5) * 0.2); ctx.fill(P(NAR_FLIPPER)); ctx.restore();
+    ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(33, -2, 1.2, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#ece4cc"); ctx.lineWidth = 2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(40, -3); ctx.lineTo(100, -10); ctx.stroke();
+    ctx.strokeStyle = sh("#a89e84"); ctx.lineWidth = 0.6;
     ctx.beginPath();
-    for (let i = 0; i < 12; i++) { const f = i / 12, px = L * (0.42 + f * 0.56), py = -L * (0.032 + f * 0.067); ctx.moveTo(px, py - L * 0.007); ctx.lineTo(px + L * 0.012, py + L * 0.007); }
+    for (let i = 0; i < 14; i++) { const f = i / 14, px = 42 + f * 56, py = -3.2 - f * 6.6; ctx.moveTo(px, py - 0.8); ctx.lineTo(px + 1.2, py + 0.8); }
     ctx.stroke();
     ctx.restore();
   }

@@ -384,6 +384,13 @@
     ctx.restore();
   }
 
+  // A lobster: a spiny shell with a pointed beak, a segmented tail ending in a fan,
+  // and two big claws that open and close in turn.
+  const LOB_SHELL = "M 30 -16 C 29 -26 16 -30 2 -29 C -8 -28 -15 -25 -18 -19 L -18 -10 C -10 -6 10 -6 26 -10 C 29 -11.5 30.5 -13.5 30 -16 Z M 28 -22 L 40 -24 L 29 -19 Z";
+  const LOB_ABDOMEN = "M -16 -27 C -30 -28 -46 -25 -62 -20 L -64 -12 C -48 -10 -30 -9 -16 -10 Z";
+  const LOB_TAIL = "M -62 -20 L -82 -30 C -85 -20 -85 -10 -82 -1 L -64 -12 Z";
+  const LOB_CLAW = "M 0 -6 C 12 -10 26 -9 34 -5 L 42 -6 C 42 -2 38 2 32 3 C 22 6 10 6 0 6 Z";
+  const LOB_FINGER = "M 26 -5 C 33 -10 41 -12 47 -10 C 41 -7 33 -4 28 -2 Z";
   function drawLobster(l, k) {
     if (l.pause > 0) l.pause -= k / 60;
     else {
@@ -394,28 +401,31 @@
     if (l.x < scene.floorL + 30 * u) l.dir = 1;
     if (l.x > scene.floorR - 30 * u) l.dir = -1;
     const s = l.s, body = sh("#2f4a78"), dark = sh("#1c2c4a"), light = sh("#5a78a8");
-    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(l.dir, 1);
-    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.8, s * 0.03);
-    for (let i = 0; i < 4; i++) { const x0 = s * (0.05 - i * 0.12), sw = Math.sin(l.leg + i) * s * 0.05; ctx.beginPath(); ctx.moveTo(x0, -s * 0.16); ctx.lineTo(x0 + sw + s * 0.04, -s * 0.06); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
-    ctx.fillStyle = body;
-    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.ellipse(-s * (0.18 + i * 0.11), -s * 0.18 + i * s * 0.01, s * 0.08, s * (0.09 - i * 0.008), 0, 0, TAU); ctx.fill(); }
-    ctx.beginPath(); ctx.moveTo(-s * 0.68, -s * 0.13); ctx.lineTo(-s * 0.84, -s * 0.24); ctx.lineTo(-s * 0.86, -s * 0.04); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(s * 0.05, -s * 0.2, s * 0.2, s * 0.1, -0.05, 0, TAU); ctx.fill();
-    ctx.fillStyle = light; ctx.beginPath(); ctx.ellipse(s * 0.05, -s * 0.24, s * 0.14, s * 0.03, -0.05, 0, TAU); ctx.fill();
-    ctx.lineCap = "round";
-    for (const [dy, ph] of [[-0.02, 0], [0.03, 1.5]]) {
-      const open = 0.15 + Math.max(0, Math.sin(t * 1.3 + ph)) * 0.2;
-      ctx.strokeStyle = body; ctx.lineWidth = s * 0.05;
-      ctx.beginPath(); ctx.moveTo(s * 0.2, -s * 0.17); ctx.lineTo(s * 0.36, -s * (0.1 + dy)); ctx.stroke();
-      ctx.fillStyle = body;
-      ctx.save(); ctx.translate(s * 0.36, -s * (0.1 + dy)); ctx.rotate(-0.2);
-      ctx.beginPath(); ctx.ellipse(s * 0.12, 0, s * 0.13, s * 0.06, 0, 0, TAU); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(s * 0.2, -s * 0.02); ctx.lineTo(s * 0.34, -s * 0.02 - open * s * 0.3); ctx.lineTo(s * 0.24, s * 0.01); ctx.fill();
+    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(l.dir * s / 100, s / 100);
+    // walking legs
+    ctx.strokeStyle = dark; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    for (let i = 0; i < 4; i++) { const x0 = 18 - i * 9, sw = Math.sin(l.leg + i) * 4; ctx.beginPath(); ctx.moveTo(x0, -12); ctx.lineTo(x0 + sw + 5, -5); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
+    // the far claw, a shade darker
+    const clawAt = (ph, col, dy) => {
+      const open = 0.15 + Math.max(0, Math.sin(t * 1.3 + ph)) * 0.35;
+      ctx.strokeStyle = col; ctx.lineWidth = 4.5;
+      ctx.beginPath(); ctx.moveTo(24, -16 + dy); ctx.quadraticCurveTo(36, -24 + dy, 44, -16 + dy); ctx.stroke();
+      ctx.save(); ctx.translate(44, -16 + dy); ctx.rotate(-0.1);
+      ctx.fillStyle = col; ctx.fill(P(LOB_CLAW));
+      ctx.save(); ctx.translate(28, -3); ctx.rotate(-open); ctx.translate(-28, 3); ctx.fill(P(LOB_FINGER)); ctx.restore();
       ctx.restore();
-    }
-    ctx.strokeStyle = sh("#a05a3a"); ctx.lineWidth = Math.max(0.6, s * 0.012);
-    for (const a of [0, 1]) { ctx.beginPath(); ctx.moveTo(s * 0.24, -s * 0.24); ctx.quadraticCurveTo(s * 0.6, -s * (0.55 + a * 0.1) + Math.sin(t * 2 + a) * s * 0.05, s * (0.9 + a * 0.1), -s * (0.3 + a * 0.15)); ctx.stroke(); }
-    ctx.fillStyle = "#0e0e10"; ctx.beginPath(); ctx.arc(s * 0.22, -s * 0.27, s * 0.025, 0, TAU); ctx.fill();
+    };
+    clawAt(1.5, dark, -3);
+    ctx.fillStyle = body;
+    ctx.fill(P(LOB_TAIL)); ctx.fill(P(LOB_ABDOMEN)); ctx.fill(P(LOB_SHELL));
+    ctx.strokeStyle = dark; ctx.lineWidth = 1.2;
+    ctx.beginPath(); for (const sx of [-26, -36, -45, -54]) { ctx.moveTo(sx, -26 + (sx + 16) * -0.12); ctx.lineTo(sx + 1, -10); } ctx.moveTo(-64, -16); ctx.lineTo(-80, -20); ctx.moveTo(-64, -14); ctx.lineTo(-81, -9); ctx.stroke();
+    ctx.fillStyle = light; ctx.beginPath(); ctx.ellipse(8, -24, 14, 2.6, -0.05, 0, TAU); ctx.fill();
+    clawAt(0, body, 2);
+    // long antennae, eye on a stalk
+    ctx.strokeStyle = sh("#a05a3a"); ctx.lineWidth = 1.2;
+    for (const a of [0, 1]) { ctx.beginPath(); ctx.moveTo(30, -24); ctx.quadraticCurveTo(60, -55 - a * 10 + Math.sin(t * 2 + a) * 5, 90 + a * 10, -30 - a * 15); ctx.stroke(); }
+    ctx.fillStyle = "#0e0e10"; ctx.beginPath(); ctx.arc(26, -29, 2.4, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -528,25 +538,28 @@
     ctx.restore();
   }
 
+  // An orca: a tall dorsal fin standing up from the middle of the back, a grey saddle behind it,
+  // the white eye patch, white chin and belly with the white flank sweep, and round paddle flippers.
+  const ORCA_BODY = "M 50 2 C 49 -6 44 -11 34 -13.5 C 14 -16.5 -14 -13 -32 -6 C -40 -3 -46 -1 -48 0 C -42 3 -32 6 -12 9.5 C 12 13 38 11 47 7 C 50 5.5 50 3.5 50 2 Z";
+  const ORCA_FIN = "M 7 -15 C 6 -24 3 -32 -1 -39 C -3 -30 -8 -20 -15 -12.5 Z";
+  const ORCA_SADDLE = "M -13 -12.5 C -19 -13.5 -27 -11 -31 -6.5 C -25 -8.5 -17 -9.5 -11 -9.5 Z";
+  const ORCA_BELLY = "M 49 5 C 40 9.5 26 11.5 8 10.5 C -2 10 -9 8.5 -12 6.5 C 2 5.5 22 6.5 36 4.5 C 42 4 46 4.2 49 5 Z";
+  const ORCA_FLANK = "M 2 9.5 C -8 8.5 -17 4 -23 -1.5 C -25.5 -4 -21 -4.5 -17.5 -2 C -12 1.5 -5 4.5 2 6 Z";
+  const ORCA_FLIPPER = "M 0 0 C 4 5 6 12 3 16 C 0 18.5 -4.5 16.5 -4.5 10.5 C -4.5 6 -2.5 2 0 0 Z";
+  const ORCA_FLUKE = "M 2 0 C -4 -3 -9 -7 -14 -10 C -12 -4 -11 -1 -11 0 C -11 1 -12 4 -14 10 C -9 7 -4 3 2 0 Z";
   function drawOrca(v) {
     const L = v.size, black = sh("#14181c"), white = sh("#f0f0ea");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.03);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = black;
-    ctx.save(); ctx.translate(-L * 0.46, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.2);
-    ctx.beginPath(); ctx.moveTo(L * 0.04, 0); ctx.quadraticCurveTo(-L * 0.06, -L * 0.04, -L * 0.13, -L * 0.1); ctx.quadraticCurveTo(-L * 0.08, 0, -L * 0.13, L * 0.1); ctx.quadraticCurveTo(-L * 0.06, L * 0.04, L * 0.04, 0); ctx.fill();
-    ctx.restore();
-    ctx.beginPath(); ctx.moveTo(L * 0.5, L * 0.02);
-    ctx.bezierCurveTo(L * 0.45, -L * 0.13, L * 0.05, -L * 0.15, -L * 0.3, -L * 0.06);
-    ctx.quadraticCurveTo(-L * 0.45, -L * 0.02, -L * 0.48, 0);
-    ctx.quadraticCurveTo(-L * 0.4, L * 0.05, -L * 0.1, L * 0.1);
-    ctx.bezierCurveTo(L * 0.2, L * 0.13, L * 0.48, L * 0.1, L * 0.5, L * 0.02); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.02, -L * 0.13); ctx.quadraticCurveTo(L * 0.0, -L * 0.3, -L * 0.06, -L * 0.36); ctx.quadraticCurveTo(-L * 0.06, -L * 0.22, -L * 0.14, -L * 0.11); ctx.fill();
-    ctx.fillStyle = white;
-    ctx.beginPath(); ctx.moveTo(L * 0.42, L * 0.06); ctx.quadraticCurveTo(L * 0.2, L * 0.13, -L * 0.05, L * 0.09); ctx.quadraticCurveTo(L * 0.15, L * 0.05, L * 0.42, L * 0.06); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(L * 0.3, -L * 0.04, L * 0.06, L * 0.022, -0.15, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(200,205,210,0.55)"; ctx.beginPath(); ctx.ellipse(-L * 0.1, -L * 0.1, L * 0.07, L * 0.025, 0.1, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(-47, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.2); ctx.fill(P(ORCA_FLUKE)); ctx.restore();
+    ctx.fill(P(ORCA_FIN));
+    ctx.fill(P(ORCA_BODY));
+    ctx.fillStyle = white; ctx.fill(P(ORCA_BELLY)); ctx.fill(P(ORCA_FLANK));
+    ctx.beginPath(); ctx.ellipse(29, -6.5, 6.5, 2.4, -0.18, 0, TAU); ctx.fill();
+    ctx.fillStyle = sh("#9aa2a8"); ctx.fill(P(ORCA_SADDLE));
     ctx.fillStyle = black;
-    ctx.save(); ctx.translate(L * 0.22, L * 0.08); ctx.rotate(0.7 + Math.sin(v.ph * 1.5) * 0.15); ctx.beginPath(); ctx.ellipse(0, L * 0.05, L * 0.03, L * 0.07, 0, 0, TAU); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.translate(26, 7); ctx.rotate(0.55 + Math.sin(v.ph * 1.5) * 0.15); ctx.fill(P(ORCA_FLIPPER)); ctx.restore();
+    ctx.fillStyle = "#2a3036"; ctx.beginPath(); ctx.arc(37, -4.5, 0.9, 0, TAU); ctx.fill();
     ctx.restore();
   }
 

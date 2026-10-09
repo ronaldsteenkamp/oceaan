@@ -728,43 +728,41 @@
     ctx.restore();
   }
 
+  // A sea turtle: a domed shell with plates and a pale belly shield, long wing-like front flippers
+  // that sweep in turn, small back flippers, and a head on a short neck with a hooked beak.
+  const TURTLE_SHELL = "M -44 6 C -42 -18 -20 -31 4 -31 C 28 -31 43 -17 46 4 C 30 10 -24 12 -44 6 Z";
+  const TURTLE_PLASTRON = "M -40 6 C -20 11.5 26 10.5 44 4 C 40 10 20 14 0 14 C -20 14 -34 11 -40 6 Z";
+  const TURTLE_HEAD = "M 36 -1 C 44 -5 52 -10 61 -10.5 C 70 -11 77 -7 77 -1.5 C 77 3.5 71 6 63 5.5 C 55 5 46 4.5 38 7 Z";
+  const TURTLE_FLIPPER = "M 0 -3 C -8 6 -20 17 -38 24 C -43 25.5 -43 21 -40 19 C -26 12 -12 3 -5 -6 Z";
+  const TURTLE_BACKFLIP = "M 0 -2 C -6 1 -14 5 -19 10 C -12 11.5 -4 8 3 3 Z";
+  const TURTLE_PLATES = "M -40 0 C -20 -8 20 -8 44 0 M -24 -5 L -30 -20 M 28 -4.5 L 34 -18 M -14 -6.5 L -8 -20 L 6 -21 L 14 -6.5 M -8 -20 L -12 -29 M 6 -21 L 10 -30 M -30 -20 C -22 -24 -16 -22 -8 -20 M 6 -21 C 14 -23 26 -22 34 -18";
   function drawTurtle(v) {
     const L = v.size;
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 0.5) * 0.05 - 0.04);
-    const skin = sh("#7d8a6a"), shell = sh("#5f4e32"), line = sh("#3b301f");
+    const skin = sh("#7d8a6a"), skinDark = sh("#5d6a4c"), shell = sh("#6a5434"), line = sh("#3b301f");
+    const stroke = Math.sin(v.ph);
+    // the far flippers, a shade darker, behind the shell
+    ctx.fillStyle = skinDark;
+    ctx.save(); ctx.translate(20, 2); ctx.rotate(0.15 - stroke * 0.45); ctx.fill(P(TURTLE_FLIPPER)); ctx.restore();
+    ctx.save(); ctx.translate(-36, 5); ctx.rotate(-0.2 + stroke * 0.2); ctx.fill(P(TURTLE_BACKFLIP)); ctx.restore();
+    ctx.fillStyle = skin; ctx.fill(P(TURTLE_HEAD));
+    ctx.fillStyle = skinDark;
+    for (const [hx, hy, r] of [[58, -6, 2.2], [64, -8, 1.8], [52, -4, 1.8], [68, -3, 1.6], [46, 0, 1.6]]) { ctx.beginPath(); ctx.arc(hx, hy, r, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = "#1c1a14"; ctx.beginPath(); ctx.arc(67, -5.5, 2, 0, TAU); ctx.fill();
+    ctx.strokeStyle = line; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(77, -0.5); ctx.quadraticCurveTo(72, 1.5, 68, 1); ctx.stroke();
+    ctx.fillStyle = sh("#d8c890"); ctx.fill(P(TURTLE_PLASTRON));
+    ctx.fillStyle = shell; ctx.fill(P(TURTLE_SHELL));
+    ctx.save(); ctx.clip(P(TURTLE_SHELL));
+    ctx.fillStyle = "rgba(255,230,170,0.12)"; ctx.beginPath(); ctx.ellipse(2, -22, 30, 8, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = line; ctx.lineWidth = 1.6; ctx.lineCap = "round"; ctx.stroke(P(TURTLE_PLATES));
+    ctx.restore();
+    // the near flippers in front of the shell
     ctx.fillStyle = skin;
-    ctx.save();
-    ctx.translate(-L * 0.3, L * 0.08);
-    ctx.rotate(0.5 + Math.sin(v.ph + 1) * 0.3);
-    ctx.beginPath(); ctx.ellipse(-L * 0.1, 0, L * 0.16, L * 0.06, 0, 0, TAU); ctx.fill();
-    ctx.restore();
-    ctx.save();
-    ctx.translate(L * 0.18, L * 0.08);
-    ctx.rotate(0.7 + Math.sin(v.ph) * 0.6);
-    ctx.beginPath(); ctx.ellipse(-L * 0.25, 0, L * 0.3, L * 0.07, 0, 0, TAU); ctx.fill();
-    ctx.restore();
-    ctx.beginPath(); ctx.ellipse(L * 0.55, -L * 0.02, L * 0.14, L * 0.09, -0.1, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#1c1a14";
-    ctx.beginPath(); ctx.arc(L * 0.6, -L * 0.05, L * 0.018, 0, TAU); ctx.fill();
-    ctx.fillStyle = shell;
-    ctx.beginPath();
-    ctx.moveTo(-L * 0.45, L * 0.06);
-    ctx.bezierCurveTo(-L * 0.4, -L * 0.3, L * 0.38, -L * 0.3, L * 0.45, L * 0.04);
-    ctx.quadraticCurveTo(0, L * 0.14, -L * 0.45, L * 0.06);
-    ctx.fill();
-    ctx.strokeStyle = line;
-    ctx.lineWidth = Math.max(1, L * 0.015);
-    ctx.beginPath();
-    for (let i = -2; i <= 2; i++) {
-      ctx.moveTo(i * L * 0.15, -L * 0.2 + Math.abs(i) * L * 0.04);
-      ctx.lineTo(i * L * 0.17, L * 0.08);
-    }
-    ctx.moveTo(-L * 0.38, -L * 0.06);
-    ctx.quadraticCurveTo(0, -L * 0.14, L * 0.38, -L * 0.06);
-    ctx.stroke();
+    ctx.save(); ctx.translate(26, 5); ctx.rotate(0.1 + stroke * 0.5); ctx.fill(P(TURTLE_FLIPPER)); ctx.restore();
+    ctx.save(); ctx.translate(-32, 8); ctx.rotate(-0.1 - stroke * 0.2); ctx.fill(P(TURTLE_BACKFLIP)); ctx.restore();
     ctx.restore();
   }
 

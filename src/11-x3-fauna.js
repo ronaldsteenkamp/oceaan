@@ -250,23 +250,37 @@
     ctx.fillStyle = "#101010"; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(24, sd * 5, 2, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
+  // A marine iguana: a dark, blunt-headed lizard with a spiky crest, bent legs with claws,
+  // and a long flat tail that it swims with.
+  const IGU_BODY = "M 20 -4 C 18 -9 8 -10.5 -4 -9.5 C -14 -8.5 -20 -6.5 -24 -3.5 L -24 3 C -18 6 -8 7 4 6.5 C 12 6 18 3 20 -1 Z";
+  const IGU_HEAD = "M 17 -5.5 C 21 -10.5 30 -11.5 35 -8.5 C 38.5 -6.5 38.5 -2 36 0 C 32 2.5 24 3 17 2 Z";
+  const IGU_LEG = "M 0 0 C 3 3 3 7 0 9 L -4 10 L -1 11 L 3 10.5 L 4 8.5 C 6 6 5 2 3 -1 Z";
   function drawIguana(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
-    const skin = sh("#3a4040"), crest = sh("#6a7068");
-    ctx.strokeStyle = skin; ctx.lineCap = "round";
-    ctx.lineWidth = s * 0.07;
-    ctx.beginPath(); ctx.moveTo(-s * 0.15, 0);
-    for (let i = 1; i <= 8; i++) { const fr = i / 8; ctx.lineTo(-s * (0.15 + fr * 0.55), Math.sin(f.ph * 3 - fr * 4) * s * 0.06 * fr); }
-    ctx.stroke();
-    ctx.fillStyle = skin;
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.22, s * 0.08, 0, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(s * 0.26, -s * 0.02, s * 0.09, s * 0.06, 0.1, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    const skin = sh("#3a4040"), dark = sh("#262c2c"), crest = sh("#6a7068");
+    const swim = f.ph * 3;
+    ctx.fillStyle = dark;
+    ctx.save(); ctx.translate(10, 3); ctx.rotate(0.6 + Math.sin(swim) * 0.3); ctx.fill(P(IGU_LEG)); ctx.restore();
+    ctx.save(); ctx.translate(-16, 3); ctx.rotate(0.9 + Math.sin(swim + 1) * 0.3); ctx.fill(P(IGU_LEG)); ctx.restore();
+    // the flat tail waves like an eel
+    const tail = [];
+    for (let i = 0; i <= 14; i++) { const fr = i / 14; tail.push([-22 - fr * 50, Math.sin(swim - fr * 4) * 6 * fr, 3.6 * (1 - fr * 0.85)]); }
+    ctx.fillStyle = skin; ctx.beginPath();
+    tail.forEach(([x, y, w], i) => i ? ctx.lineTo(x, y - w) : ctx.moveTo(x, y - w));
+    for (let i = tail.length - 1; i >= 0; i--) ctx.lineTo(tail[i][0], tail[i][1] + tail[i][2]);
+    ctx.closePath(); ctx.fill();
+    ctx.fill(P(IGU_BODY)); ctx.fill(P(IGU_HEAD));
+    // crest spikes from the head down the back and onto the tail
     ctx.fillStyle = crest;
-    for (let i = 0; i < 8; i++) { const x = s * (0.24 - i * 0.06); ctx.beginPath(); ctx.moveTo(x - s * 0.02, -s * 0.06); ctx.lineTo(x, -s * 0.11); ctx.lineTo(x + s * 0.02, -s * 0.06); ctx.fill(); }
-    ctx.strokeStyle = skin; ctx.lineWidth = s * 0.03;
-    for (const lx of [0.12, -0.12]) { ctx.beginPath(); ctx.moveTo(s * lx, s * 0.05); ctx.lineTo(s * (lx - 0.06), s * 0.12); ctx.stroke(); }
-    ctx.fillStyle = "#c84a3a"; ctx.beginPath(); ctx.arc(s * 0.3, -s * 0.04, s * 0.012, 0, TAU); ctx.fill();
+    for (let i = 0; i < 10; i++) { const x = 22 - i * 4.6, h = i < 2 ? 3 : 4.4; ctx.beginPath(); ctx.moveTo(x - 1.6, -8.8 + (i > 7 ? (i - 7) * 1.6 : 0)); ctx.lineTo(x, -8.8 - h + (i > 7 ? (i - 7) * 1.6 : 0)); ctx.lineTo(x + 1.6, -8.8 + (i > 7 ? (i - 7) * 1.6 : 0)); ctx.fill(); }
+    for (let i = 1; i < 9; i++) { const [x, y, w] = tail[i]; ctx.beginPath(); ctx.moveTo(x - 1.2, y - w); ctx.lineTo(x, y - w - 2.6 * (1 - i / 10)); ctx.lineTo(x + 1.2, y - w); ctx.fill(); }
+    // pale salt crust on the head, and a red eye
+    ctx.fillStyle = "rgba(220,220,210,0.35)"; ctx.beginPath(); ctx.ellipse(31, -8, 4.5, 2, -0.2, 0, TAU); ctx.fill();
+    ctx.fillStyle = skin;
+    ctx.save(); ctx.translate(14, 4); ctx.rotate(0.4 - Math.sin(swim) * 0.3); ctx.fill(P(IGU_LEG)); ctx.restore();
+    ctx.save(); ctx.translate(-12, 4); ctx.rotate(0.7 - Math.sin(swim + 1) * 0.3); ctx.fill(P(IGU_LEG)); ctx.restore();
+    ctx.fillStyle = "#c84a3a"; ctx.beginPath(); ctx.arc(29, -5.5, 1.4, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -542,9 +556,13 @@
     const black = sh("#1e2226"), sheen = sh("#2e4a3a");
     if (under < 0.15) {
       ctx.fillStyle = black;
-      ctx.beginPath(); ctx.ellipse(0, -s * 0.08, s * 0.42, s * 0.14, 0, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, 0, s * 0.42, s * 0.14, 0, 0, TAU); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, s * 0.42, s * 0.14, 0, 0, TAU); ctx.clip();
+      ctx.fillStyle = "rgba(30,80,120,0.42)"; ctx.fillRect(-s, 0, s * 2, s); ctx.restore();
+      ctx.save(); ctx.scale(s / 100, s / 100); ripple(-36, 30, f.ph); ctx.restore();
+      ctx.fillStyle = black;
       ctx.strokeStyle = black; ctx.lineWidth = s * 0.1; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(s * 0.3, -s * 0.12); ctx.quadraticCurveTo(s * 0.42, -s * 0.45, s * 0.36, -s * 0.55); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.3, -s * 0.06); ctx.quadraticCurveTo(s * 0.42, -s * 0.45, s * 0.36, -s * 0.55); ctx.stroke();
       ctx.fillStyle = black; ctx.beginPath(); ctx.arc(s * 0.38, -s * 0.57, s * 0.08, 0, TAU); ctx.fill();
       ctx.fillStyle = sh("#e8b040"); ctx.beginPath(); ctx.moveTo(s * 0.44, -s * 0.6); ctx.lineTo(s * 0.66, -s * 0.55); ctx.quadraticCurveTo(s * 0.7, -s * 0.5, s * 0.64, -s * 0.5); ctx.lineTo(s * 0.44, -s * 0.53); ctx.fill();
       ctx.fillStyle = "#3fbf8a"; ctx.beginPath(); ctx.arc(s * 0.41, -s * 0.59, s * 0.02, 0, TAU); ctx.fill();
@@ -563,12 +581,14 @@
   }
 
   // ---- visitors ----------------------------------------------------------------
+  // The thresher's upper tail lobe is as long as its body: a curved scythe that whips from side to side.
+  const THRESH_LOBE = "M 0 -1 C -8 -6 -20 -14 -34 -27 C -40 -32 -46 -34 -50 -33.5 C -40 -25 -26 -13 -6 1.5 Z";
   function drawThresher(x, y, dir, L, ph) {
     ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
-    // the enormously long upper tail lobe whips from side to side
-    ctx.save(); ctx.translate(-L * 0.36, 0); ctx.rotate(Math.sin(ph * 2) * 0.12); ctx.translate(L * 0.36, 0);
-    sharkForm(L, sh("#5a6a8a"), sh("#dfe4ea"), { upper: 0.55 });
+    ctx.save(); ctx.translate(-L * 0.36, 0); ctx.rotate(Math.sin(ph * 2) * 0.12);
+    ctx.scale(L / 100, L / 100); ctx.fillStyle = sh("#5a6a8a"); ctx.fill(P(THRESH_LOBE));
     ctx.restore();
+    sharkForm(L, sh("#5a6a8a"), sh("#dfe4ea"), { upper: 0.14 });
     ctx.restore();
   }
   // An oceanic whitetip: huge, rounded, white-tipped fins like wings.
@@ -600,19 +620,27 @@
     ctx.fillStyle = "#f8f8f0"; for (let i = 0; i < 5; i++) { const tx = L * (0.42 - i * 0.022); ctx.beginPath(); ctx.moveTo(tx, L * 0.026); ctx.lineTo(tx - L * 0.006, L * 0.04); ctx.lineTo(tx - L * 0.012, L * 0.027); ctx.fill(); }
     ctx.restore();
   }
+  // A blue marlin: a strong body with a tall front dorsal fin that runs low towards the tail,
+  // a long round spear, sickle flippers, a crescent tail and pale blue bars on the flanks.
+  const MARLIN_BODY = "M 34 0 C 30 -6 20 -9.5 6 -10 C -12 -10 -28 -5.5 -40 -1.5 L -40 1.5 C -28 5 -12 8.5 6 8.5 C 20 8 30 5 34 0 Z";
+  const MARLIN_DORSAL = "M 22 -8.4 C 21 -16 18 -21 13 -21 C 6 -18 -10 -12 -28 -5 L 17 -9.5 Z";
+  const MARLIN_TAIL = "M 2 0 C -4 -6 -10 -14 -15 -20 C -12 -8 -12 8 -15 20 C -10 14 -4 6 2 0 Z";
+  const MARLIN_PEC = "M 0 0 C -4 4 -9 8 -15 10 C -11 5 -6 2 0 -1.5 Z";
   function drawMarlin(x, y, dir, L, ph) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.02);
     const back = sh("#1e3a6a"), belly = sh("#c8d8e8");
     ctx.fillStyle = back;
-    ctx.save(); ctx.translate(-L * 0.4, 0); ctx.rotate(Math.sin(ph * 2) * 0.12);
-    ctx.beginPath(); ctx.moveTo(L * 0.02, 0); ctx.quadraticCurveTo(-L * 0.08, -L * 0.1, -L * 0.14, -L * 0.18); ctx.quadraticCurveTo(-L * 0.08, 0, -L * 0.14, L * 0.18); ctx.quadraticCurveTo(-L * 0.08, L * 0.1, L * 0.02, 0); ctx.fill(); ctx.restore();
-    ctx.beginPath(); ctx.moveTo(L * 0.35, 0); ctx.bezierCurveTo(L * 0.25, -L * 0.09, -L * 0.15, -L * 0.07, -L * 0.4, -L * 0.01); ctx.lineTo(-L * 0.4, L * 0.01); ctx.bezierCurveTo(-L * 0.15, L * 0.07, L * 0.25, L * 0.08, L * 0.35, 0); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.2, -L * 0.06); ctx.quadraticCurveTo(L * 0.15, -L * 0.18, L * 0.05, -L * 0.12); ctx.lineTo(-L * 0.25, -L * 0.04); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.34, -L * 0.01); ctx.lineTo(L * 0.62, 0); ctx.lineTo(L * 0.34, L * 0.012); ctx.fill();
-    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(L * 0.0, L * 0.035, L * 0.3, L * 0.025, 0, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#6ab0e8"); ctx.lineWidth = Math.max(0.7, L * 0.006);
-    for (let i = 0; i < 9; i++) { const sx = L * (0.2 - i * 0.055); ctx.beginPath(); ctx.moveTo(sx, -L * 0.05); ctx.lineTo(sx - L * 0.01, L * 0.04); ctx.stroke(); }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.3, -L * 0.015, L * 0.012, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(ph * 2) * 0.12); ctx.fill(P(MARLIN_TAIL)); ctx.restore();
+    ctx.fill(P(MARLIN_DORSAL));
+    ctx.beginPath(); ctx.moveTo(32, -1.6); ctx.lineTo(62, 0); ctx.lineTo(32, 1.4); ctx.fill();
+    ctx.fill(P(MARLIN_BODY));
+    ctx.save(); ctx.clip(P(MARLIN_BODY));
+    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#6ab0e8"); ctx.lineWidth = 1;
+    for (let i = 0; i < 9; i++) { const sx = 20 - i * 5.5; ctx.beginPath(); ctx.moveTo(sx, -9); ctx.lineTo(sx - 1, 5); ctx.stroke(); }
+    ctx.restore();
+    ctx.save(); ctx.translate(18, 4); ctx.rotate(Math.sin(ph * 1.5) * 0.12); ctx.fillStyle = back; ctx.fill(P(MARLIN_PEC)); ctx.restore();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(28, -2, 1.3, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // A small school of tuna, swimming as one.
