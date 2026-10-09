@@ -295,7 +295,7 @@
   // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
   // so that every kind of shiny turns up about as often.
   const SHINY_N = {
-    fish: 1000, lantern: 1000, jelly: 1000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
+    fish: 10000, lantern: 9000, jelly: 6000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
     seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
     penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
     whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
@@ -443,8 +443,8 @@
     tier("m10", "Ontdekker", "Explorer", 10, "elke 5 minuten een nieuwe oceaan", "a new ocean every 5 minutes"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 2 minuten een nieuwe oceaan", "a new ocean every 2 minutes"),
     tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke minuut een nieuwe oceaan", "a proper torch for your diver and a new ocean every minute"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
-    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 20 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 20 seconds"),
+    tier("m100", "Zeeheld", "Sea hero", 100, "gouden randjes in je logboek en elke 10 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 10 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
