@@ -338,6 +338,7 @@
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
       body: `<h2 class="nb-title small">${nm(key)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
+        ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>` : ""}
         <dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
