@@ -591,25 +591,10 @@
     sharkForm(L, sh("#5a6a8a"), sh("#dfe4ea"), { upper: 0.14 });
     ctx.restore();
   }
-  // An oceanic whitetip: huge, rounded, white-tipped fins like wings.
-  const WT_BODY = "M 50 1 C 44 -8 30 -11 10 -11 C -14 -10 -30 -5 -38 -2 L -38 2 C -30 5 -14 9 10 9 C 30 9 44 7 50 1 Z";
-  const WT_DORSAL = "M 16 -10 C 14 -24 6 -33 -2 -33 C -9 -33 -8 -24 -12 -9 Z";
-  const WT_PEC = "M 24 6 C 18 18 8 30 -3 33 C -10 34 -8 27 -2 19 C 2 13 6 9 10 7 Z";
-  const WT_TAIL = "M 0 -2 C -6 -8 -12 -16 -18 -23 C -18 -14 -16 -6 -10 0 L -17 11 C -11 9 -6 6 0 2 Z";
-  const WT_SMALL = "M -24 -4 L -28 -10 C -30 -8 -30 -6 -30 -3 Z";
+  // A whitetip reef shark: slim and grey with a blunt snout, ordinary fins, and bright white tips on the first dorsal fin and the tail.
   function drawWhitetip(x, y, dir, L, ph) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.02);
-    const top = sh("#7a8288"), belly = sh("#dcdfe2"), tip = "#f4f4f4";
-    const tipped = (d, cx, cy, r) => { fillWith(P(d), top); ctx.save(); ctx.clip(P(d)); ctx.fillStyle = tip; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill(); ctx.restore(); };
-    ctx.save(); ctx.translate(-37, 0); ctx.rotate(Math.sin(ph * 2) * 0.15); tipped(WT_TAIL, -18, -23, 6); ctx.restore();
-    fillWith(P(WT_BODY), top);
-    paintInside(P(WT_BODY), belly, P("M -60 2 C -20 3 20 2 60 1 L 60 20 L -60 20 Z"));
-    fillWith(P(WT_SMALL), top);
-    tipped(WT_DORSAL, -2, -33, 8);
-    tipped(WT_PEC, -4, 33, 8);
-    ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = 0.6;
-    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(32 - i * 2.4, -4); ctx.lineTo(31 - i * 2.4, 3); ctx.stroke(); }
-    ctx.fillStyle = "#0b0f12"; ctx.beginPath(); ctx.arc(41, -2.5, 1.3, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
+    ctx.save(); ctx.scale(1, 0.85); sharkForm(L, sh("#7a8288"), sh("#d8dcdf"), { upper: 0.22, tip: "#f4f4f4" }); ctx.restore();
     ctx.restore();
   }
   function drawGreatWhite(x, y, dir, L, ph) {

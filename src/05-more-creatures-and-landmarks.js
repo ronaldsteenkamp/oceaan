@@ -631,31 +631,34 @@
     }
   }
 
-  // A swordfish: a dark bronze back and silver belly, a tall sickle-shaped dorsal fin (no sail),
-  // long sickle flippers, a big crescent tail and the long, flat sword.
+  // A sailfish: a slim blue body with a silver belly and pale bars, the huge spotted sail along its back,
+  // long thin flippers, a crescent tail and a long, round bill.
   const SWORD_BODY = "M 30 0 C 26 -6 16 -9 4 -9.5 C -14 -9.5 -30 -5 -40 -1.5 L -40 1.5 C -30 4.5 -14 8.5 4 8.5 C 16 8 26 5 30 0 Z";
-  const SWORD_DORSAL = "M 15 -8.6 C 13 -18 9 -24 2 -28 C 4 -20 2 -13 -3 -8.8 Z";
+  const SWORD_DORSAL = "M 24 -8 C 21 -26 10 -33 -6 -32 C -20 -31 -29 -19 -33 -4 L 18 -9 Z";
   const SWORD_PEC = "M 0 0 C -4 5 -10 9 -17 11.5 C -12 6 -6 2 0 -1.5 Z";
   const SWORD_TAIL = "M 2 0 C -4 -6 -10 -14 -15 -21 C -12 -8 -12 8 -15 21 C -10 14 -4 6 2 0 Z";
-  const SWORD_BLADE = "M 28 -2.6 L 64 -1.1 C 65 -0.6 65 0 64 0.4 L 28 2.2 Z";
+  const SWORD_BLADE = "M 28 -1.8 L 64 -0.5 C 64.6 -0.2 64.6 0.2 64 0.4 L 28 1.6 Z";
   function drawSwordfish(v) {
-    const L = v.size, body = sh("#3e3a56"), belly = sh("#c9d0d8"), fin = sh("#2c2940");
+    const L = v.size, body = sh("#2d4f8a"), belly = sh("#c9d4dc"), fin = sh("#1e335a"), sail = sh("#3a5fa8");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 2) * 0.03);
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2); ctx.fill(P(SWORD_TAIL)); ctx.restore();
-    ctx.fill(P(SWORD_DORSAL));
-    ctx.beginPath(); ctx.moveTo(-33, -3); ctx.lineTo(-36.5, -6.5); ctx.lineTo(-37.5, -2.4); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-33, 3); ctx.lineTo(-36.5, 6.5); ctx.lineTo(-37.5, 2.4); ctx.fill();
-    ctx.fillStyle = sh("#5a5670"); ctx.fill(P(SWORD_BLADE));
-    ctx.fillStyle = body; ctx.fill(P(SWORD_BODY));
-    ctx.save(); ctx.clip(P(SWORD_BODY)); ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill(); ctx.restore();
+    // the sail, folding up and down a little
+    ctx.save(); ctx.translate(18, -9); ctx.scale(1, 0.85 + 0.15 * Math.sin(v.ph * 0.8)); ctx.translate(-18, 9);
+    ctx.fillStyle = sail; ctx.globalAlpha *= 0.92; ctx.fill(P(SWORD_DORSAL)); ctx.globalAlpha /= 0.92;
+    ctx.fillStyle = fin; for (let i = 0; i < 7; i++) { ctx.beginPath(); ctx.arc(14 - i * 6.5, -14 - Math.sin(i * 0.9) * 5, 1.4, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = fin; ctx.lineWidth = 0.6; ctx.beginPath(); for (let i = 0; i < 9; i++) { const x = 18 - i * 6; ctx.moveTo(x, -9); ctx.lineTo(x - 4, -28 + Math.abs(i - 3) * 2.4); } ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = body; ctx.fill(P(SWORD_BLADE)); ctx.fill(P(SWORD_BODY));
+    ctx.save(); ctx.clip(P(SWORD_BODY)); ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#8ab8e8"); ctx.lineWidth = 0.9; for (let i = 0; i < 8; i++) { const x = 16 - i * 6; ctx.beginPath(); ctx.moveTo(x, -9); ctx.lineTo(x - 1, 4); ctx.stroke(); }
+    ctx.restore();
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(18, 5); ctx.rotate(Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(SWORD_PEC)); ctx.restore();
-    ctx.fillStyle = sh("#d8dce4"); ctx.beginPath(); ctx.arc(22, -2.6, 2.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(22.4, -2.6, 1.4, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(23, -2.4, 1.5, 0, TAU); ctx.fill();
     ctx.restore();
   }
 

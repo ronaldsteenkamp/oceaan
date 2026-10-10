@@ -3570,31 +3570,34 @@
     }
   }
 
-  // A swordfish: a dark bronze back and silver belly, a tall sickle-shaped dorsal fin (no sail),
-  // long sickle flippers, a big crescent tail and the long, flat sword.
+  // A sailfish: a slim blue body with a silver belly and pale bars, the huge spotted sail along its back,
+  // long thin flippers, a crescent tail and a long, round bill.
   const SWORD_BODY = "M 30 0 C 26 -6 16 -9 4 -9.5 C -14 -9.5 -30 -5 -40 -1.5 L -40 1.5 C -30 4.5 -14 8.5 4 8.5 C 16 8 26 5 30 0 Z";
-  const SWORD_DORSAL = "M 15 -8.6 C 13 -18 9 -24 2 -28 C 4 -20 2 -13 -3 -8.8 Z";
+  const SWORD_DORSAL = "M 24 -8 C 21 -26 10 -33 -6 -32 C -20 -31 -29 -19 -33 -4 L 18 -9 Z";
   const SWORD_PEC = "M 0 0 C -4 5 -10 9 -17 11.5 C -12 6 -6 2 0 -1.5 Z";
   const SWORD_TAIL = "M 2 0 C -4 -6 -10 -14 -15 -21 C -12 -8 -12 8 -15 21 C -10 14 -4 6 2 0 Z";
-  const SWORD_BLADE = "M 28 -2.6 L 64 -1.1 C 65 -0.6 65 0 64 0.4 L 28 2.2 Z";
+  const SWORD_BLADE = "M 28 -1.8 L 64 -0.5 C 64.6 -0.2 64.6 0.2 64 0.4 L 28 1.6 Z";
   function drawSwordfish(v) {
-    const L = v.size, body = sh("#3e3a56"), belly = sh("#c9d0d8"), fin = sh("#2c2940");
+    const L = v.size, body = sh("#2d4f8a"), belly = sh("#c9d4dc"), fin = sh("#1e335a"), sail = sh("#3a5fa8");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(v.dir * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 2) * 0.03);
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2); ctx.fill(P(SWORD_TAIL)); ctx.restore();
-    ctx.fill(P(SWORD_DORSAL));
-    ctx.beginPath(); ctx.moveTo(-33, -3); ctx.lineTo(-36.5, -6.5); ctx.lineTo(-37.5, -2.4); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-33, 3); ctx.lineTo(-36.5, 6.5); ctx.lineTo(-37.5, 2.4); ctx.fill();
-    ctx.fillStyle = sh("#5a5670"); ctx.fill(P(SWORD_BLADE));
-    ctx.fillStyle = body; ctx.fill(P(SWORD_BODY));
-    ctx.save(); ctx.clip(P(SWORD_BODY)); ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill(); ctx.restore();
+    // the sail, folding up and down a little
+    ctx.save(); ctx.translate(18, -9); ctx.scale(1, 0.85 + 0.15 * Math.sin(v.ph * 0.8)); ctx.translate(-18, 9);
+    ctx.fillStyle = sail; ctx.globalAlpha *= 0.92; ctx.fill(P(SWORD_DORSAL)); ctx.globalAlpha /= 0.92;
+    ctx.fillStyle = fin; for (let i = 0; i < 7; i++) { ctx.beginPath(); ctx.arc(14 - i * 6.5, -14 - Math.sin(i * 0.9) * 5, 1.4, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = fin; ctx.lineWidth = 0.6; ctx.beginPath(); for (let i = 0; i < 9; i++) { const x = 18 - i * 6; ctx.moveTo(x, -9); ctx.lineTo(x - 4, -28 + Math.abs(i - 3) * 2.4); } ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = body; ctx.fill(P(SWORD_BLADE)); ctx.fill(P(SWORD_BODY));
+    ctx.save(); ctx.clip(P(SWORD_BODY)); ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(0, 8, 40, 6, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#8ab8e8"); ctx.lineWidth = 0.9; for (let i = 0; i < 8; i++) { const x = 16 - i * 6; ctx.beginPath(); ctx.moveTo(x, -9); ctx.lineTo(x - 1, 4); ctx.stroke(); }
+    ctx.restore();
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(18, 5); ctx.rotate(Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(SWORD_PEC)); ctx.restore();
-    ctx.fillStyle = sh("#d8dce4"); ctx.beginPath(); ctx.arc(22, -2.6, 2.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(22.4, -2.6, 1.4, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(23, -2.4, 1.5, 0, TAU); ctx.fill();
     ctx.restore();
   }
 
@@ -8210,25 +8213,10 @@
     sharkForm(L, sh("#5a6a8a"), sh("#dfe4ea"), { upper: 0.14 });
     ctx.restore();
   }
-  // An oceanic whitetip: huge, rounded, white-tipped fins like wings.
-  const WT_BODY = "M 50 1 C 44 -8 30 -11 10 -11 C -14 -10 -30 -5 -38 -2 L -38 2 C -30 5 -14 9 10 9 C 30 9 44 7 50 1 Z";
-  const WT_DORSAL = "M 16 -10 C 14 -24 6 -33 -2 -33 C -9 -33 -8 -24 -12 -9 Z";
-  const WT_PEC = "M 24 6 C 18 18 8 30 -3 33 C -10 34 -8 27 -2 19 C 2 13 6 9 10 7 Z";
-  const WT_TAIL = "M 0 -2 C -6 -8 -12 -16 -18 -23 C -18 -14 -16 -6 -10 0 L -17 11 C -11 9 -6 6 0 2 Z";
-  const WT_SMALL = "M -24 -4 L -28 -10 C -30 -8 -30 -6 -30 -3 Z";
+  // A whitetip reef shark: slim and grey with a blunt snout, ordinary fins, and bright white tips on the first dorsal fin and the tail.
   function drawWhitetip(x, y, dir, L, ph) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.02);
-    const top = sh("#7a8288"), belly = sh("#dcdfe2"), tip = "#f4f4f4";
-    const tipped = (d, cx, cy, r) => { fillWith(P(d), top); ctx.save(); ctx.clip(P(d)); ctx.fillStyle = tip; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill(); ctx.restore(); };
-    ctx.save(); ctx.translate(-37, 0); ctx.rotate(Math.sin(ph * 2) * 0.15); tipped(WT_TAIL, -18, -23, 6); ctx.restore();
-    fillWith(P(WT_BODY), top);
-    paintInside(P(WT_BODY), belly, P("M -60 2 C -20 3 20 2 60 1 L 60 20 L -60 20 Z"));
-    fillWith(P(WT_SMALL), top);
-    tipped(WT_DORSAL, -2, -33, 8);
-    tipped(WT_PEC, -4, 33, 8);
-    ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = 0.6;
-    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(32 - i * 2.4, -4); ctx.lineTo(31 - i * 2.4, 3); ctx.stroke(); }
-    ctx.fillStyle = "#0b0f12"; ctx.beginPath(); ctx.arc(41, -2.5, 1.3, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
+    ctx.save(); ctx.scale(1, 0.85); sharkForm(L, sh("#7a8288"), sh("#d8dcdf"), { upper: 0.22, tip: "#f4f4f4" }); ctx.restore();
     ctx.restore();
   }
   function drawGreatWhite(x, y, dir, L, ph) {
@@ -10028,7 +10016,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=39").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=40").catch(() => {}));
   }
 </script>
 </body>
