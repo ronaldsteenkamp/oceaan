@@ -222,6 +222,8 @@
   const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
+  const W5_RARE = ["ghostsub"];
+  RARE_KEYS.push(...W5_RARE); AQ_ALL.push(...W5_RARE);
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_ALL, so older aquarium links still read correctly.
   const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
@@ -229,8 +231,8 @@
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.15;
   const RARES_BY_WATER = {
-    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
-    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick"],
+    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall", "ghostsub"],
+    noordzee: ["ghost", "ghostdiver", "ghostsub"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick", "ghostsub"],
     mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
@@ -249,7 +251,7 @@
     mimic: "Mimicoctopus", parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal en wachtersgrondel", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
     crocodile: "Zeekrokodil", whaleshark: "Walvishaai", sealion: "Zeeleeuw", eagleray: "Adelaarsrog", spermwhale: "Potvis",
     eelmigration: "Palingtrek", quake: "Zeebeving", crabmarch: "Krabbentrek", bubblerings: "Bellenringen",
-    aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker",
+    aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker", ghostsub: "Spookonderzeeër",
     triggerfish: "Trekkersvis", wrasse: "Lipvis", surgeonfish: "Doktersvis", mandarinfish: "Mandarijnvis",
     scorpionfish: "Schorpioenvis", stonefish: "Steenvis", goby: "Grondel", needlefish: "Naaldvis",
     thresher: "Voshaai", whitetip: "Witpuntrifhaai", greatwhite: "Witte haai", marlin: "Marlijn", tuna: "Tonijn", barracuda: "Barracuda", coelacanth: "Coelacant",
@@ -304,7 +306,7 @@
     ],
     "Zeldzaam": [
       ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
-      ["Spoken", "Ghosts", ["ghost", "ghostdiver"]],
+      ["Spoken", "Ghosts", ["ghost", "ghostdiver", "ghostsub"]],
       ["Wonderen", "Wonders", ["goldpearl", "whalefall"]],
     ],
   };
@@ -334,7 +336,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
-    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100, ghostsub: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150, mimic: 150,
     triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
@@ -350,7 +352,7 @@
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub",
     "hatchlings", "eelmigration", "giant", "mimic",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
@@ -384,7 +386,7 @@
     mimic: "Mimic octopus", parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp and watchman goby", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
     crocodile: "Saltwater crocodile", whaleshark: "Whale shark", sealion: "Sea lion", eagleray: "Spotted eagle ray", spermwhale: "Sperm whale",
     eelmigration: "Eel migration", quake: "Seaquake", crabmarch: "Crab march", bubblerings: "Bubble rings",
-    aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver",
+    aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver", ghostsub: "Ghost submarine",
     triggerfish: "Triggerfish", wrasse: "Wrasse", surgeonfish: "Surgeonfish", mandarinfish: "Mandarinfish",
     scorpionfish: "Scorpionfish", stonefish: "Stonefish", goby: "Goby", needlefish: "Needlefish",
     thresher: "Thresher shark", whitetip: "Whitetip reef shark", greatwhite: "Great white shark", marlin: "Marlin", tuna: "Tuna", barracuda: "Barracuda", coelacanth: "Coelacanth",

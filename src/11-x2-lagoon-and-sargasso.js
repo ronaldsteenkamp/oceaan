@@ -36,6 +36,7 @@
     // the northern lights: a weather moment over the cold waters, now and then on a dark night
     s.aurora = { enabled: !!water.surface && ["ijszee", "noordzee", "kelpwoud"].includes(water.name), active: false, age: 0, fade: 0, timer: range(15, 45) };
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
+    s.ghostSub = s.rares.includes("ghostsub") ? { x: rng() * W, y: H * range(0.3, 0.5), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
     s.ghostDiver = s.rares.includes("ghostdiver") ? { x: rng() * W, y: H * range(0.3, 0.55), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
   }
 
@@ -644,6 +645,7 @@
       return true;
     });
     if (S.ghostDiver) shinyDraw(S.ghostDiver, () => drawGhostDiver(S.ghostDiver, k));
+    if (S.ghostSub) shinyDraw(S.ghostSub, () => drawGhostSub(S.ghostSub, k));
   }
 
   // Moby Dick: a white sperm whale glides past, far away.
@@ -678,6 +680,59 @@
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
     if (!g.logged && lit(g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver"); }
+  }
+
+  // The ghost of an old war submarine: a long hull full of rust holes, a conning tower, a deck gun and a periscope,
+  // seaweed trailing from its belly, faintly glowing portholes, and now and then a pale searchlight sweeping the water.
+  const GSUB_HULL = "M 50 2 C 48 -4 40 -6.5 20 -7 L -36 -6.5 C -44 -6 -50 -3 -52 0 C -50 3 -44 5.5 -36 6 L 20 6.5 C 40 6.5 48 6 50 2 Z";
+  const GSUB_TOWER = "M 3 -6.8 L 6 -15 C 6.5 -17 8 -18 10 -18 L 21 -18 C 23 -18 24 -17 24 -15 L 25 -6.8 Z";
+  const GSUB_RUDDER = "M -48 -1 L -56 -9 L -58 -8 L -54 0 L -58 8 L -56 9 L -48 1 Z";
+  function drawGhostSubShape(x, y, dir, L, ph, alpha) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph * 0.7) * 0.02);
+    ctx.globalAlpha = alpha;
+    // the searchlight sweeps now and then
+    const beam = Math.max(0, Math.sin(ph * 0.25) - 0.4) / 0.6;
+    if (beam > 0) {
+      const a = Math.sin(ph * 0.6) * 0.25, gr = ctx.createLinearGradient(50, 0, 130, 0);
+      gr.addColorStop(0, sca("#d8fff0", 0.35 * beam)); gr.addColorStop(1, sca("#d8fff0", 0));
+      ctx.save(); ctx.rotate(a); ctx.fillStyle = gr;
+      ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(130, -18); ctx.lineTo(130, 18); ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+    // seaweed trailing from the hull
+    ctx.strokeStyle = sca("#5ad0a0", 0.38); ctx.lineWidth = 0.8; ctx.lineCap = "round";
+    for (let i = 0; i < 5; i++) {
+      const sx = -28 + i * 13 + (i % 2) * 4, len = 4 + (i * 5) % 6;
+      ctx.beginPath(); ctx.moveTo(sx, 5.5); ctx.quadraticCurveTo(sx - 3 + Math.sin(ph * 1.5 + i) * 3, 5.5 + len * 0.6, sx - 4 + Math.sin(ph + i) * 4, 5.5 + len); ctx.stroke();
+    }
+    ctx.fillStyle = sca("#3a8a74", 0.75); ctx.fill(P(GSUB_RUDDER));
+    ctx.fillStyle = sca("#9affd8", 0.7); ctx.fill(P(GSUB_HULL)); ctx.fill(P(GSUB_TOWER));
+    // deck gun and periscope
+    ctx.strokeStyle = sca("#9affd8", 0.7); ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(32, -7); ctx.lineTo(32, -10); ctx.lineTo(42, -11.5); ctx.moveTo(14, -18); ctx.lineTo(14, -27); ctx.lineTo(18, -27); ctx.stroke();
+    // rust holes and a seam along the hull
+    ctx.fillStyle = sca("#061e20", 0.8);
+    for (const [hx, hy, r] of [[-22, 1, 2.2], [-6, -2, 1.6], [26, 2, 2.6], [38, -1, 1.4], [-38, -1, 1.6]]) { ctx.beginPath(); ctx.ellipse(hx, hy, r * 1.3, r, 0.3, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = sca("#3a8a74", 0.6); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-40, -1.5); ctx.lineTo(46, -1.5); ctx.stroke();
+    // the portholes glow and flicker
+    for (let i = 0; i < 4; i++) {
+      const f = 0.5 + 0.5 * Math.sin(ph * 3 + i * 1.7);
+      ctx.fillStyle = sca("#e8fff4", 0.35 + 0.5 * f); ctx.beginPath(); ctx.arc(-14 + i * 10, 1.5, 1.4, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawGhostSub(g, k) {
+    g.ph += 0.02 * k;
+    g.x += g.dir * 0.18 * u * k;
+    const L = 150 * u;
+    if (g.x > W + L) g.x = -L;
+    if (g.x < -L) g.x = W + L;
+    const y = g.y + Math.sin(g.ph * 0.6) * 12 * u, a = 0.2 + 0.1 * Math.sin(t * 0.9 + 1) + 0.2 * night;
+    g.cy = y;
+    ctx.globalCompositeOperation = "lighter";
+    drawGhostSubShape(g.x, y, g.dir, L, g.ph, a);
+    ctx.globalCompositeOperation = "source-over";
+    if (!g.logged && lit(g.x, y, 50 * u)) { g.logged = true; seen("ghostsub"); }
   }
 
   // The northern lights shimmer through the surface in green and violet curtains.
@@ -732,6 +787,7 @@
     mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
     ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
     ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
+    ghostsub: ["Een oude sonar pingt terug... maar er vaart niets.", "An old sonar pings back... but nothing is sailing there."],
   };
 
   function sonarSource(S) {
@@ -740,6 +796,7 @@
     if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
     if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
+    if (r === "ghostsub" && S.ghostSub) return [S.ghostSub.x, S.ghostSub.cy || S.ghostSub.y];
     if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
     if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
     if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
@@ -858,4 +915,5 @@
     },
     mobydick: () => drawSpermWhaleShape(58, 44, 1, 100, 0, "#eceae4", "#a8a6a0"),
     ghostdiver: () => drawGhostDiverShape(66, 44, 1, 34, 1, 0.9),
+    ghostsub: () => drawGhostSubShape(58, 46, 1, 92, 1.5, 0.9),
   });

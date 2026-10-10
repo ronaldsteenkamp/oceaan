@@ -75,6 +75,7 @@
         S.megalodon.enabled = true; S.megalodon.timer = 0;
         S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
         if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
+        if (!S.ghostSub) S.ghostSub = { x: W * 0.3, y: H * 0.4, dir: -1, ph: 0, logged: false };
         if (sd % 3 === 0) [S.kraken, S.serpent, S.megalodon, S.moby, S.ghostDiver][(sd / 3) % 5].shiny = "kraken";
         if (S.aurora.enabled) { S.aurora.active = true; S.aurora.age = 10; S.aurora.fade = 1; }
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }

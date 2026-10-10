@@ -694,6 +694,8 @@
   const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
+  const W5_RARE = ["ghostsub"];
+  RARE_KEYS.push(...W5_RARE); AQ_ALL.push(...W5_RARE);
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_ALL, so older aquarium links still read correctly.
   const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
@@ -701,8 +703,8 @@
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.15;
   const RARES_BY_WATER = {
-    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
-    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick"],
+    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall", "ghostsub"],
+    noordzee: ["ghost", "ghostdiver", "ghostsub"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick", "ghostsub"],
     mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
@@ -721,7 +723,7 @@
     mimic: "Mimicoctopus", parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal en wachtersgrondel", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
     crocodile: "Zeekrokodil", whaleshark: "Walvishaai", sealion: "Zeeleeuw", eagleray: "Adelaarsrog", spermwhale: "Potvis",
     eelmigration: "Palingtrek", quake: "Zeebeving", crabmarch: "Krabbentrek", bubblerings: "Bellenringen",
-    aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker",
+    aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker", ghostsub: "Spookonderzeeër",
     triggerfish: "Trekkersvis", wrasse: "Lipvis", surgeonfish: "Doktersvis", mandarinfish: "Mandarijnvis",
     scorpionfish: "Schorpioenvis", stonefish: "Steenvis", goby: "Grondel", needlefish: "Naaldvis",
     thresher: "Voshaai", whitetip: "Witpuntrifhaai", greatwhite: "Witte haai", marlin: "Marlijn", tuna: "Tonijn", barracuda: "Barracuda", coelacanth: "Coelacant",
@@ -776,7 +778,7 @@
     ],
     "Zeldzaam": [
       ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
-      ["Spoken", "Ghosts", ["ghost", "ghostdiver"]],
+      ["Spoken", "Ghosts", ["ghost", "ghostdiver", "ghostsub"]],
       ["Wonderen", "Wonders", ["goldpearl", "whalefall"]],
     ],
   };
@@ -806,7 +808,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
-    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100, ghostsub: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150, mimic: 150,
     triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
@@ -822,7 +824,7 @@
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub",
     "hatchlings", "eelmigration", "giant", "mimic",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
@@ -856,7 +858,7 @@
     mimic: "Mimic octopus", parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp and watchman goby", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
     crocodile: "Saltwater crocodile", whaleshark: "Whale shark", sealion: "Sea lion", eagleray: "Spotted eagle ray", spermwhale: "Sperm whale",
     eelmigration: "Eel migration", quake: "Seaquake", crabmarch: "Crab march", bubblerings: "Bubble rings",
-    aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver",
+    aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver", ghostsub: "Ghost submarine",
     triggerfish: "Triggerfish", wrasse: "Wrasse", surgeonfish: "Surgeonfish", mandarinfish: "Mandarinfish",
     scorpionfish: "Scorpionfish", stonefish: "Stonefish", goby: "Goby", needlefish: "Needlefish",
     thresher: "Thresher shark", whitetip: "Whitetip reef shark", greatwhite: "Great white shark", marlin: "Marlin", tuna: "Tuna", barracuda: "Barracuda", coelacanth: "Coelacanth",
@@ -5895,6 +5897,7 @@
     whalefall: pal("#ddd6c2>#f2d880 #c98a8a>#7a5ad8"),
     goldpearl: pal("#f2c440>#ff7ac8 #a89c88>#2a2a3a #d8d0c0>#4a4a6a"),
     ghostdiver: pal("#96ffd7>#c8a0ff #cdffeb>#ecdcff #061e20>#1a0830"),
+    ghostsub: pal("#9affd8>#ff9a5a #3a8a74>#a83a1a #5ad0a0>#ffc060 #061e20>#2a0a04 #d8fff0>#fff0c8 #e8fff4>#ffe08a"),
     eelmigration: pal("", { body: "#f2c040" }),
   };
   // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).
@@ -5953,6 +5956,7 @@
     if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
     if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
+    if (s.ghostSub) add("ghostsub", s.ghostSub, 50 * u, () => [s.ghostSub.x, s.ghostSub.cy || s.ghostSub.y]);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
   Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
@@ -7212,6 +7216,7 @@
     // the northern lights: a weather moment over the cold waters, now and then on a dark night
     s.aurora = { enabled: !!water.surface && ["ijszee", "noordzee", "kelpwoud"].includes(water.name), active: false, age: 0, fade: 0, timer: range(15, 45) };
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
+    s.ghostSub = s.rares.includes("ghostsub") ? { x: rng() * W, y: H * range(0.3, 0.5), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
     s.ghostDiver = s.rares.includes("ghostdiver") ? { x: rng() * W, y: H * range(0.3, 0.55), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
   }
 
@@ -7820,6 +7825,7 @@
       return true;
     });
     if (S.ghostDiver) shinyDraw(S.ghostDiver, () => drawGhostDiver(S.ghostDiver, k));
+    if (S.ghostSub) shinyDraw(S.ghostSub, () => drawGhostSub(S.ghostSub, k));
   }
 
   // Moby Dick: a white sperm whale glides past, far away.
@@ -7854,6 +7860,59 @@
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
     if (!g.logged && lit(g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver"); }
+  }
+
+  // The ghost of an old war submarine: a long hull full of rust holes, a conning tower, a deck gun and a periscope,
+  // seaweed trailing from its belly, faintly glowing portholes, and now and then a pale searchlight sweeping the water.
+  const GSUB_HULL = "M 50 2 C 48 -4 40 -6.5 20 -7 L -36 -6.5 C -44 -6 -50 -3 -52 0 C -50 3 -44 5.5 -36 6 L 20 6.5 C 40 6.5 48 6 50 2 Z";
+  const GSUB_TOWER = "M 3 -6.8 L 6 -15 C 6.5 -17 8 -18 10 -18 L 21 -18 C 23 -18 24 -17 24 -15 L 25 -6.8 Z";
+  const GSUB_RUDDER = "M -48 -1 L -56 -9 L -58 -8 L -54 0 L -58 8 L -56 9 L -48 1 Z";
+  function drawGhostSubShape(x, y, dir, L, ph, alpha) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph * 0.7) * 0.02);
+    ctx.globalAlpha = alpha;
+    // the searchlight sweeps now and then
+    const beam = Math.max(0, Math.sin(ph * 0.25) - 0.4) / 0.6;
+    if (beam > 0) {
+      const a = Math.sin(ph * 0.6) * 0.25, gr = ctx.createLinearGradient(50, 0, 130, 0);
+      gr.addColorStop(0, sca("#d8fff0", 0.35 * beam)); gr.addColorStop(1, sca("#d8fff0", 0));
+      ctx.save(); ctx.rotate(a); ctx.fillStyle = gr;
+      ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(130, -18); ctx.lineTo(130, 18); ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+    // seaweed trailing from the hull
+    ctx.strokeStyle = sca("#5ad0a0", 0.38); ctx.lineWidth = 0.8; ctx.lineCap = "round";
+    for (let i = 0; i < 5; i++) {
+      const sx = -28 + i * 13 + (i % 2) * 4, len = 4 + (i * 5) % 6;
+      ctx.beginPath(); ctx.moveTo(sx, 5.5); ctx.quadraticCurveTo(sx - 3 + Math.sin(ph * 1.5 + i) * 3, 5.5 + len * 0.6, sx - 4 + Math.sin(ph + i) * 4, 5.5 + len); ctx.stroke();
+    }
+    ctx.fillStyle = sca("#3a8a74", 0.75); ctx.fill(P(GSUB_RUDDER));
+    ctx.fillStyle = sca("#9affd8", 0.7); ctx.fill(P(GSUB_HULL)); ctx.fill(P(GSUB_TOWER));
+    // deck gun and periscope
+    ctx.strokeStyle = sca("#9affd8", 0.7); ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(32, -7); ctx.lineTo(32, -10); ctx.lineTo(42, -11.5); ctx.moveTo(14, -18); ctx.lineTo(14, -27); ctx.lineTo(18, -27); ctx.stroke();
+    // rust holes and a seam along the hull
+    ctx.fillStyle = sca("#061e20", 0.8);
+    for (const [hx, hy, r] of [[-22, 1, 2.2], [-6, -2, 1.6], [26, 2, 2.6], [38, -1, 1.4], [-38, -1, 1.6]]) { ctx.beginPath(); ctx.ellipse(hx, hy, r * 1.3, r, 0.3, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = sca("#3a8a74", 0.6); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-40, -1.5); ctx.lineTo(46, -1.5); ctx.stroke();
+    // the portholes glow and flicker
+    for (let i = 0; i < 4; i++) {
+      const f = 0.5 + 0.5 * Math.sin(ph * 3 + i * 1.7);
+      ctx.fillStyle = sca("#e8fff4", 0.35 + 0.5 * f); ctx.beginPath(); ctx.arc(-14 + i * 10, 1.5, 1.4, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawGhostSub(g, k) {
+    g.ph += 0.02 * k;
+    g.x += g.dir * 0.18 * u * k;
+    const L = 150 * u;
+    if (g.x > W + L) g.x = -L;
+    if (g.x < -L) g.x = W + L;
+    const y = g.y + Math.sin(g.ph * 0.6) * 12 * u, a = 0.2 + 0.1 * Math.sin(t * 0.9 + 1) + 0.2 * night;
+    g.cy = y;
+    ctx.globalCompositeOperation = "lighter";
+    drawGhostSubShape(g.x, y, g.dir, L, g.ph, a);
+    ctx.globalCompositeOperation = "source-over";
+    if (!g.logged && lit(g.x, y, 50 * u)) { g.logged = true; seen("ghostsub"); }
   }
 
   // The northern lights shimmer through the surface in green and violet curtains.
@@ -7908,6 +7967,7 @@
     mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
     ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
     ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
+    ghostsub: ["Een oude sonar pingt terug... maar er vaart niets.", "An old sonar pings back... but nothing is sailing there."],
   };
 
   function sonarSource(S) {
@@ -7916,6 +7976,7 @@
     if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
     if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
+    if (r === "ghostsub" && S.ghostSub) return [S.ghostSub.x, S.ghostSub.cy || S.ghostSub.y];
     if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
     if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
     if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
@@ -8034,6 +8095,7 @@
     },
     mobydick: () => drawSpermWhaleShape(58, 44, 1, 100, 0, "#eceae4", "#a8a6a0"),
     ghostdiver: () => drawGhostDiverShape(66, 44, 1, 34, 1, 0.9),
+    ghostsub: () => drawGhostSubShape(58, 46, 1, 92, 1.5, 0.9),
   });
   // ---- the fourth wave of animals -------------------------------------------
   // Thirty-six more animals, all run by one small system: swimmers in open water, gliders just above the floor,
@@ -9533,6 +9595,7 @@
     bubblerings: "Dolfijnen blazen voor de lol ringen van lucht. Daarna spelen ze ermee en bijten ze er soms in.",
     aurora: "Het noorderlicht ontstaat als deeltjes van de zon botsen op de lucht hoog boven de aarde.",
     mobydick: "Moby Dick is de witte potvis uit het boek van Herman Melville. Er zijn echt witte potvissen gezien.",
+    ghostsub: "Op de zeebodem liggen honderden gezonken onderzeeërs uit de wereldoorlogen. Zeelieden vertellen over eentje die nog steeds rondvaart, met brandende lampen.",
     ghostdiver: "Vroeger doken duikers met een koperen helm en een slang naar het schip. Zeelieden vertellen dat er nog steeds een rondspookt.",
     wreck: "Rond een scheepswrak ontstaat vaak binnen een paar jaar een kunstmatig rif vol leven.",
     plane: "Op veel zeebodems liggen nog vliegtuigwrakken uit de Tweede Wereldoorlog. Sommige zijn populaire duikplekken geworden.",
@@ -9690,6 +9753,7 @@
     bubblerings: "Dolphins blow rings of air for fun. Then they play with them and sometimes bite them.",
     aurora: "The northern lights appear when particles from the sun crash into the air high above the earth.",
     mobydick: "Moby Dick is the white sperm whale from Herman Melville's book. Real white sperm whales have been seen.",
+    ghostsub: "Hundreds of submarines from the world wars lie sunk on the seabed. Sailors tell of one that still sails around, its lamps still burning.",
     ghostdiver: "Long ago divers went down with a copper helmet and an air hose from the ship. Sailors say one still haunts the deep.",
     wreck: "Within a few years a shipwreck often becomes an artificial reef full of life.",
     plane: "Many seabeds still hold plane wrecks from the Second World War. Some have become popular dive sites.",
@@ -10523,6 +10587,7 @@
         S.megalodon.enabled = true; S.megalodon.timer = 0;
         S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
         if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
+        if (!S.ghostSub) S.ghostSub = { x: W * 0.3, y: H * 0.4, dir: -1, ph: 0, logged: false };
         if (sd % 3 === 0) [S.kraken, S.serpent, S.megalodon, S.moby, S.ghostDiver][(sd / 3) % 5].shiny = "kraken";
         if (S.aurora.enabled) { S.aurora.active = true; S.aurora.age = 10; S.aurora.fade = 1; }
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
@@ -10609,7 +10674,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=50").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=51").catch(() => {}));
   }
 </script>
 </body>

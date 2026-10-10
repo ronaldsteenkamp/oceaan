@@ -172,6 +172,7 @@
     whalefall: pal("#ddd6c2>#f2d880 #c98a8a>#7a5ad8"),
     goldpearl: pal("#f2c440>#ff7ac8 #a89c88>#2a2a3a #d8d0c0>#4a4a6a"),
     ghostdiver: pal("#96ffd7>#c8a0ff #cdffeb>#ecdcff #061e20>#1a0830"),
+    ghostsub: pal("#9affd8>#ff9a5a #3a8a74>#a83a1a #5ad0a0>#ffc060 #061e20>#2a0a04 #d8fff0>#fff0c8 #e8fff4>#ffe08a"),
     eelmigration: pal("", { body: "#f2c040" }),
   };
   // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).
@@ -230,6 +231,7 @@
     if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
     if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
+    if (s.ghostSub) add("ghostsub", s.ghostSub, 50 * u, () => [s.ghostSub.x, s.ghostSub.cy || s.ghostSub.y]);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
   Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
