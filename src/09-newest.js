@@ -112,7 +112,7 @@
   function drawWhalefall(g) {
     const L = g.w, x = g.x, y = sandY(x) + 4 * u;
     const bone = sh("#ddd6c2", 0.1);
-    ctx.save(); ctx.translate(x, y); ctx.scale(g.dir, 1);
+    ctx.save(); ctx.translate(x, y); ctx.scale(faceOf(g), 1);
     ctx.fillStyle = "rgba(240,240,230,0.3)";
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.55, L * 0.05, 0, 0, TAU); ctx.fill();
     // ribs arch over the spine like a cage
@@ -626,7 +626,7 @@
     const L = f.s, body = sh("#4f86c6"), back = sh("#24466e"), belly = sh("#dfe8ef");
     ctx.save();
     ctx.translate(f.x, f.y);
-    ctx.scale(f.dir, 1);
+    ctx.scale(faceOf(f), 1);
     ctx.rotate(Math.atan2(f.vy, f.vx));
     // the big pectoral fins: spread wide in the air, folded along the body in the water
     const spread = f.air ? 1 : 0.25;

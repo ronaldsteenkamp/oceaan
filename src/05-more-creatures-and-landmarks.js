@@ -84,7 +84,7 @@
     const metal = sh("#6e7867"), dark = sh("#30362f"), light = sh("#8d977f");
     ctx.save();
     ctx.translate(g.x, y0);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     // far wing, sinking into the sand
     ctx.fillStyle = dark;
@@ -267,7 +267,7 @@
     // a fallen stone head, half sunk in the sand
     ctx.save();
     ctx.translate(x - g.dir * s * 0.55, y + s * 0.1);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(-0.2);
     ctx.fillStyle = stone;
     ctx.beginPath();
@@ -340,7 +340,7 @@
     const s = o.s, x = o.x, y = sandY(x) + 5 * u;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(o.dir, 1);
+    ctx.scale(faceOf(o), 1);
     if (o.type === "cucumber") {
       const len = s * (1.6 + step * 0.3);
       ctx.fillStyle = sh(o.color);
@@ -379,7 +379,7 @@
     const x = h.x, y = sandY(x) + 5 * u, out = 1 - h.hide;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(h.dir, 1);
+    ctx.scale(faceOf(h), 1);
     if (out > 0.05) {
       ctx.strokeStyle = sh("#c9603c"); ctx.lineCap = "round"; ctx.lineWidth = Math.max(1, s * 0.08);
       for (let i = 0; i < 3; i++) {
@@ -522,7 +522,7 @@
     const s = se.s, body = sh("#6f7478"), spot = sh("#3e4246"), belly = sh("#a9aca8");
     ctx.save();
     ctx.translate(se.x, y);
-    ctx.scale(se.dir, 1);
+    ctx.scale(faceOf(se), 1);
     ctx.rotate(ang);
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.5, 0); ctx.rotate(Math.sin(t * 5) * 0.3);
@@ -570,7 +570,7 @@
       const recolor = p.shiny && beginShiny();
       ctx.save();
       ctx.translate(p.x, y);
-      ctx.scale(p.dir, 1);
+      ctx.scale(faceOf(p), 1);
       ctx.rotate(Math.atan2(vy, vx));
       ctx.scale(s / 100, s / 100);
       ctx.fillStyle = "#f29a2e";
@@ -642,7 +642,7 @@
     const L = v.size, body = sh("#2d4f8a"), belly = sh("#c9d4dc"), fin = sh("#1e335a"), sail = sh("#3a5fa8");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 2) * 0.03);
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2); ctx.fill(P(SWORD_TAIL)); ctx.restore();
@@ -666,7 +666,7 @@
     const L = v.size, hull = sh("#e8b52a", -0.05), dark = sh("#5a4a1a");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.fillStyle = hull;
     ctx.beginPath(); ctx.roundRect(-L * 0.45, -L * 0.13, L * 0.9, L * 0.26, L * 0.13); ctx.fill();
     ctx.beginPath(); ctx.roundRect(-L * 0.12, -L * 0.26, L * 0.26, L * 0.15, L * 0.04); ctx.fill();
@@ -701,7 +701,7 @@
     const L = v.size, back = sh("#26313b"), belly = sh("#c9cfd2"), fin = sh("#dfe3e2");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.03);
     const sweep = Math.sin(v.ph * 1.3);
     // the far flipper, in shadow behind the body
@@ -736,7 +736,7 @@
     const L = v.size, body = sh("#8e969a"), spot = sh("#4a5256");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.04);
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-46, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25); ctx.fill(P(NAR_FLUKE)); ctx.restore();
@@ -762,7 +762,7 @@
     const L = v.size, tail = sh("#2fa58f", -0.05), tail2 = sh("#7fd8c9"), skin = sh("#d9a07a"), hair = sh("#b5452f");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.rotate(Math.sin(v.ph) * 0.05);
     ctx.strokeStyle = hair; ctx.lineCap = "round";
     for (let i = 0; i < 7; i++) {

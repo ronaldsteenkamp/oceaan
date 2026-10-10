@@ -602,3 +602,14 @@
   function paintInside(path, col, region) { ctx.save(); ctx.clip(path); ctx.fillStyle = col; ctx.fill(region); ctx.restore(); }
   // a soft shadow on the sand under something that hovers
   function sandShadow(f, w) { if (!f.lift) return; ctx.fillStyle = "rgba(0,0,0,0.13)"; ctx.beginPath(); ctx.ellipse(f.x, f.cy + f.lift, w, w * 0.18, 0, 0, TAU); ctx.fill(); }
+
+  // An animal that changes direction turns round smoothly instead of flipping in one frame:
+  // its width shrinks to a sliver and grows back the other way, as if it turns its body.
+  let frameK = 1;
+  function faceOf(o) {
+    const dir = o.dir || 1;
+    if (o.turn === undefined || !isFinite(o.turn) || Math.abs(o.turn) > 1) o.turn = dir;
+    o.turn += (dir - o.turn) * Math.min(1, 0.14 * frameK);
+    if (Math.abs(dir - o.turn) < 0.01) o.turn = dir;
+    return Math.abs(o.turn) < 0.06 ? (o.turn < 0 ? -0.06 : 0.06) : o.turn;
+  }

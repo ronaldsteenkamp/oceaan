@@ -180,7 +180,7 @@
     const y = floor - 46 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
     p.cy = y;
     if (dip > 0.95 && k > 0 && Math.random() < 0.3) puff(p.x + p.dir * s * 0.5, floor + 2 * u, 2);
-    ctx.save(); ctx.translate(p.x, y); ctx.scale(p.dir * s / 100, s / 100); ctx.rotate(dip * 0.5);
+    ctx.save(); ctx.translate(p.x, y); ctx.scale(faceOf(p) * s / 100, s / 100); ctx.rotate(dip * 0.5);
     const body = sh(p.hue), dark = sh(p.hue, 0.3), pink = sh("#f08ab0");
     // a parrotfish: a deep body with a long low dorsal and anal fin, scales outlined in pink,
     // a lyre-shaped tail and the fused white teeth that make its beak
@@ -211,7 +211,7 @@
     if (Math.abs(dx) > 5 * u) b.dir = Math.sign(dx);
     const y = b.y + Math.sin(b.ph * 0.1) * 8 * u, s = b.s;
     b.cy = y;
-    ctx.save(); ctx.translate(b.x, y); ctx.scale(b.dir, 1);
+    ctx.save(); ctx.translate(b.x, y); ctx.scale(faceOf(b), 1);
     const yel = sh("#f2d030"), dark = sh("#b89818");
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(-s * 0.6, 0); ctx.rotate(Math.sin(b.ph) * 0.4); ctx.beginPath(); ctx.ellipse(-s * 0.15, 0, s * 0.18, s * 0.12, 0, 0, TAU); ctx.fill(); ctx.restore();
@@ -355,7 +355,7 @@
   function drawCrocodile(v) {
     const L = v.size, skin = sh("#5a6a3a"), dark = sh("#3a4628"), belly = sh("#b8b088");
     const y = water.surface ? waveY(v.x) + L * 0.04 : v.y + v.yOff;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100);
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100);
     // the far legs, a shade darker
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(10, 4); ctx.rotate(0.3 + Math.sin(v.ph * 2 + 1) * 0.2); ctx.fill(P(CROC_FRONTLEG)); ctx.restore();
@@ -392,7 +392,7 @@
 
   function drawWhaleshark(v) {
     const L = v.size, skin = sh("#3a5068"), spot = sh("#dfe8ee"), belly = sh("#c8d4dc");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.42, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
     ctx.beginPath(); ctx.moveTo(L * 0.02, 0); ctx.lineTo(-L * 0.12, -L * 0.2); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.12, L * 0.12); ctx.closePath(); ctx.fill();
@@ -424,7 +424,7 @@
   function drawSealion(v) {
     const L = v.size, skin = sh("#7a5a3a"), light = sh("#a88a64"), dark = sh("#5a4028");
     const loop = Math.sin(v.ph * 1.5), y = v.y + v.yOff + loop * 50 * u;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
     const beat = Math.sin(v.ph * 4);
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(14, 3); ctx.rotate(0.5 - beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
@@ -443,7 +443,7 @@
 
   function drawEagleray(v) {
     const L = v.size, skin = sh("#2a3442"), spot = sh("#e8eef2"), flap = Math.sin(v.ph * 3);
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.strokeStyle = skin; ctx.lineWidth = Math.max(1, L * 0.012);
     ctx.beginPath(); ctx.moveTo(-L * 0.2, 0); ctx.quadraticCurveTo(-L * 0.6, Math.sin(v.ph * 2) * L * 0.05, -L * 0.95, Math.sin(v.ph * 2 + 1) * L * 0.08); ctx.stroke();
     ctx.fillStyle = skin;

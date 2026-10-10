@@ -283,6 +283,129 @@
   }
   @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
+
+  /* ---- the logbook as a researcher's field notebook ---- */
+  #panel.book {
+    --paper: #f3ead3; --ink: #2d2a24; --ink-soft: #6e624c; --pencil: #29507a; --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+    width: min(1080px, calc(100% - 24px)); height: min(88vh, 780px); max-height: none;
+    background: #34463a; background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.2px); background-size: 5px 5px;
+    border: 1px solid rgba(0, 0, 0, 0.45); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 6px rgba(0, 0, 0, 0.12);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  #panel.book .panel-head { border-bottom: 0; padding: 8px 10px 2px 20px; }
+  #panel.book .panel-head h2 { font-family: var(--hand); font-size: 28px; font-weight: 600; color: #f3ead3; letter-spacing: 0; }
+  #panel.book .icon-btn { color: #f3ead3; }
+  #panel.book #panelBody { flex: 1; min-height: 0; overflow: hidden; padding: 0 12px 12px; display: flex; flex-direction: column; }
+  .nb { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .nb-tabs { display: flex; gap: 4px; padding: 0 10px; overflow-x: auto; scrollbar-width: none; flex: none; }
+  .nb-tabs::-webkit-scrollbar { display: none; }
+  .nb-tab { flex: none; padding: 5px 13px 9px; border: 0; border-radius: 8px 8px 0 0; background: var(--tab); color: #2d2a24; font-family: var(--hand); font-size: 19px; line-height: 1; transform: translateY(5px); opacity: 0.82; transition: transform 0.15s, opacity 0.15s; }
+  .nb-tab:hover { opacity: 1; background: var(--tab); transform: translateY(2px); }
+  .nb-tab.on { opacity: 1; transform: translateY(0); }
+  .nb-tab:disabled { opacity: 0.35; transform: translateY(6px); }
+  .nb-spread { position: relative; flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; perspective: 2400px; border-radius: 6px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); }
+  .nb-spread.single { grid-template-columns: 1fr; }
+  .nb-page {
+    position: relative; box-sizing: border-box; min-width: 0; min-height: 0; overflow: hidden; padding: 20px 24px 40px; color: var(--ink);
+    background-color: var(--paper);
+    background-image: linear-gradient(rgba(60, 100, 130, 0.11) 1px, transparent 1px), linear-gradient(90deg, rgba(60, 100, 130, 0.11) 1px, transparent 1px);
+    background-size: 18px 18px; background-position: -1px -1px;
+  }
+  .nb-left { border-radius: 6px 0 0 6px; box-shadow: inset -24px 0 28px -20px rgba(70, 50, 20, 0.5); }
+  .nb-right { border-radius: 0 6px 6px 0; box-shadow: inset 24px 0 28px -20px rgba(70, 50, 20, 0.5); }
+  .single .nb-left { border-radius: 6px; box-shadow: inset 16px 0 20px -16px rgba(70, 50, 20, 0.4); }
+  .nb-spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-1px); background: rgba(70, 50, 20, 0.28); pointer-events: none; }
+  .single .nb-spine { display: none; }
+  .nb-meter { position: absolute; top: 0; left: 0; width: 50%; height: 100%; visibility: hidden; pointer-events: none; }
+  .single .nb-meter { width: 100%; }
+  .nb-blank { height: 100%; }
+  .nb-pnum { position: absolute; bottom: 9px; font-family: var(--hand); font-size: 18px; color: var(--ink-soft); }
+  .nb-pnum.l { left: 22px; }
+  .nb-pnum.r { right: 22px; }
+  .nb-run { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; }
+  .nb-title { margin: 0; font-family: var(--hand); font-size: 44px; font-weight: 600; line-height: 1; color: var(--pencil); }
+  .nb-title.small { font-size: 36px; }
+  .nb-sub { margin: 2px 0 14px; font-family: var(--hand); font-size: 20px; color: var(--ink-soft); }
+  .nb-stat { margin: 0 0 6px; font-size: 15px; color: var(--ink); }
+  .nb-stat b { color: var(--pencil); }
+  .nb-bar { height: 8px; border-radius: 4px; border: 1.5px solid rgba(41, 80, 122, 0.55); margin: 0 0 10px; overflow: hidden; }
+  .nb-bar i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, rgba(41, 80, 122, 0.75) 0 3px, rgba(41, 80, 122, 0.35) 3px 6px); }
+  .nb-note { margin: 4px 0 8px; font-size: 13px; line-height: 1.45; color: var(--ink-soft); }
+  .nb-fam { margin: 12px 0 10px; padding-bottom: 2px; font-family: var(--hand); font-size: 25px; font-weight: 600; line-height: 1.05; color: var(--pencil); border-bottom: 1.5px solid rgba(41, 80, 122, 0.3); }
+  .nb-fam span { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--ink-soft); margin-left: 4px; }
+  .nb .cards { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 14px 10px; padding-top: 6px; }
+  .nb .card { padding: 5px 5px 6px; gap: 4px; border: 0; border-radius: 2px; background: #fffdf7; color: var(--ink); transform: rotate(var(--tilt, 0deg)); box-shadow: 0 1px 2px rgba(60, 40, 10, 0.28), 0 4px 10px rgba(60, 40, 10, 0.12); transition: transform 0.15s; }
+  .nb .card:hover { background: #fffdf7; transform: rotate(0deg) scale(1.04); }
+  .nb .card::before { content: ""; position: absolute; top: -6px; left: 50%; width: 40%; height: 12px; transform: translateX(-50%) rotate(-3deg); background: rgba(236, 222, 178, 0.82); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08); }
+  .nb .card img { border-radius: 1px; }
+  .nb .card span { font-family: var(--hand); font-size: 17px; font-weight: 600; line-height: 1; }
+  .nb .card.off { background: transparent; box-shadow: none; outline: 1.5px dashed rgba(80, 70, 50, 0.38); outline-offset: -1px; color: #8a7d62; }
+  .nb .card.off::before { display: none; }
+  .nb .card.off img { opacity: 0.55; filter: saturate(0.3); }
+  .nb .card.new { box-shadow: 0 0 0 2px #b8322a, 0 4px 10px rgba(60, 40, 10, 0.18); }
+  .nb .card .newtag { top: auto; bottom: 26px; left: 6px; background: rgba(255, 253, 247, 0.92); color: #b8322a; border: 1.5px solid #b8322a; border-radius: 4px; font-family: var(--hand); font-size: 15px; transform: rotate(-8deg); }
+  .nb .card.hasshiny.on:not(.new) { box-shadow: 0 0 0 2px rgba(214, 165, 40, 0.75), 0 4px 10px rgba(60, 40, 10, 0.15); }
+  .nb .chip { color: var(--ink); border-color: rgba(80, 70, 50, 0.4); font-size: 12.5px; }
+  .nb .chip:hover { background: rgba(41, 80, 122, 0.08); }
+  .nb .chip.pick.on { color: var(--pencil); background: rgba(41, 80, 122, 0.14); border-color: rgba(41, 80, 122, 0.6); }
+  .nb .row button, .nb .nb-back { background: #fffdf7; color: var(--ink); border: 1px solid rgba(80, 70, 50, 0.38); }
+  .nb .row button:hover, .nb .nb-back:hover { background: #fff; border-color: rgba(80, 70, 50, 0.6); }
+  .nb .row button.primary { background: var(--pencil); color: #fff; border-color: var(--pencil); }
+  .nb-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+  .nb-check li { display: flex; align-items: baseline; gap: 8px; font-family: var(--hand); font-size: 19px; line-height: 1.05; color: var(--ink-soft); }
+  .nb-check li.on { color: var(--ink); }
+  .nb-check .box { flex: none; width: 15px; height: 15px; display: inline-grid; place-items: center; border: 1.5px solid rgba(80, 70, 50, 0.55); border-radius: 2px; font-size: 16px; line-height: 1; color: #2f7a3a; transform: translateY(2px); }
+  .nb-check .what { flex: 1; min-width: 0; }
+  .nb-check .how { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+  .nb-check .gift { font-style: normal; color: #c89a1a; }
+  .nb .album { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px 12px; }
+  .nb .album button { padding: 6px 6px 18px; border: 0; border-radius: 2px; background: #fffdf7; transform: rotate(var(--tilt, 0deg)); box-shadow: 0 1px 2px rgba(60, 40, 10, 0.28), 0 4px 10px rgba(60, 40, 10, 0.12); }
+  .nb .album img { border-radius: 1px; }
+  .nb-nav { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 4px 0; }
+  .nb-turn { padding: 6px 14px; border-radius: 999px; background: transparent; border: 1px solid rgba(243, 234, 211, 0.4); color: #f3ead3; font-family: var(--hand); font-size: 19px; line-height: 1; }
+  .nb-turn:hover { background: rgba(243, 234, 211, 0.12); }
+  .nb-turn:disabled { opacity: 0.3; }
+  .nb-num { font-family: var(--hand); font-size: 19px; color: rgba(243, 234, 211, 0.85); }
+  /* the page that turns over */
+  .nb-leaf { position: absolute; top: 0; bottom: 0; transform-style: preserve-3d; z-index: 5; will-change: transform; }
+  .nb-leaf.fwd { left: 50%; width: 50%; transform-origin: left center; }
+  .nb-leaf.bwd { left: 0; width: 50%; transform-origin: right center; }
+  .nb-leaf.one { left: 0; width: 100%; transform-origin: left center; }
+  .nb-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .nb-face.back { transform: rotateY(180deg); }
+  .nb-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(40, 25, 5, 0.45), rgba(40, 25, 5, 0) 70%); opacity: 0; }
+  /* one animal's page */
+  .nb-detail { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .nb-detail .dtabs { background: rgba(80, 70, 50, 0.07); border-color: rgba(80, 70, 50, 0.25); }
+  .nb-detail .dtabs button { color: var(--ink-soft); }
+  .nb-detail .dtabs button:hover { color: var(--ink); background: rgba(41, 80, 122, 0.08); }
+  .nb-detail .dtabs button.on { color: var(--pencil); background: rgba(41, 80, 122, 0.15); }
+  .nb-detail .dtabs button.got { color: #9a6f10; }
+  .nb-detail .dtabs button.on.got { background: rgba(214, 165, 40, 0.2); }
+  .nb-photo { position: relative; margin: 14px auto 0; width: min(100%, 440px); padding: 9px 9px 6px; background: #fffdf7; transform: rotate(var(--tilt, -1deg)); box-shadow: 0 2px 4px rgba(60, 40, 10, 0.3), 0 8px 20px rgba(60, 40, 10, 0.15); }
+  .nb-photo::before, .nb-photo::after { content: ""; position: absolute; top: -8px; width: 70px; height: 18px; background: rgba(236, 222, 178, 0.85); }
+  .nb-photo::before { left: 14px; transform: rotate(-12deg); }
+  .nb-photo::after { right: 14px; transform: rotate(10deg); }
+  .nb-photo img { width: 100%; aspect-ratio: 120 / 84; display: block; background: #0d3a52; }
+  .nb-photo.shinybig { box-shadow: 0 0 0 3px rgba(214, 165, 40, 0.8), 0 8px 20px rgba(60, 40, 10, 0.15); }
+  .nb-photo figcaption { padding-top: 6px; text-align: center; font-family: var(--hand); font-size: 24px; font-weight: 600; color: var(--ink); }
+  .nb-back { align-self: flex-start; padding: 6px 14px; border-radius: 999px; font-size: 13px; }
+  .nb-fact { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+  .nb-dl { display: grid; gap: 8px; margin: 4px 0 0; }
+  .nb-dl div { padding: 6px 0 6px 12px; border-left: 3px solid rgba(41, 80, 122, 0.4); }
+  .nb-dl dt { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); }
+  .nb-dl dd { margin: 1px 0 0; font-size: 13.5px; color: var(--ink); overflow-wrap: anywhere; }
+  @media (max-width: 600px) {
+    #panel.book { width: 100%; height: 90vh; }
+    #panel.book #panelBody { padding: 0 8px 10px; }
+    .nb-page { padding: 16px 16px 36px; }
+    .nb-title { font-size: 38px; }
+    .nb .cards { grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); }
+    .nb-photo { margin-top: 6px; width: min(100%, 300px); }
+    .nb-fact { font-size: 14px; line-height: 1.5; }
+  }
+
+  #panel.book.gilded { background-color: #6a5422; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 6px rgba(230, 190, 90, 0.35); }
 </style>
 </head>
 <body>
@@ -948,6 +1071,17 @@
   function paintInside(path, col, region) { ctx.save(); ctx.clip(path); ctx.fillStyle = col; ctx.fill(region); ctx.restore(); }
   // a soft shadow on the sand under something that hovers
   function sandShadow(f, w) { if (!f.lift) return; ctx.fillStyle = "rgba(0,0,0,0.13)"; ctx.beginPath(); ctx.ellipse(f.x, f.cy + f.lift, w, w * 0.18, 0, 0, TAU); ctx.fill(); }
+
+  // An animal that changes direction turns round smoothly instead of flipping in one frame:
+  // its width shrinks to a sliver and grows back the other way, as if it turns its body.
+  let frameK = 1;
+  function faceOf(o) {
+    const dir = o.dir || 1;
+    if (o.turn === undefined || !isFinite(o.turn) || Math.abs(o.turn) > 1) o.turn = dir;
+    o.turn += (dir - o.turn) * Math.min(1, 0.14 * frameK);
+    if (Math.abs(dir - o.turn) < 0.01) o.turn = dir;
+    return Math.abs(o.turn) < 0.06 ? (o.turn < 0 ? -0.06 : 0.06) : o.turn;
+  }
   // ---- state -------------------------------------------------------------
   let W = 0, H = 0, dpr = 1, u = 1;
   let seed, rng, water, scene;
@@ -1544,7 +1678,7 @@
     const wood = sh("#5d4129"), dark = sh("#2c1e14"), light = sh("#7a5a3a"), sail = sh("#cfc2a2", 0.1);
     ctx.save();
     ctx.translate(g.x, y0);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     ctx.lineCap = "round";
 
@@ -1848,7 +1982,7 @@
     const iron = sh("#2c2c31"), hi = sh("#4a4a52");
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     ctx.fillStyle = iron;
     ctx.beginPath();
@@ -2301,6 +2435,24 @@
   }
 
   // ---- jellyfish ---------------------------------------------------------
+  const JELLY_BELL = (() => {
+    const p = new Path2D();
+    p.moveTo(-1, 0); p.bezierCurveTo(-1, -1.35, 1, -1.35, 1, 0);
+    for (let s = 4; s >= 0; s--) { const xa = -1 + (s / 4) * 2; p.quadraticCurveTo(xa + 0.25, 0.18, xa, 0); }
+    return p;
+  })();
+  const JELLY_GRADS = new WeakMap();
+  function jellyGradient(col) {
+    let m = JELLY_GRADS.get(ctx);
+    if (!m) { m = new Map(); JELLY_GRADS.set(ctx, m); }
+    let g = m.get(col);
+    if (!g) {
+      g = ctx.createRadialGradient(0, -0.5, 0, 0, -0.3, 1.1);
+      g.addColorStop(0, `rgba(${col},0.55)`); g.addColorStop(1, `rgba(${col},0.12)`);
+      m.set(col, g);
+    }
+    return g;
+  }
   function updateAndDrawJellies(k) {
     if (water.glow) ctx.globalCompositeOperation = "lighter";
     for (const j of scene.jellies) {
@@ -2355,18 +2507,11 @@
         ctx.stroke();
       }
       if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${j.col},0.8)`; }
-      const g = ctx.createRadialGradient(0, -bh * 0.5, 0, 0, -bh * 0.3, bw * 1.1);
-      g.addColorStop(0, `rgba(${j.col},0.55)`);
-      g.addColorStop(1, `rgba(${j.col},0.12)`);
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.moveTo(-bw, 0);
-      ctx.bezierCurveTo(-bw, -bh * 1.35, bw, -bh * 1.35, bw, 0);
-      for (let s = 4; s >= 0; s--) {
-        const xa = -bw + (s / 4) * 2 * bw;
-        ctx.quadraticCurveTo(xa + bw / 4, bh * 0.18, xa, 0);
-      }
-      ctx.fill();
+      // the bell is drawn at unit size and stretched, so its colour gradient can be made once and reused
+      ctx.save(); ctx.scale(bw, bh);
+      ctx.fillStyle = jellyGradient(j.col);
+      ctx.fill(JELLY_BELL);
+      ctx.restore();
       ctx.shadowBlur = 0;
       ctx.restore();
       if (recolor) endShiny(j.shiny, j);
@@ -2560,7 +2705,7 @@
     ctx.beginPath(); ctx.ellipse(r.x, gy, s * 0.8, s * 0.12, 0, 0, TAU); ctx.fill();
     ctx.save();
     ctx.translate(r.x, y);
-    ctx.scale(r.dir * s / 100, s / 100);
+    ctx.scale(faceOf(r) * s / 100, s / 100);
     const col = sh("#7c6a55"), spot = sh("#3e342a");
     ctx.fillStyle = col;
     ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(r.ph) * 0.06); ctx.scale(1, 1); ctx.fill(P(RAY_TAIL));
@@ -2587,7 +2732,7 @@
     const col = sh(h.color);
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(h.dir, 1);
+    ctx.scale(faceOf(h), 1);
     ctx.rotate(Math.sin(t * 0.8 + h.ph) * 0.06);
     const pts = [[0, -0.85], [0.18, -0.62], [0.27, -0.32], [0.2, 0], [0.02, 0.22], [-0.1, 0.42], [-0.02, 0.6], [0.14, 0.6], [0.16, 0.48], [0.07, 0.44]];
     const widths = [0.3, 0.34, 0.36, 0.32, 0.24, 0.16, 0.11, 0.08, 0.06, 0.05];
@@ -2672,7 +2817,7 @@
     const s = a.s, y = a.y + Math.sin(a.ph) * 8 * u;
     ctx.save();
     ctx.translate(a.x, y);
-    ctx.scale(a.dir, 1);
+    ctx.scale(faceOf(a), 1);
     const body = "#1b1e26";
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.85, 0); ctx.rotate(Math.sin(t * 3) * 0.25);
@@ -2812,7 +2957,7 @@
     const L = v.size;
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 0.5) * 0.05 - 0.04);
     const skin = sh("#7d8a6a"), skinDark = sh("#5d6a4c"), shell = sh("#6a5434"), line = sh("#3b301f");
     const stroke = Math.sin(v.ph);
@@ -2843,7 +2988,7 @@
     const flap = 0.82 + 0.18 * Math.sin(v.ph * 2);
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.fillStyle = "rgba(18,26,34,0.88)";
     ctx.beginPath();
     ctx.moveTo(L * 0.3, -L * 0.07);
@@ -2877,7 +3022,7 @@
     const body = sh("#56646f"), belly = sh("#b9c3c7");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = body;
     ctx.save();
@@ -3011,7 +3156,7 @@
     const metal = sh("#6e7867"), dark = sh("#30362f"), light = sh("#8d977f");
     ctx.save();
     ctx.translate(g.x, y0);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     // far wing, sinking into the sand
     ctx.fillStyle = dark;
@@ -3194,7 +3339,7 @@
     // a fallen stone head, half sunk in the sand
     ctx.save();
     ctx.translate(x - g.dir * s * 0.55, y + s * 0.1);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(-0.2);
     ctx.fillStyle = stone;
     ctx.beginPath();
@@ -3267,7 +3412,7 @@
     const s = o.s, x = o.x, y = sandY(x) + 5 * u;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(o.dir, 1);
+    ctx.scale(faceOf(o), 1);
     if (o.type === "cucumber") {
       const len = s * (1.6 + step * 0.3);
       ctx.fillStyle = sh(o.color);
@@ -3306,7 +3451,7 @@
     const x = h.x, y = sandY(x) + 5 * u, out = 1 - h.hide;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(h.dir, 1);
+    ctx.scale(faceOf(h), 1);
     if (out > 0.05) {
       ctx.strokeStyle = sh("#c9603c"); ctx.lineCap = "round"; ctx.lineWidth = Math.max(1, s * 0.08);
       for (let i = 0; i < 3; i++) {
@@ -3449,7 +3594,7 @@
     const s = se.s, body = sh("#6f7478"), spot = sh("#3e4246"), belly = sh("#a9aca8");
     ctx.save();
     ctx.translate(se.x, y);
-    ctx.scale(se.dir, 1);
+    ctx.scale(faceOf(se), 1);
     ctx.rotate(ang);
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.5, 0); ctx.rotate(Math.sin(t * 5) * 0.3);
@@ -3497,7 +3642,7 @@
       const recolor = p.shiny && beginShiny();
       ctx.save();
       ctx.translate(p.x, y);
-      ctx.scale(p.dir, 1);
+      ctx.scale(faceOf(p), 1);
       ctx.rotate(Math.atan2(vy, vx));
       ctx.scale(s / 100, s / 100);
       ctx.fillStyle = "#f29a2e";
@@ -3569,7 +3714,7 @@
     const L = v.size, body = sh("#2d4f8a"), belly = sh("#c9d4dc"), fin = sh("#1e335a"), sail = sh("#3a5fa8");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 2) * 0.03);
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(v.ph * 4) * 0.2); ctx.fill(P(SWORD_TAIL)); ctx.restore();
@@ -3593,7 +3738,7 @@
     const L = v.size, hull = sh("#e8b52a", -0.05), dark = sh("#5a4a1a");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.fillStyle = hull;
     ctx.beginPath(); ctx.roundRect(-L * 0.45, -L * 0.13, L * 0.9, L * 0.26, L * 0.13); ctx.fill();
     ctx.beginPath(); ctx.roundRect(-L * 0.12, -L * 0.26, L * 0.26, L * 0.15, L * 0.04); ctx.fill();
@@ -3628,7 +3773,7 @@
     const L = v.size, back = sh("#26313b"), belly = sh("#c9cfd2"), fin = sh("#dfe3e2");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.03);
     const sweep = Math.sin(v.ph * 1.3);
     // the far flipper, in shadow behind the body
@@ -3663,7 +3808,7 @@
     const L = v.size, body = sh("#8e969a"), spot = sh("#4a5256");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph) * 0.04);
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-46, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25); ctx.fill(P(NAR_FLUKE)); ctx.restore();
@@ -3689,7 +3834,7 @@
     const L = v.size, tail = sh("#2fa58f", -0.05), tail2 = sh("#7fd8c9"), skin = sh("#d9a07a"), hair = sh("#b5452f");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.rotate(Math.sin(v.ph) * 0.05);
     ctx.strokeStyle = hair; ctx.lineCap = "round";
     for (let i = 0; i < 7; i++) {
@@ -4115,7 +4260,7 @@
     ctx.save();
     ctx.globalAlpha = 0.1 + 0.04 * Math.sin(t * 1.3) + 0.14 * night;
     ctx.translate(gs.x, gs.y + Math.sin(t * 0.4) * 10 * u);
-    ctx.scale(gs.dir, 1);
+    ctx.scale(faceOf(gs), 1);
     ctx.rotate(Math.sin(t * 0.3) * 0.03);
     ctx.drawImage(gs.img, -w / 2, -gs.img.height * 0.72);
     ctx.restore();
@@ -4696,7 +4841,7 @@
   function drawWhalefall(g) {
     const L = g.w, x = g.x, y = sandY(x) + 4 * u;
     const bone = sh("#ddd6c2", 0.1);
-    ctx.save(); ctx.translate(x, y); ctx.scale(g.dir, 1);
+    ctx.save(); ctx.translate(x, y); ctx.scale(faceOf(g), 1);
     ctx.fillStyle = "rgba(240,240,230,0.3)";
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.55, L * 0.05, 0, 0, TAU); ctx.fill();
     // ribs arch over the spine like a cage
@@ -5210,7 +5355,7 @@
     const L = f.s, body = sh("#4f86c6"), back = sh("#24466e"), belly = sh("#dfe8ef");
     ctx.save();
     ctx.translate(f.x, f.y);
-    ctx.scale(f.dir, 1);
+    ctx.scale(faceOf(f), 1);
     ctx.rotate(Math.atan2(f.vy, f.vx));
     // the big pectoral fins: spread wide in the air, folded along the body in the water
     const spread = f.air ? 1 : 0.25;
@@ -5903,7 +6048,7 @@
   function drawCar(g) {
     const s = g.s, y0 = sandY(g.x) + s * 0.12;
     const paint = sh(g.color), dark = sh("#1a2228"), rust = sh("#7a4a2a"), glass = sh("#2a4a58", 0.1);
-    ctx.save(); ctx.translate(g.x, y0); ctx.scale(g.dir, 1); ctx.rotate(g.tilt);
+    ctx.save(); ctx.translate(g.x, y0); ctx.scale(faceOf(g), 1); ctx.rotate(g.tilt);
     // a round old car, half sunk in the sand
     ctx.fillStyle = paint;
     ctx.beginPath();
@@ -6068,7 +6213,7 @@
     if (Math.abs(dx) > 5 * u) f.dir = Math.sign(dx);
     const y = f.y + Math.sin(f.ph * 0.4) * 6 * u, s = f.s;
     f.cy = y;
-    ctx.save(); ctx.translate(f.x, y); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, y); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = "rgba(220,150,120,0.35)";
     ctx.beginPath(); ctx.moveTo(s * 0.05, s * 0.05);
     for (let i = 0; i <= 8; i++) { const a = 2.2 + i * 0.16; ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.75, s * 0.05 + Math.sin(a) * s * 0.75); }
@@ -6107,7 +6252,7 @@
     if (!back && Math.abs(dx) > 5 * u) c.dir = Math.sign(dx); // it backs away without turning round
     const y = c.y + Math.sin(c.ph * 0.3) * 8 * u, s = c.s;
     c.cy = y;
-    ctx.save(); ctx.translate(c.x, y); ctx.scale(c.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(c.x, y); ctx.scale(faceOf(c) * s / 100, s / 100);
     const pale = c.flash > 0.3, skin = sh(pale ? "#ece6dc" : "#a07850"), fin = sh("#c8a888");
     // the thin fin around the mantle ripples in a wave
     ctx.fillStyle = fin; ctx.beginPath();
@@ -6150,7 +6295,7 @@
     if (l.x < scene.floorL + 30 * u) l.dir = 1;
     if (l.x > scene.floorR - 30 * u) l.dir = -1;
     const s = l.s, body = sh("#2f4a78"), dark = sh("#1c2c4a"), light = sh("#5a78a8");
-    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(l.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(faceOf(l) * s / 100, s / 100);
     // walking legs
     ctx.strokeStyle = dark; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";
     for (let i = 0; i < 4; i++) { const x0 = 18 - i * 9, sw = Math.sin(l.leg + i) * 4; ctx.beginPath(); ctx.moveTo(x0, -12); ctx.lineTo(x0 + sw + 5, -5); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
@@ -6210,7 +6355,7 @@
     if (o.x < scene.floorL + 20 * u) o.dir = 1;
     if (o.x > scene.floorR - 20 * u) o.dir = -1;
     const s = o.s;
-    ctx.save(); ctx.translate(o.x, sandY(o.x) + 4 * u); ctx.scale(o.dir, 1);
+    ctx.save(); ctx.translate(o.x, sandY(o.x) + 4 * u); ctx.scale(faceOf(o), 1);
     ctx.strokeStyle = sh("#8a7a8a"); ctx.lineWidth = Math.max(0.7, s * 0.03);
     for (let i = 0; i < 7; i++) { const x0 = -s * 0.4 + i * s * 0.12, sw = Math.sin(o.leg + i * 0.9) * s * 0.04; ctx.beginPath(); ctx.moveTo(x0, -s * 0.06); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
     ctx.fillStyle = sh("#a898a8"); ctx.beginPath(); ctx.moveTo(-s * 0.45, -s * 0.08); ctx.lineTo(-s * 0.62, -s * 0.16); ctx.lineTo(-s * 0.62, 0); ctx.closePath(); ctx.fill();
@@ -6233,7 +6378,7 @@
     if (d.x > W - 40 * u) d.dir = -1;
     const y = d.y + Math.sin(d.ph * 0.6) * 10 * u, s = d.s, body = sh("#d8a040"), leaf = sh("#9aa040");
     d.cy = y;
-    ctx.save(); ctx.translate(d.x, y); ctx.scale(d.dir, 1); ctx.rotate(Math.sin(d.ph * 0.5) * 0.06);
+    ctx.save(); ctx.translate(d.x, y); ctx.scale(faceOf(d), 1); ctx.rotate(Math.sin(d.ph * 0.5) * 0.06);
     const pts = [];
     for (let i = 0; i <= 12; i++) { const f = i / 12; pts.push([s * (0.5 - f), Math.sin(f * 3 + 0.4) * s * 0.12 + f * f * s * 0.15]); }
     ctx.fillStyle = leaf;
@@ -6270,7 +6415,7 @@
   // ---- visitors -----------------------------------------------------------
   function drawManatee(v) {
     const L = v.size, skin = sh("#8a8a80"), dark = sh("#5a5a52");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.03);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.42, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25);
     ctx.beginPath(); ctx.ellipse(-L * 0.1, 0, L * 0.14, L * 0.1, 0, 0, TAU); ctx.fill(); ctx.restore();
@@ -6298,7 +6443,7 @@
   const ORCA_FLUKE = "M 2 0 C -4 -3 -9 -7 -14 -10 C -12 -4 -11 -1 -11 0 C -11 1 -12 4 -14 10 C -9 7 -4 3 2 0 Z";
   function drawOrca(v) {
     const L = v.size, black = sh("#14181c"), white = sh("#f0f0ea");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.sin(v.ph) * 0.03);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = black;
     ctx.save(); ctx.translate(-47, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.2); ctx.fill(P(ORCA_FLUKE)); ctx.restore();
     ctx.fill(P(ORCA_FIN));
@@ -6314,7 +6459,7 @@
 
   function drawHammerhead(v) {
     const L = v.size, skin = sh("#7a8a94"), belly = sh("#d8dde0"), dark = sh("#4a5862");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.38, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-L * 0.12, -L * 0.17); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.13, L * 0.07); ctx.closePath(); ctx.fill();
@@ -6341,7 +6486,7 @@
 
   function drawSunfish(v) {
     const L = v.size, skin = sh("#9aa4ae"), dark = sh("#6a747e"), light = sh("#c8d0d6"), flap = Math.sin(v.ph * 2.5) * 0.35;
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.06);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.06);
     ctx.fillStyle = dark;
     // tall fins above and below beat from side to side
     ctx.save(); ctx.translate(-L * 0.12, -L * 0.3); ctx.rotate(-0.25 + flap); ctx.beginPath(); ctx.moveTo(-L * 0.08, 0); ctx.quadraticCurveTo(0, -L * 0.45, L * 0.08, 0); ctx.fill(); ctx.restore();
@@ -6360,7 +6505,7 @@
 
   function drawBeluga(v) {
     const L = v.size, skin = sh("#eef2f2"), shade = sh("#c8d2d6");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.04);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.04);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.44, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.22);
     ctx.beginPath(); ctx.moveTo(L * 0.04, 0); ctx.quadraticCurveTo(-L * 0.05, -L * 0.03, -L * 0.12, -L * 0.09); ctx.quadraticCurveTo(-L * 0.07, 0, -L * 0.12, L * 0.09); ctx.quadraticCurveTo(-L * 0.05, L * 0.03, L * 0.04, 0); ctx.fill();
@@ -6653,7 +6798,7 @@
     ctx.save();
     ctx.globalAlpha = 0.5;
     ctx.translate(M.x, M.y + Math.sin(M.ph * 0.5) * 10 * u);
-    ctx.scale(M.dir, 1);
+    ctx.scale(faceOf(M), 1);
     ctx.rotate(Math.sin(M.ph) * 0.03);
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
@@ -6939,7 +7084,7 @@
     const y = floor - 46 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
     p.cy = y;
     if (dip > 0.95 && k > 0 && Math.random() < 0.3) puff(p.x + p.dir * s * 0.5, floor + 2 * u, 2);
-    ctx.save(); ctx.translate(p.x, y); ctx.scale(p.dir * s / 100, s / 100); ctx.rotate(dip * 0.5);
+    ctx.save(); ctx.translate(p.x, y); ctx.scale(faceOf(p) * s / 100, s / 100); ctx.rotate(dip * 0.5);
     const body = sh(p.hue), dark = sh(p.hue, 0.3), pink = sh("#f08ab0");
     // a parrotfish: a deep body with a long low dorsal and anal fin, scales outlined in pink,
     // a lyre-shaped tail and the fused white teeth that make its beak
@@ -6970,7 +7115,7 @@
     if (Math.abs(dx) > 5 * u) b.dir = Math.sign(dx);
     const y = b.y + Math.sin(b.ph * 0.1) * 8 * u, s = b.s;
     b.cy = y;
-    ctx.save(); ctx.translate(b.x, y); ctx.scale(b.dir, 1);
+    ctx.save(); ctx.translate(b.x, y); ctx.scale(faceOf(b), 1);
     const yel = sh("#f2d030"), dark = sh("#b89818");
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(-s * 0.6, 0); ctx.rotate(Math.sin(b.ph) * 0.4); ctx.beginPath(); ctx.ellipse(-s * 0.15, 0, s * 0.18, s * 0.12, 0, 0, TAU); ctx.fill(); ctx.restore();
@@ -7114,7 +7259,7 @@
   function drawCrocodile(v) {
     const L = v.size, skin = sh("#5a6a3a"), dark = sh("#3a4628"), belly = sh("#b8b088");
     const y = water.surface ? waveY(v.x) + L * 0.04 : v.y + v.yOff;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100);
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100);
     // the far legs, a shade darker
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(10, 4); ctx.rotate(0.3 + Math.sin(v.ph * 2 + 1) * 0.2); ctx.fill(P(CROC_FRONTLEG)); ctx.restore();
@@ -7151,7 +7296,7 @@
 
   function drawWhaleshark(v) {
     const L = v.size, skin = sh("#3a5068"), spot = sh("#dfe8ee"), belly = sh("#c8d4dc");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.42, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
     ctx.beginPath(); ctx.moveTo(L * 0.02, 0); ctx.lineTo(-L * 0.12, -L * 0.2); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.12, L * 0.12); ctx.closePath(); ctx.fill();
@@ -7183,7 +7328,7 @@
   function drawSealion(v) {
     const L = v.size, skin = sh("#7a5a3a"), light = sh("#a88a64"), dark = sh("#5a4028");
     const loop = Math.sin(v.ph * 1.5), y = v.y + v.yOff + loop * 50 * u;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
     const beat = Math.sin(v.ph * 4);
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(14, 3); ctx.rotate(0.5 - beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
@@ -7202,7 +7347,7 @@
 
   function drawEagleray(v) {
     const L = v.size, skin = sh("#2a3442"), spot = sh("#e8eef2"), flap = Math.sin(v.ph * 3);
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.strokeStyle = skin; ctx.lineWidth = Math.max(1, L * 0.012);
     ctx.beginPath(); ctx.moveTo(-L * 0.2, 0); ctx.quadraticCurveTo(-L * 0.6, Math.sin(v.ph * 2) * L * 0.05, -L * 0.95, Math.sin(v.ph * 2 + 1) * L * 0.08); ctx.stroke();
     ctx.fillStyle = skin;
@@ -7674,7 +7819,7 @@
   const TRIG_WEDGE = "M 6 -8 C 2 6 -8 20 -14 32 L 2 32 C 6 20 12 8 16 -4 Z";
   function drawTrigger(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const dark = sh("#1e1e22");
     ctx.save(); ctx.translate(-36, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(TRIG_TAIL), dark); ctx.restore();
     const wave = Math.sin(f.ph * 3) * 0.06;
@@ -7706,7 +7851,7 @@
   const WRASSE_TAIL = "M 2 0 C -4 -6 -10 -12 -18 -16 C -14 -6 -14 6 -18 16 C -10 12 -4 6 2 0 Z";
   function drawWrasse(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.3); fillWith(P(WRASSE_TAIL), sh("#f2c840")); ctx.restore();
     fillWith(P(WRASSE_FIN), sh("#e8609a"));
     ctx.save(); ctx.scale(1, -1); fillWith(P(WRASSE_FIN), sh("#e8609a")); ctx.restore();
@@ -7731,7 +7876,7 @@
   const TANG_TAIL = "M 2 0 L -14 -14 C -10 -6 -9 6 -14 14 Z";
   function drawSurgeon(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f5fe0"), black = sh("#0e1430");
     ctx.save(); ctx.translate(-38, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.3); fillWith(P(TANG_TAIL), sh("#f2d030")); ctx.restore();
     for (const fin of [TANG_DORSAL, TANG_ANAL]) { fillWith(P(fin), blue); ctx.strokeStyle = black; ctx.lineWidth = 1.6; ctx.stroke(P(fin)); }
@@ -7751,7 +7896,7 @@
   const MAND_FAN = "M 0 0 C 6 -6 16 -4 16 4 C 16 12 6 14 0 6 Z";
   function drawMandarin(f) {
     const s = f.s, fan = Math.sin(f.ph * 4);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f6fe0"), orange = sh("#f08a30");
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(MAND_TAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_TAIL)); ctx.restore();
     ctx.save(); ctx.translate(4, -21); ctx.scale(1, 0.8 + 0.2 * Math.sin(f.ph * 1.5)); ctx.translate(-4, 21); fillWith(P(MAND_SAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_SAIL)); ctx.restore();
@@ -7770,7 +7915,7 @@
   }
   function drawNeedle(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1); ctx.rotate(Math.sin(f.ph) * 0.03);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1); ctx.rotate(Math.sin(f.ph) * 0.03);
     ctx.fillStyle = sh("#c8d8e0");
     ctx.beginPath(); ctx.moveTo(-s * 0.5, -s * 0.06); ctx.lineTo(-s * 0.62, -s * 0.12); ctx.lineTo(-s * 0.6, 0); ctx.lineTo(-s * 0.62, s * 0.12); ctx.lineTo(-s * 0.5, s * 0.06); ctx.fill();
     ctx.beginPath(); ctx.ellipse(0, 0, s * 0.52, s * 0.055, 0, 0, TAU); ctx.fill();
@@ -7783,7 +7928,7 @@
   // A yellow-bellied sea snake: black on top, yellow underneath, with a flat paddle tail.
   function drawSeaSnake(f) {
     const s = f.s, pts = snakePoints(s, f.ph);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     for (const [col, off, w] of [[sh("#f2c830"), s * 0.02, 0.08], [sh("#1a1a1a"), -s * 0.012, 0.06]]) {
       ctx.strokeStyle = col; ctx.lineWidth = s * w;
@@ -7800,7 +7945,7 @@
   // A sea krait: blue with black rings and a yellow snout.
   function drawKrait(f) {
     const s = f.s, pts = snakePoints(s, f.ph + 1);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     ctx.strokeStyle = sh("#6a9ad8"); ctx.lineWidth = s * 0.075;
     ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
@@ -7821,7 +7966,7 @@
   function drawElectricRay(f) {
     const s = f.s;
     sandShadow(f, s * 0.4);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100 * 0.55);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * 0.55);
     const body = sh("#8a5a3a"), dark = sh("#5e3a24");
     ctx.save(); ctx.rotate(Math.sin(f.ph * 2) * 0.04);
     fillWith(P(TORP_TAIL), body); fillWith(P(TORP_CAUDAL), body); fillWith(P(TORP_PELVIC), body);
@@ -7852,7 +7997,7 @@
   function drawGuitar(f) {
     const s = f.s;
     sandShadow(f, s * 0.5);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 110, s / 110 * 0.55);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 110, s / 110 * 0.55);
     const sand = sh("#c8a878"), dark = sh("#8a6a48");
     ctx.save(); ctx.translate(-30, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.1); ctx.translate(30, 0);
     ctx.save(); ctx.translate(-60, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.2); fillWith(P(GUIT_TAIL), sand); ctx.restore();
@@ -7876,7 +8021,7 @@
   const IGU_LEG = "M 0 0 C 3 3 3 7 0 9 L -4 10 L -1 11 L 3 10.5 L 4 8.5 C 6 6 5 2 3 -1 Z";
   function drawIguana(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const skin = sh("#3a4040"), dark = sh("#262c2c"), crest = sh("#6a7068");
     const swim = f.ph * 3;
     ctx.fillStyle = dark;
@@ -7906,7 +8051,7 @@
   // ---- animals on the floor ------------------------------------------------------
   function drawScorpion(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     const body = sh("#b84a3a"), mottle = sh("#7a2a20"), pale = sh("#e8b8a0");
     // fan-shaped pectoral fin
     ctx.fillStyle = "rgba(200,110,90,0.75)";
@@ -7927,7 +8072,7 @@
   // A stonefish looks exactly like an overgrown rock, until it opens its eyes.
   function drawStonefish(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = sh("#7a7060");
     ctx.beginPath(); ctx.moveTo(-s * 0.5, 0);
     for (let i = 0; i <= 10; i++) { const a = Math.PI + i * Math.PI / 10; ctx.lineTo(Math.cos(a) * s * 0.5, Math.sin(a) * s * (0.36 + ((i * 7) % 3) * 0.04)); }
@@ -7972,7 +8117,7 @@
   }
   function drawGoby(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(faceOf(f) * s / 100, s / 100);
     drawGobyShape(sh("#d8c8a0"), sh("#9a7a4a"), sh("#8a6a3a"), f.ph);
     ctx.restore();
   }
@@ -8005,7 +8150,7 @@
 
   function drawCucumber(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = sh("#6a4030");
     ctx.beginPath(); ctx.ellipse(0, -s * 0.15, s * 0.5, s * 0.16, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#8a5a40"); for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.arc(s * (-0.38 + i * 0.095), -s * (0.25 + (i % 2) * 0.03), s * 0.03, 0, TAU); ctx.fill(); }
@@ -8041,7 +8186,7 @@
   const ALB_LONGWING = "M 0 0 C 20 -7 50 -11 86 -7 C 50 -2 20 2 0 5 Z";
   function drawAlbatross(f) {
     const s = f.s, spread = Math.max(0, Math.sin(f.ph * 0.12) - 0.85) / 0.15;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const white = sh("#f6f6f2"), wing = sh("#3a3a42");
     if (spread > 0) { ctx.save(); ctx.translate(10, -18); ctx.rotate(Math.PI + 0.3 + spread * 0.5); ctx.scale(1, -1); fillWith(P(ALB_LONGWING), sh("#2a2a30")); ctx.restore(); }
     fillWith(P(ALB_BODY), white);
@@ -8067,7 +8212,7 @@
   const PEL_WING = "M 22 -20 C 0 -27 -30 -21 -52 -10 C -38 -7 -10 -9 22 -14 Z";
   function drawPelican(f) {
     const s = f.s, dip = Math.max(0, Math.sin(f.ph * 0.2) - 0.9) / 0.1;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const white = sh("#f4f0e4");
     fillWith(P(PEL_BODY), white);
     fillWith(P(PEL_WING), sh("#c8c4b8"));
@@ -8091,7 +8236,7 @@
   const WALRUS_TAIL = "M 0 0 C -10 -10 -20 -12 -24 -8 C -20 -2 -20 4 -24 10 C -18 14 -8 10 0 4 Z";
   function drawWalrus(f) {
     const s = f.s, swing = Math.sin(f.ph * 2);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const skin = sh("#b4806a"), dark = sh("#8a5a48"), pad = sh("#d4a48c");
     ctx.save(); ctx.translate(20, 22); ctx.rotate(-0.3 - swing * 0.35); fillUnder(P(WALRUS_FLIP), dark); ctx.restore();
     ctx.save(); ctx.translate(-66, 14); ctx.rotate(swing * 0.25); fillUnder(P(WALRUS_TAIL), dark); ctx.restore();
@@ -8118,7 +8263,7 @@
   const BEAR_LEG = "M -7 -4 C -8 8 -7 18 -6 25 C -5 31 7 31 8 25 C 8 17 7 7 6 -4 Z";
   function drawPolarBear(f) {
     const s = f.s, sw = Math.sin(f.ph * 2);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const fur = sh("#f4f0e2"), shade = sh("#d6cfba");
     // the far legs paddle behind, the near legs in front of the body
     ctx.save(); ctx.translate(20, 18); ctx.rotate(-0.6 - sw * 0.5); fillUnder(P(BEAR_LEG), shade); ctx.restore();
@@ -8140,7 +8285,7 @@
   // A cormorant floats, then dives after fish and comes back up.
   function drawCormorant(f) {
     const s = f.s, under = f.under || 0;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     const black = sh("#1e2226"), sheen = sh("#2e4a3a");
     if (under < 0.15) {
       ctx.fillStyle = black;
@@ -8428,7 +8573,9 @@
       return;
     }
     if (F.kind === "surface" || F.kind === "dive") {
-      f.x += f.dir * F.speed * u * k;
+      // paddles gently: speeds up and slows down instead of jumping to full speed
+      f.vx = (f.vx || 0) + (f.dir * F.speed * u - (f.vx || 0)) * Math.min(1, 0.03 * k);
+      f.x += f.vx * k;
       if (f.x < edge) f.dir = 1;
       if (f.x > W - edge) f.dir = -1;
       if (F.kind === "dive") {
@@ -8443,8 +8590,11 @@
     // swimmers and gliders wander between spots
     if (Math.abs(f.tx - f.x) < 12 * u) f.tx = Math.max(edge, Math.min(W - edge, f.x + (Math.random() - 0.5) * 380 * u));
     const dx = f.tx - f.x;
-    f.x += Math.sign(dx) * F.speed * u * k;
-    if (Math.abs(dx) > 6 * u) f.dir = Math.sign(dx);
+    // swim towards the next spot: pick up speed, and slow down when nearly there
+    const want = Math.sign(dx) * F.speed * u * Math.min(1, Math.abs(dx) / (50 * u) + 0.25);
+    f.vx = (f.vx || 0) + (want - (f.vx || 0)) * Math.min(1, 0.04 * k);
+    f.x += f.vx * k;
+    if (Math.abs(f.vx) > F.speed * u * 0.15) f.dir = Math.sign(f.vx);
     if (F.kind === "glide") f.cy = sandY(f.x) - f.lift + Math.sin(f.ph * 0.4) * 4 * u;
     else {
       let y = H * f.band + Math.sin(f.ph * 0.35) * 10 * u;
@@ -8547,6 +8697,7 @@
     if (frameNo % 30 === 0) updateClock();
     const speed = (reduceMotion ? 0.5 : 1) * (restMode ? 0.55 : 1);
     const k = (dtMs / 16.667) * speed;
+    frameK = k;
     const dtSec = (dtMs / 1000) * speed;
     t += dtSec;
     const S = scene;
@@ -8753,6 +8904,9 @@
       return;
     }
     const focusTag = document.activeElement && document.activeElement.tagName;
+    if (!panelEl.hidden && panelTab === "log" && !detailOpen && (e.key === "ArrowLeft" || e.key === "ArrowRight") && focusTag !== "INPUT") {
+      e.preventDefault(); turnBook(e.key === "ArrowRight" ? 1 : -1); return;
+    }
     if (e.key in keys && focusTag !== "INPUT") {
       e.preventDefault();
       keys[e.key] = 1;
@@ -8966,7 +9120,7 @@
   bookBtn.addEventListener("click", () => {
     if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
-    logFilter = "all";
+    logFilter = "all"; bookFilter = "all"; bookAt = 0; // the book opens at the first page
     openPanel("log", bookBtn);
     panelBody.scrollTop = 0; // new finds are at the top
   });
@@ -9003,81 +9157,12 @@
   function renderPanel() {
     panelTitle.textContent = panelTab === "set" ? L("Maken en delen", "Create and share") : L("Logboek", "Logbook");
     detailOpen = false;
-    if (panelTab === "set") { renderMake(); return; }
+    if (panelTab === "set") { panelEl.classList.remove("book"); renderMake(); return; }
     bookDot.hidden = true;
-    const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
-    const got = all.filter(k => logbook.has(k)).length;
-    const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    // A card is always the animal itself. Its shiny shows as a golden sparkle on the card;
-    // in shiny mode (the Shiny filter, or a new shiny) the card shows the shiny picture instead.
-    // An animal whose Shiny tab you picked shows its shiny here too.
-    const card = (k, isNew, forceShiny) => {
-      const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
-      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-      return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
-    };
-    const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
-    let html = "";
-    if (news.length && logFilter !== "album") {
-      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => k.startsWith("shiny:") ? card(k.slice(6), true, true) : card(k, true)).join("") + `</div>`;
-    }
-    html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
-    html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
-    html += `<p class="sum small">${L(`Je kunt nu elke ${durationText(lockSeconds())} een nieuwe oceaan kiezen. Elke mijlpaal van vondsten maakt dat korter.`, `You can now pick a new ocean every ${durationText(lockSeconds())}. Every milestone of finds makes that shorter.`)}</p>`;
-    html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
-    html += `<div class="badges">` + MILESTONES.map(m => {
-      const [have, need] = m.prog(), done = have >= need;
-      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
-      return `<span class="badge ${done ? "on" : ""}" title="${tip}">${L(m.name[0], m.name[1])} · ${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}${m.reward ? ` <i class="gift" aria-label="${tip}">★</i>` : ""}</span>`;
-    }).join("") + `</div>`;
-    html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`;
-    const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
-    html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
-    if (logFilter === "album") html += albumHTML();
-    // the Shiny filter shows every animal that has a shiny, in its shiny colours; the shinies have no group of their own
-    const shinyMode = logFilter === "shiny";
-    const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k));
-    for (const [title, allKeys, subs] of logFilter === "album" ? [] : LOG_GROUPS) {
-      if (title === "Shiny" || !allKeys.some(show)) continue;
-      html += `<h3>${groupName(title)}</h3>`;
-      for (const [nl, en, keys] of subs) {
-        const vis = keys.filter(show);
-        if (!vis.length) continue;
-        html += `<h4 class="sub">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)).join("") + `</div>`;
-      }
-    }
-    html += `<h3>${L("Bewaren", "Keep")}</h3>
-      <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
-      <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>`;
-    html += `<h3>${L("Opnieuw beginnen", "Start over")}</h3>
-      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
-      <div class="row" id="resetConfirm" hidden>
-        <span class="sum">${L("Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.", "Everything you have seen will be cleared, shinies too. This cannot be undone.")}</span>
-        <button type="button" id="logResetYes" class="primary">${L("Ja, wis mijn logboek", "Yes, clear my logbook")}</button>
-        <button type="button" id="logResetNo">${L("Annuleren", "Cancel")}</button>
-      </div>`;
-    panelBody.innerHTML = html;
-    fillThumbs();
+    renderBook();
   }
 
   let logFilter = "all";
-
-  // Pictures are drawn a few at a time so the logbook opens straight away.
-  let thumbJob = 0;
-  function fillThumbs() {
-    const job = ++thumbJob;
-    const imgs = [...panelBody.querySelectorAll("img[data-thumb]")];
-    const step = () => {
-      if (job !== thumbJob) return;
-      for (let i = 0; i < 6 && imgs.length; i++) {
-        const img = imgs.shift();
-        img.src = thumbURL(img.dataset.thumb, img.dataset.seen === "1");
-      }
-      if (imgs.length) setTimeout(step, 0);
-    };
-    step();
-  }
 
   function resetLogbook() {
     logbook = new Map();
@@ -9440,24 +9525,21 @@
         <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
         <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny</button>
       </div>` : "";
-    // everything on one screen: the picture beside the text (above it on a phone), no scrolling
-    panelBody.innerHTML = `
-      <div class="detail">
-        <div class="dtop"><button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>${tabs}</div>
-        <div class="dmain">
-          <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
-          <div class="dinfo">
-            <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
-            <p class="fact">${fact}</p>
-            <dl>
-              ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
-                : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
-              ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
-              ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-            </dl>
-          </div>
-        </div>
-      </div>`;
+    // a page of the notebook: the photo taped in, the name in pencil, and the notes beside it
+    const group = (LOG_GROUPS.find(g => g[0] !== "Shiny" && g[1].includes(base)) || ["Dieren"])[0];
+    const photo = `<div class="nb-run">${groupName(group)}</div>${tabs}
+      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
+    renderBookDetail(photo, {
+      back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
+      body: `<h2 class="nb-title small">${nm(key)}</h2>
+        <p class="nb-fact">${fact}</p>
+        <dl class="nb-dl">
+          ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
+            : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
+          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
+          ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
+        </dl>`,
+    });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
     (tabBtn || document.getElementById("detailBack")).focus();
@@ -9751,6 +9833,7 @@
     if (!ph) return;
     logScroll = panelBody.scrollTop;
     detailOpen = true;
+    panelEl.classList.remove("book");
     const when = dateText(ph.d);
     panelBody.innerHTML = `
       <div class="detail album-view">
@@ -9810,6 +9893,275 @@
   }
 
 
+  // ---- the logbook as a researcher's field notebook ---------------------------------
+  // Pages of taped-in photos and pencil notes. On a wide screen two pages lie side by side, on a phone one,
+  // and you leaf through them with the arrows, the arrow keys or a swipe. Tabs jump to a part of the book.
+  let bookPages = [], bookGroups = [], bookJumps = {}, bookAt = 0, bookTurning = false, bookFilter = "all";
+  const bookSingle = () => panelEl.clientWidth < 760;
+  const BOOK_TABS = [["intro", "Overzicht", "Overview", "#e9dcb5"], ["Dieren", null, null, "#a9cfa6"], ["Momenten", null, null, "#e8bd86"],
+    ["Zeldzaam", null, null, "#cdb0dc"], ["Wateren", null, null, "#9cc6dc"], ["album", "Foto's", "Photos", "#e9aaa6"], ["keep", "Bewaren", "Keep", "#d4ccb6"]];
+  const tabLabel = t => t[1] ? L(t[1], t[2]) : groupName(t[0]);
+
+  // every photo sits a little crooked, always the same way for the same animal
+  function tiltOf(k) { let h = 7; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) | 0; return ((Math.abs(h) % 9) - 4) * 0.4; }
+
+  // A taped-in photo. An animal whose Shiny tab you picked shows its shiny here; the name stays the animal's own.
+  function bookCard(k, isNew, forceShiny) {
+    const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
+    const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
+    return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
+  }
+
+  // The content of the book as a list of blocks; the pages are filled from it by measuring what fits.
+  function bookBlocks() {
+    const blocks = [];
+    const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
+    const got = all.filter(k => logbook.has(k)).length;
+    const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
+    const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
+    const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"]];
+    let intro = `<h2 class="nb-title">${L("Veldnotities", "Field notes")}</h2>
+      <p class="nb-sub">${L("Logboek van een onderzoeker onder water", "Logbook of an underwater researcher")}</p>
+      <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
+      <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
+      <p class="nb-note">${L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
+      <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
+      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
+    if (news.length) {
+      const show = news.slice(0, 6);
+      intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
+      if (news.length > show.length) intro += `<p class="nb-note">${L(`…en nog ${news.length - show.length}, verderop in het boek.`, `…and ${news.length - show.length} more, further on in the book.`)}</p>`;
+    }
+    blocks.push({ html: intro, newPage: true, group: "intro", jump: "intro" });
+
+    const msItems = MILESTONES.map(m => {
+      const [have, need] = m.prog(), done = have >= need;
+      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
+      return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}</span><span class="how">${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}</span>${m.reward ? `<i class="gift" title="${tip}" aria-label="${tip}">★</i>` : ""}</li>`;
+    });
+    blocks.push({ head: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</span></h4><p class="nb-note">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`,
+      headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, newPage: true, group: "intro" });
+
+    // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
+    const shinyMode = logFilter === "shiny";
+    const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
+    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    // in the same order as the tabs: animals, moments, rare things, and then the waters
+    for (const title of ["Dieren", "Momenten", "Zeldzaam", "Wateren"]) {
+      const grp = LOG_GROUPS.find(g => g[0] === title);
+      if (!grp) continue;
+      const subs = grp[2];
+      let first = true;
+      for (const [nl, en, keys] of subs) {
+        const vis = keys.filter(show);
+        if (!vis.length) continue;
+        blocks.push({ head: `<h4 class="nb-fam">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4>`, headMore: `<h4 class="nb-fam">${L(nl, en)} <span>${L("vervolg", "continued")}</span></h4>`,
+          cards: vis.map(k => bookCard(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)), newPage: first, group: title, jump: first ? title : null });
+        first = false;
+      }
+    }
+    // photos and the back of the book
+    const photos = album.length
+      ? `<div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" style="--tilt:${tiltOf(ph.id)}deg" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`
+      : `<p class="nb-note">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
+    blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, newPage: true, group: "album", jump: "album" });
+    blocks.push({ html: `<h4 class="nb-fam">${L("Bewaren", "Keep")}</h4>
+      <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
+      <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>
+      <h4 class="nb-fam">${L("Opnieuw beginnen", "Start over")}</h4>
+      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
+      <div class="row" id="resetConfirm" hidden>
+        <span class="nb-note">${L("Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.", "Everything you have seen will be cleared, shinies too. This cannot be undone.")}</span>
+        <button type="button" id="logResetYes" class="primary">${L("Ja, wis mijn logboek", "Yes, clear my logbook")}</button>
+        <button type="button" id="logResetNo">${L("Annuleren", "Cancel")}</button>
+      </div>`, newPage: true, group: "keep", jump: "keep" });
+    return blocks;
+  }
+
+  // Fill the pages: a block goes on the current page if it fits, otherwise on a new one;
+  // a family too long for one page carries on overleaf.
+  function paginate(blocks, meter) {
+    const pages = [], groups = [], jumps = {};
+    let cur = "", curGroup = "intro";
+    const run = g => g === "intro" || g === "album" || g === "keep" ? "" : `<div class="nb-run">${groupName(g)}</div>`;
+    const fits = html => { meter.innerHTML = html; return meter.scrollHeight <= meter.clientHeight + 1; };
+    const flush = () => { if (cur) { pages.push(cur); groups.push(curGroup); } cur = ""; };
+    for (const b of blocks) {
+      if (b.newPage) flush();
+      if (b.jump && !(b.jump in jumps)) jumps[b.jump] = pages.length;
+      curGroup = b.group;
+      if (b.html !== undefined) {
+        // fixed pages: the overview, milestones, photos and the back of the book
+        cur = (cur || run(b.group)) + b.html;
+        continue;
+      }
+      const open = b.open || `<div class="cards">`, close = b.close || `</div>`;
+      const whole = b.head + open + b.cards.join("") + close;
+      if (fits((cur || run(b.group)) + whole)) { cur = (cur || run(b.group)) + whole; continue; }
+      if (cur) flush();
+      // card by card onto as many pages as it needs
+      let head = b.head, list = [];
+      for (const c of b.cards) {
+        if (list.length && !fits(run(b.group) + head + open + list.join("") + c + close)) {
+          cur = run(b.group) + head + open + list.join("") + close; flush();
+          head = b.headMore; list = [];
+        }
+        list.push(c);
+      }
+      cur = run(b.group) + head + open + list.join("") + close;
+    }
+    flush();
+    meter.innerHTML = "";
+    return { pages, groups, jumps };
+  }
+
+  function bookSkeleton(single, withNav) {
+    return `<div class="nb">
+      ${withNav ? `<nav class="nb-tabs" aria-label="${L("Delen van het logboek", "Parts of the logbook")}">` + BOOK_TABS.map(t => `<button type="button" class="nb-tab" data-jump="${t[0]}" style="--tab:${t[3]}">${tabLabel(t)}</button>`).join("") + `</nav>` : ""}
+      <div class="nb-spread${single ? " single" : ""}">
+        <section class="nb-page nb-left"></section>${single ? "" : `<section class="nb-page nb-right"></section>`}
+        <div class="nb-spine" aria-hidden="true"></div>
+        <section class="nb-page nb-meter" aria-hidden="true"></section>
+      </div>
+      ${withNav ? `<div class="nb-nav"><button type="button" class="nb-turn" data-turn="-1" aria-label="${L("Vorige bladzijde", "Previous page")}">‹ ${L("Vorige", "Previous")}</button><span class="nb-num" aria-live="polite"></span><button type="button" class="nb-turn" data-turn="1" aria-label="${L("Volgende bladzijde", "Next page")}">${L("Volgende", "Next")} ›</button></div>` : ""}
+    </div>`;
+  }
+
+  function renderBook() {
+    panelEl.classList.add("book");
+    const single = bookSingle();
+    panelBody.innerHTML = bookSkeleton(single, true);
+    const meter = panelBody.querySelector(".nb-meter");
+    const { pages, groups, jumps } = paginate(bookBlocks(), meter);
+    bookPages = pages; bookGroups = groups; bookJumps = jumps;
+    // choosing a filter leafs straight to the first page with animals
+    if (logFilter === "album") { bookAt = jumps.album; logFilter = bookFilter; }
+    else if (logFilter !== bookFilter) { bookFilter = logFilter; bookAt = jumps.Dieren !== undefined ? jumps.Dieren : 0; }
+    bookAt = Math.max(0, Math.min(bookPages.length - 1, bookAt));
+    if (!single) bookAt -= bookAt % 2;
+    for (const t of panelBody.querySelectorAll(".nb-tab")) t.disabled = !(t.dataset.jump in jumps);
+    showSpread();
+  }
+
+  const pageHTML = (i, side) => bookPages[i] !== undefined ? `${bookPages[i]}<div class="nb-pnum ${side}">${i + 1}</div>` : `<div class="nb-blank" aria-hidden="true"></div>`;
+  function fillIn(root) { for (const img of root.querySelectorAll("img[data-thumb]")) img.src = thumbURL(img.dataset.thumb, img.dataset.seen === "1"); }
+
+  function showSpread() {
+    const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
+    if (!left) return;
+    left.innerHTML = pageHTML(bookAt, "l"); fillIn(left);
+    if (right) { right.innerHTML = pageHTML(bookAt + 1, "r"); fillIn(right); }
+    updateBookNav();
+  }
+  function updateBookNav() {
+    const single = !panelBody.querySelector(".nb-right"), n = bookPages.length;
+    const num = panelBody.querySelector(".nb-num");
+    if (num) num.textContent = single || bookAt + 1 >= n ? `${bookAt + 1} / ${n}` : `${bookAt + 1}–${bookAt + 2} / ${n}`;
+    const [prev, next] = panelBody.querySelectorAll(".nb-turn");
+    if (prev) prev.disabled = bookAt <= 0;
+    if (next) next.disabled = bookAt + (single ? 1 : 2) >= n;
+    const g = bookGroups[bookAt], g2 = single ? g : bookGroups[bookAt + 1];
+    for (const t of panelBody.querySelectorAll(".nb-tab")) t.classList.toggle("on", t.dataset.jump === g || t.dataset.jump === g2 && g2 !== undefined && t.dataset.jump !== "intro");
+  }
+
+  // Leafing: a page lifts at its edge and turns over, showing the next page on its back.
+  function turnBook(delta) {
+    const single = !panelBody.querySelector(".nb-right");
+    bookGoTo(bookAt + delta * (single ? 1 : 2));
+  }
+  function bookGoTo(target) {
+    const single = !panelBody.querySelector(".nb-right");
+    target = Math.max(0, Math.min(bookPages.length - 1, target));
+    if (!single) target -= target % 2;
+    if (bookTurning || target === bookAt || detailOpen) return;
+    const spread = panelBody.querySelector(".nb-spread");
+    if (reduceMotion || !spread || !spread.animate) { bookAt = target; showSpread(); return; }
+    const fwd = target > bookAt, left = spread.querySelector(".nb-left"), right = spread.querySelector(".nb-right");
+    const leaf = document.createElement("div");
+    let frames, done;
+    if (single) {
+      leaf.className = "nb-leaf one";
+      if (fwd) {
+        leaf.innerHTML = `<div class="nb-face nb-page nb-left">${pageHTML(bookAt, "l")}</div><div class="nb-face back nb-page nb-left"></div>`;
+        left.innerHTML = pageHTML(target, "l"); fillIn(left);
+        frames = [{ transform: "rotateY(0deg)", opacity: 1 }, { transform: "rotateY(-110deg)", opacity: 1, offset: 0.6 }, { transform: "rotateY(-180deg)", opacity: 0 }];
+        done = () => {};
+      } else {
+        leaf.innerHTML = `<div class="nb-face nb-page nb-left">${pageHTML(target, "l")}</div><div class="nb-face back nb-page nb-left"></div>`;
+        frames = [{ transform: "rotateY(-180deg)", opacity: 0 }, { transform: "rotateY(-110deg)", opacity: 1, offset: 0.4 }, { transform: "rotateY(0deg)", opacity: 1 }];
+        done = () => { left.innerHTML = pageHTML(target, "l"); fillIn(left); };
+      }
+    } else if (fwd) {
+      leaf.className = "nb-leaf fwd";
+      leaf.innerHTML = `<div class="nb-face nb-page nb-right">${pageHTML(bookAt + 1, "r")}</div><div class="nb-face back nb-page nb-left">${pageHTML(target, "l")}</div>`;
+      right.innerHTML = pageHTML(target + 1, "r"); fillIn(right);
+      frames = [{ transform: "rotateY(0deg)" }, { transform: "rotateY(-180deg)" }];
+      done = () => { left.innerHTML = pageHTML(target, "l"); fillIn(left); };
+    } else {
+      leaf.className = "nb-leaf bwd";
+      leaf.innerHTML = `<div class="nb-face nb-page nb-left">${pageHTML(bookAt, "l")}</div><div class="nb-face back nb-page nb-right">${pageHTML(target + 1, "r")}</div>`;
+      left.innerHTML = pageHTML(target, "l"); fillIn(left);
+      frames = [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }];
+      done = () => { right.innerHTML = pageHTML(target + 1, "r"); fillIn(right); };
+    }
+    fillIn(leaf);
+    // a shadow sweeps over the turning page
+    const shade = document.createElement("div"); shade.className = "nb-shade";
+    leaf.append(shade);
+    spread.append(leaf);
+    bookTurning = true;
+    sfxPage();
+    const ease = "cubic-bezier(0.45, 0.05, 0.3, 1)";
+    shade.animate([{ opacity: 0 }, { opacity: 0.5, offset: 0.5 }, { opacity: 0 }], { duration: 620, easing: ease });
+    // finish when the page has turned, or after a moment anyway (a hidden tab pauses animations)
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (leaf.isConnected) { done(); leaf.remove(); }
+      bookAt = target; bookTurning = false; updateBookNav();
+    };
+    leaf.animate(frames, { duration: 620, easing: ease }).finished.catch(() => {}).finally(finish);
+    setTimeout(finish, 1200);
+    bookAt = target;
+    updateBookNav();
+  }
+  // a soft paper rustle
+  function sfxPage() {
+    try { tone({ type: "triangle", freqs: [[900, 0], [500, 0.25]], dur: 0.25, gain: 0.012, attack: 0.01, release: 0.2, verb: 0.2 }); } catch (e) {}
+  }
+
+  // The page of one animal: its photo taped in on the left, the notes on the right (one below the other on a phone).
+  function renderBookDetail(photoHTML, notesHTML) {
+    panelEl.classList.add("book");
+    const single = bookSingle();
+    panelBody.innerHTML = bookSkeleton(single, false);
+    const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
+    if (single) left.innerHTML = `<div class="nb-detail">${notesHTML.back}${photoHTML}${notesHTML.body}</div>`;
+    else { left.innerHTML = `<div class="nb-detail">${photoHTML}</div>`; right.innerHTML = `<div class="nb-detail">${notesHTML.back}${notesHTML.body}</div>`; }
+  }
+
+  // leafing with a swipe on a touch screen
+  let swipe = null;
+  panelBody.addEventListener("pointerdown", e => { if (panelTab === "log" && !detailOpen && e.target.closest(".nb-spread")) swipe = { x: e.clientX, y: e.clientY }; });
+  panelBody.addEventListener("pointerup", e => {
+    if (!swipe) return;
+    const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) > 50 && Math.abs(dy) < 70) turnBook(dx < 0 ? 1 : -1);
+  });
+  panelBody.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    if (b.dataset.turn) turnBook(Number(b.dataset.turn));
+    else if (b.dataset.jump && b.dataset.jump in bookJumps) bookGoTo(bookJumps[b.dataset.jump]);
+  });
+  // a different screen width can mean one page instead of two
+  let bookResize = null;
+  addEventListener("resize", () => {
+    clearTimeout(bookResize);
+    bookResize = setTimeout(() => { if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderBook(); }, 200);
+  });
   // ---- language ----------------------------------------------------------
   // Sets every fixed text on the page in the current language.
   function applyLang() {
@@ -9973,7 +10325,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=45").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=46").catch(() => {}));
   }
 </script>
 </body>

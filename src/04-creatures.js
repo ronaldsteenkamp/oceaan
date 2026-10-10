@@ -214,6 +214,24 @@
   }
 
   // ---- jellyfish ---------------------------------------------------------
+  const JELLY_BELL = (() => {
+    const p = new Path2D();
+    p.moveTo(-1, 0); p.bezierCurveTo(-1, -1.35, 1, -1.35, 1, 0);
+    for (let s = 4; s >= 0; s--) { const xa = -1 + (s / 4) * 2; p.quadraticCurveTo(xa + 0.25, 0.18, xa, 0); }
+    return p;
+  })();
+  const JELLY_GRADS = new WeakMap();
+  function jellyGradient(col) {
+    let m = JELLY_GRADS.get(ctx);
+    if (!m) { m = new Map(); JELLY_GRADS.set(ctx, m); }
+    let g = m.get(col);
+    if (!g) {
+      g = ctx.createRadialGradient(0, -0.5, 0, 0, -0.3, 1.1);
+      g.addColorStop(0, `rgba(${col},0.55)`); g.addColorStop(1, `rgba(${col},0.12)`);
+      m.set(col, g);
+    }
+    return g;
+  }
   function updateAndDrawJellies(k) {
     if (water.glow) ctx.globalCompositeOperation = "lighter";
     for (const j of scene.jellies) {
@@ -268,18 +286,11 @@
         ctx.stroke();
       }
       if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${j.col},0.8)`; }
-      const g = ctx.createRadialGradient(0, -bh * 0.5, 0, 0, -bh * 0.3, bw * 1.1);
-      g.addColorStop(0, `rgba(${j.col},0.55)`);
-      g.addColorStop(1, `rgba(${j.col},0.12)`);
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.moveTo(-bw, 0);
-      ctx.bezierCurveTo(-bw, -bh * 1.35, bw, -bh * 1.35, bw, 0);
-      for (let s = 4; s >= 0; s--) {
-        const xa = -bw + (s / 4) * 2 * bw;
-        ctx.quadraticCurveTo(xa + bw / 4, bh * 0.18, xa, 0);
-      }
-      ctx.fill();
+      // the bell is drawn at unit size and stretched, so its colour gradient can be made once and reused
+      ctx.save(); ctx.scale(bw, bh);
+      ctx.fillStyle = jellyGradient(j.col);
+      ctx.fill(JELLY_BELL);
+      ctx.restore();
       ctx.shadowBlur = 0;
       ctx.restore();
       if (recolor) endShiny(j.shiny, j);
@@ -473,7 +484,7 @@
     ctx.beginPath(); ctx.ellipse(r.x, gy, s * 0.8, s * 0.12, 0, 0, TAU); ctx.fill();
     ctx.save();
     ctx.translate(r.x, y);
-    ctx.scale(r.dir * s / 100, s / 100);
+    ctx.scale(faceOf(r) * s / 100, s / 100);
     const col = sh("#7c6a55"), spot = sh("#3e342a");
     ctx.fillStyle = col;
     ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(r.ph) * 0.06); ctx.scale(1, 1); ctx.fill(P(RAY_TAIL));
@@ -500,7 +511,7 @@
     const col = sh(h.color);
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(h.dir, 1);
+    ctx.scale(faceOf(h), 1);
     ctx.rotate(Math.sin(t * 0.8 + h.ph) * 0.06);
     const pts = [[0, -0.85], [0.18, -0.62], [0.27, -0.32], [0.2, 0], [0.02, 0.22], [-0.1, 0.42], [-0.02, 0.6], [0.14, 0.6], [0.16, 0.48], [0.07, 0.44]];
     const widths = [0.3, 0.34, 0.36, 0.32, 0.24, 0.16, 0.11, 0.08, 0.06, 0.05];
@@ -585,7 +596,7 @@
     const s = a.s, y = a.y + Math.sin(a.ph) * 8 * u;
     ctx.save();
     ctx.translate(a.x, y);
-    ctx.scale(a.dir, 1);
+    ctx.scale(faceOf(a), 1);
     const body = "#1b1e26";
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.85, 0); ctx.rotate(Math.sin(t * 3) * 0.25);
@@ -725,7 +736,7 @@
     const L = v.size;
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
+    ctx.scale(faceOf(v) * L / 100, L / 100);
     ctx.rotate(Math.sin(v.ph * 0.5) * 0.05 - 0.04);
     const skin = sh("#7d8a6a"), skinDark = sh("#5d6a4c"), shell = sh("#6a5434"), line = sh("#3b301f");
     const stroke = Math.sin(v.ph);
@@ -756,7 +767,7 @@
     const flap = 0.82 + 0.18 * Math.sin(v.ph * 2);
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.fillStyle = "rgba(18,26,34,0.88)";
     ctx.beginPath();
     ctx.moveTo(L * 0.3, -L * 0.07);
@@ -790,7 +801,7 @@
     const body = sh("#56646f"), belly = sh("#b9c3c7");
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir, 1);
+    ctx.scale(faceOf(v), 1);
     ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = body;
     ctx.save();

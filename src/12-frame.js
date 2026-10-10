@@ -56,6 +56,7 @@
     if (frameNo % 30 === 0) updateClock();
     const speed = (reduceMotion ? 0.5 : 1) * (restMode ? 0.55 : 1);
     const k = (dtMs / 16.667) * speed;
+    frameK = k;
     const dtSec = (dtMs / 1000) * speed;
     t += dtSec;
     const S = scene;

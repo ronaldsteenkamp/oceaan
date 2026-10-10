@@ -132,7 +132,7 @@
     const wood = sh("#5d4129"), dark = sh("#2c1e14"), light = sh("#7a5a3a"), sail = sh("#cfc2a2", 0.1);
     ctx.save();
     ctx.translate(g.x, y0);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     ctx.lineCap = "round";
 
@@ -436,7 +436,7 @@
     const iron = sh("#2c2c31"), hi = sh("#4a4a52");
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(g.dir, 1);
+    ctx.scale(faceOf(g), 1);
     ctx.rotate(g.tilt);
     ctx.fillStyle = iron;
     ctx.beginPath();

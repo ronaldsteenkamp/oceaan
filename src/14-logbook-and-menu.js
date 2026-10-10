@@ -326,24 +326,21 @@
         <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
         <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny</button>
       </div>` : "";
-    // everything on one screen: the picture beside the text (above it on a phone), no scrolling
-    panelBody.innerHTML = `
-      <div class="detail">
-        <div class="dtop"><button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>${tabs}</div>
-        <div class="dmain">
-          <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
-          <div class="dinfo">
-            <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
-            <p class="fact">${fact}</p>
-            <dl>
-              ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
-                : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
-              ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
-              ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-            </dl>
-          </div>
-        </div>
-      </div>`;
+    // a page of the notebook: the photo taped in, the name in pencil, and the notes beside it
+    const group = (LOG_GROUPS.find(g => g[0] !== "Shiny" && g[1].includes(base)) || ["Dieren"])[0];
+    const photo = `<div class="nb-run">${groupName(group)}</div>${tabs}
+      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
+    renderBookDetail(photo, {
+      back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
+      body: `<h2 class="nb-title small">${nm(key)}</h2>
+        <p class="nb-fact">${fact}</p>
+        <dl class="nb-dl">
+          ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
+            : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
+          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
+          ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
+        </dl>`,
+    });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
     (tabBtn || document.getElementById("detailBack")).focus();
@@ -637,6 +634,7 @@
     if (!ph) return;
     logScroll = panelBody.scrollTop;
     detailOpen = true;
+    panelEl.classList.remove("book");
     const when = dateText(ph.d);
     panelBody.innerHTML = `
       <div class="detail album-view">

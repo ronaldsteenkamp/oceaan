@@ -154,7 +154,7 @@
   function drawCar(g) {
     const s = g.s, y0 = sandY(g.x) + s * 0.12;
     const paint = sh(g.color), dark = sh("#1a2228"), rust = sh("#7a4a2a"), glass = sh("#2a4a58", 0.1);
-    ctx.save(); ctx.translate(g.x, y0); ctx.scale(g.dir, 1); ctx.rotate(g.tilt);
+    ctx.save(); ctx.translate(g.x, y0); ctx.scale(faceOf(g), 1); ctx.rotate(g.tilt);
     // a round old car, half sunk in the sand
     ctx.fillStyle = paint;
     ctx.beginPath();
@@ -319,7 +319,7 @@
     if (Math.abs(dx) > 5 * u) f.dir = Math.sign(dx);
     const y = f.y + Math.sin(f.ph * 0.4) * 6 * u, s = f.s;
     f.cy = y;
-    ctx.save(); ctx.translate(f.x, y); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, y); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = "rgba(220,150,120,0.35)";
     ctx.beginPath(); ctx.moveTo(s * 0.05, s * 0.05);
     for (let i = 0; i <= 8; i++) { const a = 2.2 + i * 0.16; ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.75, s * 0.05 + Math.sin(a) * s * 0.75); }
@@ -358,7 +358,7 @@
     if (!back && Math.abs(dx) > 5 * u) c.dir = Math.sign(dx); // it backs away without turning round
     const y = c.y + Math.sin(c.ph * 0.3) * 8 * u, s = c.s;
     c.cy = y;
-    ctx.save(); ctx.translate(c.x, y); ctx.scale(c.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(c.x, y); ctx.scale(faceOf(c) * s / 100, s / 100);
     const pale = c.flash > 0.3, skin = sh(pale ? "#ece6dc" : "#a07850"), fin = sh("#c8a888");
     // the thin fin around the mantle ripples in a wave
     ctx.fillStyle = fin; ctx.beginPath();
@@ -401,7 +401,7 @@
     if (l.x < scene.floorL + 30 * u) l.dir = 1;
     if (l.x > scene.floorR - 30 * u) l.dir = -1;
     const s = l.s, body = sh("#2f4a78"), dark = sh("#1c2c4a"), light = sh("#5a78a8");
-    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(l.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(faceOf(l) * s / 100, s / 100);
     // walking legs
     ctx.strokeStyle = dark; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";
     for (let i = 0; i < 4; i++) { const x0 = 18 - i * 9, sw = Math.sin(l.leg + i) * 4; ctx.beginPath(); ctx.moveTo(x0, -12); ctx.lineTo(x0 + sw + 5, -5); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
@@ -461,7 +461,7 @@
     if (o.x < scene.floorL + 20 * u) o.dir = 1;
     if (o.x > scene.floorR - 20 * u) o.dir = -1;
     const s = o.s;
-    ctx.save(); ctx.translate(o.x, sandY(o.x) + 4 * u); ctx.scale(o.dir, 1);
+    ctx.save(); ctx.translate(o.x, sandY(o.x) + 4 * u); ctx.scale(faceOf(o), 1);
     ctx.strokeStyle = sh("#8a7a8a"); ctx.lineWidth = Math.max(0.7, s * 0.03);
     for (let i = 0; i < 7; i++) { const x0 = -s * 0.4 + i * s * 0.12, sw = Math.sin(o.leg + i * 0.9) * s * 0.04; ctx.beginPath(); ctx.moveTo(x0, -s * 0.06); ctx.lineTo(x0 + sw, 0); ctx.stroke(); }
     ctx.fillStyle = sh("#a898a8"); ctx.beginPath(); ctx.moveTo(-s * 0.45, -s * 0.08); ctx.lineTo(-s * 0.62, -s * 0.16); ctx.lineTo(-s * 0.62, 0); ctx.closePath(); ctx.fill();
@@ -484,7 +484,7 @@
     if (d.x > W - 40 * u) d.dir = -1;
     const y = d.y + Math.sin(d.ph * 0.6) * 10 * u, s = d.s, body = sh("#d8a040"), leaf = sh("#9aa040");
     d.cy = y;
-    ctx.save(); ctx.translate(d.x, y); ctx.scale(d.dir, 1); ctx.rotate(Math.sin(d.ph * 0.5) * 0.06);
+    ctx.save(); ctx.translate(d.x, y); ctx.scale(faceOf(d), 1); ctx.rotate(Math.sin(d.ph * 0.5) * 0.06);
     const pts = [];
     for (let i = 0; i <= 12; i++) { const f = i / 12; pts.push([s * (0.5 - f), Math.sin(f * 3 + 0.4) * s * 0.12 + f * f * s * 0.15]); }
     ctx.fillStyle = leaf;
@@ -521,7 +521,7 @@
   // ---- visitors -----------------------------------------------------------
   function drawManatee(v) {
     const L = v.size, skin = sh("#8a8a80"), dark = sh("#5a5a52");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.03);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.42, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.25);
     ctx.beginPath(); ctx.ellipse(-L * 0.1, 0, L * 0.14, L * 0.1, 0, 0, TAU); ctx.fill(); ctx.restore();
@@ -549,7 +549,7 @@
   const ORCA_FLUKE = "M 2 0 C -4 -3 -9 -7 -14 -10 C -12 -4 -11 -1 -11 0 C -11 1 -12 4 -14 10 C -9 7 -4 3 2 0 Z";
   function drawOrca(v) {
     const L = v.size, black = sh("#14181c"), white = sh("#f0f0ea");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir * L / 100, L / 100); ctx.rotate(Math.sin(v.ph) * 0.03);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.sin(v.ph) * 0.03);
     ctx.fillStyle = black;
     ctx.save(); ctx.translate(-47, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.2); ctx.fill(P(ORCA_FLUKE)); ctx.restore();
     ctx.fill(P(ORCA_FIN));
@@ -565,7 +565,7 @@
 
   function drawHammerhead(v) {
     const L = v.size, skin = sh("#7a8a94"), belly = sh("#d8dde0"), dark = sh("#4a5862");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.38, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-L * 0.12, -L * 0.17); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.13, L * 0.07); ctx.closePath(); ctx.fill();
@@ -592,7 +592,7 @@
 
   function drawSunfish(v) {
     const L = v.size, skin = sh("#9aa4ae"), dark = sh("#6a747e"), light = sh("#c8d0d6"), flap = Math.sin(v.ph * 2.5) * 0.35;
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.06);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.06);
     ctx.fillStyle = dark;
     // tall fins above and below beat from side to side
     ctx.save(); ctx.translate(-L * 0.12, -L * 0.3); ctx.rotate(-0.25 + flap); ctx.beginPath(); ctx.moveTo(-L * 0.08, 0); ctx.quadraticCurveTo(0, -L * 0.45, L * 0.08, 0); ctx.fill(); ctx.restore();
@@ -611,7 +611,7 @@
 
   function drawBeluga(v) {
     const L = v.size, skin = sh("#eef2f2"), shade = sh("#c8d2d6");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(v.dir, 1); ctx.rotate(Math.sin(v.ph) * 0.04);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.04);
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(-L * 0.44, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.22);
     ctx.beginPath(); ctx.moveTo(L * 0.04, 0); ctx.quadraticCurveTo(-L * 0.05, -L * 0.03, -L * 0.12, -L * 0.09); ctx.quadraticCurveTo(-L * 0.07, 0, -L * 0.12, L * 0.09); ctx.quadraticCurveTo(-L * 0.05, L * 0.03, L * 0.04, 0); ctx.fill();
@@ -904,7 +904,7 @@
     ctx.save();
     ctx.globalAlpha = 0.5;
     ctx.translate(M.x, M.y + Math.sin(M.ph * 0.5) * 10 * u);
-    ctx.scale(M.dir, 1);
+    ctx.scale(faceOf(M), 1);
     ctx.rotate(Math.sin(M.ph) * 0.03);
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();

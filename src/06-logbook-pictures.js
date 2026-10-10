@@ -288,7 +288,7 @@
     ctx.save();
     ctx.globalAlpha = 0.1 + 0.04 * Math.sin(t * 1.3) + 0.14 * night;
     ctx.translate(gs.x, gs.y + Math.sin(t * 0.4) * 10 * u);
-    ctx.scale(gs.dir, 1);
+    ctx.scale(faceOf(gs), 1);
     ctx.rotate(Math.sin(t * 0.3) * 0.03);
     ctx.drawImage(gs.img, -w / 2, -gs.img.height * 0.72);
     ctx.restore();

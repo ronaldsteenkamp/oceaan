@@ -55,7 +55,7 @@
   const TRIG_WEDGE = "M 6 -8 C 2 6 -8 20 -14 32 L 2 32 C 6 20 12 8 16 -4 Z";
   function drawTrigger(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const dark = sh("#1e1e22");
     ctx.save(); ctx.translate(-36, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(TRIG_TAIL), dark); ctx.restore();
     const wave = Math.sin(f.ph * 3) * 0.06;
@@ -87,7 +87,7 @@
   const WRASSE_TAIL = "M 2 0 C -4 -6 -10 -12 -18 -16 C -14 -6 -14 6 -18 16 C -10 12 -4 6 2 0 Z";
   function drawWrasse(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.3); fillWith(P(WRASSE_TAIL), sh("#f2c840")); ctx.restore();
     fillWith(P(WRASSE_FIN), sh("#e8609a"));
     ctx.save(); ctx.scale(1, -1); fillWith(P(WRASSE_FIN), sh("#e8609a")); ctx.restore();
@@ -112,7 +112,7 @@
   const TANG_TAIL = "M 2 0 L -14 -14 C -10 -6 -9 6 -14 14 Z";
   function drawSurgeon(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f5fe0"), black = sh("#0e1430");
     ctx.save(); ctx.translate(-38, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.3); fillWith(P(TANG_TAIL), sh("#f2d030")); ctx.restore();
     for (const fin of [TANG_DORSAL, TANG_ANAL]) { fillWith(P(fin), blue); ctx.strokeStyle = black; ctx.lineWidth = 1.6; ctx.stroke(P(fin)); }
@@ -132,7 +132,7 @@
   const MAND_FAN = "M 0 0 C 6 -6 16 -4 16 4 C 16 12 6 14 0 6 Z";
   function drawMandarin(f) {
     const s = f.s, fan = Math.sin(f.ph * 4);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f6fe0"), orange = sh("#f08a30");
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(MAND_TAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_TAIL)); ctx.restore();
     ctx.save(); ctx.translate(4, -21); ctx.scale(1, 0.8 + 0.2 * Math.sin(f.ph * 1.5)); ctx.translate(-4, 21); fillWith(P(MAND_SAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_SAIL)); ctx.restore();
@@ -151,7 +151,7 @@
   }
   function drawNeedle(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1); ctx.rotate(Math.sin(f.ph) * 0.03);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1); ctx.rotate(Math.sin(f.ph) * 0.03);
     ctx.fillStyle = sh("#c8d8e0");
     ctx.beginPath(); ctx.moveTo(-s * 0.5, -s * 0.06); ctx.lineTo(-s * 0.62, -s * 0.12); ctx.lineTo(-s * 0.6, 0); ctx.lineTo(-s * 0.62, s * 0.12); ctx.lineTo(-s * 0.5, s * 0.06); ctx.fill();
     ctx.beginPath(); ctx.ellipse(0, 0, s * 0.52, s * 0.055, 0, 0, TAU); ctx.fill();
@@ -164,7 +164,7 @@
   // A yellow-bellied sea snake: black on top, yellow underneath, with a flat paddle tail.
   function drawSeaSnake(f) {
     const s = f.s, pts = snakePoints(s, f.ph);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     for (const [col, off, w] of [[sh("#f2c830"), s * 0.02, 0.08], [sh("#1a1a1a"), -s * 0.012, 0.06]]) {
       ctx.strokeStyle = col; ctx.lineWidth = s * w;
@@ -181,7 +181,7 @@
   // A sea krait: blue with black rings and a yellow snout.
   function drawKrait(f) {
     const s = f.s, pts = snakePoints(s, f.ph + 1);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
     ctx.strokeStyle = sh("#6a9ad8"); ctx.lineWidth = s * 0.075;
     ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
@@ -202,7 +202,7 @@
   function drawElectricRay(f) {
     const s = f.s;
     sandShadow(f, s * 0.4);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100 * 0.55);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * 0.55);
     const body = sh("#8a5a3a"), dark = sh("#5e3a24");
     ctx.save(); ctx.rotate(Math.sin(f.ph * 2) * 0.04);
     fillWith(P(TORP_TAIL), body); fillWith(P(TORP_CAUDAL), body); fillWith(P(TORP_PELVIC), body);
@@ -233,7 +233,7 @@
   function drawGuitar(f) {
     const s = f.s;
     sandShadow(f, s * 0.5);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 110, s / 110 * 0.55);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 110, s / 110 * 0.55);
     const sand = sh("#c8a878"), dark = sh("#8a6a48");
     ctx.save(); ctx.translate(-30, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.1); ctx.translate(30, 0);
     ctx.save(); ctx.translate(-60, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.2); fillWith(P(GUIT_TAIL), sand); ctx.restore();
@@ -257,7 +257,7 @@
   const IGU_LEG = "M 0 0 C 3 3 3 7 0 9 L -4 10 L -1 11 L 3 10.5 L 4 8.5 C 6 6 5 2 3 -1 Z";
   function drawIguana(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const skin = sh("#3a4040"), dark = sh("#262c2c"), crest = sh("#6a7068");
     const swim = f.ph * 3;
     ctx.fillStyle = dark;
@@ -287,7 +287,7 @@
   // ---- animals on the floor ------------------------------------------------------
   function drawScorpion(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     const body = sh("#b84a3a"), mottle = sh("#7a2a20"), pale = sh("#e8b8a0");
     // fan-shaped pectoral fin
     ctx.fillStyle = "rgba(200,110,90,0.75)";
@@ -308,7 +308,7 @@
   // A stonefish looks exactly like an overgrown rock, until it opens its eyes.
   function drawStonefish(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = sh("#7a7060");
     ctx.beginPath(); ctx.moveTo(-s * 0.5, 0);
     for (let i = 0; i <= 10; i++) { const a = Math.PI + i * Math.PI / 10; ctx.lineTo(Math.cos(a) * s * 0.5, Math.sin(a) * s * (0.36 + ((i * 7) % 3) * 0.04)); }
@@ -353,7 +353,7 @@
   }
   function drawGoby(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(faceOf(f) * s / 100, s / 100);
     drawGobyShape(sh("#d8c8a0"), sh("#9a7a4a"), sh("#8a6a3a"), f.ph);
     ctx.restore();
   }
@@ -386,7 +386,7 @@
 
   function drawCucumber(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = sh("#6a4030");
     ctx.beginPath(); ctx.ellipse(0, -s * 0.15, s * 0.5, s * 0.16, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#8a5a40"); for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.arc(s * (-0.38 + i * 0.095), -s * (0.25 + (i % 2) * 0.03), s * 0.03, 0, TAU); ctx.fill(); }
@@ -422,7 +422,7 @@
   const ALB_LONGWING = "M 0 0 C 20 -7 50 -11 86 -7 C 50 -2 20 2 0 5 Z";
   function drawAlbatross(f) {
     const s = f.s, spread = Math.max(0, Math.sin(f.ph * 0.12) - 0.85) / 0.15;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const white = sh("#f6f6f2"), wing = sh("#3a3a42");
     if (spread > 0) { ctx.save(); ctx.translate(10, -18); ctx.rotate(Math.PI + 0.3 + spread * 0.5); ctx.scale(1, -1); fillWith(P(ALB_LONGWING), sh("#2a2a30")); ctx.restore(); }
     fillWith(P(ALB_BODY), white);
@@ -448,7 +448,7 @@
   const PEL_WING = "M 22 -20 C 0 -27 -30 -21 -52 -10 C -38 -7 -10 -9 22 -14 Z";
   function drawPelican(f) {
     const s = f.s, dip = Math.max(0, Math.sin(f.ph * 0.2) - 0.9) / 0.1;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const white = sh("#f4f0e4");
     fillWith(P(PEL_BODY), white);
     fillWith(P(PEL_WING), sh("#c8c4b8"));
@@ -472,7 +472,7 @@
   const WALRUS_TAIL = "M 0 0 C -10 -10 -20 -12 -24 -8 C -20 -2 -20 4 -24 10 C -18 14 -8 10 0 4 Z";
   function drawWalrus(f) {
     const s = f.s, swing = Math.sin(f.ph * 2);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const skin = sh("#b4806a"), dark = sh("#8a5a48"), pad = sh("#d4a48c");
     ctx.save(); ctx.translate(20, 22); ctx.rotate(-0.3 - swing * 0.35); fillUnder(P(WALRUS_FLIP), dark); ctx.restore();
     ctx.save(); ctx.translate(-66, 14); ctx.rotate(swing * 0.25); fillUnder(P(WALRUS_TAIL), dark); ctx.restore();
@@ -499,7 +499,7 @@
   const BEAR_LEG = "M -7 -4 C -8 8 -7 18 -6 25 C -5 31 7 31 8 25 C 8 17 7 7 6 -4 Z";
   function drawPolarBear(f) {
     const s = f.s, sw = Math.sin(f.ph * 2);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const fur = sh("#f4f0e2"), shade = sh("#d6cfba");
     // the far legs paddle behind, the near legs in front of the body
     ctx.save(); ctx.translate(20, 18); ctx.rotate(-0.6 - sw * 0.5); fillUnder(P(BEAR_LEG), shade); ctx.restore();
@@ -521,7 +521,7 @@
   // A cormorant floats, then dives after fish and comes back up.
   function drawCormorant(f) {
     const s = f.s, under = f.under || 0;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     const black = sh("#1e2226"), sheen = sh("#2e4a3a");
     if (under < 0.15) {
       ctx.fillStyle = black;
@@ -809,7 +809,9 @@
       return;
     }
     if (F.kind === "surface" || F.kind === "dive") {
-      f.x += f.dir * F.speed * u * k;
+      // paddles gently: speeds up and slows down instead of jumping to full speed
+      f.vx = (f.vx || 0) + (f.dir * F.speed * u - (f.vx || 0)) * Math.min(1, 0.03 * k);
+      f.x += f.vx * k;
       if (f.x < edge) f.dir = 1;
       if (f.x > W - edge) f.dir = -1;
       if (F.kind === "dive") {
@@ -824,8 +826,11 @@
     // swimmers and gliders wander between spots
     if (Math.abs(f.tx - f.x) < 12 * u) f.tx = Math.max(edge, Math.min(W - edge, f.x + (Math.random() - 0.5) * 380 * u));
     const dx = f.tx - f.x;
-    f.x += Math.sign(dx) * F.speed * u * k;
-    if (Math.abs(dx) > 6 * u) f.dir = Math.sign(dx);
+    // swim towards the next spot: pick up speed, and slow down when nearly there
+    const want = Math.sign(dx) * F.speed * u * Math.min(1, Math.abs(dx) / (50 * u) + 0.25);
+    f.vx = (f.vx || 0) + (want - (f.vx || 0)) * Math.min(1, 0.04 * k);
+    f.x += f.vx * k;
+    if (Math.abs(f.vx) > F.speed * u * 0.15) f.dir = Math.sign(f.vx);
     if (F.kind === "glide") f.cy = sandY(f.x) - f.lift + Math.sin(f.ph * 0.4) * 4 * u;
     else {
       let y = H * f.band + Math.sin(f.ph * 0.35) * 10 * u;

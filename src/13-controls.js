@@ -81,6 +81,9 @@
       return;
     }
     const focusTag = document.activeElement && document.activeElement.tagName;
+    if (!panelEl.hidden && panelTab === "log" && !detailOpen && (e.key === "ArrowLeft" || e.key === "ArrowRight") && focusTag !== "INPUT") {
+      e.preventDefault(); turnBook(e.key === "ArrowRight" ? 1 : -1); return;
+    }
     if (e.key in keys && focusTag !== "INPUT") {
       e.preventDefault();
       keys[e.key] = 1;
@@ -294,7 +297,7 @@
   bookBtn.addEventListener("click", () => {
     if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
-    logFilter = "all";
+    logFilter = "all"; bookFilter = "all"; bookAt = 0; // the book opens at the first page
     openPanel("log", bookBtn);
     panelBody.scrollTop = 0; // new finds are at the top
   });
@@ -331,81 +334,12 @@
   function renderPanel() {
     panelTitle.textContent = panelTab === "set" ? L("Maken en delen", "Create and share") : L("Logboek", "Logbook");
     detailOpen = false;
-    if (panelTab === "set") { renderMake(); return; }
+    if (panelTab === "set") { panelEl.classList.remove("book"); renderMake(); return; }
     bookDot.hidden = true;
-    const all = LOG_GROUPS.flatMap(g => g[1]).filter(k => !k.startsWith("shiny:"));
-    const got = all.filter(k => logbook.has(k)).length;
-    const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
-    // A card is always the animal itself. Its shiny shows as a golden sparkle on the card;
-    // in shiny mode (the Shiny filter, or a new shiny) the card shows the shiny picture instead.
-    // An animal whose Shiny tab you picked shows its shiny here too.
-    const card = (k, isNew, forceShiny) => {
-      const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
-      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-      return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
-    };
-    const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
-    let html = "";
-    if (news.length && logFilter !== "album") {
-      html += `<h3 class="newhead">${L(`Nieuw sinds je vorige keer · ${news.length}`, `New since last time · ${news.length}`)}</h3><div class="cards">` + news.map(k => k.startsWith("shiny:") ? card(k.slice(6), true, true) : card(k, true)).join("") + `</div>`;
-    }
-    html += `<p class="sum">${L(`<b>${got}</b> van ${all.length} gezien, en <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny. Tik op een plaatje voor meer over dat dier of die vondst.`, `<b>${got}</b> of ${all.length} seen, and <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny. Tap a picture to learn more.`)}</p>`;
-    html += `<div class="progress" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>`;
-    html += `<p class="sum small">${L(`Je kunt nu elke ${durationText(lockSeconds())} een nieuwe oceaan kiezen. Elke mijlpaal van vondsten maakt dat korter.`, `You can now pick a new ocean every ${durationText(lockSeconds())}. Every milestone of finds makes that shorter.`)}</p>`;
-    html += `<h3>${L("Mijlpalen", "Milestones")} · ${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</h3>`;
-    html += `<div class="badges">` + MILESTONES.map(m => {
-      const [have, need] = m.prog(), done = have >= need;
-      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
-      return `<span class="badge ${done ? "on" : ""}" title="${tip}">${L(m.name[0], m.name[1])} · ${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}${m.reward ? ` <i class="gift" aria-label="${tip}">★</i>` : ""}</span>`;
-    }).join("") + `</div>`;
-    html += `<p class="sum small">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`;
-    const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"], ["album", L("Mijn foto's", "My photos")]];
-    html += `<div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
-    if (logFilter === "album") html += albumHTML();
-    // the Shiny filter shows every animal that has a shiny, in its shiny colours; the shinies have no group of their own
-    const shinyMode = logFilter === "shiny";
-    const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "all" || (logFilter === "missing" && !logbook.has(k)) || (logFilter === "found" && logbook.has(k));
-    for (const [title, allKeys, subs] of logFilter === "album" ? [] : LOG_GROUPS) {
-      if (title === "Shiny" || !allKeys.some(show)) continue;
-      html += `<h3>${groupName(title)}</h3>`;
-      for (const [nl, en, keys] of subs) {
-        const vis = keys.filter(show);
-        if (!vis.length) continue;
-        html += `<h4 class="sub">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4><div class="cards">` + vis.map(k => card(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)).join("") + `</div>`;
-      }
-    }
-    html += `<h3>${L("Bewaren", "Keep")}</h3>
-      <p class="sum">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
-      <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>`;
-    html += `<h3>${L("Opnieuw beginnen", "Start over")}</h3>
-      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
-      <div class="row" id="resetConfirm" hidden>
-        <span class="sum">${L("Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.", "Everything you have seen will be cleared, shinies too. This cannot be undone.")}</span>
-        <button type="button" id="logResetYes" class="primary">${L("Ja, wis mijn logboek", "Yes, clear my logbook")}</button>
-        <button type="button" id="logResetNo">${L("Annuleren", "Cancel")}</button>
-      </div>`;
-    panelBody.innerHTML = html;
-    fillThumbs();
+    renderBook();
   }
 
   let logFilter = "all";
-
-  // Pictures are drawn a few at a time so the logbook opens straight away.
-  let thumbJob = 0;
-  function fillThumbs() {
-    const job = ++thumbJob;
-    const imgs = [...panelBody.querySelectorAll("img[data-thumb]")];
-    const step = () => {
-      if (job !== thumbJob) return;
-      for (let i = 0; i < 6 && imgs.length; i++) {
-        const img = imgs.shift();
-        img.src = thumbURL(img.dataset.thumb, img.dataset.seen === "1");
-      }
-      if (imgs.length) setTimeout(step, 0);
-    };
-    step();
-  }
 
   function resetLogbook() {
     logbook = new Map();
