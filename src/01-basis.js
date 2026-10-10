@@ -227,7 +227,7 @@
   const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
   for (const list of [LIFE_KEYS, VIS_KEYS, RARE_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
   // Only a few oceans hold something rare, and every rare thing has its own waters.
-  const RARE_RATE = 0.06;
+  const RARE_RATE = 0.15;
   const RARES_BY_WATER = {
     rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
     noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick"],

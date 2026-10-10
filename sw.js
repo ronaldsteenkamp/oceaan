@@ -1,5 +1,5 @@
 // Service worker: maakt de oceaan installeerbaar en speelbaar zonder internet.
-const VERSION = "v48";
+const VERSION = "v49";
 const SHELL = `oceaan-shell-${VERSION}`;
 const FONTS = "oceaan-fonts-1";
 const SHELL_FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
