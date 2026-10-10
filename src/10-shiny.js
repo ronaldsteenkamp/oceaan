@@ -69,12 +69,11 @@
     }
     if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
     if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
-    if (s.aurora) add("aurora", s.aurora, 80 * u, () => [W / 2, H * 0.12], () => night > 0.5);
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
   Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
-  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
+  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, mobydick: 50, ghostdiver: 160 });
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {

@@ -222,14 +222,15 @@
   const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
-  // Animals that were taken out of the game. They keep their place in AQ_ALL, so older aquarium links still read correctly.
-  const RETIRED = new Set(["whale", "shark", "frogfish", "blenny"]);
-  for (const list of [LIFE_KEYS, VIS_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
+  // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
+  // which became an ordinary weather moment. They keep their place in AQ_ALL, so older aquarium links still read correctly.
+  const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
+  for (const list of [LIFE_KEYS, VIS_KEYS, RARE_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.06;
   const RARES_BY_WATER = {
     rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
-    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["aurora", "mobydick"],
+    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick"],
     mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
@@ -311,7 +312,7 @@
     "Wateren": WATERS.map(w => "w:" + w.name),
     "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", "giant", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
     "Momenten": [...MOMENT_KEYS.filter(k => k !== "giant"), "treasure", "sub", "aurora"],
-    "Zeldzaam": RARE_KEYS.filter(k => k !== "aurora"),
+    "Zeldzaam": RARE_KEYS,
   };
   // anything not placed in a family yet still shows, at the end of its group
   for (const title in LOG_ALL) {
@@ -333,7 +334,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
-    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150,
     triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
@@ -349,7 +350,7 @@
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver",
     "hatchlings", "eelmigration", "giant",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];

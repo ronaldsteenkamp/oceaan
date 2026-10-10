@@ -33,8 +33,8 @@
     s.march = { enabled: !s.canyon, timer: range(70, 160), queue: [], list: [], next: 0, logged: false };
     s.bubbleRings = [];
     s.sonar = { cool: 0, rings: [], echoAt: -1, side: 0, arrow: 0, dir: 0 };
-    s.aurora = s.rares.includes("aurora") && water.surface ? { logged: false } : null;
-    if (s.aurora) s.dayOffset = range(0.45, 0.52); // the northern lights need a dark sky
+    // the northern lights: a weather moment over the cold waters, now and then on a dark night
+    s.aurora = { enabled: !!water.surface && ["ijszee", "noordzee", "kelpwoud"].includes(water.name), active: false, age: 0, fade: 0, timer: range(15, 45) };
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
     s.ghostDiver = s.rares.includes("ghostdiver") ? { x: rng() * W, y: H * range(0.3, 0.55), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
   }
@@ -506,6 +506,18 @@
   // ---- moments and rare things ----------------------------------------------
   function updateWave2(k, dtSec) {
     const S = scene;
+    const A = S.aurora;
+    if (A.enabled) {
+      if (!A.active) {
+        A.timer -= dtSec;
+        if (A.timer <= 0) { A.timer = 50 + Math.random() * 60; if (night > 0.6 && claim(45)) { A.active = true; A.age = 0; watch("aurora", () => A.active && A.fade > 0.5 && diverMode ? [diver.x, diver.y] : null); } }
+      } else {
+        A.age += dtSec;
+        // it slowly fades in, shimmers for a while, and fades out again
+        A.fade = Math.min(1, A.age / 5, Math.max(0, (48 - A.age) / 6));
+        if (A.age > 48) { A.active = false; A.fade = 0; }
+      }
+    }
     // glass eels on their long journey wriggle past in a stream
     const E = S.eels;
     if (E.enabled && !E.list.length) {
@@ -670,11 +682,10 @@
   // The northern lights shimmer through the surface in green and violet curtains.
   function drawAurora() {
     const A = scene.aurora;
-    if (!A) return;
-    const lv = Math.min(1, Math.max(0, night - 0.1) / 0.6);
+    if (!A || !A.fade) return;
+    const lv = A.fade * Math.min(1, Math.max(0, night - 0.1) / 0.6);
     if (lv <= 0) return;
-    if (!A.logged && lv > 0.5 && diverMode) { A.logged = true; seen("aurora"); }
-    const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["110,255,170", "170,120,255"];
+    const c1 = "110,255,170", c2 = "170,120,255";
     ctx.globalCompositeOperation = "lighter";
     // a soft glow of colour over the upper water
     const wash = ctx.createLinearGradient(0, 0, 0, H * 0.75);
@@ -717,7 +728,6 @@
     whalefall: ["Je sonar vindt grote botten op de bodem...", "Your sonar finds huge bones on the seabed..."],
     serpent: ["Iets lang en kronkelends weerkaatst je sonar...", "Something long and winding bounces your sonar back..."],
     goldpearl: ["Er glinstert iets kostbaars in een schelp...", "Something precious glints inside a shell..."],
-    aurora: ["De echo komt gekleurd terug van het oppervlak...", "The echo comes back coloured from the surface..."],
     mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
     ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
     ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
@@ -730,7 +740,6 @@
     if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
     if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
-    if (r === "aurora") return [W * 0.5, -60 * u];
     if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
     if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
     if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
@@ -755,7 +764,7 @@
     if (so.echoAt > 0) {
       so.echoAt -= dtSec;
       if (so.echoAt <= 0) {
-        if (S.rares.some(r => r !== "aurora")) {
+        if (S.rares.length) {
           const [sx, sy] = sonarSource(S);
           for (let i = 0; i < 3; i++) so.rings.push({ x: sx, y: sy, r: -i * 40 * u, a: 0.9, gold: true });
           so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = 2.5;

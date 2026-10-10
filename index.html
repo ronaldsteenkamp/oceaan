@@ -568,14 +568,15 @@
   const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
-  // Animals that were taken out of the game. They keep their place in AQ_ALL, so older aquarium links still read correctly.
-  const RETIRED = new Set(["whale", "shark", "frogfish", "blenny"]);
-  for (const list of [LIFE_KEYS, VIS_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
+  // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
+  // which became an ordinary weather moment. They keep their place in AQ_ALL, so older aquarium links still read correctly.
+  const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
+  for (const list of [LIFE_KEYS, VIS_KEYS, RARE_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.06;
   const RARES_BY_WATER = {
     rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall"],
-    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["aurora", "mobydick"],
+    noordzee: ["ghost", "ghostdiver"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick"],
     mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
@@ -657,7 +658,7 @@
     "Wateren": WATERS.map(w => "w:" + w.name),
     "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", "giant", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
     "Momenten": [...MOMENT_KEYS.filter(k => k !== "giant"), "treasure", "sub", "aurora"],
-    "Zeldzaam": RARE_KEYS.filter(k => k !== "aurora"),
+    "Zeldzaam": RARE_KEYS,
   };
   // anything not placed in a family yet still shows, at the end of its group
   for (const title in LOG_ALL) {
@@ -679,7 +680,7 @@
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
-    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
+    kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150,
     triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
@@ -695,7 +696,7 @@
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
-    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
+    "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver",
     "hatchlings", "eelmigration", "giant",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
@@ -1116,7 +1117,6 @@
     else {
       const rr = rng(), list = RARES_BY_WATER[water.name] || [];
       s.rares = rr < RARE_RATE && list.length ? [list[Math.min(list.length - 1, Math.floor(rr / RARE_RATE * list.length))]] : [];
-      if (s.rares[0] === "aurora" && !water.surface) s.rares = [];
     }
     s.rare = s.rares[0] || null;
 
@@ -5540,12 +5540,11 @@
     }
     if (R.includes("serpent")) add("serpent", s.serpent, 34 * u, () => [s.serpent.hx === undefined ? -999 : s.serpent.hx, s.serpent.hy || 0], () => s.serpent.active);
     if (R.includes("megalodon")) add("megalodon", s.megalodon, 120 * u, () => [s.megalodon.x, s.megalodon.y], () => s.megalodon.active);
-    if (s.aurora) add("aurora", s.aurora, 80 * u, () => [W / 2, H * 0.12], () => night > 0.5);
     if (R.includes("mobydick")) add("mobydick", s.moby, 100 * u, () => [s.moby.x, s.moby.y], () => s.moby.active);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
   Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
-  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, aurora: 140, mobydick: 50, ghostdiver: 160 });
+  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, mobydick: 50, ghostdiver: 160 });
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
@@ -6790,8 +6789,8 @@
     s.march = { enabled: !s.canyon, timer: range(70, 160), queue: [], list: [], next: 0, logged: false };
     s.bubbleRings = [];
     s.sonar = { cool: 0, rings: [], echoAt: -1, side: 0, arrow: 0, dir: 0 };
-    s.aurora = s.rares.includes("aurora") && water.surface ? { logged: false } : null;
-    if (s.aurora) s.dayOffset = range(0.45, 0.52); // the northern lights need a dark sky
+    // the northern lights: a weather moment over the cold waters, now and then on a dark night
+    s.aurora = { enabled: !!water.surface && ["ijszee", "noordzee", "kelpwoud"].includes(water.name), active: false, age: 0, fade: 0, timer: range(15, 45) };
     s.moby = { enabled: s.rares.includes("mobydick"), active: false, timer: range(8, 16) };
     s.ghostDiver = s.rares.includes("ghostdiver") ? { x: rng() * W, y: H * range(0.3, 0.55), dir: chance(0.5) ? 1 : -1, ph: range(0, TAU), logged: false } : null;
   }
@@ -7263,6 +7262,18 @@
   // ---- moments and rare things ----------------------------------------------
   function updateWave2(k, dtSec) {
     const S = scene;
+    const A = S.aurora;
+    if (A.enabled) {
+      if (!A.active) {
+        A.timer -= dtSec;
+        if (A.timer <= 0) { A.timer = 50 + Math.random() * 60; if (night > 0.6 && claim(45)) { A.active = true; A.age = 0; watch("aurora", () => A.active && A.fade > 0.5 && diverMode ? [diver.x, diver.y] : null); } }
+      } else {
+        A.age += dtSec;
+        // it slowly fades in, shimmers for a while, and fades out again
+        A.fade = Math.min(1, A.age / 5, Math.max(0, (48 - A.age) / 6));
+        if (A.age > 48) { A.active = false; A.fade = 0; }
+      }
+    }
     // glass eels on their long journey wriggle past in a stream
     const E = S.eels;
     if (E.enabled && !E.list.length) {
@@ -7427,11 +7438,10 @@
   // The northern lights shimmer through the surface in green and violet curtains.
   function drawAurora() {
     const A = scene.aurora;
-    if (!A) return;
-    const lv = Math.min(1, Math.max(0, night - 0.1) / 0.6);
+    if (!A || !A.fade) return;
+    const lv = A.fade * Math.min(1, Math.max(0, night - 0.1) / 0.6);
     if (lv <= 0) return;
-    if (!A.logged && lv > 0.5 && diverMode) { A.logged = true; seen("aurora"); }
-    const [c1, c2] = A.shiny ? ["255,120,200", "255,200,110"] : ["110,255,170", "170,120,255"];
+    const c1 = "110,255,170", c2 = "170,120,255";
     ctx.globalCompositeOperation = "lighter";
     // a soft glow of colour over the upper water
     const wash = ctx.createLinearGradient(0, 0, 0, H * 0.75);
@@ -7474,7 +7484,6 @@
     whalefall: ["Je sonar vindt grote botten op de bodem...", "Your sonar finds huge bones on the seabed..."],
     serpent: ["Iets lang en kronkelends weerkaatst je sonar...", "Something long and winding bounces your sonar back..."],
     goldpearl: ["Er glinstert iets kostbaars in een schelp...", "Something precious glints inside a shell..."],
-    aurora: ["De echo komt gekleurd terug van het oppervlak...", "The echo comes back coloured from the surface..."],
     mobydick: ["Een witte reus antwoordt met diepe klikken...", "A white giant answers with deep clicks..."],
     ghost: ["De echo komt hol en spookachtig terug...", "The echo comes back hollow and ghostly..."],
     ghostdiver: ["Er tikt iets terug, als een oude koperen helm...", "Something taps back, like an old copper helmet..."],
@@ -7487,7 +7496,6 @@
     if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
     if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
-    if (r === "aurora") return [W * 0.5, -60 * u];
     if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
     if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
     if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
@@ -7512,7 +7520,7 @@
     if (so.echoAt > 0) {
       so.echoAt -= dtSec;
       if (so.echoAt <= 0) {
-        if (S.rares.some(r => r !== "aurora")) {
+        if (S.rares.length) {
           const [sx, sy] = sonarSource(S);
           for (let i = 0; i < 3; i++) so.rings.push({ x: sx, y: sy, r: -i * 40 * u, a: 0.9, gold: true });
           so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = 2.5;
@@ -9473,6 +9481,7 @@
     eruption: "wacht bij de onderzeese vulkaan", task: "zoek de drie zeepaardjes die in de kelp verstopt zitten",
     jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
     glowtide: "op een donkere nacht in wateren met een oppervlak; beweeg dan je vinger door het water",
+    aurora: "af en toe op een donkere nacht in de IJszee, de Noordzee en het kelpwoud",
     hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
     eelmigration: "trekt af en toe voorbij in de Sargassozee, de Noordzee, het kelpwoud en de mangrove",
     quake: "heel af en toe, in elk water", crabmarch: "steekt af en toe de bodem over, als er geen afgrond is",
@@ -9507,6 +9516,7 @@
     moray: "lives in the hole in the pirate wreck", clown: "lives in the anemone on the coral reef",
     grouper: "visits the cleaning station", giant: "now and then reaches out its tentacles in the deep sea",
     baitball: "happens now and then, in every water except the deep sea", spawning: "schools lay eggs now and then",
+    aurora: "now and then on a dark night in the Arctic Sea, the North Sea and the kelp forest",
     coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
     jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
@@ -9875,7 +9885,7 @@
         S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
         if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
         if (sd % 3 === 0) [S.kraken, S.serpent, S.megalodon, S.moby, S.ghostDiver][(sd / 3) % 5].shiny = "kraken";
-        if (water.surface && !S.aurora) S.aurora = { logged: false };
+        if (S.aurora.enabled) { S.aurora.active = true; S.aurora.age = 10; S.aurora.fade = 1; }
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }
         for (const g of S.ground) if (g.kind === "clam") { g.open = 1; g.pearl = "gold"; tapClam(g.x, sandY(g.x) - g.s * 0.35); }
         if (S.treasure) dig();
@@ -9960,7 +9970,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=43").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=44").catch(() => {}));
   }
 </script>
 </body>

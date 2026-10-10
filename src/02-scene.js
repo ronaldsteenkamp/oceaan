@@ -167,7 +167,6 @@
     else {
       const rr = rng(), list = RARES_BY_WATER[water.name] || [];
       s.rares = rr < RARE_RATE && list.length ? [list[Math.min(list.length - 1, Math.floor(rr / RARE_RATE * list.length))]] : [];
-      if (s.rares[0] === "aurora" && !water.surface) s.rares = [];
     }
     s.rare = s.rares[0] || null;
 
