@@ -7403,19 +7403,11 @@
   }
 
   // The ghost of a diver: the same diver you swim with yourself, but pale green and see-through,
-  // with an empty dark mask, a slow lazy kick and a wisp of mist trailing from its fins.
+  // with an empty dark mask and a slow lazy kick.
   function drawGhostDiverShape(x, y, dir, s, ph, alpha) {
     const L = s * 1.55;
     ctx.save(); ctx.translate(x + dir * L * 0.12, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph * 0.9) * 0.08);
     ctx.globalAlpha = alpha;
-    // the mist it leaves behind, fading away
-    ctx.lineCap = "round";
-    for (let i = 0; i < 3; i++) {
-      ctx.strokeStyle = `rgba(150,255,215,${0.35 - i * 0.1})`; ctx.lineWidth = L * (0.06 - i * 0.015);
-      ctx.beginPath(); ctx.moveTo(-L * 0.55, (i - 1) * L * 0.03);
-      ctx.bezierCurveTo(-L * 0.75, Math.sin(ph * 2 + i) * L * 0.08, -L * 0.9, -Math.sin(ph * 2 + i) * L * 0.08, -L * (1.05 + i * 0.08), Math.sin(ph * 3 + i * 2) * L * 0.06);
-      ctx.stroke();
-    }
     drawDiverBody(L, ph * 2.2, { suit: "rgba(150,255,215,0.8)", fin: "rgba(150,255,215,0.55)", tank: "rgba(205,255,235,0.85)", gear: "rgba(150,255,215,0.6)", mask: `rgba(6,30,32,${0.85 * alpha})`, hollow: true });
     ctx.restore();
   }
@@ -9968,7 +9960,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=42").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=43").catch(() => {}));
   }
 </script>
 </body>
