@@ -404,7 +404,7 @@
     if (o.dash > 0) { o.x += o.dir * 4 * u * o.dash * k; o.dash = Math.max(0, o.dash - 0.03 * k); }
     else {
       // now and then the octopus wanders to the chest and pinches a coin
-      const chest = scene.ground.find(g => g.kind === "chest");
+      const chest = scene.ground.find(g => g.kind === "chest" && g.revealed && !g.mimic);
       if (chest && !o.holding && o.goal == null && Math.random() < 0.0015 * k) o.goal = chest.x;
       if (o.goal != null) {
         o.dir = Math.sign(o.goal - o.x) || 1;

@@ -117,6 +117,7 @@
     squid: pal("", { body: "#4a7af0" }),
     cuttlefish: pal("#c8a888>#f2d04a #b08860>#8a3a8a #a07850>#6a2a7a #ece6dc>#f8e8f8"),
     nautilus: pal("#f2e8d8>#2c2c3c #b0603a>#e8c040 #e8c8a8>#5a5a74 #b07858>#c8a030 #c8b8a0>#44445a"),
+    mimic: pal("#e8d6b4>#2c2a3a #5a3420>#f2c040 #f2c34a>#f2c34a #c8962a>#c8962a"),
     giant: pal("#8a2e2a>#e8e8f0 #5a1a18>#a8a8c0 #c86a5a>#5a7ad8"),
     // crustaceans
     crab: pal("#5a2418>#14304a", { hue: 205, sat: 0.95 }),

@@ -46,7 +46,14 @@
     if (S.treasure && !S.treasure.dug && Math.abs(x - S.treasure.x) < 35 * u && Math.abs(y - sandY(S.treasure.x)) < 50 * u) { dig(); return; }
     if (tapClam(x, y)) return;
     const chest = S.ground.find(g => g.kind === "chest" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.4)) < g.s * 1.2);
-    if (chest) { chestBurst(chest); return; }
+    if (chest) {
+      if (!chest.opened) {
+        const near = diverMode && Math.hypot(diver.x - chest.x, diver.y - (sandY(chest.x) - chest.s * 0.4)) < 160 * u;
+        if (near) openChest(chest);
+        else toast(L("Zwem met je duiker naar de kist om hem open te maken", "Swim to the chest with your diver to open it"));
+      } else if (chest.revealed && !chest.mimic) chestBurst(chest);
+      return;
+    }
   }
   canvas.addEventListener("pointercancel", () => { pointer.active = false; down = null; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("contextmenu", e => e.preventDefault());

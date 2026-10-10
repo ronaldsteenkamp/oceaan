@@ -4,7 +4,7 @@
   const TW = 120, TH = 84;
   const THUMB_WATER = Object.assign({}, WATERS[0], { name: "thumb", tintK: 0, glow: false, surface: true });
   const FULL_THUMBS = new Set([...WATERS.map(w => "w:" + w.name), "canyon", "storm"]);
-  const FLOOR_THUMBS = new Set([...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
+  const FLOOR_THUMBS = new Set(["mimic", ...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
     "goldpearl", "cassiopea", "lobster", "isopod", "pistol", "spidercrab", "parrotfish", "crabmarch", "quake"]);
   const thumbCache = new Map();
 
@@ -64,9 +64,10 @@
   const THUMBS = {
     wreck: () => drawWreck({ x: 62, y0: 78, w: 100, tilt: -0.04, dir: 1, mastBroken: false, moray: null }),
     plane: () => drawPlane({ x: 60, w: 110, tilt: -0.05, dir: 1 }),
-    chest: () => drawChest({ x: 60, s: 30, eel: 0, sparkles: [[-0.6, -1.2, 0], [0.5, -1.4, 1], [0, -1.0, 2]] }),
+    chest: () => drawChest({ x: 60, s: 30, mimic: false, opened: true, open: 1, revealed: true, sparkles: [[-0.6, -1.2, 0], [0.5, -1.4, 1], [0, -1.0, 2]] }),
+    mimic: () => drawMimicOctopus(66, sandY(66) - 8, 26, 1, 1, 1),
     treasure: () => {
-      drawChest({ x: 66, s: 26, eel: 0, sparkles: [[-0.5, -1.2, 0], [0.4, -1.3, 1.5]] });
+      drawChest({ x: 66, s: 26, mimic: false, opened: true, open: 1, revealed: true, sparkles: [[-0.5, -1.2, 0], [0.4, -1.3, 1.5]] });
       ctx.strokeStyle = "#e0453a"; ctx.lineWidth = 3; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(18, 72); ctx.lineTo(30, 82); ctx.moveTo(30, 72); ctx.lineTo(18, 82); ctx.stroke();
     },

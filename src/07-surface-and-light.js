@@ -185,7 +185,6 @@
       coins.push({ x: g.x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: s * 0.09, rot: Math.random() * TAU, spin: 0.1 + Math.random() * 0.2, life: 4 + Math.random() * 3 });
     }
     for (let i = 0; i < 30; i++) bubbles.push({ x: g.x + (Math.random() - 0.5) * s, y: y - Math.random() * s, r: (1 + Math.random() * 4) * u, ph: Math.random() * TAU });
-    if (Math.random() < 0.35) g.eel = 1;
     sfxChest();
     buzz(25);
   }

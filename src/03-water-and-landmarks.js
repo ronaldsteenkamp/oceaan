@@ -305,44 +305,78 @@
     ctx.restore();
   }
 
-  function drawChest(g) {
+  // A treasure chest starts out closed. When the diver swims up to it, or taps it with the diver close by,
+  // the lid swings open. Usually there is gold inside; now and then a mimic octopus, disguised as the gold:
+  // you only see its outline among the coins, until it gives itself away and flees.
+  const CHEST_LID = "M -57 -50 C -57 -82 57 -82 57 -50 Z";
+  const CHEST_BANDS = "M -44 -50 C -44 -70 -36 -76 -32 -77 L -26 -78 C -32 -74 -37 -68 -37 -50 Z M 37 -50 C 37 -68 32 -74 26 -78 L 32 -77 C 36 -76 44 -70 44 -50 Z";
+  // one chest in ten hides a mimic; the same chest every time, so a shared ocean keeps it
+  const chestHash = g => { const v = Math.sin(g.x * 12.9898 + g.s * 78.233) * 43758.5453; return v - Math.floor(v); };
+  function openChest(g) {
+    if (g.opened) return;
+    g.opened = true;
+    sfxClick(); buzz(20);
+  }
+  function startMimic(g) {
+    const s = g.s, y = sandY(g.x) + s * 0.12;
+    g.mim = { state: "hide", t: 0, x: g.x, y: y - s * 0.62, s: s * 0.5, dir: Math.random() < 0.5 ? -1 : 1, ph: Math.random() * TAU, real: 0 };
+    maybeShiny("mimic", g.mim, s * 0.5, () => [g.mim.x, g.mim.y], () => g.mim && g.mim.state !== "gone");
+    watch("mimic", () => g.mim && g.mim.state !== "gone" ? [g.mim.x, g.mim.y] : null, s * 0.4);
+  }
+  function drawChest(g, k = 0) {
     const s = g.s, x = g.x, y = sandY(x) + s * 0.12;
-    const wood = sh("#6b4527"), dark = sh("#2e1d10"), metal = sh("#a8873a"), gold = sh("#f2c34a", -0.1);
-    // glow
-    ctx.globalCompositeOperation = "lighter";
-    const glow = 0.25 + 0.12 * Math.sin(t * 1.6);
-    const gr = ctx.createRadialGradient(x, y - s * 0.6, 0, x, y - s * 0.6, s * 1.8);
-    gr.addColorStop(0, `rgba(255,210,110,${glow})`);
-    gr.addColorStop(1, "rgba(255,210,110,0)");
-    ctx.fillStyle = gr;
-    ctx.fillRect(x - s * 2, y - s * 2.6, s * 4, s * 3.2);
-    ctx.globalCompositeOperation = "source-over";
+    if (g.mimic === undefined) g.mimic = chestHash(g) < 0.1;
+    if (g.open === undefined) g.open = 0;
+    // the diver opens it by swimming right up to it
+    if (!g.opened && diverMode && Math.hypot(diver.x - x, diver.y - (y - s * 0.45)) < s * 1.4) openChest(g);
+    if (g.opened && g.open < 1) g.open = Math.min(1, g.open + 0.025 * k);
+    if (g.opened && g.open > 0.55 && !g.revealed) { g.revealed = true; if (g.mimic) startMimic(g); else chestBurst(g); }
+    const op = g.open, gold = sh("#f2c34a", -0.1), wood = sh("#6b4527"), dark = sh("#2e1d10"), metal = sh("#a8873a");
+    const treasure = !g.mimic && op > 0.1;
+    // the glow of the gold, once the lid is up
+    if (treasure) {
+      ctx.globalCompositeOperation = "lighter";
+      glow(x, y - s * 0.6, s * 1.8, "255,210,110", (0.25 + 0.12 * Math.sin(t * 1.6)) * op);
+      ctx.globalCompositeOperation = "source-over";
+    }
     ctx.save();
     ctx.translate(x, y);
-    // open lid behind
-    ctx.fillStyle = dark;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.55, -s * 0.5);
-    ctx.lineTo(-s * 0.5, -s * 0.95);
-    ctx.quadraticCurveTo(0, -s * 1.15, s * 0.5, -s * 0.95);
-    ctx.lineTo(s * 0.55, -s * 0.5);
-    ctx.fill();
-    ctx.fillStyle = wood;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.5, -s * 0.95); ctx.quadraticCurveTo(0, -s * 1.15, s * 0.5, -s * 0.95);
-    ctx.lineTo(s * 0.47, -s * 0.88); ctx.quadraticCurveTo(0, -s * 1.05, -s * 0.47, -s * 0.88);
-    ctx.fill();
-    // gold heap
-    ctx.fillStyle = gold;
-    for (let i = 0; i < 14; i++) {
-      const cx = -s * 0.42 + (i % 7) * s * 0.14, cy = -s * 0.52 - (i < 7 ? 0 : s * 0.1) - Math.sin((i % 7) / 6 * Math.PI) * s * 0.12;
-      ctx.beginPath(); ctx.arc(cx, cy, s * 0.1, 0, TAU); ctx.fill();
+    // the lid swings on its hinge at the back: first it tilts up, then it stands open behind the box
+    const front = op < 0.5;
+    const lid = () => {
+      if (front) {
+        ctx.save(); ctx.translate(0, -s * 0.5); ctx.scale(s / 100, (s / 100) * (1 - op * 1.8)); ctx.translate(0, 50);
+        ctx.fillStyle = wood; ctx.fill(P(CHEST_LID));
+        ctx.fillStyle = metal; ctx.fill(P(CHEST_BANDS)); ctx.fillRect(-57, -55, 114, 5);
+        ctx.restore();
+      } else {
+        // standing open: we see the inside of the lid, with the wooden rim along its top
+        const h = s * (0.15 + 0.35 * Math.min(1, (op - 0.5) / 0.5));
+        ctx.fillStyle = dark;
+        ctx.beginPath(); ctx.moveTo(-s * 0.55, -s * 0.5); ctx.lineTo(-s * 0.5, -s * 0.5 - h);
+        ctx.quadraticCurveTo(0, -s * 0.7 - h, s * 0.5, -s * 0.5 - h); ctx.lineTo(s * 0.55, -s * 0.5); ctx.fill();
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.moveTo(-s * 0.5, -s * 0.5 - h); ctx.quadraticCurveTo(0, -s * 0.7 - h, s * 0.5, -s * 0.5 - h);
+        ctx.lineTo(s * 0.47, -s * 0.43 - h); ctx.quadraticCurveTo(0, -s * 0.6 - h, -s * 0.47, -s * 0.43 - h); ctx.fill();
+      }
+    };
+    if (!front) lid();
+    // what is inside
+    if (op > 0.1) {
+      ctx.fillStyle = dark; ctx.fillRect(-s * 0.52, -s * 0.56, s * 1.04, s * 0.1);
+      if (treasure) {
+        ctx.fillStyle = gold;
+        for (let i = 0; i < 14; i++) {
+          const cx = -s * 0.42 + (i % 7) * s * 0.14, cy = -s * 0.52 - (i < 7 ? 0 : s * 0.1) - Math.sin((i % 7) / 6 * Math.PI) * s * 0.12;
+          ctx.beginPath(); ctx.arc(cx, cy, s * 0.1, 0, TAU); ctx.fill();
+        }
+        ctx.fillStyle = sh("#e05a7a"); ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.7, s * 0.05, 0, TAU); ctx.fill();
+        ctx.fillStyle = sh("#5ad0e0"); ctx.beginPath(); ctx.arc(s * 0.2, -s * 0.68, s * 0.045, 0, TAU); ctx.fill();
+      } else if (g.mim && g.mim.state === "hide") {
+        drawMimicDisguise(s, gold);
+      }
     }
-    ctx.fillStyle = sh("#e05a7a");
-    ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.7, s * 0.05, 0, TAU); ctx.fill();
-    ctx.fillStyle = sh("#5ad0e0");
-    ctx.beginPath(); ctx.arc(s * 0.2, -s * 0.68, s * 0.045, 0, TAU); ctx.fill();
-    // box
+    // the box
     ctx.fillStyle = wood;
     ctx.fillRect(-s * 0.55, -s * 0.52, s * 1.1, s * 0.6);
     ctx.fillStyle = metal;
@@ -352,40 +386,99 @@
     ctx.fillRect(-s * 0.07, -s * 0.38, s * 0.14, s * 0.14);
     ctx.fillStyle = dark;
     ctx.fillRect(-s * 0.02, -s * 0.33, s * 0.04, s * 0.06);
-    // a coin or two spilled on the sand
-    ctx.fillStyle = gold;
-    for (const [dx, dy] of [[0.75, 0.02], [0.9, 0.05], [-0.8, 0.04], [1.1, 0.06]]) {
-      ctx.beginPath(); ctx.ellipse(s * dx, s * dy - s * 0.05, s * 0.08, s * 0.035, 0, 0, TAU); ctx.fill();
+    if (front) lid();
+    // a coin or two spilled on the sand, once the gold has come out
+    if (g.revealed && !g.mimic) {
+      ctx.fillStyle = gold;
+      for (const [dx, dy] of [[0.75, 0.02], [0.9, 0.05], [-0.8, 0.04], [1.1, 0.06]]) {
+        ctx.beginPath(); ctx.ellipse(s * dx, s * dy - s * 0.05, s * 0.08, s * 0.035, 0, 0, TAU); ctx.fill();
+      }
     }
     ctx.restore();
-    // sparkles
-    ctx.fillStyle = "rgba(255,245,200,0.9)";
-    for (const [sx, sy, ph] of g.sparkles) {
-      const a = Math.max(0, Math.sin(t * 2 + ph));
-      if (a < 0.2) continue;
-      const px = x + sx * s * 0.6, py = y + sy * s * 0.7, r = s * 0.12 * a;
+    // sparkles over the gold
+    if (treasure && op > 0.5) {
+      ctx.fillStyle = "rgba(255,245,200,0.9)";
+      for (const [sx, sy, ph] of g.sparkles) {
+        const a = Math.max(0, Math.sin(t * 2 + ph));
+        if (a < 0.2) continue;
+        const px = x + sx * s * 0.6, py = y + sy * s * 0.7, r = s * 0.12 * a;
+        ctx.beginPath();
+        ctx.moveTo(px, py - r); ctx.lineTo(px + r * 0.2, py - r * 0.2); ctx.lineTo(px + r, py); ctx.lineTo(px + r * 0.2, py + r * 0.2);
+        ctx.lineTo(px, py + r); ctx.lineTo(px - r * 0.2, py + r * 0.2); ctx.lineTo(px - r, py); ctx.lineTo(px - r * 0.2, py - r * 0.2);
+        ctx.fill();
+      }
+    }
+    if (g.mim) updateMimic(g, k);
+  }
+
+  // The disguise: a heap of "gold" that is really an octopus. Only its outline and, now and then, its eyes give it away.
+  function drawMimicDisguise(s, gold) {
+    ctx.fillStyle = gold;
+    for (let i = 0; i < 12; i++) {
+      const cx = -s * 0.4 + (i % 6) * s * 0.16, cy = -s * 0.52 - (i < 6 ? 0 : s * 0.09) - Math.sin((i % 6) / 5 * Math.PI) * s * 0.12;
+      ctx.beginPath(); ctx.arc(cx, cy, s * 0.11, 0, TAU); ctx.fill();
+    }
+    ctx.beginPath(); ctx.ellipse(0, -s * 0.72, s * 0.17, s * 0.13, 0, 0, TAU); ctx.fill();
+    // the outline of a body and curled arms, drawn into the heap
+    ctx.strokeStyle = sh("#a87a1e", -0.1); ctx.lineWidth = Math.max(0.8, s * 0.022); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.ellipse(0, -s * 0.72, s * 0.17, s * 0.13, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    for (let i = 0; i < 6; i++) {
+      const sd = i < 3 ? -1 : 1, j = i % 3, wave = Math.sin(t * 0.8 + i) * s * 0.01;
       ctx.beginPath();
-      ctx.moveTo(px, py - r); ctx.lineTo(px + r * 0.2, py - r * 0.2); ctx.lineTo(px + r, py); ctx.lineTo(px + r * 0.2, py + r * 0.2);
-      ctx.lineTo(px, py + r); ctx.lineTo(px - r * 0.2, py + r * 0.2); ctx.lineTo(px - r, py); ctx.lineTo(px - r * 0.2, py - r * 0.2);
-      ctx.fill();
+      ctx.moveTo(sd * s * (0.06 + j * 0.04), -s * 0.62);
+      ctx.quadraticCurveTo(sd * s * (0.2 + j * 0.08), -s * (0.6 - j * 0.03) + wave, sd * s * (0.3 + j * 0.06), -s * (0.5 + j * 0.02));
+      ctx.stroke();
     }
-    // after a tap a moray sometimes pops out of the chest
-    if (g.eel > 0) {
-      g.eel = Math.max(0, g.eel - 0.004);
-      const h = Math.sin(Math.PI * (1 - g.eel)) * s * 1.6;
-      const body = sh("#6f7d3a");
-      const ex = x + Math.sin(t * 2) * s * 0.15, ey = y - s * 0.55 - h;
-      ctx.strokeStyle = body; ctx.lineWidth = s * 0.22; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(x, y - s * 0.5); ctx.quadraticCurveTo(x - s * 0.2, y - s * 0.5 - h * 0.5, ex, ey); ctx.stroke();
-      ctx.fillStyle = body;
-      ctx.beginPath(); ctx.ellipse(ex + s * 0.1, ey, s * 0.22, s * 0.14, -0.3, 0, TAU); ctx.fill();
-      ctx.fillStyle = sh("#2a1a12");
-      ctx.beginPath(); ctx.moveTo(ex + s * 0.32, ey - s * 0.02); ctx.lineTo(ex + s * 0.12, ey + s * 0.08); ctx.lineTo(ex + s * 0.14, ey - s * 0.02); ctx.fill();
-      ctx.fillStyle = "#f2e9c8";
-      ctx.beginPath(); ctx.arc(ex + s * 0.12, ey - s * 0.06, s * 0.04, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(ex + s * 0.13, ey - s * 0.06, s * 0.02, 0, TAU); ctx.fill();
+    const blink = Math.sin(t * 0.7) > 0.93 ? 0.15 : 1;
+    ctx.fillStyle = sh("#5a3a10", -0.1);
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * s * 0.07, -s * 0.8, s * 0.028, s * 0.018 * blink, 0, 0, TAU); ctx.fill(); }
+  }
+
+  // When the diver comes close, or after a while, the mimic drops its disguise and flees over the floor.
+  function updateMimic(g, k) {
+    const m = g.mim, s = g.s;
+    m.ph += 0.06 * k;
+    if (m.state === "hide") {
+      m.t += k / 60;
+      const close = diverMode && Math.hypot(diver.x - m.x, diver.y - m.y) < s * 2.2;
+      if ((close && m.t > 1.2) || m.t > 9) { m.state = "flee"; m.dir = diverMode ? Math.sign(m.x - diver.x) || m.dir : m.dir; sfxInk(); }
+      return;
     }
+    if (m.state !== "flee") return;
+    m.real = Math.min(1, m.real + 0.03 * k);
+    m.x += m.dir * (0.4 + m.real * 1.6) * u * k;
+    const floor = sandY(m.x) - m.s * 0.35;
+    m.y += (floor + Math.sin(m.ph * 2) * 2 * u - m.y) * Math.min(1, 0.05 * k);
+    if (Math.random() < 0.3 * k) puff(m.x - m.dir * m.s * 0.5, sandY(m.x) + 4 * u, 1);
+    if (m.x < -m.s * 3 || m.x > W + m.s * 3) { m.state = "gone"; return; }
+    shinyDraw(m, () => drawMimicOctopus(m.x, m.y, m.s, m.dir, m.ph, m.real));
+  }
+
+  // The mimic octopus in its real colours: cream with brown bands on its long arms. real=0 is still gold.
+  function drawMimicOctopus(x, y, s, dir, ph, real) {
+    const mix = (a, b) => { const A = hexRgb(a), B = hexRgb(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * real).toString(16).padStart(2, "0")).join(""); };
+    const base = sh(mix("#f2c34a", "#e8d6b4")), band = sh(mix("#c8962a", "#5a3420"));
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
+    ctx.lineCap = "round";
+    // the long arms trail behind, banded
+    for (let i = 0; i < 8; i++) {
+      const spread = (i - 3.5) * 0.13, len = s * (1.7 + (i % 3) * 0.25);
+      const pts = [];
+      for (let j = 0; j <= 8; j++) { const f = j / 8; pts.push([-f * len, spread * s * 2 * f + Math.sin(ph * 3 - f * 4 + i) * s * 0.12 * f + s * 0.1]); }
+      ctx.lineCap = "round"; ctx.lineWidth = s * 0.085; ctx.strokeStyle = base;
+      ctx.beginPath(); pts.forEach(([px, py], j) => j ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
+      ctx.lineCap = "butt"; ctx.lineWidth = s * 0.09; ctx.strokeStyle = band; ctx.setLineDash([s * 0.08, s * 0.1]);
+      ctx.beginPath(); pts.forEach(([px, py], j) => j ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
+      ctx.setLineDash([]); ctx.lineCap = "round";
+    }
+    // the head and mantle, with bands and two eyes on stalks
+    ctx.fillStyle = base; ctx.beginPath(); ctx.ellipse(s * 0.15, 0, s * 0.42, s * 0.3, -0.15, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(s * 0.15, 0, s * 0.42, s * 0.3, -0.15, 0, TAU); ctx.clip();
+    ctx.fillStyle = band; for (const bx of [-0.15, 0.08, 0.3]) ctx.fillRect(s * bx, -s * 0.4, s * 0.08, s * 0.8);
+    ctx.restore();
+    ctx.fillStyle = base; for (const ex of [0.34, 0.46]) { ctx.beginPath(); ctx.arc(s * ex, -s * 0.24, s * 0.07, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = "#151010"; for (const ex of [0.35, 0.47]) { ctx.beginPath(); ctx.ellipse(s * ex, -s * 0.25, s * 0.035, s * 0.018, 0, 0, TAU); ctx.fill(); }
+    ctx.restore();
   }
 
   function drawAnchor(g) {

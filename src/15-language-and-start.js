@@ -24,7 +24,7 @@
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
       L("Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek. <b>Houd ingedrukt</b> om de vissen te voeren.", "Call the <b>diver</b> (D) and swim around: everything that comes into the light of its lamp goes into your logbook. <b>Press and hold</b> to feed the fish."),
-      L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
+      L("<b>Zwem met je duiker naar een schatkist om hem open te maken. Tik op een fles of een verstopt zeepaardje.</b>", "<b>Swim to a treasure chest with your diver to open it. Tap a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
     ];

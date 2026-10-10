@@ -825,9 +825,8 @@
     puff(T.x, sandY(T.x) + 4 * u, 30);
     sfxDig();
     buzz(70);
-    const g = { kind: "chest", x: T.x, w: 90 * u, s: 40 * u, eel: 0, sparkles: Array.from({ length: 6 }, () => [Math.random() * 2 - 1, -0.6 - Math.random(), Math.random() * TAU]) };
+    const g = { kind: "chest", x: T.x, w: 90 * u, s: 40 * u, mimic: Math.random() < 0.5, sparkles: Array.from({ length: 6 }, () => [Math.random() * 2 - 1, -0.6 - Math.random(), Math.random() * TAU]) };
     scene.ground.push(g);
-    chestBurst(g);
     seen("chest");
     seen("treasure");
   }

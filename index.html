@@ -718,7 +718,7 @@
     serpent: "Zeeslang", megalodon: "Megalodon", goldpearl: "Gouden parel",
     "w:lagune": "Lagune", "w:sargasso": "Sargassozee",
     wheel: "Scheepsroer", idol: "Gouden beeldje", phonebox: "Telefooncel", sponges: "Sponzen",
-    parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal en wachtersgrondel", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
+    mimic: "Mimicoctopus", parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal en wachtersgrondel", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
     crocodile: "Zeekrokodil", whaleshark: "Walvishaai", sealion: "Zeeleeuw", eagleray: "Adelaarsrog", spermwhale: "Potvis",
     eelmigration: "Palingtrek", quake: "Zeebeving", crabmarch: "Krabbentrek", bubblerings: "Bellenringen",
     aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker",
@@ -759,7 +759,7 @@
       ["Roggen", "Rays", ["ray", "manta", "eagleray", "electricray", "guitarfish", "sawfish"]],
       ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
       ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
-      ["Inktvissen", "Cephalopods", ["octopus", "squid", "giant", "cuttlefish", "nautilus"]],
+      ["Inktvissen", "Cephalopods", ["octopus", "mimic", "squid", "giant", "cuttlefish", "nautilus"]],
       ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
       ["Zeesterren, egels en slakken", "Starfish, urchins and slugs", ["starfish", "brittlestar", "featherstar", "urchin", "sanddollar", "seacucumber", "slugs"]],
       ["Koralen, sponzen en schelpen", "Corals, sponges and clams", ["coral", "anemone", "sponges", "clam"]],
@@ -782,7 +782,7 @@
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
-    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", "giant", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", "giant", "mimic", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
     "Momenten": [...MOMENT_KEYS.filter(k => k !== "giant"), "treasure", "sub", "aurora"],
     "Zeldzaam": RARE_KEYS,
   };
@@ -807,7 +807,7 @@
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
     kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, mobydick: 100, ghostdiver: 100,
-    hatchlings: 300, eelmigration: 1200, giant: 150,
+    hatchlings: 300, eelmigration: 1200, giant: 150, mimic: 150,
     triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
     albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
@@ -823,7 +823,7 @@
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
     "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver",
-    "hatchlings", "eelmigration", "giant",
+    "hatchlings", "eelmigration", "giant", "mimic",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeenaaktslak", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
@@ -853,7 +853,7 @@
     serpent: "Sea serpent", megalodon: "Megalodon", goldpearl: "Golden pearl",
     "w:lagune": "Lagoon", "w:sargasso": "Sargasso Sea",
     wheel: "Ship's wheel", idol: "Golden idol", phonebox: "Phone box", sponges: "Sponges",
-    parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp and watchman goby", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
+    mimic: "Mimic octopus", parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp and watchman goby", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
     crocodile: "Saltwater crocodile", whaleshark: "Whale shark", sealion: "Sea lion", eagleray: "Spotted eagle ray", spermwhale: "Sperm whale",
     eelmigration: "Eel migration", quake: "Seaquake", crabmarch: "Crab march", bubblerings: "Bubble rings",
     aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver",
@@ -1858,44 +1858,78 @@
     ctx.restore();
   }
 
-  function drawChest(g) {
+  // A treasure chest starts out closed. When the diver swims up to it, or taps it with the diver close by,
+  // the lid swings open. Usually there is gold inside; now and then a mimic octopus, disguised as the gold:
+  // you only see its outline among the coins, until it gives itself away and flees.
+  const CHEST_LID = "M -57 -50 C -57 -82 57 -82 57 -50 Z";
+  const CHEST_BANDS = "M -44 -50 C -44 -70 -36 -76 -32 -77 L -26 -78 C -32 -74 -37 -68 -37 -50 Z M 37 -50 C 37 -68 32 -74 26 -78 L 32 -77 C 36 -76 44 -70 44 -50 Z";
+  // one chest in ten hides a mimic; the same chest every time, so a shared ocean keeps it
+  const chestHash = g => { const v = Math.sin(g.x * 12.9898 + g.s * 78.233) * 43758.5453; return v - Math.floor(v); };
+  function openChest(g) {
+    if (g.opened) return;
+    g.opened = true;
+    sfxClick(); buzz(20);
+  }
+  function startMimic(g) {
+    const s = g.s, y = sandY(g.x) + s * 0.12;
+    g.mim = { state: "hide", t: 0, x: g.x, y: y - s * 0.62, s: s * 0.5, dir: Math.random() < 0.5 ? -1 : 1, ph: Math.random() * TAU, real: 0 };
+    maybeShiny("mimic", g.mim, s * 0.5, () => [g.mim.x, g.mim.y], () => g.mim && g.mim.state !== "gone");
+    watch("mimic", () => g.mim && g.mim.state !== "gone" ? [g.mim.x, g.mim.y] : null, s * 0.4);
+  }
+  function drawChest(g, k = 0) {
     const s = g.s, x = g.x, y = sandY(x) + s * 0.12;
-    const wood = sh("#6b4527"), dark = sh("#2e1d10"), metal = sh("#a8873a"), gold = sh("#f2c34a", -0.1);
-    // glow
-    ctx.globalCompositeOperation = "lighter";
-    const glow = 0.25 + 0.12 * Math.sin(t * 1.6);
-    const gr = ctx.createRadialGradient(x, y - s * 0.6, 0, x, y - s * 0.6, s * 1.8);
-    gr.addColorStop(0, `rgba(255,210,110,${glow})`);
-    gr.addColorStop(1, "rgba(255,210,110,0)");
-    ctx.fillStyle = gr;
-    ctx.fillRect(x - s * 2, y - s * 2.6, s * 4, s * 3.2);
-    ctx.globalCompositeOperation = "source-over";
+    if (g.mimic === undefined) g.mimic = chestHash(g) < 0.1;
+    if (g.open === undefined) g.open = 0;
+    // the diver opens it by swimming right up to it
+    if (!g.opened && diverMode && Math.hypot(diver.x - x, diver.y - (y - s * 0.45)) < s * 1.4) openChest(g);
+    if (g.opened && g.open < 1) g.open = Math.min(1, g.open + 0.025 * k);
+    if (g.opened && g.open > 0.55 && !g.revealed) { g.revealed = true; if (g.mimic) startMimic(g); else chestBurst(g); }
+    const op = g.open, gold = sh("#f2c34a", -0.1), wood = sh("#6b4527"), dark = sh("#2e1d10"), metal = sh("#a8873a");
+    const treasure = !g.mimic && op > 0.1;
+    // the glow of the gold, once the lid is up
+    if (treasure) {
+      ctx.globalCompositeOperation = "lighter";
+      glow(x, y - s * 0.6, s * 1.8, "255,210,110", (0.25 + 0.12 * Math.sin(t * 1.6)) * op);
+      ctx.globalCompositeOperation = "source-over";
+    }
     ctx.save();
     ctx.translate(x, y);
-    // open lid behind
-    ctx.fillStyle = dark;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.55, -s * 0.5);
-    ctx.lineTo(-s * 0.5, -s * 0.95);
-    ctx.quadraticCurveTo(0, -s * 1.15, s * 0.5, -s * 0.95);
-    ctx.lineTo(s * 0.55, -s * 0.5);
-    ctx.fill();
-    ctx.fillStyle = wood;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.5, -s * 0.95); ctx.quadraticCurveTo(0, -s * 1.15, s * 0.5, -s * 0.95);
-    ctx.lineTo(s * 0.47, -s * 0.88); ctx.quadraticCurveTo(0, -s * 1.05, -s * 0.47, -s * 0.88);
-    ctx.fill();
-    // gold heap
-    ctx.fillStyle = gold;
-    for (let i = 0; i < 14; i++) {
-      const cx = -s * 0.42 + (i % 7) * s * 0.14, cy = -s * 0.52 - (i < 7 ? 0 : s * 0.1) - Math.sin((i % 7) / 6 * Math.PI) * s * 0.12;
-      ctx.beginPath(); ctx.arc(cx, cy, s * 0.1, 0, TAU); ctx.fill();
+    // the lid swings on its hinge at the back: first it tilts up, then it stands open behind the box
+    const front = op < 0.5;
+    const lid = () => {
+      if (front) {
+        ctx.save(); ctx.translate(0, -s * 0.5); ctx.scale(s / 100, (s / 100) * (1 - op * 1.8)); ctx.translate(0, 50);
+        ctx.fillStyle = wood; ctx.fill(P(CHEST_LID));
+        ctx.fillStyle = metal; ctx.fill(P(CHEST_BANDS)); ctx.fillRect(-57, -55, 114, 5);
+        ctx.restore();
+      } else {
+        // standing open: we see the inside of the lid, with the wooden rim along its top
+        const h = s * (0.15 + 0.35 * Math.min(1, (op - 0.5) / 0.5));
+        ctx.fillStyle = dark;
+        ctx.beginPath(); ctx.moveTo(-s * 0.55, -s * 0.5); ctx.lineTo(-s * 0.5, -s * 0.5 - h);
+        ctx.quadraticCurveTo(0, -s * 0.7 - h, s * 0.5, -s * 0.5 - h); ctx.lineTo(s * 0.55, -s * 0.5); ctx.fill();
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.moveTo(-s * 0.5, -s * 0.5 - h); ctx.quadraticCurveTo(0, -s * 0.7 - h, s * 0.5, -s * 0.5 - h);
+        ctx.lineTo(s * 0.47, -s * 0.43 - h); ctx.quadraticCurveTo(0, -s * 0.6 - h, -s * 0.47, -s * 0.43 - h); ctx.fill();
+      }
+    };
+    if (!front) lid();
+    // what is inside
+    if (op > 0.1) {
+      ctx.fillStyle = dark; ctx.fillRect(-s * 0.52, -s * 0.56, s * 1.04, s * 0.1);
+      if (treasure) {
+        ctx.fillStyle = gold;
+        for (let i = 0; i < 14; i++) {
+          const cx = -s * 0.42 + (i % 7) * s * 0.14, cy = -s * 0.52 - (i < 7 ? 0 : s * 0.1) - Math.sin((i % 7) / 6 * Math.PI) * s * 0.12;
+          ctx.beginPath(); ctx.arc(cx, cy, s * 0.1, 0, TAU); ctx.fill();
+        }
+        ctx.fillStyle = sh("#e05a7a"); ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.7, s * 0.05, 0, TAU); ctx.fill();
+        ctx.fillStyle = sh("#5ad0e0"); ctx.beginPath(); ctx.arc(s * 0.2, -s * 0.68, s * 0.045, 0, TAU); ctx.fill();
+      } else if (g.mim && g.mim.state === "hide") {
+        drawMimicDisguise(s, gold);
+      }
     }
-    ctx.fillStyle = sh("#e05a7a");
-    ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.7, s * 0.05, 0, TAU); ctx.fill();
-    ctx.fillStyle = sh("#5ad0e0");
-    ctx.beginPath(); ctx.arc(s * 0.2, -s * 0.68, s * 0.045, 0, TAU); ctx.fill();
-    // box
+    // the box
     ctx.fillStyle = wood;
     ctx.fillRect(-s * 0.55, -s * 0.52, s * 1.1, s * 0.6);
     ctx.fillStyle = metal;
@@ -1905,40 +1939,99 @@
     ctx.fillRect(-s * 0.07, -s * 0.38, s * 0.14, s * 0.14);
     ctx.fillStyle = dark;
     ctx.fillRect(-s * 0.02, -s * 0.33, s * 0.04, s * 0.06);
-    // a coin or two spilled on the sand
-    ctx.fillStyle = gold;
-    for (const [dx, dy] of [[0.75, 0.02], [0.9, 0.05], [-0.8, 0.04], [1.1, 0.06]]) {
-      ctx.beginPath(); ctx.ellipse(s * dx, s * dy - s * 0.05, s * 0.08, s * 0.035, 0, 0, TAU); ctx.fill();
+    if (front) lid();
+    // a coin or two spilled on the sand, once the gold has come out
+    if (g.revealed && !g.mimic) {
+      ctx.fillStyle = gold;
+      for (const [dx, dy] of [[0.75, 0.02], [0.9, 0.05], [-0.8, 0.04], [1.1, 0.06]]) {
+        ctx.beginPath(); ctx.ellipse(s * dx, s * dy - s * 0.05, s * 0.08, s * 0.035, 0, 0, TAU); ctx.fill();
+      }
     }
     ctx.restore();
-    // sparkles
-    ctx.fillStyle = "rgba(255,245,200,0.9)";
-    for (const [sx, sy, ph] of g.sparkles) {
-      const a = Math.max(0, Math.sin(t * 2 + ph));
-      if (a < 0.2) continue;
-      const px = x + sx * s * 0.6, py = y + sy * s * 0.7, r = s * 0.12 * a;
+    // sparkles over the gold
+    if (treasure && op > 0.5) {
+      ctx.fillStyle = "rgba(255,245,200,0.9)";
+      for (const [sx, sy, ph] of g.sparkles) {
+        const a = Math.max(0, Math.sin(t * 2 + ph));
+        if (a < 0.2) continue;
+        const px = x + sx * s * 0.6, py = y + sy * s * 0.7, r = s * 0.12 * a;
+        ctx.beginPath();
+        ctx.moveTo(px, py - r); ctx.lineTo(px + r * 0.2, py - r * 0.2); ctx.lineTo(px + r, py); ctx.lineTo(px + r * 0.2, py + r * 0.2);
+        ctx.lineTo(px, py + r); ctx.lineTo(px - r * 0.2, py + r * 0.2); ctx.lineTo(px - r, py); ctx.lineTo(px - r * 0.2, py - r * 0.2);
+        ctx.fill();
+      }
+    }
+    if (g.mim) updateMimic(g, k);
+  }
+
+  // The disguise: a heap of "gold" that is really an octopus. Only its outline and, now and then, its eyes give it away.
+  function drawMimicDisguise(s, gold) {
+    ctx.fillStyle = gold;
+    for (let i = 0; i < 12; i++) {
+      const cx = -s * 0.4 + (i % 6) * s * 0.16, cy = -s * 0.52 - (i < 6 ? 0 : s * 0.09) - Math.sin((i % 6) / 5 * Math.PI) * s * 0.12;
+      ctx.beginPath(); ctx.arc(cx, cy, s * 0.11, 0, TAU); ctx.fill();
+    }
+    ctx.beginPath(); ctx.ellipse(0, -s * 0.72, s * 0.17, s * 0.13, 0, 0, TAU); ctx.fill();
+    // the outline of a body and curled arms, drawn into the heap
+    ctx.strokeStyle = sh("#a87a1e", -0.1); ctx.lineWidth = Math.max(0.8, s * 0.022); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.ellipse(0, -s * 0.72, s * 0.17, s * 0.13, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    for (let i = 0; i < 6; i++) {
+      const sd = i < 3 ? -1 : 1, j = i % 3, wave = Math.sin(t * 0.8 + i) * s * 0.01;
       ctx.beginPath();
-      ctx.moveTo(px, py - r); ctx.lineTo(px + r * 0.2, py - r * 0.2); ctx.lineTo(px + r, py); ctx.lineTo(px + r * 0.2, py + r * 0.2);
-      ctx.lineTo(px, py + r); ctx.lineTo(px - r * 0.2, py + r * 0.2); ctx.lineTo(px - r, py); ctx.lineTo(px - r * 0.2, py - r * 0.2);
-      ctx.fill();
+      ctx.moveTo(sd * s * (0.06 + j * 0.04), -s * 0.62);
+      ctx.quadraticCurveTo(sd * s * (0.2 + j * 0.08), -s * (0.6 - j * 0.03) + wave, sd * s * (0.3 + j * 0.06), -s * (0.5 + j * 0.02));
+      ctx.stroke();
     }
-    // after a tap a moray sometimes pops out of the chest
-    if (g.eel > 0) {
-      g.eel = Math.max(0, g.eel - 0.004);
-      const h = Math.sin(Math.PI * (1 - g.eel)) * s * 1.6;
-      const body = sh("#6f7d3a");
-      const ex = x + Math.sin(t * 2) * s * 0.15, ey = y - s * 0.55 - h;
-      ctx.strokeStyle = body; ctx.lineWidth = s * 0.22; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(x, y - s * 0.5); ctx.quadraticCurveTo(x - s * 0.2, y - s * 0.5 - h * 0.5, ex, ey); ctx.stroke();
-      ctx.fillStyle = body;
-      ctx.beginPath(); ctx.ellipse(ex + s * 0.1, ey, s * 0.22, s * 0.14, -0.3, 0, TAU); ctx.fill();
-      ctx.fillStyle = sh("#2a1a12");
-      ctx.beginPath(); ctx.moveTo(ex + s * 0.32, ey - s * 0.02); ctx.lineTo(ex + s * 0.12, ey + s * 0.08); ctx.lineTo(ex + s * 0.14, ey - s * 0.02); ctx.fill();
-      ctx.fillStyle = "#f2e9c8";
-      ctx.beginPath(); ctx.arc(ex + s * 0.12, ey - s * 0.06, s * 0.04, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(ex + s * 0.13, ey - s * 0.06, s * 0.02, 0, TAU); ctx.fill();
+    const blink = Math.sin(t * 0.7) > 0.93 ? 0.15 : 1;
+    ctx.fillStyle = sh("#5a3a10", -0.1);
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * s * 0.07, -s * 0.8, s * 0.028, s * 0.018 * blink, 0, 0, TAU); ctx.fill(); }
+  }
+
+  // When the diver comes close, or after a while, the mimic drops its disguise and flees over the floor.
+  function updateMimic(g, k) {
+    const m = g.mim, s = g.s;
+    m.ph += 0.06 * k;
+    if (m.state === "hide") {
+      m.t += k / 60;
+      const close = diverMode && Math.hypot(diver.x - m.x, diver.y - m.y) < s * 2.2;
+      if ((close && m.t > 1.2) || m.t > 9) { m.state = "flee"; m.dir = diverMode ? Math.sign(m.x - diver.x) || m.dir : m.dir; sfxInk(); }
+      return;
     }
+    if (m.state !== "flee") return;
+    m.real = Math.min(1, m.real + 0.03 * k);
+    m.x += m.dir * (0.4 + m.real * 1.6) * u * k;
+    const floor = sandY(m.x) - m.s * 0.35;
+    m.y += (floor + Math.sin(m.ph * 2) * 2 * u - m.y) * Math.min(1, 0.05 * k);
+    if (Math.random() < 0.3 * k) puff(m.x - m.dir * m.s * 0.5, sandY(m.x) + 4 * u, 1);
+    if (m.x < -m.s * 3 || m.x > W + m.s * 3) { m.state = "gone"; return; }
+    shinyDraw(m, () => drawMimicOctopus(m.x, m.y, m.s, m.dir, m.ph, m.real));
+  }
+
+  // The mimic octopus in its real colours: cream with brown bands on its long arms. real=0 is still gold.
+  function drawMimicOctopus(x, y, s, dir, ph, real) {
+    const mix = (a, b) => { const A = hexRgb(a), B = hexRgb(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * real).toString(16).padStart(2, "0")).join(""); };
+    const base = sh(mix("#f2c34a", "#e8d6b4")), band = sh(mix("#c8962a", "#5a3420"));
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
+    ctx.lineCap = "round";
+    // the long arms trail behind, banded
+    for (let i = 0; i < 8; i++) {
+      const spread = (i - 3.5) * 0.13, len = s * (1.7 + (i % 3) * 0.25);
+      const pts = [];
+      for (let j = 0; j <= 8; j++) { const f = j / 8; pts.push([-f * len, spread * s * 2 * f + Math.sin(ph * 3 - f * 4 + i) * s * 0.12 * f + s * 0.1]); }
+      ctx.lineCap = "round"; ctx.lineWidth = s * 0.085; ctx.strokeStyle = base;
+      ctx.beginPath(); pts.forEach(([px, py], j) => j ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
+      ctx.lineCap = "butt"; ctx.lineWidth = s * 0.09; ctx.strokeStyle = band; ctx.setLineDash([s * 0.08, s * 0.1]);
+      ctx.beginPath(); pts.forEach(([px, py], j) => j ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
+      ctx.setLineDash([]); ctx.lineCap = "round";
+    }
+    // the head and mantle, with bands and two eyes on stalks
+    ctx.fillStyle = base; ctx.beginPath(); ctx.ellipse(s * 0.15, 0, s * 0.42, s * 0.3, -0.15, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(s * 0.15, 0, s * 0.42, s * 0.3, -0.15, 0, TAU); ctx.clip();
+    ctx.fillStyle = band; for (const bx of [-0.15, 0.08, 0.3]) ctx.fillRect(s * bx, -s * 0.4, s * 0.08, s * 0.8);
+    ctx.restore();
+    ctx.fillStyle = base; for (const ex of [0.34, 0.46]) { ctx.beginPath(); ctx.arc(s * ex, -s * 0.24, s * 0.07, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = "#151010"; for (const ex of [0.35, 0.47]) { ctx.beginPath(); ctx.ellipse(s * ex, -s * 0.25, s * 0.035, s * 0.018, 0, 0, TAU); ctx.fill(); }
+    ctx.restore();
   }
 
   function drawAnchor(g) {
@@ -2632,7 +2725,7 @@
     if (o.dash > 0) { o.x += o.dir * 4 * u * o.dash * k; o.dash = Math.max(0, o.dash - 0.03 * k); }
     else {
       // now and then the octopus wanders to the chest and pinches a coin
-      const chest = scene.ground.find(g => g.kind === "chest");
+      const chest = scene.ground.find(g => g.kind === "chest" && g.revealed && !g.mimic);
       if (chest && !o.holding && o.goal == null && Math.random() < 0.0015 * k) o.goal = chest.x;
       if (o.goal != null) {
         o.dir = Math.sign(o.goal - o.x) || 1;
@@ -3991,7 +4084,7 @@
   const TW = 120, TH = 84;
   const THUMB_WATER = Object.assign({}, WATERS[0], { name: "thumb", tintK: 0, glow: false, surface: true });
   const FULL_THUMBS = new Set([...WATERS.map(w => "w:" + w.name), "canyon", "storm"]);
-  const FLOOR_THUMBS = new Set([...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
+  const FLOOR_THUMBS = new Set(["mimic", ...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
     "goldpearl", "cassiopea", "lobster", "isopod", "pistol", "spidercrab", "parrotfish", "crabmarch", "quake"]);
   const thumbCache = new Map();
 
@@ -4051,9 +4144,10 @@
   const THUMBS = {
     wreck: () => drawWreck({ x: 62, y0: 78, w: 100, tilt: -0.04, dir: 1, mastBroken: false, moray: null }),
     plane: () => drawPlane({ x: 60, w: 110, tilt: -0.05, dir: 1 }),
-    chest: () => drawChest({ x: 60, s: 30, eel: 0, sparkles: [[-0.6, -1.2, 0], [0.5, -1.4, 1], [0, -1.0, 2]] }),
+    chest: () => drawChest({ x: 60, s: 30, mimic: false, opened: true, open: 1, revealed: true, sparkles: [[-0.6, -1.2, 0], [0.5, -1.4, 1], [0, -1.0, 2]] }),
+    mimic: () => drawMimicOctopus(66, sandY(66) - 8, 26, 1, 1, 1),
     treasure: () => {
-      drawChest({ x: 66, s: 26, eel: 0, sparkles: [[-0.5, -1.2, 0], [0.4, -1.3, 1.5]] });
+      drawChest({ x: 66, s: 26, mimic: false, opened: true, open: 1, revealed: true, sparkles: [[-0.5, -1.2, 0], [0.4, -1.3, 1.5]] });
       ctx.strokeStyle = "#e0453a"; ctx.lineWidth = 3; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(18, 72); ctx.lineTo(30, 82); ctx.moveTo(30, 72); ctx.lineTo(18, 82); ctx.stroke();
     },
@@ -4468,7 +4562,6 @@
       coins.push({ x: g.x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: s * 0.09, rot: Math.random() * TAU, spin: 0.1 + Math.random() * 0.2, life: 4 + Math.random() * 3 });
     }
     for (let i = 0; i < 30; i++) bubbles.push({ x: g.x + (Math.random() - 0.5) * s, y: y - Math.random() * s, r: (1 + Math.random() * 4) * u, ph: Math.random() * TAU });
-    if (Math.random() < 0.35) g.eel = 1;
     sfxChest();
     buzz(25);
   }
@@ -5569,9 +5662,8 @@
     puff(T.x, sandY(T.x) + 4 * u, 30);
     sfxDig();
     buzz(70);
-    const g = { kind: "chest", x: T.x, w: 90 * u, s: 40 * u, eel: 0, sparkles: Array.from({ length: 6 }, () => [Math.random() * 2 - 1, -0.6 - Math.random(), Math.random() * TAU]) };
+    const g = { kind: "chest", x: T.x, w: 90 * u, s: 40 * u, mimic: Math.random() < 0.5, sparkles: Array.from({ length: 6 }, () => [Math.random() * 2 - 1, -0.6 - Math.random(), Math.random() * TAU]) };
     scene.ground.push(g);
-    chestBurst(g);
     seen("chest");
     seen("treasure");
   }
@@ -5748,6 +5840,7 @@
     squid: pal("", { body: "#4a7af0" }),
     cuttlefish: pal("#c8a888>#f2d04a #b08860>#8a3a8a #a07850>#6a2a7a #ece6dc>#f8e8f8"),
     nautilus: pal("#f2e8d8>#2c2c3c #b0603a>#e8c040 #e8c8a8>#5a5a74 #b07858>#c8a030 #c8b8a0>#44445a"),
+    mimic: pal("#e8d6b4>#2c2a3a #5a3420>#f2c040 #f2c34a>#f2c34a #c8962a>#c8962a"),
     giant: pal("#8a2e2a>#e8e8f0 #5a1a18>#a8a8c0 #c86a5a>#5a7ad8"),
     // crustaceans
     crab: pal("#5a2418>#14304a", { hue: 205, sat: 0.95 }),
@@ -9049,7 +9142,14 @@
     if (S.treasure && !S.treasure.dug && Math.abs(x - S.treasure.x) < 35 * u && Math.abs(y - sandY(S.treasure.x)) < 50 * u) { dig(); return; }
     if (tapClam(x, y)) return;
     const chest = S.ground.find(g => g.kind === "chest" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.4)) < g.s * 1.2);
-    if (chest) { chestBurst(chest); return; }
+    if (chest) {
+      if (!chest.opened) {
+        const near = diverMode && Math.hypot(diver.x - chest.x, diver.y - (sandY(chest.x) - chest.s * 0.4)) < 160 * u;
+        if (near) openChest(chest);
+        else toast(L("Zwem met je duiker naar de kist om hem open te maken", "Swim to the chest with your diver to open it"));
+      } else if (chest.revealed && !chest.mimic) chestBurst(chest);
+      return;
+    }
   }
   canvas.addEventListener("pointercancel", () => { pointer.active = false; down = null; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("contextmenu", e => e.preventDefault());
@@ -9418,6 +9518,7 @@
     sponges: "Sponzen zijn dieren zonder organen. Ze pompen elke dag duizenden liters water door hun lichaam om voedsel eruit te halen.",
     parrotfish: "Een papegaaivis knabbelt aan koraal en poept het fijngemalen uit als wit zand. Veel witte stranden komen deels van hem.",
     boxfish: "Een koffervis zit in een stevig pantser van benen plaatjes en kan alleen zijn vinnen en staart bewegen.",
+    mimic: "De mimicoctopus doet andere dieren na, zoals een koraalduivel, een zeeslang of een platvis. Zo schrikt hij vijanden af.",
     pistol: "De klik van een pistoolgarnaal is een van de hardste geluiden in de zee. Hij is bijna blind; de gele wachtersgrondel houdt bij de ingang van hun hol de wacht en waarschuwt hem met een tik van zijn staart.",
     sargassumfish: "De sargassumvis ziet er precies uit als het zeewier waarin hij woont, en klimt erin rond met zijn vinnen als armpjes.",
     spidercrab: "De Japanse reuzenkrab heeft de langste poten van alle geleedpotigen: van punt tot punt tot bijna vier meter.",
@@ -9574,6 +9675,7 @@
     sponges: "Sponges are animals without organs. Every day they pump thousands of litres of water through their bodies to filter out food.",
     parrotfish: "A parrotfish nibbles coral and poops it out as fine white sand. Many white beaches come partly from parrotfish.",
     boxfish: "A boxfish lives in a stiff armour of bony plates and can only move its fins and tail.",
+    mimic: "The mimic octopus imitates other animals, such as a lionfish, a sea snake or a flatfish, to scare off enemies.",
     pistol: "The snap of a pistol shrimp is one of the loudest sounds in the sea. It is almost blind; the yellow watchman goby guards the entrance of their burrow and warns it with a flick of its tail.",
     sargassumfish: "The sargassum fish looks just like the seaweed it lives in, and climbs around in it with arm-like fins.",
     spidercrab: "The Japanese spider crab has the longest legs of any arthropod: almost four metres from tip to tip.",
@@ -9747,6 +9849,7 @@
     jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
     glowtide: "alleen op een donkere nacht, in wateren met een oppervlak; beweeg dan je vinger door het water",
     aurora: "af en toe op een donkere nacht in de IJszee, de Noordzee en het kelpwoud",
+    mimic: "verstopt zich soms in een schatkist, vermomd als de schat (1 op de 10); in een opgegraven kist vaak (1 op de 2)",
     hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
     eelmigration: "trekt af en toe voorbij in de Sargassozee, de Noordzee, het kelpwoud en de mangrove",
     quake: "heel af en toe, in elk water", crabmarch: "steekt af en toe de bodem over, als er geen afgrond is",
@@ -9782,6 +9885,7 @@
     grouper: "visits the cleaning station", giant: "now and then reaches out its tentacles in the deep sea",
     baitball: "happens now and then, in every water except the deep sea", spawning: "schools lay eggs now and then",
     aurora: "now and then on a dark night in the Arctic Sea, the North Sea and the kelp forest",
+    mimic: "sometimes hides in a treasure chest, disguised as the treasure (1 in 10); often in a dug-up chest (1 in 2)",
     coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
     jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
@@ -10368,7 +10472,7 @@
     const howto = [
       L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
       L("Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek. <b>Houd ingedrukt</b> om de vissen te voeren.", "Call the <b>diver</b> (D) and swim around: everything that comes into the light of its lamp goes into your logbook. <b>Press and hold</b> to feed the fish."),
-      L("<b>Tik op een schatkist, een fles of een verstopt zeepaardje.</b>", "<b>Tap a treasure chest, a bottle or a hidden seahorse.</b>"),
+      L("<b>Zwem met je duiker naar een schatkist om hem open te maken. Tik op een fles of een verstopt zeepaardje.</b>", "<b>Swim to a treasure chest with your diver to open it. Tap a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),
       L("Onder <b>maken en delen</b> bouw je je eigen aquarium en deel je je oceaan.", "Under <b>create and share</b> you build your own aquarium and share your ocean."),
     ];
@@ -10505,7 +10609,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=49").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=50").catch(() => {}));
   }
 </script>
 </body>
