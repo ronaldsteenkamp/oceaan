@@ -233,7 +233,7 @@
     for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.arc(i * s * 0.2, cy + Math.sin(i + g.ph * 3) * lip * 0.3, s * 0.035, 0, TAU); ctx.fill(); }
     if (g.pearl && g.open > 0.45) {
       const gold = g.pearl === "gold";
-      ctx.fillStyle = gold ? "#f2c440" : "#f4f0ea";
+      ctx.fillStyle = gold ? sc("#f2c440") : sc("#f4f0ea");
       ctx.beginPath(); ctx.arc(0, cy, s * (gold ? 0.17 : 0.12), 0, TAU); ctx.fill();
       ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(-s * 0.04, cy - s * 0.04, s * 0.035, 0, TAU); ctx.fill();
       if (gold) { const tw = 0.5 + 0.5 * Math.sin(t * 3); ctx.fillStyle = `rgba(255,240,170,${0.25 * tw})`; ctx.beginPath(); ctx.arc(0, cy, s * 0.3, 0, TAU); ctx.fill(); }
@@ -920,7 +920,7 @@
     ctx = c.getContext("2d");
     drawShark({ x: c.width / 2, y: c.height / 2, dir: 1, size, ph: 0, yOff: 0 });
     ctx.globalCompositeOperation = "source-atop";
-    ctx.fillStyle = "rgba(4,10,18,0.9)";
+    ctx.fillStyle = sca("#040a12", 0.9);
     ctx.fillRect(0, 0, c.width, c.height);
     ctx = saved;
     c.w = size;

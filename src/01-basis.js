@@ -341,9 +341,9 @@
     albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
     thresher: 450, whitetip: 450, greatwhite: 450, marlin: 450, tuna: 450, barracuda: 450, coelacanth: 300, sawfish: 450, bluewhale: 450, finwhale: 450, pilotwhale: 450, falsekiller: 450,
   };
-  // shinies are five times easier to find than the base table above
-  const SHINY_EASE = 5;
-  for (const k in SHINY_N) SHINY_N[k] = Math.max(20, Math.round(SHINY_N[k] / SHINY_EASE));
+  // shinies are twice as easy to find as the base table above (it used to be five times: they had become too common)
+  const SHINY_EASE = 2;
+  for (const k in SHINY_N) SHINY_N[k] = Math.max(50, Math.round(SHINY_N[k] / SHINY_EASE));
   const shinyChance = key => 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
@@ -613,3 +613,6 @@
     if (Math.abs(dir - o.turn) < 0.01) o.turn = dir;
     return Math.abs(o.turn) < 0.06 ? (o.turn < 0 ? -0.06 : 0.06) : o.turn;
   }
+
+  // The colour scheme of the shiny that is being drawn right now (see 10-shiny.js), or null.
+  let shinyPal = null;

@@ -119,8 +119,8 @@
       if (o.x < 30) o.vx = Math.abs(o.vx);
       if (o.x > W - 30) o.vx = -Math.abs(o.vx);
       const y = waveY(o.x) + 2 * u, s = o.s;
+      const recolor = o.shiny && beginShiny(o.shiny);
       const fur = sh("#5a3e2a"), face = sh("#c9b49a");
-      const recolor = o.shiny && beginShiny();
       ctx.save();
       ctx.translate(o.x, y);
       ctx.rotate(Math.sin(t * 1.4 + o.ph) * 0.08);

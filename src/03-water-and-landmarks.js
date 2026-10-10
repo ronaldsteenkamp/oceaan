@@ -653,7 +653,7 @@
       if (h < 2) continue;
       const sway = Math.sin(t * 0.9 + e.ph) * 6 * u;
       const tx = bx + sway, ty = by - h;
-      const recolor = e.shiny && beginShiny();
+      const recolor = e.shiny && beginShiny(e.shiny);
       ctx.strokeStyle = sh("#e8e0c8", 0.05); ctx.lineWidth = 3 * u; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx - sway * 0.6, by - h * 0.6, tx, ty); ctx.stroke();
       ctx.fillStyle = sh("#2a2620");

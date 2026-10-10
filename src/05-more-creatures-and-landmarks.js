@@ -439,12 +439,12 @@
       if (q.y > H * 0.7) q.vy -= 0.1 * u;
       if (Math.abs(q.vx) > 0.2 * u) q.face = Math.sign(q.vx);
       const face = q.face || 1, s = q.s;
-      const recolor = q.shiny && beginShiny();
+      const recolor = q.shiny && beginShiny(q.shiny);
       ctx.save();
       ctx.translate(q.x, q.y);
       ctx.scale(face, 1);
       ctx.rotate(Math.atan2(q.vy, Math.abs(q.vx) + 0.5) * 0.6);
-      const col = `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.95)`;
+      const col = shinyPal && shinyPal.body ? rgbaOf(shinyPal.body, 0.95) : `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.95)`;
       ctx.strokeStyle = col; ctx.lineWidth = Math.max(0.8, s * 0.06); ctx.lineCap = "round";
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
@@ -490,7 +490,10 @@
         ctx.fillStyle = "rgba(220,240,255,0.12)";
         ctx.strokeStyle = "rgba(220,240,255,0.35)";
         ctx.lineWidth = 1;
-        shinyDraw(c, () => { ctx.beginPath(); ctx.ellipse(c.x, c.y, c.r * 0.65, c.r, 0, 0, TAU); ctx.fill(); ctx.stroke(); });
+        shinyDraw(c, () => {
+          if (shinyPal && shinyPal.body) { ctx.fillStyle = rgbaOf(shinyPal.body, 0.2); ctx.strokeStyle = rgbaOf(shinyPal.body, 0.6); }
+          ctx.beginPath(); ctx.ellipse(c.x, c.y, c.r * 0.65, c.r, 0, 0, TAU); ctx.fill(); ctx.stroke();
+        });
       } else {
         // rows of beating cilia scatter light into rainbows
         const a = 0.55 + 0.35 * Math.sin(t * 2 + c.ph);
@@ -498,7 +501,7 @@
           const rx = (r / 7 - 0.5) * 1.1;
           for (let j = 0; j < 10; j++) {
             const yy = -0.85 + j * 0.19, xr = rx * Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.65;
-            ctx.fillStyle = `hsla(${(t * 240 + j * 36 + r * 15) % 360} 90% 65% / ${a})`;
+            ctx.fillStyle = c.shiny || (shinyPal && shinyPal.body) ? `rgba(255,${200 + ((j * 7 + r * 3) % 40)},90,${a})` : `hsla(${(t * 240 + j * 36 + r * 15) % 360} 90% 65% / ${a})`;
             ctx.beginPath(); ctx.arc(c.x + xr, c.y + yy * c.r, Math.max(0.7, 1.1 * u), 0, TAU); ctx.fill();
           }
         }
@@ -567,19 +570,19 @@
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;
-      const recolor = p.shiny && beginShiny();
+      const recolor = p.shiny && beginShiny(p.shiny);
       ctx.save();
       ctx.translate(p.x, y);
       ctx.scale(faceOf(p), 1);
       ctx.rotate(Math.atan2(vy, vx));
       ctx.scale(s / 100, s / 100);
-      ctx.fillStyle = "#f29a2e";
+      ctx.fillStyle = sc("#f29a2e");
       ctx.save(); ctx.translate(-92, 4); ctx.rotate(Math.sin(t * 9 + p.ph) * 0.3); ctx.fill(P(PENG_FOOT)); ctx.restore();
-      ctx.fillStyle = "#15181c"; ctx.fill(P(PENG_BODY));
-      ctx.save(); ctx.clip(P(PENG_BODY)); ctx.fillStyle = "#f2f2ec"; ctx.fill(P(PENG_FRONT)); ctx.fillStyle = "rgba(242,190,60,0.85)"; ctx.fill(P(PENG_NECK)); ctx.restore();
-      ctx.fillStyle = "#15181c";
+      ctx.fillStyle = sc("#15181c"); ctx.fill(P(PENG_BODY));
+      ctx.save(); ctx.clip(P(PENG_BODY)); ctx.fillStyle = sc("#f2f2ec"); ctx.fill(P(PENG_FRONT)); ctx.fillStyle = sca("#f2be3c", 0.85); ctx.fill(P(PENG_NECK)); ctx.restore();
+      ctx.fillStyle = sc("#15181c");
       ctx.save(); ctx.translate(34, 4); ctx.rotate(-0.4 - Math.sin(t * 9 + p.ph) * 0.45); ctx.fill(P(PENG_FLIPPER)); ctx.restore();
-      ctx.fillStyle = "#f29a2e"; ctx.fill(P(PENG_BEAK));
+      ctx.fillStyle = sc("#f29a2e"); ctx.fill(P(PENG_BEAK));
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(80, -12, 5.5, 0, TAU); ctx.fill();
       ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(81.5, -12, 3, 0, TAU); ctx.fill();
       ctx.restore();

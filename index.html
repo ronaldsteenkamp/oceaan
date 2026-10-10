@@ -813,9 +813,9 @@
     albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
     thresher: 450, whitetip: 450, greatwhite: 450, marlin: 450, tuna: 450, barracuda: 450, coelacanth: 300, sawfish: 450, bluewhale: 450, finwhale: 450, pilotwhale: 450, falsekiller: 450,
   };
-  // shinies are five times easier to find than the base table above
-  const SHINY_EASE = 5;
-  for (const k in SHINY_N) SHINY_N[k] = Math.max(20, Math.round(SHINY_N[k] / SHINY_EASE));
+  // shinies are twice as easy to find as the base table above (it used to be five times: they had become too common)
+  const SHINY_EASE = 2;
+  for (const k in SHINY_N) SHINY_N[k] = Math.max(50, Math.round(SHINY_N[k] / SHINY_EASE));
   const shinyChance = key => 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
@@ -1085,6 +1085,9 @@
     if (Math.abs(dir - o.turn) < 0.01) o.turn = dir;
     return Math.abs(o.turn) < 0.06 ? (o.turn < 0 ? -0.06 : 0.06) : o.turn;
   }
+
+  // The colour scheme of the shiny that is being drawn right now (see 10-shiny.js), or null.
+  let shinyPal = null;
   // ---- state -------------------------------------------------------------
   let W = 0, H = 0, dpr = 1, u = 1;
   let seed, rng, water, scene;
@@ -1163,6 +1166,7 @@
   const shadeCache = new Map();
   function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
   function sh(hex, extra = 0) {
+    if (shinyPal) hex = shinySwap(hex);
     const key = hex + water.name + extra;
     let v = shadeCache.get(key);
     if (!v) {
@@ -2202,7 +2206,7 @@
       if (h < 2) continue;
       const sway = Math.sin(t * 0.9 + e.ph) * 6 * u;
       const tx = bx + sway, ty = by - h;
-      const recolor = e.shiny && beginShiny();
+      const recolor = e.shiny && beginShiny(e.shiny);
       ctx.strokeStyle = sh("#e8e0c8", 0.05); ctx.lineWidth = 3 * u; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx - sway * 0.6, by - h * 0.6, tx, ty); ctx.stroke();
       ctx.fillStyle = sh("#2a2620");
@@ -2240,6 +2244,7 @@
     ctx.rotate(ang);
     if (Math.cos(ang) < 0) ctx.scale(1, -1);
     const k = L / 100, big = L > 9;
+    main = sc(main); dark = sc(dark);
     ctx.scale(k, k * (stripes ? 1.2 : 1));
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(-80, 0); ctx.rotate(Math.sin(ph) * 0.4); ctx.fill(P(FISH_TAIL)); ctx.restore();
@@ -2249,7 +2254,7 @@
       // a clownfish: white bands edged in black
       ctx.save(); ctx.clip(P(FISH_BODY));
       ctx.strokeStyle = dark; ctx.lineWidth = 9; ctx.stroke(P(CLOWN_BANDS));
-      ctx.fillStyle = "#fbfbf6"; ctx.fill(P(CLOWN_BANDS));
+      ctx.fillStyle = sc("#fbfbf6"); ctx.fill(P(CLOWN_BANDS));
       ctx.restore();
     } else {
       ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.fill(P(FISH_BELLY));
@@ -2482,13 +2487,14 @@
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
-      const recolor = j.shiny && beginShiny();
+      const recolor = j.shiny && beginShiny(j.shiny);
+      const jc = scTriplet(j.col);
       ctx.save();
       ctx.translate(j.x, j.y);
       ctx.rotate(Math.sin(t * 0.25 + j.drift) * 0.12);
 
       ctx.lineWidth = Math.max(0.7, 0.9 * u);
-      ctx.strokeStyle = `rgba(${j.col},0.32)`;
+      ctx.strokeStyle = `rgba(${jc},0.32)`;
       const n = 7, len = j.r * j.tl;
       for (let i = 0; i < n; i++) {
         const x0 = -bw * 0.8 + (i * 1.6 * bw) / (n - 1);
@@ -2502,17 +2508,17 @@
         ctx.stroke();
       }
       ctx.lineWidth = Math.max(1.5, j.r * 0.12);
-      ctx.strokeStyle = `rgba(${j.col},0.4)`;
+      ctx.strokeStyle = `rgba(${jc},0.4)`;
       for (let i = -1; i <= 1; i += 2) {
         ctx.beginPath();
         ctx.moveTo(i * bw * 0.15, 0);
         for (let s = 1; s <= 8; s++) ctx.lineTo(i * bw * 0.15 + Math.sin(t * 1.4 - s * 0.7 + i) * j.r * 0.22, (s / 8) * len * 0.6);
         ctx.stroke();
       }
-      if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${j.col},0.8)`; }
+      if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${jc},0.8)`; }
       // the bell is drawn at unit size and stretched, so its colour gradient can be made once and reused
       ctx.save(); ctx.scale(bw, bh);
-      ctx.fillStyle = jellyGradient(j.col);
+      ctx.fillStyle = jellyGradient(jc);
       ctx.fill(JELLY_BELL);
       ctx.restore();
       ctx.shadowBlur = 0;
@@ -2650,7 +2656,10 @@
     if (o.dash > 0.4 && Math.random() < 0.5 * k) puff(o.x, sandY(o.x) + 5 * u, 1);
 
     const light = 42 + o.scare * 30;
-    const col = `hsl(${o.hue + Math.sin(t * 0.15) * 25} ${55 - o.scare * 25}% ${light * (1 - water.tintK * 0.6)}%)`;
+    // a shiny octopus keeps changing shade, but in its own colours
+    const P0 = shinyPal && shinyPal.bodyHue !== undefined ? shinyPal : null;
+    const col = P0 ? `hsl(${P0.bodyHue + Math.sin(t * 0.15) * 12} ${P0.bodySat - o.scare * 15}% ${Math.min(90, light * P0.bodyLight * (1 - water.tintK * 0.6))}%)`
+      : `hsl(${o.hue + Math.sin(t * 0.15) * 25} ${55 - o.scare * 25}% ${light * (1 - water.tintK * 0.6)}%)`;
     const x = o.x;
     ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineCap = "round";
     for (let i = 0; i < 8; i++) {
@@ -2821,7 +2830,7 @@
     ctx.save();
     ctx.translate(a.x, y);
     ctx.scale(faceOf(a), 1);
-    const body = "#1b1e26";
+    const body = sc("#1b1e26");
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.85, 0); ctx.rotate(Math.sin(t * 3) * 0.25);
     ctx.beginPath(); ctx.moveTo(s * 0.1, 0); ctx.lineTo(-s * 0.45, -s * 0.35); ctx.lineTo(-s * 0.4, s * 0.3); ctx.fill();
@@ -2832,15 +2841,15 @@
     ctx.bezierCurveTo(-s * 0.6, s * 0.5, s * 0.3, s * 0.6, s * 0.75, s * 0.35);
     ctx.lineTo(s * 0.6, -s * 0.05);
     ctx.fill();
-    ctx.fillStyle = "#070709";
+    ctx.fillStyle = sc("#070709");
     ctx.beginPath(); ctx.moveTo(s * 0.62, -s * 0.03); ctx.lineTo(s * 0.74, s * 0.33); ctx.lineTo(s * 0.2, s * 0.15); ctx.fill();
-    ctx.fillStyle = "#e9e4d2";
+    ctx.fillStyle = sc("#e9e4d2");
     for (let i = 0; i < 5; i++) {
       const tx = s * (0.25 + i * 0.1);
       ctx.beginPath(); ctx.moveTo(tx, s * (0.02 + i * 0.04)); ctx.lineTo(tx + s * 0.03, s * (0.14 + i * 0.03)); ctx.lineTo(tx + s * 0.06, s * (0.03 + i * 0.05)); ctx.fill();
       ctx.beginPath(); ctx.moveTo(tx, s * (0.2 + i * 0.03)); ctx.lineTo(tx + s * 0.03, s * (0.08 + i * 0.04)); ctx.lineTo(tx + s * 0.06, s * (0.22 + i * 0.03)); ctx.fill();
     }
-    ctx.fillStyle = "#b8d8e8";
+    ctx.fillStyle = sc("#b8d8e8");
     ctx.beginPath(); ctx.arc(s * 0.25, -s * 0.22, s * 0.06, 0, TAU); ctx.fill();
     // lure
     const lx = s * 0.85 + Math.sin(t * 1.2) * s * 0.06, ly = -s * 0.75 + Math.cos(t * 1.5) * s * 0.05;
@@ -2992,7 +3001,7 @@
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
-    ctx.fillStyle = "rgba(18,26,34,0.88)";
+    ctx.fillStyle = sca("#121a22", 0.88);
     ctx.beginPath();
     ctx.moveTo(L * 0.3, -L * 0.07);
     ctx.quadraticCurveTo(L * 0.12, -L * 0.42 * flap, -L * 0.06, -L * 0.62 * flap);
@@ -3006,13 +3015,13 @@
     ctx.ellipse(L * 0.33, -L * 0.06, L * 0.07, L * 0.025, 0.3, 0, TAU);
     ctx.ellipse(L * 0.33, L * 0.06, L * 0.07, L * 0.025, -0.3, 0, TAU);
     ctx.fill();
-    ctx.strokeStyle = "rgba(18,26,34,0.88)";
+    ctx.strokeStyle = sca("#121a22", 0.88);
     ctx.lineWidth = Math.max(1, L * 0.012);
     ctx.beginPath();
     ctx.moveTo(-L * 0.3, 0);
     ctx.quadraticCurveTo(-L * 0.55, Math.sin(v.ph * 2) * L * 0.05, -L * 0.85, 0);
     ctx.stroke();
-    ctx.fillStyle = "rgba(220,230,235,0.25)";
+    ctx.fillStyle = sca("#dce6eb", 0.25);
     ctx.beginPath();
     ctx.ellipse(L * 0.05, -L * 0.12, L * 0.06, L * 0.035, 0.4, 0, TAU);
     ctx.ellipse(L * 0.05, L * 0.12, L * 0.06, L * 0.035, -0.4, 0, TAU);
@@ -3514,12 +3523,12 @@
       if (q.y > H * 0.7) q.vy -= 0.1 * u;
       if (Math.abs(q.vx) > 0.2 * u) q.face = Math.sign(q.vx);
       const face = q.face || 1, s = q.s;
-      const recolor = q.shiny && beginShiny();
+      const recolor = q.shiny && beginShiny(q.shiny);
       ctx.save();
       ctx.translate(q.x, q.y);
       ctx.scale(face, 1);
       ctx.rotate(Math.atan2(q.vy, Math.abs(q.vx) + 0.5) * 0.6);
-      const col = `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.95)`;
+      const col = shinyPal && shinyPal.body ? rgbaOf(shinyPal.body, 0.95) : `hsla(${q.hue % 360} 55% ${68 - water.tintK * 30}% / 0.95)`;
       ctx.strokeStyle = col; ctx.lineWidth = Math.max(0.8, s * 0.06); ctx.lineCap = "round";
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
@@ -3565,7 +3574,10 @@
         ctx.fillStyle = "rgba(220,240,255,0.12)";
         ctx.strokeStyle = "rgba(220,240,255,0.35)";
         ctx.lineWidth = 1;
-        shinyDraw(c, () => { ctx.beginPath(); ctx.ellipse(c.x, c.y, c.r * 0.65, c.r, 0, 0, TAU); ctx.fill(); ctx.stroke(); });
+        shinyDraw(c, () => {
+          if (shinyPal && shinyPal.body) { ctx.fillStyle = rgbaOf(shinyPal.body, 0.2); ctx.strokeStyle = rgbaOf(shinyPal.body, 0.6); }
+          ctx.beginPath(); ctx.ellipse(c.x, c.y, c.r * 0.65, c.r, 0, 0, TAU); ctx.fill(); ctx.stroke();
+        });
       } else {
         // rows of beating cilia scatter light into rainbows
         const a = 0.55 + 0.35 * Math.sin(t * 2 + c.ph);
@@ -3573,7 +3585,7 @@
           const rx = (r / 7 - 0.5) * 1.1;
           for (let j = 0; j < 10; j++) {
             const yy = -0.85 + j * 0.19, xr = rx * Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.65;
-            ctx.fillStyle = `hsla(${(t * 240 + j * 36 + r * 15) % 360} 90% 65% / ${a})`;
+            ctx.fillStyle = c.shiny || (shinyPal && shinyPal.body) ? `rgba(255,${200 + ((j * 7 + r * 3) % 40)},90,${a})` : `hsla(${(t * 240 + j * 36 + r * 15) % 360} 90% 65% / ${a})`;
             ctx.beginPath(); ctx.arc(c.x + xr, c.y + yy * c.r, Math.max(0.7, 1.1 * u), 0, TAU); ctx.fill();
           }
         }
@@ -3642,19 +3654,19 @@
       const y = waveY(p.x) + 6 * u + depthF * p.depth;
       const vy = Math.cos(cyc * 0.5) * 0.5 * p.depth * 0.012 * p.sp;
       const s = p.s;
-      const recolor = p.shiny && beginShiny();
+      const recolor = p.shiny && beginShiny(p.shiny);
       ctx.save();
       ctx.translate(p.x, y);
       ctx.scale(faceOf(p), 1);
       ctx.rotate(Math.atan2(vy, vx));
       ctx.scale(s / 100, s / 100);
-      ctx.fillStyle = "#f29a2e";
+      ctx.fillStyle = sc("#f29a2e");
       ctx.save(); ctx.translate(-92, 4); ctx.rotate(Math.sin(t * 9 + p.ph) * 0.3); ctx.fill(P(PENG_FOOT)); ctx.restore();
-      ctx.fillStyle = "#15181c"; ctx.fill(P(PENG_BODY));
-      ctx.save(); ctx.clip(P(PENG_BODY)); ctx.fillStyle = "#f2f2ec"; ctx.fill(P(PENG_FRONT)); ctx.fillStyle = "rgba(242,190,60,0.85)"; ctx.fill(P(PENG_NECK)); ctx.restore();
-      ctx.fillStyle = "#15181c";
+      ctx.fillStyle = sc("#15181c"); ctx.fill(P(PENG_BODY));
+      ctx.save(); ctx.clip(P(PENG_BODY)); ctx.fillStyle = sc("#f2f2ec"); ctx.fill(P(PENG_FRONT)); ctx.fillStyle = sca("#f2be3c", 0.85); ctx.fill(P(PENG_NECK)); ctx.restore();
+      ctx.fillStyle = sc("#15181c");
       ctx.save(); ctx.translate(34, 4); ctx.rotate(-0.4 - Math.sin(t * 9 + p.ph) * 0.45); ctx.fill(P(PENG_FLIPPER)); ctx.restore();
-      ctx.fillStyle = "#f29a2e"; ctx.fill(P(PENG_BEAK));
+      ctx.fillStyle = sc("#f29a2e"); ctx.fill(P(PENG_BEAK));
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(80, -12, 5.5, 0, TAU); ctx.fill();
       ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(81.5, -12, 3, 0, TAU); ctx.fill();
       ctx.restore();
@@ -4195,7 +4207,7 @@
         bubbles = []; smoke = []; dust = []; ink = []; coins = []; abyssGlows = [];
         water = THUMB_WATER; scene = thumbScene();
         const THUMB_BASE = { fish: hexHue("#f2b134"), crab: hexHue("#d9543b"), starfish: hexHue("#e8743b"), seahorse: hexHue("#f2b134"), slugs: hexHue("#7b4fd6"), jelly: rgbHue(255, 196, 224) };
-        if (shiny && seenIt && beginShiny()) { fn(); endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } else fn();
+        if (shiny && seenIt && beginShiny(base)) { try { fn(); } finally { endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } } else fn();
       } catch (e) {
         // a picture that cannot be drawn just stays empty
       } finally {
@@ -4390,8 +4402,8 @@
       if (o.x < 30) o.vx = Math.abs(o.vx);
       if (o.x > W - 30) o.vx = -Math.abs(o.vx);
       const y = waveY(o.x) + 2 * u, s = o.s;
+      const recolor = o.shiny && beginShiny(o.shiny);
       const fur = sh("#5a3e2a"), face = sh("#c9b49a");
-      const recolor = o.shiny && beginShiny();
       ctx.save();
       ctx.translate(o.x, y);
       ctx.rotate(Math.sin(t * 1.4 + o.ph) * 0.08);
@@ -5671,7 +5683,166 @@
     s.shinies = list;
   }
 
-  // A shiny's colour sits far round the colour wheel from the animal's own colour.
+  // ---- shiny colour schemes ---------------------------------------------------------
+  // Like a shiny Pokémon, a shiny animal keeps its shape and pattern but gets a whole colour scheme of its own,
+  // chosen per animal, often after real colour morphs (albino, black, golden, blue, white).
+  // map: every colour the drawing uses gets its own replacement. Colours that are not in the map (the ones that come
+  // from the water or by chance, like the colours of a school or a crab) follow the rule: a hue for the light,
+  // middle and dark tones, so dark fins and a light body can still end up in different colours.
+  function pal(map, rule = {}) {
+    const m = {};
+    for (const pair of map.split(/\s+/).filter(Boolean)) { const [a, b] = pair.split(">"); m[a.toLowerCase()] = b.toLowerCase(); }
+    return Object.assign({ map: m, cache: new Map() }, rule);
+  }
+  const SHINY_PAL = {
+    // fish
+    fish: pal("#f2b134>#f06a9a #8a5810>#5a2a8a", { hue: 335, hueDark: 270, hueLight: 48, sat: 1.1 }),
+    lantern: pal("#1c2633>#6a1838 #0b1119>#2a0612"),
+    clown: pal("#f07c1e>#2e2026 #1d1d1d>#f2801e #fbfbf6>#fbfbf6"),
+    cleaners: pal("#58b4f2>#f6d838 #10202e>#7a2ac8"),
+    grouper: pal("#7a5a3a>#e8b828 #3e2c1c>#9a6a08 #5a3f26>#c89418"),
+    archer: pal("#d9dfe0>#f2cc48 #2a2e30>#1c3a6e"),
+    parrotfish: pal("#f08ab0>#f6e44a #f2c060>#e85aa0 #f2eee0>#f8f4ff", { hue: 212, sat: 1.1 }),
+    boxfish: pal("#f2d030>#3a86d8 #b89818>#1c4888 #e8a030>#f2d030"),
+    puffer: pal("#e8c66a>#384a6c #6b5a2a>#f4f2ea #f6efd8>#efe2f2 #fbfbf6>#ffffff"),
+    lionfish: pal("#c84a3a>#2a2230 #b8392c>#161218 #f2e6d8>#f2e6d8 #e8c8b0>#c8a6ec"),
+    flyingfish: pal("#4f86c6>#e8583a #24466e>#8a1c2a #dfe8ef>#fff2e2"),
+    angler: pal("#1b1e26>#5c2c14 #070709>#2a0e06 #b8d8e8>#ff9a3a #e9e4d2>#fff6d8"),
+    sargassumfish: pal("#b8902e>#c84a2a #6a5218>#6a1c12 #c8a840>#c8a840 #a89030>#a89030 #7a6a24>#7a6a24"),
+    triggerfish: pal("#f2ead6>#2c2c3c #bfae7a>#5c4c8c #1e1e22>#f2f0e8 #3a7fe0>#f2b820 #f2b820>#e84a8a #6a6450>#c8c0e0"),
+    wrasse: pal("#3fbf8a>#ec9a2c #2fa0b0>#d84a6a #e8609a>#3a8ad8 #f070b0>#5ad0f0 #f2c840>#7a3ad8"),
+    surgeonfish: pal("#2f5fe0>#f4ca2c #0e1430>#2a62e0 #f2d030>#0e1430"),
+    mandarinfish: pal("#2f6fe0>#e2402a #f08a30>#36d6e0 #3fc0a0>#f2d030 #f2c030>#2fe070"),
+    needlefish: pal("#c8d8e0>#ecd8a0 #3a8a7a>#2a48d8"),
+    scorpionfish: pal("#b84a3a>#ecc84a #7a2a20>#8a6a10 #e8b8a0>#faf2e2"),
+    stonefish: pal("#5a5246>#c84a3a #3a3228>#7a1e18 #7a7060>#ea705a #6a8a5a>#f2c040"),
+    goby: pal("#d8c8a0>#5ac0e8 #9a7a4a>#2a6a9a #8a6a3a>#f2f040"),
+    pistol: pal("#e8603a>#3a86d8 #f2d0a0>#f2f0fa #f0a070>#a0c8f0 #f2c830>#ea5070 #c8961a>#a02848 #4aa8f0>#f2e040"),
+    eels: pal("#e8e0c8>#f2a03a #2a2620>#fbf6ea"),
+    // sharks and big fish: every one its own colours
+    thresher: pal("#5a6a8a>#8a3a6a #dfe4ea>#f4e2ec"),
+    whitetip: pal("#7a8288>#34343c #d8dcdf>#c8ccd6 #f4f4f4>#ffd040"),
+    greatwhite: pal("#5e6870>#1a1e24 #f2f2ee>#e8d6b0"),
+    hammerhead: pal("#7a8a94>#a87a48 #4a5862>#6a4a2a #d8dde0>#f4e8d2"),
+    whaleshark: pal("#3a5068>#e2dccf #dfe8ee>#3a5a78 #c8d4dc>#f6f2ea"),
+    swordfish: pal("#2d4f8a>#1c1a26 #1e335a>#d8a020 #3a5fa8>#e8b830 #8ab8e8>#f4e8a0 #c9d4dc>#d8d0c0"),
+    marlin: pal("#1e3a6a>#4a1a6a #6ab0e8>#f2c040 #c8d8e8>#ecdcf2"),
+    tuna: pal("#1e3050>#2a5a3a #c8d4dc>#ece2c8 #f2d030>#e84a6a"),
+    barracuda: pal("#b8c4cc>#dab878 #4a5862>#6a4a20 #d8e0e4>#f4e8c8"),
+    sunfish: pal("#9aa4ae>#c8a8d8 #6a747e>#8a6aa0 #c8d0d6>#f4eaf8"),
+    coelacanth: pal("#2a3a5a>#7a5a3a #3a4c70>#9a7a4a #1e2c46>#5a3e24 #e8eef2>#f2d880 #c8d8a0>#3ad8ff"),
+    sawfish: pal("#9a8a6a>#6a7a8a #8a7a5a>#4a5a6a #e8e0cc>#e8f0f4 #f2ead8>#f8fafc"),
+    // rays
+    ray: pal("#7c6a55>#cac4b8 #3e342a>#2b5a8a #4a3e30>#7a7466"),
+    manta: pal("#121a22>#2a5aa8 #dce6eb>#f4f0e0"),
+    eagleray: pal("#2a3442>#f2e8d8 #e8eef2>#2a3442"),
+    electricray: pal("#8a5a3a>#3a4a8a #5e3a24>#f2d040"),
+    guitarfish: pal("#c8a878>#8a9aa8 #8a6a48>#4a5a68 #e8d4a8>#f2f6fa"),
+    // seahorses, jellies, cephalopods
+    seahorse: pal("", { hue: 332, hueDark: 300, lit: 0.05, sat: 1.1 }),
+    seadragon: pal("#9aa040>#c8508a #d8a040>#e85a3a"),
+    jelly: pal("", { hue: 42, hueLight: 46, sat: 1.5, lit: -0.24 }),
+    cassiopea: pal("#c8bc90>#3a6ad8 #a89c70>#2a4aa8 #f0ecc0>#f2f0ff", { hue: 222 }),
+    comb: pal("", { body: "#ffd24a" }),
+    octopus: pal("#f2c34a>#d8203a #f4ecd8>#fff0f2", { hue: 340, sat: 0.4, lit: 0.28, bodyHue: 345, bodySat: 40, bodyLight: 1.45 }),
+    squid: pal("", { body: "#4a7af0" }),
+    cuttlefish: pal("#c8a888>#f2d04a #b08860>#8a3a8a #a07850>#6a2a7a #ece6dc>#f8e8f8"),
+    nautilus: pal("#f2e8d8>#2c2c3c #b0603a>#e8c040 #e8c8a8>#5a5a74 #b07858>#c8a030 #c8b8a0>#44445a"),
+    giant: pal("#8a2e2a>#e8e8f0 #5a1a18>#a8a8c0 #c86a5a>#5a7ad8"),
+    // crustaceans
+    crab: pal("#5a2418>#14304a", { hue: 205, sat: 0.95 }),
+    hermit: pal("#d9543b>#2a8a7a #c9603c>#1f6a5e", { hue: 296, sat: 0.9 }),
+    lobster: pal("#2f4a78>#e8902a #1c2c4a>#5a2a14 #5a78a8>#f2c860 #a05a3a>#3a2a2a"),
+    spidercrab: pal("#d8783a>#e8e0d0 #f0d8b0>#c84a5a"),
+    mantis: pal("#57c27c>#c84ab8 #6fd3e0>#f2e04a #e8553a>#3a6ae8 #e8b03c>#ffffff #f08a3c>#7a3ad8 #2f8f5a>#8a2a7a #3a7fd0>#e8a020 #3fa86b>#a8389a"),
+    isopod: pal("#a898a8>#e8c060 #8a7a8a>#b88a20 #857585>#a87810 #b8a8b8>#f2d888"),
+    // starfish, urchins, slugs and the rest of the floor
+    starfish: pal("", { hue: 268, lit: -0.04 }),
+    urchin: pal("", { hue: 142, sat: 0.8, lit: 0.12 }),
+    slugs: pal("#e8d8b0>#f2d030", { hue: 48, hueLight: 186, hueDark: 20, sat: 1.1 }),
+    sanddollar: pal("#c8b8c8>#3a3a5a #a898a8>#2a2a40 #f0e8f0>#f2d870"),
+    brittlestar: pal("#d88ab8>#5ad0c0 #b86a9a>#2a9a8a"),
+    seacucumber: pal("#8a5a40>#f2d030 #6a4030>#c83a2a #e8c8a0>#e83a8a"),
+    featherstar: pal("#e8603a>#7a3ad8 #f2c030>#e85ab0", { hue: 285 }),
+    // reptiles
+    turtle: pal("#6a5434>#2a6a8a #3b301f>#e8c040 #7d8a6a>#e8d8a0 #5d6a4c>#c8a860 #d8c890>#f6f0e0"),
+    hatchlings: pal("#5a5e48>#e8e0d0 #4a4430>#c8bca8 #6e6648>#f2ead8 #c8c098>#fffaf0"),
+    crocodile: pal("#5a6a3a>#e8d8c0 #3a4628>#c8b090 #b8b088>#f8f0e0 #f0f0e0>#ffffff"),
+    seasnake: pal("#1a1a1a>#e8e4f0 #f2c830>#c83a3a"),
+    seakrait: pal("#6a9ad8>#f2e8d0 #141820>#c8302a #f2c830>#141820"),
+    iguana: pal("#3a4040>#c8402a #262c2c>#2a6a3a #6a7068>#3aa060"),
+    // whales and dolphins
+    dolphins: pal("#7d8f9c>#e8a0b0 #4f5f6b>#c8708a #d5dde0>#fbe6ea"),
+    orca: pal("#14181c>#f2f0ec #f0f0ea>#1a2230 #9aa2a8>#c8ccd0"),
+    beluga: pal("#eef2f2>#6a7a8a #c8d2d6>#4a5a6a #8a9498>#2a3440"),
+    narwhal: pal("#8e969a>#2a2e3a #4a5256>#e8ecf0 #6e767a>#1a1e28 #c8ccce>#5a6070 #ece4cc>#f2d880 #a89e84>#c8a040"),
+    humpback: pal("#26313b>#e8e8e4 #c9cfd2>#ffffff #dfe3e2>#f8f8f6 #7d878c>#b8bcbc #8a949a>#c8ccca"),
+    spermwhale: pal("#5a6068>#8a4a3a #3a3e44>#5a2a20"),
+    bluewhale: pal("#5a7a98>#2a3a5a #8aa4b8>#e8d8a0"),
+    finwhale: pal("#3e4650>#5a4a3a #e8eaea>#f2e6d0"),
+    pilotwhale: pal("#22262a>#5a6a7a"),
+    falsekiller: pal("#16181a>#3a2a4a"),
+    // mammals and birds
+    seal: pal("#6f7478>#e8e4dc #3e4246>#a8a29a #a9aca8>#ffffff"),
+    sealion: pal("#7a5a3a>#b0b8c0 #5a4028>#7a8490 #a88a64>#d8dce0"),
+    otters: pal("#5a3e2a>#e8dcc8 #c9b49a>#fff6e8 #e6c9a8>#f2e2c8"),
+    manatee: pal("#8a8a80>#a8c0a0 #5a5a52>#6a8a68"),
+    penguins: pal("#15181c>#8a6a4a #f2f2ec>#fbf6ee #f29a2e>#e8604a #f2be3c>#f2e0a0"),
+    walrus: pal("#b4806a>#c8c8d0 #8a5a48>#8a8a98 #d4a48c>#e8e8f0 #f4ecd8>#f2d060"),
+    polarbear: pal("#f4f0e2>#c8a070 #d6cfba>#a07a50"),
+    albatross: pal("#f6f6f2>#f2e6c8 #d8dadc>#e0c890 #3a3a42>#6a3a20 #2a2a30>#4a2a14 #f0b0a0>#e8c040 #d88a78>#c89a20 #f0b8a0>#e8c040"),
+    pelican: pal("#f4f0e4>#f8d8dc #c8c4b8>#e8b0b8 #2a2a2a>#3a2a2a #e89838>#e85a7a #f2c878>#f2a0b0 #f2d8a8>#f8c8d0"),
+    cormorant: pal("#1e2226>#f0f0ea #2e4a3a>#c8d0c8 #e8b040>#e8603a"),
+    // legends and wonders
+    mermaid: pal("#2fa58f>#c83a6a #7fd8c9>#f2a0c0 #8a5ad0>#2fa58f #b5452f>#f2e0a0 #d9a07a>#d9a07a"),
+    serpent: pal("#2f6a4a>#3a2a6a #1a3a28>#1a1238 #a8c070>#f2c860 #c84a3a>#3ad8c0"),
+    kraken: pal("#6a1f2e>#1f5a4a #e0a0a0>#f2d060 #4a1420>#123a30"),
+    megalodon: pal("#040a12>#5a1414"),
+    mobydick: pal("#eceae4>#e8c860 #a8a6a0>#a88a30"),
+    whalefall: pal("#ddd6c2>#f2d880 #c98a8a>#7a5ad8"),
+    goldpearl: pal("#f2c440>#ff7ac8 #a89c88>#2a2a3a #d8d0c0>#4a4a6a"),
+    ghostdiver: pal("#96ffd7>#c8a0ff #cdffeb>#ecdcff #061e20>#1a0830"),
+    eelmigration: pal("", { body: "#f2c040" }),
+  };
+  // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).
+  function shinySwap(hex) {
+    const p = shinyPal;
+    if (!p || typeof hex !== "string" || hex.length !== 7 || hex[0] !== "#") return hex;
+    const k = hex.toLowerCase();
+    if (p.map[k]) return p.map[k];
+    let v = p.cache.get(k);
+    if (!v) { v = shinyRule(k, p); p.cache.set(k, v); }
+    return v;
+  }
+  function shinyRule(hex, p) {
+    const [r, g, b] = hexRgb(hex).map(c => c / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let l = (mx + mn) / 2, s = d ? d / (1 - Math.abs(2 * l - 1)) : 0, h = d ? rgbHue(r * 255, g * 255, b * 255) : 0;
+    let target = p.hue;
+    if (p.hueDark !== undefined && l < 0.33) target = p.hueDark;
+    else if (p.hueLight !== undefined && l > 0.72) target = p.hueLight;
+    if (target !== undefined) { h = target; if (s < 0.12) s = 0.45; }
+    else h = (h + (p.rot !== undefined ? p.rot : 150)) % 360;
+    s = Math.max(0, Math.min(1, s * (p.sat || 1)));
+    l = Math.max(0.03, Math.min(0.97, l + (p.lit || 0)));
+    const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = l - c / 2;
+    const [rr, gg, bb] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return "#" + [rr, gg, bb].map(v => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("");
+  }
+  // for colours that are not mixed with the water: the shiny colour if a shiny is being drawn
+  const sc = hex => shinyPal ? shinySwap(hex) : hex;
+  const sca = (hex, a) => { const [r, g, b] = hexRgb(sc(hex)); return `rgba(${r},${g},${b},${a})`; };
+  // a scheme's own body colour, used as it is
+  const rgbaOf = (hex, a) => { const [r, g, b] = hexRgb(hex); return `rgba(${r},${g},${b},${a})`; };
+  // an "r,g,b" colour, as the jellies use
+  function scTriplet(rgb) {
+    if (!shinyPal) return rgb;
+    const hex = "#" + rgb.split(",").map(v => (+v).toString(16).padStart(2, "0")).join("");
+    return hexRgb(shinySwap(hex)).join(",");
+  }
+
+  // Things without a scheme of their own (the ghost ship is a ready-made picture) get one colour over everything,
+  // far round the colour wheel from their own colour.
   const BASE_HUE = {
     octopus: 18, ray: 30, eels: 45, puffer: 45, squid: 340, hermit: 15, otters: 25, clown: 25, mantis: 140, archer: 190,
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
@@ -5801,16 +5972,20 @@
   // The spare layers match whatever is being drawn on: the ocean itself, or a small logbook picture.
   let shinyA = null, shinyB = null, shinyMain = null;
   const shinyBufs = new Map();
-  function beginShiny() {
+  // With a scheme, a shiny is simply drawn with its own colours; only things without one go through the spare layers.
+  const palStack = [];
+  function beginShiny(key) {
+    const scheme = key && SHINY_PAL[key];
+    if (scheme) { palStack.push(shinyPal); shinyPal = scheme; return true; }
     const target = ctx.canvas;
     if (shinyMain || !target || !target.width || !target.height) return false;
-    const key = target.width + "x" + target.height;
-    let bufs = shinyBufs.get(key);
+    const size = target.width + "x" + target.height;
+    let bufs = shinyBufs.get(size);
     if (!bufs) {
       if (shinyBufs.size > 3) shinyBufs.clear();
       bufs = [document.createElement("canvas"), document.createElement("canvas")];
       for (const c of bufs) { c.width = target.width; c.height = target.height; }
-      shinyBufs.set(key, bufs);
+      shinyBufs.set(size, bufs);
     }
     [shinyA, shinyB] = bufs;
     const a = shinyA.getContext("2d");
@@ -5823,6 +5998,7 @@
     return true;
   }
   function endShiny(key, obj) {
+    if (key && SHINY_PAL[key] && palStack.length) { shinyPal = palStack.pop(); return; }
     if (!shinyMain) return;
     const a = ctx, w = shinyA.width, h = shinyA.height;
     ctx = shinyMain;
@@ -5860,7 +6036,7 @@
   }
   // Draw something; recolour it when the creature is shiny.
   function shinyDraw(obj, fn) {
-    if (obj && obj.shiny && beginShiny()) { fn(); endShiny(obj.shiny, obj); }
+    if (obj && obj.shiny && beginShiny(obj.shiny)) { try { fn(); } finally { endShiny(obj.shiny, obj); } }
     else fn();
   }
 
@@ -6130,7 +6306,7 @@
     for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.arc(i * s * 0.2, cy + Math.sin(i + g.ph * 3) * lip * 0.3, s * 0.035, 0, TAU); ctx.fill(); }
     if (g.pearl && g.open > 0.45) {
       const gold = g.pearl === "gold";
-      ctx.fillStyle = gold ? "#f2c440" : "#f4f0ea";
+      ctx.fillStyle = gold ? sc("#f2c440") : sc("#f4f0ea");
       ctx.beginPath(); ctx.arc(0, cy, s * (gold ? 0.17 : 0.12), 0, TAU); ctx.fill();
       ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(-s * 0.04, cy - s * 0.04, s * 0.035, 0, TAU); ctx.fill();
       if (gold) { const tw = 0.5 + 0.5 * Math.sin(t * 3); ctx.fillStyle = `rgba(255,240,170,${0.25 * tw})`; ctx.beginPath(); ctx.arc(0, cy, s * 0.3, 0, TAU); ctx.fill(); }
@@ -6817,7 +6993,7 @@
     ctx = c.getContext("2d");
     drawShark({ x: c.width / 2, y: c.height / 2, dir: 1, size, ph: 0, yOff: 0 });
     ctx.globalCompositeOperation = "source-atop";
-    ctx.fillStyle = "rgba(4,10,18,0.9)";
+    ctx.fillStyle = sca("#040a12", 0.9);
     ctx.fillRect(0, 0, c.width, c.height);
     ctx = saved;
     c.w = size;
@@ -7382,6 +7558,7 @@
   }
 
   function drawSpermWhaleShape(x, y, dir, L, ph, col, dark) {
+    col = sc(col); dark = sc(dark);
     ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
     ctx.fillStyle = col;
     ctx.save(); ctx.translate(-L * 0.48, 0); ctx.rotate(Math.sin(ph * 2) * 0.18);
@@ -7522,7 +7699,7 @@
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
         if (!E.logged && lit(e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration"); }
         shinyDraw(e, () => {
-          ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
+          ctx.strokeStyle = e.shiny ? "rgba(242,192,64,0.95)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
           ctx.beginPath();
           for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
           ctx.stroke();
@@ -7570,7 +7747,7 @@
     const L = s * 1.55;
     ctx.save(); ctx.translate(x + dir * L * 0.12, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph * 0.9) * 0.08);
     ctx.globalAlpha = alpha;
-    drawDiverBody(L, ph * 2.2, { suit: "rgba(150,255,215,0.8)", fin: "rgba(150,255,215,0.55)", tank: "rgba(205,255,235,0.85)", gear: "rgba(150,255,215,0.6)", mask: `rgba(6,30,32,${0.85 * alpha})`, hollow: true });
+    drawDiverBody(L, ph * 2.2, { suit: sca("#96ffd7", 0.8), fin: sca("#96ffd7", 0.55), tank: sca("#cdffeb", 0.85), gear: sca("#96ffd7", 0.6), mask: sca("#061e20", 0.85 * alpha), hollow: true });
     ctx.restore();
   }
   function drawGhostDiver(g, k) {
@@ -7734,7 +7911,7 @@
     eagleray: () => drawEagleray({ x: 64, y: 44, dir: 1, size: 80, ph: 0.5, yOff: 0 }),
     spermwhale: () => drawSpermwhale({ x: 58, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     eelmigration: () => {
-      ctx.strokeStyle = "rgba(220,240,255,0.7)"; ctx.lineWidth = 2; ctx.lineCap = "round";
+      ctx.strokeStyle = shinyPal && shinyPal.body ? rgbaOf(shinyPal.body, 0.95) : "rgba(220,240,255,0.7)"; ctx.lineWidth = 2; ctx.lineCap = "round";
       for (let i = 0; i < 14; i++) {
         const x0 = 14 + (i * 41) % 92, y0 = 18 + (i * 29) % 50;
         ctx.beginPath(); for (let j = 0; j <= 6; j++) { const x = x0 - j * 3, y = y0 + Math.sin(i + j) * 2; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
@@ -7789,7 +7966,7 @@
     ctx.beginPath(); ctx.moveTo(L * 0.18, L * 0.05); ctx.quadraticCurveTo(L * 0.06, L * 0.18, -L * 0.02, L * 0.19); ctx.lineTo(L * 0.06, L * 0.05); ctx.fill();
     ctx.beginPath(); ctx.moveTo(-L * 0.2, -L * 0.04); ctx.lineTo(-L * 0.25, -L * 0.1); ctx.lineTo(-L * 0.27, -L * 0.035); ctx.fill();
     if (tip) {
-      ctx.fillStyle = tip;
+      ctx.fillStyle = sc(tip);
       ctx.beginPath(); ctx.moveTo(-L * 0.01, -L * 0.2); ctx.lineTo(-L * 0.06, -L * 0.24); ctx.lineTo(-L * 0.06, -L * 0.18); ctx.fill();
       ctx.beginPath(); ctx.moveTo(L * 0.02, L * 0.17); ctx.lineTo(-L * 0.02, L * 0.19); ctx.lineTo(L * 0.0, L * 0.15); ctx.fill();
       ctx.beginPath(); ctx.arc(-L * (0.36 + upper), -L * (upper * 0.75), L * 0.018, 0, TAU); ctx.fill();
@@ -10328,7 +10505,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=47").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=48").catch(() => {}));
   }
 </script>
 </body>

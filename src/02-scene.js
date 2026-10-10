@@ -76,6 +76,7 @@
   const shadeCache = new Map();
   function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
   function sh(hex, extra = 0) {
+    if (shinyPal) hex = shinySwap(hex);
     const key = hex + water.name + extra;
     let v = shadeCache.get(key);
     if (!v) {

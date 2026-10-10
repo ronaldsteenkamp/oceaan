@@ -16,6 +16,7 @@
     ctx.rotate(ang);
     if (Math.cos(ang) < 0) ctx.scale(1, -1);
     const k = L / 100, big = L > 9;
+    main = sc(main); dark = sc(dark);
     ctx.scale(k, k * (stripes ? 1.2 : 1));
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(-80, 0); ctx.rotate(Math.sin(ph) * 0.4); ctx.fill(P(FISH_TAIL)); ctx.restore();
@@ -25,7 +26,7 @@
       // a clownfish: white bands edged in black
       ctx.save(); ctx.clip(P(FISH_BODY));
       ctx.strokeStyle = dark; ctx.lineWidth = 9; ctx.stroke(P(CLOWN_BANDS));
-      ctx.fillStyle = "#fbfbf6"; ctx.fill(P(CLOWN_BANDS));
+      ctx.fillStyle = sc("#fbfbf6"); ctx.fill(P(CLOWN_BANDS));
       ctx.restore();
     } else {
       ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.fill(P(FISH_BELLY));
@@ -258,13 +259,14 @@
 
       const pulse = Math.sin(j.ph);
       const bw = j.r * (1 + 0.12 * pulse), bh = j.r * (0.78 - 0.14 * pulse);
-      const recolor = j.shiny && beginShiny();
+      const recolor = j.shiny && beginShiny(j.shiny);
+      const jc = scTriplet(j.col);
       ctx.save();
       ctx.translate(j.x, j.y);
       ctx.rotate(Math.sin(t * 0.25 + j.drift) * 0.12);
 
       ctx.lineWidth = Math.max(0.7, 0.9 * u);
-      ctx.strokeStyle = `rgba(${j.col},0.32)`;
+      ctx.strokeStyle = `rgba(${jc},0.32)`;
       const n = 7, len = j.r * j.tl;
       for (let i = 0; i < n; i++) {
         const x0 = -bw * 0.8 + (i * 1.6 * bw) / (n - 1);
@@ -278,17 +280,17 @@
         ctx.stroke();
       }
       ctx.lineWidth = Math.max(1.5, j.r * 0.12);
-      ctx.strokeStyle = `rgba(${j.col},0.4)`;
+      ctx.strokeStyle = `rgba(${jc},0.4)`;
       for (let i = -1; i <= 1; i += 2) {
         ctx.beginPath();
         ctx.moveTo(i * bw * 0.15, 0);
         for (let s = 1; s <= 8; s++) ctx.lineTo(i * bw * 0.15 + Math.sin(t * 1.4 - s * 0.7 + i) * j.r * 0.22, (s / 8) * len * 0.6);
         ctx.stroke();
       }
-      if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${j.col},0.8)`; }
+      if (water.glow) { ctx.shadowBlur = 18 * u; ctx.shadowColor = `rgba(${jc},0.8)`; }
       // the bell is drawn at unit size and stretched, so its colour gradient can be made once and reused
       ctx.save(); ctx.scale(bw, bh);
-      ctx.fillStyle = jellyGradient(j.col);
+      ctx.fillStyle = jellyGradient(jc);
       ctx.fill(JELLY_BELL);
       ctx.restore();
       ctx.shadowBlur = 0;
@@ -426,7 +428,10 @@
     if (o.dash > 0.4 && Math.random() < 0.5 * k) puff(o.x, sandY(o.x) + 5 * u, 1);
 
     const light = 42 + o.scare * 30;
-    const col = `hsl(${o.hue + Math.sin(t * 0.15) * 25} ${55 - o.scare * 25}% ${light * (1 - water.tintK * 0.6)}%)`;
+    // a shiny octopus keeps changing shade, but in its own colours
+    const P0 = shinyPal && shinyPal.bodyHue !== undefined ? shinyPal : null;
+    const col = P0 ? `hsl(${P0.bodyHue + Math.sin(t * 0.15) * 12} ${P0.bodySat - o.scare * 15}% ${Math.min(90, light * P0.bodyLight * (1 - water.tintK * 0.6))}%)`
+      : `hsl(${o.hue + Math.sin(t * 0.15) * 25} ${55 - o.scare * 25}% ${light * (1 - water.tintK * 0.6)}%)`;
     const x = o.x;
     ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineCap = "round";
     for (let i = 0; i < 8; i++) {
@@ -597,7 +602,7 @@
     ctx.save();
     ctx.translate(a.x, y);
     ctx.scale(faceOf(a), 1);
-    const body = "#1b1e26";
+    const body = sc("#1b1e26");
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(-s * 0.85, 0); ctx.rotate(Math.sin(t * 3) * 0.25);
     ctx.beginPath(); ctx.moveTo(s * 0.1, 0); ctx.lineTo(-s * 0.45, -s * 0.35); ctx.lineTo(-s * 0.4, s * 0.3); ctx.fill();
@@ -608,15 +613,15 @@
     ctx.bezierCurveTo(-s * 0.6, s * 0.5, s * 0.3, s * 0.6, s * 0.75, s * 0.35);
     ctx.lineTo(s * 0.6, -s * 0.05);
     ctx.fill();
-    ctx.fillStyle = "#070709";
+    ctx.fillStyle = sc("#070709");
     ctx.beginPath(); ctx.moveTo(s * 0.62, -s * 0.03); ctx.lineTo(s * 0.74, s * 0.33); ctx.lineTo(s * 0.2, s * 0.15); ctx.fill();
-    ctx.fillStyle = "#e9e4d2";
+    ctx.fillStyle = sc("#e9e4d2");
     for (let i = 0; i < 5; i++) {
       const tx = s * (0.25 + i * 0.1);
       ctx.beginPath(); ctx.moveTo(tx, s * (0.02 + i * 0.04)); ctx.lineTo(tx + s * 0.03, s * (0.14 + i * 0.03)); ctx.lineTo(tx + s * 0.06, s * (0.03 + i * 0.05)); ctx.fill();
       ctx.beginPath(); ctx.moveTo(tx, s * (0.2 + i * 0.03)); ctx.lineTo(tx + s * 0.03, s * (0.08 + i * 0.04)); ctx.lineTo(tx + s * 0.06, s * (0.22 + i * 0.03)); ctx.fill();
     }
-    ctx.fillStyle = "#b8d8e8";
+    ctx.fillStyle = sc("#b8d8e8");
     ctx.beginPath(); ctx.arc(s * 0.25, -s * 0.22, s * 0.06, 0, TAU); ctx.fill();
     // lure
     const lx = s * 0.85 + Math.sin(t * 1.2) * s * 0.06, ly = -s * 0.75 + Math.cos(t * 1.5) * s * 0.05;
@@ -768,7 +773,7 @@
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
-    ctx.fillStyle = "rgba(18,26,34,0.88)";
+    ctx.fillStyle = sca("#121a22", 0.88);
     ctx.beginPath();
     ctx.moveTo(L * 0.3, -L * 0.07);
     ctx.quadraticCurveTo(L * 0.12, -L * 0.42 * flap, -L * 0.06, -L * 0.62 * flap);
@@ -782,13 +787,13 @@
     ctx.ellipse(L * 0.33, -L * 0.06, L * 0.07, L * 0.025, 0.3, 0, TAU);
     ctx.ellipse(L * 0.33, L * 0.06, L * 0.07, L * 0.025, -0.3, 0, TAU);
     ctx.fill();
-    ctx.strokeStyle = "rgba(18,26,34,0.88)";
+    ctx.strokeStyle = sca("#121a22", 0.88);
     ctx.lineWidth = Math.max(1, L * 0.012);
     ctx.beginPath();
     ctx.moveTo(-L * 0.3, 0);
     ctx.quadraticCurveTo(-L * 0.55, Math.sin(v.ph * 2) * L * 0.05, -L * 0.85, 0);
     ctx.stroke();
-    ctx.fillStyle = "rgba(220,230,235,0.25)";
+    ctx.fillStyle = sca("#dce6eb", 0.25);
     ctx.beginPath();
     ctx.ellipse(L * 0.05, -L * 0.12, L * 0.06, L * 0.035, 0.4, 0, TAU);
     ctx.ellipse(L * 0.05, L * 0.12, L * 0.06, L * 0.035, -0.4, 0, TAU);

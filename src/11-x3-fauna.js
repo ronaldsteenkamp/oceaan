@@ -22,7 +22,7 @@
     ctx.beginPath(); ctx.moveTo(L * 0.18, L * 0.05); ctx.quadraticCurveTo(L * 0.06, L * 0.18, -L * 0.02, L * 0.19); ctx.lineTo(L * 0.06, L * 0.05); ctx.fill();
     ctx.beginPath(); ctx.moveTo(-L * 0.2, -L * 0.04); ctx.lineTo(-L * 0.25, -L * 0.1); ctx.lineTo(-L * 0.27, -L * 0.035); ctx.fill();
     if (tip) {
-      ctx.fillStyle = tip;
+      ctx.fillStyle = sc(tip);
       ctx.beginPath(); ctx.moveTo(-L * 0.01, -L * 0.2); ctx.lineTo(-L * 0.06, -L * 0.24); ctx.lineTo(-L * 0.06, -L * 0.18); ctx.fill();
       ctx.beginPath(); ctx.moveTo(L * 0.02, L * 0.17); ctx.lineTo(-L * 0.02, L * 0.19); ctx.lineTo(L * 0.0, L * 0.15); ctx.fill();
       ctx.beginPath(); ctx.arc(-L * (0.36 + upper), -L * (upper * 0.75), L * 0.018, 0, TAU); ctx.fill();

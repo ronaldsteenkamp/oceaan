@@ -220,7 +220,7 @@
         bubbles = []; smoke = []; dust = []; ink = []; coins = []; abyssGlows = [];
         water = THUMB_WATER; scene = thumbScene();
         const THUMB_BASE = { fish: hexHue("#f2b134"), crab: hexHue("#d9543b"), starfish: hexHue("#e8743b"), seahorse: hexHue("#f2b134"), slugs: hexHue("#7b4fd6"), jelly: rgbHue(255, 196, 224) };
-        if (shiny && seenIt && beginShiny()) { fn(); endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } else fn();
+        if (shiny && seenIt && beginShiny(base)) { try { fn(); } finally { endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } } else fn();
       } catch (e) {
         // a picture that cannot be drawn just stays empty
       } finally {

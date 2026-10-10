@@ -475,6 +475,7 @@
   }
 
   function drawSpermWhaleShape(x, y, dir, L, ph, col, dark) {
+    col = sc(col); dark = sc(dark);
     ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.02);
     ctx.fillStyle = col;
     ctx.save(); ctx.translate(-L * 0.48, 0); ctx.rotate(Math.sin(ph * 2) * 0.18);
@@ -615,7 +616,7 @@
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
         if (!E.logged && lit(e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration"); }
         shinyDraw(e, () => {
-          ctx.strokeStyle = e.shiny ? "rgba(220,240,255,0.9)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
+          ctx.strokeStyle = e.shiny ? "rgba(242,192,64,0.95)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
           ctx.beginPath();
           for (let j = 0; j <= 6; j++) { const f = j / 6, x = e.x - e.dir * f * e.s, y = e.y + Math.sin(e.ph - f * 4) * 2.5 * u * f; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
           ctx.stroke();
@@ -663,7 +664,7 @@
     const L = s * 1.55;
     ctx.save(); ctx.translate(x + dir * L * 0.12, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph * 0.9) * 0.08);
     ctx.globalAlpha = alpha;
-    drawDiverBody(L, ph * 2.2, { suit: "rgba(150,255,215,0.8)", fin: "rgba(150,255,215,0.55)", tank: "rgba(205,255,235,0.85)", gear: "rgba(150,255,215,0.6)", mask: `rgba(6,30,32,${0.85 * alpha})`, hollow: true });
+    drawDiverBody(L, ph * 2.2, { suit: sca("#96ffd7", 0.8), fin: sca("#96ffd7", 0.55), tank: sca("#cdffeb", 0.85), gear: sca("#96ffd7", 0.6), mask: sca("#061e20", 0.85 * alpha), hollow: true });
     ctx.restore();
   }
   function drawGhostDiver(g, k) {
@@ -827,7 +828,7 @@
     eagleray: () => drawEagleray({ x: 64, y: 44, dir: 1, size: 80, ph: 0.5, yOff: 0 }),
     spermwhale: () => drawSpermwhale({ x: 58, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     eelmigration: () => {
-      ctx.strokeStyle = "rgba(220,240,255,0.7)"; ctx.lineWidth = 2; ctx.lineCap = "round";
+      ctx.strokeStyle = shinyPal && shinyPal.body ? rgbaOf(shinyPal.body, 0.95) : "rgba(220,240,255,0.7)"; ctx.lineWidth = 2; ctx.lineCap = "round";
       for (let i = 0; i < 14; i++) {
         const x0 = 14 + (i * 41) % 92, y0 = 18 + (i * 29) % 50;
         ctx.beginPath(); for (let j = 0; j <= 6; j++) { const x = x0 - j * 3, y = y0 + Math.sin(i + j) * 2; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
