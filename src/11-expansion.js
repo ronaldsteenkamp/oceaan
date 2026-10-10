@@ -734,10 +734,11 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && diverMode ? [diver.x, diver.y] : null); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.85 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && night > 0.75 && diverMode ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
-        if (G.age > 35) G.active = false;
+        // only on a dark night: when the sky starts to brighten it is over
+        if (G.age > 35 || night < 0.5) G.active = false;
       }
     }
 
@@ -929,7 +930,9 @@
   // Sea sparkle: tiny plankton light up wherever the water moves.
   function drawGlowtide(k) {
     const G = scene.glowtide;
-    const lv = G.active ? Math.max(0, Math.min(1, G.age / 3, (35 - G.age) / 4)) : 0;
+    // it fades along with the darkness, so it never sparkles in daylight
+    const dark = Math.min(1, Math.max(0, night - 0.5) / 0.3);
+    const lv = G.active ? Math.max(0, Math.min(1, G.age / 3, (35 - G.age) / 4)) * dark : 0;
     if (lv > 0) {
       for (let i = 0; i < 4; i++) if (Math.random() < lv) { const x = Math.random() * W; G.sparks.push({ x, y: waveY(x) + Math.random() * 10 * u, a: 1, r: (0.8 + Math.random() * 1.4) * u }); }
       for (const sp of scene.species) for (let n = 0; n < 2; n++) {

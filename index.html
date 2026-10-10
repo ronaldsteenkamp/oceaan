@@ -6483,10 +6483,11 @@
     if (G.enabled) {
       if (!G.active) {
         G.timer -= dtSec;
-        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.6 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && diverMode ? [diver.x, diver.y] : null); } }
+        if (G.timer <= 0) { G.timer = 30 + Math.random() * 40; if (night > 0.85 && claim(35)) { G.active = true; G.age = 0; watch("glowtide", () => G.active && night > 0.75 && diverMode ? [diver.x, diver.y] : null); } }
       } else {
         G.age += dtSec;
-        if (G.age > 35) G.active = false;
+        // only on a dark night: when the sky starts to brighten it is over
+        if (G.age > 35 || night < 0.5) G.active = false;
       }
     }
 
@@ -6678,7 +6679,9 @@
   // Sea sparkle: tiny plankton light up wherever the water moves.
   function drawGlowtide(k) {
     const G = scene.glowtide;
-    const lv = G.active ? Math.max(0, Math.min(1, G.age / 3, (35 - G.age) / 4)) : 0;
+    // it fades along with the darkness, so it never sparkles in daylight
+    const dark = Math.min(1, Math.max(0, night - 0.5) / 0.3);
+    const lv = G.active ? Math.max(0, Math.min(1, G.age / 3, (35 - G.age) / 4)) * dark : 0;
     if (lv > 0) {
       for (let i = 0; i < 4; i++) if (Math.random() < lv) { const x = Math.random() * W; G.sparks.push({ x, y: waveY(x) + Math.random() * 10 * u, a: 1, r: (0.8 + Math.random() * 1.4) * u }); }
       for (const sp of scene.species) for (let n = 0; n < 2; n++) {
@@ -9480,7 +9483,7 @@
     coralspawn: "op een volle-maannacht bij het koraal", storm: "trekt af en toe over wateren met een oppervlak",
     eruption: "wacht bij de onderzeese vulkaan", task: "zoek de drie zeepaardjes die in de kelp verstopt zitten",
     jellybloom: "drijft af en toe door het water", whalesong: "een bultrug zingt soms als hij langszwemt",
-    glowtide: "op een donkere nacht in wateren met een oppervlak; beweeg dan je vinger door het water",
+    glowtide: "alleen op een donkere nacht, in wateren met een oppervlak; beweeg dan je vinger door het water",
     aurora: "af en toe op een donkere nacht in de IJszee, de Noordzee en het kelpwoud",
     hatchlings: "zwemmen af en toe langs in wateren met zeeschildpadden",
     eelmigration: "trekt af en toe voorbij in de Sargassozee, de Noordzee, het kelpwoud en de mangrove",
@@ -9520,7 +9523,7 @@
     coralspawn: "on a full-moon night at the coral", storm: "now and then rolls over waters with a surface",
     eruption: "waiting at the undersea volcano", task: "find the three seahorses hidden in the kelp",
     jellybloom: "drifts through now and then", whalesong: "a humpback sometimes sings as it swims by",
-    glowtide: "on a dark night in waters with a surface; move your finger through the water",
+    glowtide: "only on a dark night, in waters with a surface; move your finger through the water",
     hatchlings: "swim past now and then in waters with sea turtles",
     eelmigration: "passes by now and then in the Sargasso Sea, the North Sea, the kelp forest and the mangrove",
     quake: "very now and then, in any water", crabmarch: "crosses the floor now and then, where there is no abyss",
@@ -9970,7 +9973,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=44").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=45").catch(() => {}));
   }
 </script>
 </body>
