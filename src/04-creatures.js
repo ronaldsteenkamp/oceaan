@@ -1,4 +1,6 @@
   // ---- fish --------------------------------------------------------------
+  // the sharks that fish scatter from
+  const BIG_SHARKS = new Set(["greatwhite", "whitetip", "thresher"]);
   // A fish with a proper outline: a rounded head, a narrow tail stalk, a forked tail and fins.
   // L is half its body length; the shapes are drawn in units where L = 100.
   const FISH_BODY = "M 100 6 C 92 -22 56 -40 6 -40 C -36 -40 -66 -24 -84 -9 L -84 9 C -66 22 -36 36 6 36 C 56 36 92 22 100 6 Z";
@@ -45,7 +47,7 @@
     if (diverMode) list.push([diver.x, diver.y, 90 * u]);
     const v = scene.visitor;
     if (v) {
-      if (v.type === "shark") list.push([v.x, v.y, v.size * 1.1]);
+      if (BIG_SHARKS.has(v.type)) list.push([v.x, v.y, v.size * 1.1]);
       if (v.type === "swordfish") list.push([v.x, v.y, v.size * 1.5]);
       if (v.type === "dolphins") for (const d of v.pod) list.push([v.x + d.dx * v.dir, v.y + d.dy, v.size * 0.9]);
     }
@@ -623,8 +625,8 @@
   }
 
   // ---- big visitors ------------------------------------------------------
-  const VISITOR_SPEED = { whale: 0.35, humpback: 0.6, manta: 0.7, shark: 1.1, turtle: 0.55, dolphins: 1.7, swordfish: 2.4, sub: 0.6, narwhal: 0.8, mermaid: 0.7 };
-  const VISITOR_PHASE = { whale: 0.012, humpback: 0.01, manta: 0.025, shark: 0.05, swordfish: 0.06, dolphins: 0.03, sub: 0.02, narwhal: 0.03, mermaid: 0.03, turtle: 0.035 };
+  const VISITOR_SPEED = { humpback: 0.6, manta: 0.7, turtle: 0.55, dolphins: 1.7, swordfish: 2.4, sub: 0.6, narwhal: 0.8, mermaid: 0.7 };
+  const VISITOR_PHASE = { humpback: 0.01, manta: 0.025, swordfish: 0.06, dolphins: 0.03, sub: 0.02, narwhal: 0.03, mermaid: 0.03, turtle: 0.035 };
 
   function spawnVisitor() {
     const pool = scene.visitorPool;
@@ -634,15 +636,15 @@
     const dir = Math.random() < 0.5 ? 1 : -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
     const SIZE = {
-      whale: () => Math.min(W * 0.45, 620 * u), humpback: () => Math.min(W * 0.95, 950 * u),
-      manta: () => rnd(110, 170) * u, shark: () => rnd(150, 230) * u, turtle: () => rnd(70, 100) * u,
+      humpback: () => Math.min(W * 0.95, 950 * u),
+      manta: () => rnd(110, 170) * u, turtle: () => rnd(70, 100) * u,
       dolphins: () => rnd(70, 95) * u, swordfish: () => rnd(130, 180) * u, sub: () => rnd(120, 170) * u,
       narwhal: () => rnd(110, 150) * u, mermaid: () => rnd(110, 140) * u,
     };
     const size = (SIZE[type] || MORE_SIZE[type])();
     const v = {
       type, dir, size, ph: 0, yOff: 0,
-      y: H * (type === "whale" ? rnd(0.15, 0.35) : type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
+      y: H * (type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
       speed: VISITOR_SPEED[type] * u,
     };
     if (type === "dolphins") {
@@ -682,7 +684,7 @@
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
     if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
     // hunters steer towards the biggest school
-    if (v.type === "shark" || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
+    if (BIG_SHARKS.has(v.type) || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
       let best = null;
       for (const s of scene.species) if (!best || s.fish.length > best.fish.length) best = s;
       if (best && best.fish.length) {
@@ -693,7 +695,7 @@
       }
     }
     // the shark snaps up a fish now and then
-    if (v.type === "shark" && frameNo % 10 === 0) {
+    if (BIG_SHARKS.has(v.type) && frameNo % 10 === 0) {
       const mx = v.x + v.dir * v.size * 0.45, my = v.y + v.yOff;
       for (const s of scene.species) {
         if (s.lantern) continue;
@@ -709,23 +711,6 @@
       if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
       else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
     }
-  }
-
-  const WHALE_BODY = "M 50 1 C 49 -5 42 -9 30 -10.5 C 10 -12 -20 -9 -38 -4 C -44 -2.4 -50 -1 -53 0 C -46 2 -38 4 -22 6.5 C 2 10 30 10 44 6 C 48 4.5 50 3 50 1 Z";
-  const WHALE_FLUKE = "M 2 0 C -4 -3 -9 -7 -13 -11 C -12 -6 -10 -2 -9 0 C -10 2 -12 6 -13 11 C -9 7 -4 3 2 0 Z";
-  const WHALE_FLIPPER = "M 0 0 C -4 4 -14 9 -24 10 C -20 6 -10 2 0 -1 Z";
-  function drawWhale(v) {
-    const L = v.size;
-    ctx.save();
-    ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
-    ctx.rotate(Math.sin(v.ph) * 0.02);
-    ctx.fillStyle = `rgba(${water.whale},0.5)`;
-    ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.18); ctx.fill(P(WHALE_FLUKE)); ctx.restore();
-    ctx.fill(P(WHALE_BODY));
-    ctx.beginPath(); ctx.moveTo(-26, -6.5); ctx.quadraticCurveTo(-30, -9.5, -34, -10); ctx.lineTo(-32, -5.5); ctx.fill();
-    ctx.save(); ctx.translate(22, 6); ctx.rotate(0.15 + Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(WHALE_FLIPPER)); ctx.restore();
-    ctx.restore();
   }
 
   // A sea turtle: a domed shell with plates and a pale belly shield, long wing-like front flippers

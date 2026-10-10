@@ -249,10 +249,10 @@
     ctx.fillStyle = sh(water.sand[0], 0.05);
     ctx.beginPath(); ctx.ellipse(0, 0, 16 * u, 5 * u, 0, Math.PI, TAU); ctx.fill();
     ctx.fillStyle = "rgba(0,0,0,0.55)"; ctx.beginPath(); ctx.ellipse(0, 0, 7 * u, 3 * u, 0, 0, TAU); ctx.fill();
-    // the goby keeps watch at the entrance
-    drawFishShape(-5 * u, -9 * u, -0.15, 11 * u, sh("#e8d8b0"), sh("#8a6a3a"), p.ph, false);
-    ctx.fillStyle = sh("#c8783a");
-    for (const dx of [-8, -4, 0]) { ctx.beginPath(); ctx.arc((dx - 5) * u, -9 * u, 0.9 * u, 0, TAU); ctx.fill(); }
+    // the yellow watchman goby keeps watch at the entrance
+    ctx.save(); ctx.translate(-5 * u, -6.5 * u); ctx.rotate(-0.12); ctx.scale(22 * u / 100, 22 * u / 100);
+    drawGobyShape(sh("#f2c830"), sh("#c8961a"), sh("#4aa8f0"), p.ph);
+    ctx.restore();
     // the shrimp comes out to push sand
     const sx = 4 * u + p.out * 9 * u, body = sh("#e8603a"), stripe = sh("#f2d0a0");
     ctx.save(); ctx.translate(sx, -2.5 * u);

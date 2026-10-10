@@ -39,7 +39,7 @@
     sponges: "Sponzen zijn dieren zonder organen. Ze pompen elke dag duizenden liters water door hun lichaam om voedsel eruit te halen.",
     parrotfish: "Een papegaaivis knabbelt aan koraal en poept het fijngemalen uit als wit zand. Veel witte stranden komen deels van hem.",
     boxfish: "Een koffervis zit in een stevig pantser van benen plaatjes en kan alleen zijn vinnen en staart bewegen.",
-    pistol: "De klik van een pistoolgarnaal is een van de hardste geluiden in de zee. Een grondel houdt voor hem de wacht.",
+    pistol: "De klik van een pistoolgarnaal is een van de hardste geluiden in de zee. Hij is bijna blind; de gele wachtersgrondel houdt bij de ingang van hun hol de wacht en waarschuwt hem met een tik van zijn staart.",
     sargassumfish: "De sargassumvis ziet er precies uit als het zeewier waarin hij woont, en klimt erin rond met zijn vinnen als armpjes.",
     spidercrab: "De Japanse reuzenkrab heeft de langste poten van alle geleedpotigen: van punt tot punt tot bijna vier meter.",
     crocodile: "Zeekrokodillen zijn de grootste reptielen ter wereld en zwemmen soms honderden kilometers over open zee.",
@@ -94,10 +94,8 @@
     wrasse: "Lipvissen slapen 's nachts soms in een slijmcocon of graven zich in het zand in.",
     surgeonfish: "Doktersvissen hebben bij hun staart een scherp stekeltje als een scalpel. Daar komt hun naam vandaan.",
     mandarinfish: "De mandarijnvis is een van de weinige dieren met echt blauw pigment. Hij komt vooral bij schemering tevoorschijn.",
-    frogfish: "Een kikvorsvis 'loopt' over de bodem op zijn borstvinnen en lokt prooi met een hengeltje op zijn kop.",
     scorpionfish: "Een schorpioenvis ligt doodstil en gecamoufleerd op de bodem, met gifstekels in zijn rugvin.",
     stonefish: "De steenvis is de giftigste vis ter wereld en lijkt precies op een begroeide steen.",
-    blenny: "Slijmvissen wonen in een gaatje in rots of koraal en steken alleen hun kop met 'wenkbrauwen' naar buiten.",
     goby: "Grondels zijn een van de grootste vissenfamilies. Sommige wonen samen met een garnaal in één hol.",
     needlefish: "Naaldvissen zwemmen vlak onder het oppervlak en kunnen met hun spitse snavel uit het water springen.",
     thresher: "Een voshaai slaat met zijn extreem lange staart zo hard dat hij vissen ermee verdoven kan.",
@@ -137,9 +135,7 @@
     flyingfish: "Vliegende vissen springen uit het water en zweven op hun grote borstvinnen tientallen meters ver, om roofvissen te ontwijken.",
     cleaners: "Poetsvisjes eten parasieten van grotere vissen, die daar speciaal voor naar hun poetsstation komen.",
     grouper: "Tandbaarzen kunnen heel groot worden. De reuzentandbaars wordt meer dan twee meter lang.",
-    whale: "Walvissen stammen af van landdieren die zo'n vijftig miljoen jaar geleden de zee weer in gingen.",
     humpback: "Mannetjes bultruggen zingen lange liederen, die soms meer dan twintig minuten duren en urenlang worden herhaald.",
-    shark: "Een haai heeft geen botten. Zijn skelet is van kraakbeen, net als je oorschelp.",
     turtle: "Zeeschildpadden komen om eieren te leggen vaak terug naar het strand waar ze zelf geboren zijn.",
     manta: "Een reuzenmanta kan een spanwijdte van zo'n zeven meter hebben.",
     dolphins: "Dolfijnen slapen met één hersenhelft tegelijk, zodat ze kunnen blijven ademen.",
@@ -199,7 +195,7 @@
     sponges: "Sponges are animals without organs. Every day they pump thousands of litres of water through their bodies to filter out food.",
     parrotfish: "A parrotfish nibbles coral and poops it out as fine white sand. Many white beaches come partly from parrotfish.",
     boxfish: "A boxfish lives in a stiff armour of bony plates and can only move its fins and tail.",
-    pistol: "The snap of a pistol shrimp is one of the loudest sounds in the sea. A goby keeps watch for it.",
+    pistol: "The snap of a pistol shrimp is one of the loudest sounds in the sea. It is almost blind; the yellow watchman goby guards the entrance of their burrow and warns it with a flick of its tail.",
     sargassumfish: "The sargassum fish looks just like the seaweed it lives in, and climbs around in it with arm-like fins.",
     spidercrab: "The Japanese spider crab has the longest legs of any arthropod: almost four metres from tip to tip.",
     crocodile: "Saltwater crocodiles are the largest reptiles in the world and sometimes swim hundreds of kilometres across open sea.",
@@ -254,10 +250,8 @@
     wrasse: "At night some wrasses sleep in a cocoon of mucus or bury themselves in the sand.",
     surgeonfish: "Surgeonfish have a sharp little spine near the tail, like a scalpel. That is where their name comes from.",
     mandarinfish: "The mandarinfish is one of the few animals with real blue pigment. It mostly comes out at dusk.",
-    frogfish: "A frogfish 'walks' over the floor on its fins and lures prey with a little fishing rod on its head.",
     scorpionfish: "A scorpionfish lies perfectly still and camouflaged on the floor, with venomous spines in its back fin.",
     stonefish: "The stonefish is the most venomous fish in the world and looks exactly like an overgrown stone.",
-    blenny: "Blennies live in a little hole in rock or coral and only poke out their head with its 'eyebrows'.",
     goby: "Gobies are one of the largest fish families. Some share a burrow with a shrimp.",
     needlefish: "Needlefish swim just under the surface and can leap out of the water with their pointed beak.",
     thresher: "A thresher shark whips its extremely long tail so hard that it can stun fish with it.",
@@ -297,9 +291,7 @@
     flyingfish: "Flying fish leap out of the water and glide for tens of metres on their big pectoral fins, to escape from predators.",
     cleaners: "Cleaner wrasse eat parasites off larger fish, which visit their cleaning station especially for that.",
     grouper: "Groupers can grow very large. The giant grouper reaches more than two metres.",
-    whale: "Whales descend from land animals that went back into the sea about fifty million years ago.",
     humpback: "Male humpback whales sing long songs that can last more than twenty minutes and are repeated for hours.",
-    shark: "A shark has no bones. Its skeleton is made of cartilage, like your ear.",
     turtle: "Sea turtles often return to lay eggs on the beach where they themselves were born.",
     manta: "A giant manta can have a wingspan of about seven metres.",
     dolphins: "Dolphins sleep with one half of their brain at a time, so they can keep breathing.",
@@ -583,7 +575,7 @@
     if (!mm) return null;
     let m = 0n;
     for (const ch of mm[3]) m = m * 36n + BigInt(parseInt(ch, 36));
-    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
+    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
   }
 
   let polaroidCanvas = null;

@@ -96,7 +96,7 @@
   function audioStep() {
     const now = audio.ac.currentTime, n = audio.next, v = scene.visitor;
     if (now > n.bubble) { sfxBubble(); n.bubble = now + 0.3 + Math.random() * 2.2; }
-    if (v && (v.type === "whale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
+    if (v && (v.type === "finwhale" || v.type === "bluewhale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
     if (v && v.type === "dolphins" && now > n.whistle) { sfxWhistle(); n.whistle = now + 0.5 + Math.random() * 1.4; }
     if (now > n.note) { playNote(); n.note = now + (restMode ? 5 : 3.5) + Math.random() * 4; }
   }

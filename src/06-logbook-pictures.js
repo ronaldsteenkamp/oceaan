@@ -144,15 +144,7 @@
       ctx.fillStyle = sh("#5a3f26");
       for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(60 + ((i % 4) * 0.3 - 0.45) * 32, 42 + (Math.floor(i / 4) * 0.2 - 0.12) * 32, 1.6, 0, TAU); ctx.fill(); }
     },
-    whale: () => {
-      // in the ocean the whale is a far-off shadow; in the logbook it gets a clearer colour
-      water = Object.assign({}, water, { whale: "70,110,150" });
-      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
-      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
-      ctx.fillStyle = "#0c1a26"; ctx.beginPath(); ctx.arc(100, 42, 1.4, 0, TAU); ctx.fill();
-    },
     humpback: () => drawHumpback({ x: 64, y: 38, dir: 1, size: 100, ph: 0, yOff: 0 }),
-    shark: () => drawShark({ x: 62, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     turtle: () => drawTurtle({ x: 56, y: 44, dir: 1, size: 70, ph: 0, yOff: 0 }),
     manta: () => drawManta({ x: 66, y: 42, dir: 1, size: 64, ph: 0, yOff: 0 }),
     dolphins: () => drawDolphin(62, 42, 1, -0.1, 96, 0),

@@ -383,7 +383,7 @@
       jelly: ["255,196,224", "255,232,200"], glow: false, whale: "8,38,62",
       props: { wreck: 0.8, chest: 0.75, anchor: 0.5, cannon: 0.45, ruins: 0.3, bottle: 0.5, skull: 0.35, coral: 1, anemone: 0.95, vent: 0, rocks: 0.6 },
       life: { crab: 0.9, starfish: 1, urchin: 0.7, octopus: 0.8, ray: 0.7, eels: 0.8, seahorse: 0.8, puffer: 0.9, angler: 0, moray: 0.8 },
-      visitors: ["turtle", "manta", "shark", "whale", "turtle"] },
+      visitors: ["turtle", "manta", "whitetip", "finwhale", "turtle"] },
     { name: "diepzee", top: "#143e68", mid: "#081a33", bottom: "#02050c", tintK: 0.5,
       ray: "150,200,255", rayA: 0.05, snow: "170,210,255",
       sand: ["#2a3846", "#0a1118"], rock: "#1a242e",
@@ -392,7 +392,7 @@
       jelly: ["120,240,255", "255,120,220", "180,150,255"], glow: true, whale: "2,8,18",
       props: { wreck: 0.85, chest: 0.65, anchor: 0.4, cannon: 0.4, ruins: 0.4, bottle: 0.3, skull: 0.7, coral: 0, anemone: 0, vent: 0.95, rocks: 0.7 },
       life: { crab: 0.8, starfish: 0.5, urchin: 0.8, octopus: 0.7, ray: 0.5, eels: 0.3, seahorse: 0, puffer: 0.2, angler: 1, moray: 0.8 },
-      visitors: ["whale", "shark", "manta"] },
+      visitors: ["finwhale", "greatwhite", "manta"] },
     { name: "noordzee", top: "#64a096", mid: "#2f6566", bottom: "#0e2a2d", tintK: 0.28,
       ray: "235,250,230", rayA: 0.09, snow: "225,235,220",
       sand: ["#959076", "#4a4738"], rock: "#4a4d42",
@@ -401,7 +401,7 @@
       jelly: ["240,220,200", "220,235,255"], glow: false, whale: "12,38,40",
       props: { wreck: 0.85, chest: 0.5, anchor: 0.75, cannon: 0.65, ruins: 0.4, bottle: 0.6, skull: 0.45, coral: 0, anemone: 0.3, vent: 0, rocks: 0.9 },
       life: { crab: 1, starfish: 0.9, urchin: 0.7, octopus: 0.7, ray: 0.7, eels: 0.6, seahorse: 0.5, puffer: 0.3, angler: 0, moray: 0.7 },
-      visitors: ["whale", "shark", "turtle", "manta", "shark"] },
+      visitors: ["finwhale", "greatwhite", "turtle", "manta", "greatwhite"] },
   ];
 
   // Newer landmarks, creatures and visitors for the first three waters.
@@ -409,15 +409,15 @@
     rif: { surface: true,
       props: { helmet: 0.4, mine: 0.2, plane: 0.3, statue: 0.3, arch: 0.45 },
       life: { squid: 0.6, hermit: 0.8, slugs: 0.9 },
-      visitors: ["turtle", "manta", "shark", "whale", "dolphins", "swordfish", "sub", "humpback", "turtle", "dolphins"] },
+      visitors: ["turtle", "manta", "whitetip", "finwhale", "dolphins", "swordfish", "sub", "humpback", "turtle", "dolphins"] },
     diepzee: { surface: false, giantSquid: true,
       props: { helmet: 0.4, mine: 0.4, plane: 0.3, statue: 0.45, arch: 0.6 },
       life: { squid: 0.8, hermit: 0.4, slugs: 0.6, comb: 0.7, lantern: 1 },
-      visitors: ["whale", "shark", "manta", "sub", "sub", "swordfish"] },
+      visitors: ["finwhale", "greatwhite", "manta", "sub", "sub", "swordfish"] },
     noordzee: { surface: true,
       props: { helmet: 0.5, mine: 0.6, plane: 0.4, statue: 0.25, arch: 0.5 },
       life: { squid: 0.6, hermit: 0.7, slugs: 0.5, comb: 0.3 },
-      visitors: ["whale", "shark", "turtle", "manta", "dolphins", "sub", "humpback", "swordfish", "dolphins"] },
+      visitors: ["finwhale", "greatwhite", "turtle", "manta", "dolphins", "sub", "humpback", "swordfish", "dolphins"] },
   };
   WATERS.forEach(w => {
     const e = EXTRA[w.name];
@@ -437,7 +437,7 @@
       surface: true, denseKelp: true,
       props: { wreck: 0.5, plane: 0.3, chest: 0.45, anchor: 0.5, cannon: 0.3, helmet: 0.5, mine: 0.35, bottle: 0.4, skull: 0.3, rocks: 0.9, arch: 0.5, statue: 0.2 },
       life: { crab: 0.9, starfish: 0.9, urchin: 1, octopus: 0.8, ray: 0.4, eels: 0.2, seahorse: 0.5, puffer: 0.2, moray: 0.7, squid: 0.4, hermit: 0.8, slugs: 0.7, otters: 1, seal: 0.4 },
-      visitors: ["shark", "dolphins", "whale", "sub", "humpback", "dolphins"] },
+      visitors: ["greatwhite", "dolphins", "finwhale", "sub", "humpback", "dolphins"] },
     { name: "ijszee", top: "#86bfd0", mid: "#2b5e7a", bottom: "#0a2236", tintK: 0.25,
       ray: "235,248,255", rayA: 0.12, snow: "235,245,255",
       sand: ["#7d8a90", "#3a4448"], rock: "#4a555c",
@@ -447,7 +447,7 @@
       surface: true, ice: true, fewKelp: true,
       props: { wreck: 0.55, plane: 0.3, anchor: 0.5, mine: 0.5, helmet: 0.4, chest: 0.3, rocks: 1, arch: 0.5, skull: 0.3, bottle: 0.3, cannon: 0.3 },
       life: { crab: 0.6, starfish: 0.9, urchin: 0.6, octopus: 0.4, hermit: 0.3, slugs: 0.4, comb: 0.8, penguins: 1, seal: 0.9, squid: 0.4, lantern: 0.3 },
-      visitors: ["narwhal", "humpback", "whale", "sub", "narwhal", "shark"] },
+      visitors: ["narwhal", "humpback", "finwhale", "sub", "narwhal", "greatwhite"] },
   );
 
   // Volcanoes, brine pools, sunken cities, canyons and the newest creatures.
@@ -479,7 +479,7 @@
       surface: true, mangrove: true, fewKelp: true,
       props: { wreck: 0.3, chest: 0.5, anchor: 0.4, bottle: 0.6, skull: 0.4, rocks: 0.6, helmet: 0.3, cannon: 0.2, plane: 0.15, arch: 0.2, amphora: 0.2, car: 0.35, bell: 0.25, clam: 0.3, seagrass: 0.9 },
       life: { crab: 1, starfish: 0.4, urchin: 0.3, octopus: 0.4, ray: 0.6, eels: 0.2, seahorse: 0.7, puffer: 0.7, hermit: 0.8, slugs: 0.4, archer: 0.9, flyingfish: 0.2, cassiopea: 0.9, lionfish: 0.3, cuttlefish: 0.3, mantis: 0.4, cleaners: 0.3 },
-      visitors: ["manatee", "turtle", "shark", "hammerhead", "manatee", "dolphins", "turtle"] },
+      visitors: ["manatee", "turtle", "whitetip", "hammerhead", "manatee", "dolphins", "turtle"] },
     { name: "grot", top: "#1f4f63", mid: "#0c2433", bottom: "#03080e", tintK: 0.45,
       ray: "200,240,255", rayA: 0.2, snow: "190,220,235",
       sand: ["#4a4a46", "#161816"], rock: "#2a2e30",
@@ -489,7 +489,7 @@
       surface: false, cave: true, fewKelp: true,
       props: { wreck: 0.2, chest: 0.7, skull: 0.7, rocks: 1, helmet: 0.6, bottle: 0.2, anchor: 0.3, ruins: 0.5, statue: 0.35, arch: 0.3, canyon: 0.35, vent: 0.2, brine: 0.2, amphora: 0.7, bell: 0.3, clam: 0.4 },
       life: { crab: 0.7, starfish: 0.4, urchin: 0.5, octopus: 0.5, eels: 0.3, moray: 0.6, hermit: 0.4, slugs: 0.5, comb: 0.6, lantern: 0.8, squid: 0.3, nautilus: 0.8, isopod: 0.9, lobster: 0.5 },
-      visitors: ["shark", "turtle", "sub", "turtle"] },
+      visitors: ["whitetip", "turtle", "sub", "turtle"] },
   );
 
   // The lagoon, the Sargasso Sea and the third wave of finds, animals and visitors.
@@ -513,7 +513,7 @@
       surface: true, caustics: true, fewKelp: true,
       props: { seagrass: 1, coral: 0.6, anemone: 0.7, rocks: 0.5, chest: 0.4, bottle: 0.6, sponges: 0.5, phonebox: 0.15, wheel: 0.2, idol: 0.15, clam: 0.6, amphora: 0.15, car: 0.1, anchor: 0.3, skull: 0.2 },
       life: { starfish: 1, ray: 0.9, eels: 0.9, seahorse: 0.5, puffer: 0.6, cassiopea: 0.6, hermit: 0.8, crab: 0.7, parrotfish: 0.8, boxfish: 0.7, pistol: 0.8, slugs: 0.5, octopus: 0.4, cleaners: 0.5, lionfish: 0.3, flyingfish: 0.3 },
-      visitors: ["turtle", "turtle", "eagleray", "eagleray", "shark", "dolphins", "manatee", "whaleshark"] },
+      visitors: ["turtle", "turtle", "eagleray", "eagleray", "whitetip", "dolphins", "manatee", "whaleshark"] },
     { name: "sargasso", top: "#2f7fb8", mid: "#0f3f72", bottom: "#04142a", tintK: 0.3,
       ray: "220,240,255", rayA: 0.12, snow: "200,225,245",
       sand: ["#5a6a78", "#1a2430"], rock: "#2e3844",
@@ -523,20 +523,20 @@
       surface: true, sargasso: true, fewKelp: true,
       props: { wreck: 0.5, plane: 0.3, chest: 0.4, anchor: 0.4, bottle: 0.7, skull: 0.4, rocks: 0.5, wheel: 0.4, idol: 0.1, phonebox: 0.1, mine: 0.3, helmet: 0.3, bell: 0.3, canyon: 0.4 },
       life: { sargassumfish: 1, flyingfish: 0.9, squid: 0.6, comb: 0.4, lantern: 0.4, octopus: 0.3, crab: 0.4, starfish: 0.3, spidercrab: 0.3, puffer: 0.3 },
-      visitors: ["whale", "humpback", "sunfish", "dolphins", "spermwhale", "shark", "turtle", "swordfish"] },
+      visitors: ["finwhale", "humpback", "sunfish", "dolphins", "spermwhale", "greatwhite", "turtle", "swordfish"] },
   );
 
   // The fourth wave: thirty-six more animals.
   const WAVE4 = {
-    rif: { life: { triggerfish: 0.6, wrasse: 0.7, surgeonfish: 0.7, mandarinfish: 0.35, frogfish: 0.3, scorpionfish: 0.4, stonefish: 0.3, blenny: 0.5, goby: 0.5, needlefish: 0.3, electricray: 0.25, guitarfish: 0.25, brittlestar: 0.3, seacucumber: 0.4, featherstar: 0.4, seasnake: 0.3, seakrait: 0.25 },
+    rif: { life: { triggerfish: 0.6, wrasse: 0.7, surgeonfish: 0.7, mandarinfish: 0.35, scorpionfish: 0.4, stonefish: 0.3, goby: 0.5, needlefish: 0.3, electricray: 0.25, guitarfish: 0.25, brittlestar: 0.3, seacucumber: 0.4, featherstar: 0.4, seasnake: 0.3, seakrait: 0.25 },
       visitors: ["thresher", "whitetip", "marlin", "tuna", "barracuda", "falsekiller"] },
-    lagune: { life: { triggerfish: 0.6, wrasse: 0.5, surgeonfish: 0.6, mandarinfish: 0.3, frogfish: 0.25, stonefish: 0.35, blenny: 0.5, goby: 0.6, needlefish: 0.5, electricray: 0.2, guitarfish: 0.4, sanddollar: 0.6, seacucumber: 0.4, seasnake: 0.3, seakrait: 0.3, iguana: 0.25, pelican: 0.4 },
+    lagune: { life: { triggerfish: 0.6, wrasse: 0.5, surgeonfish: 0.6, mandarinfish: 0.3, stonefish: 0.35, goby: 0.6, needlefish: 0.5, electricray: 0.2, guitarfish: 0.4, sanddollar: 0.6, seacucumber: 0.4, seasnake: 0.3, seakrait: 0.3, iguana: 0.25, pelican: 0.4 },
       visitors: ["whitetip", "barracuda", "sawfish"] },
     mangrove: { life: { triggerfish: 0.2, mandarinfish: 0.2, stonefish: 0.3, goby: 0.5, needlefish: 0.4, guitarfish: 0.3, seasnake: 0.4, iguana: 0.15, cormorant: 0.3, pelican: 0.5 },
       visitors: ["whitetip", "barracuda", "sawfish"] },
-    noordzee: { life: { wrasse: 0.3, scorpionfish: 0.3, blenny: 0.3, goby: 0.3, electricray: 0.3, sanddollar: 0.3, brittlestar: 0.4, seacucumber: 0.3, cormorant: 0.5 },
+    noordzee: { life: { wrasse: 0.3, scorpionfish: 0.3, goby: 0.3, electricray: 0.3, sanddollar: 0.3, brittlestar: 0.4, seacucumber: 0.3, cormorant: 0.5 },
       visitors: ["thresher", "greatwhite", "tuna", "finwhale", "pilotwhale"] },
-    kelpwoud: { life: { wrasse: 0.3, scorpionfish: 0.2, blenny: 0.3, sanddollar: 0.3, cormorant: 0.4, albatross: 0.2 },
+    kelpwoud: { life: { wrasse: 0.3, scorpionfish: 0.2, sanddollar: 0.3, cormorant: 0.4, albatross: 0.2 },
       visitors: ["greatwhite", "pilotwhale"] },
     sargasso: { life: { needlefish: 0.3, albatross: 0.5 },
       visitors: ["thresher", "greatwhite", "marlin", "tuna", "bluewhale", "finwhale", "pilotwhale", "falsekiller"] },
@@ -544,7 +544,7 @@
       visitors: ["bluewhale", "finwhale"] },
     diepzee: { life: { electricray: 0.2, brittlestar: 0.6, seacucumber: 0.5, featherstar: 0.3 },
       visitors: ["coelacanth", "bluewhale"] },
-    grot: { life: { frogfish: 0.2, scorpionfish: 0.3, brittlestar: 0.5, seacucumber: 0.3, featherstar: 0.3 },
+    grot: { life: { scorpionfish: 0.3, brittlestar: 0.5, seacucumber: 0.3, featherstar: 0.3 },
       visitors: ["coelacanth"] },
   };
   WATERS.forEach(w => { const e = WAVE4[w.name]; if (!e) return; Object.assign(w.life, e.life); w.visitors.push(...e.visitors); });
@@ -568,6 +568,9 @@
   const W4_VIS = ["thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   PROP_KEYS.push(...NEW_PROPS, ...W3_PROPS); LIFE_KEYS.push(...NEW_LIFE, ...W3_LIFE, ...W4_LIFE); VIS_KEYS.push(...NEW_VIS, ...W3_VIS, ...W4_VIS); RARE_KEYS.push(...NEW_RARE, ...W3_RARE);
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
+  // Animals that were taken out of the game. They keep their place in AQ_ALL, so older aquarium links still read correctly.
+  const RETIRED = new Set(["whale", "shark", "frogfish", "blenny"]);
+  for (const list of [LIFE_KEYS, VIS_KEYS]) for (let i = list.length - 1; i >= 0; i--) if (RETIRED.has(list[i])) list.splice(i, 1);
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.06;
   const RARES_BY_WATER = {
@@ -588,12 +591,12 @@
     serpent: "Zeeslang", megalodon: "Megalodon", goldpearl: "Gouden parel",
     "w:lagune": "Lagune", "w:sargasso": "Sargassozee",
     wheel: "Scheepsroer", idol: "Gouden beeldje", phonebox: "Telefooncel", sponges: "Sponzen",
-    parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
+    parrotfish: "Papegaaivis", boxfish: "Koffervis", pistol: "Pistoolgarnaal en wachtersgrondel", sargassumfish: "Sargassumvis", spidercrab: "Japanse reuzenkrab",
     crocodile: "Zeekrokodil", whaleshark: "Walvishaai", sealion: "Zeeleeuw", eagleray: "Adelaarsrog", spermwhale: "Potvis",
     eelmigration: "Palingtrek", quake: "Zeebeving", crabmarch: "Krabbentrek", bubblerings: "Bellenringen",
     aurora: "Noorderlicht", mobydick: "Witte potvis", ghostdiver: "Spookduiker",
-    triggerfish: "Trekkersvis", wrasse: "Lipvis", surgeonfish: "Doktersvis", mandarinfish: "Mandarijnvis", frogfish: "Kikvorsvis",
-    scorpionfish: "Schorpioenvis", stonefish: "Steenvis", blenny: "Slijmvis", goby: "Grondel", needlefish: "Naaldvis",
+    triggerfish: "Trekkersvis", wrasse: "Lipvis", surgeonfish: "Doktersvis", mandarinfish: "Mandarijnvis",
+    scorpionfish: "Schorpioenvis", stonefish: "Steenvis", goby: "Grondel", needlefish: "Naaldvis",
     thresher: "Voshaai", whitetip: "Witpuntrifhaai", greatwhite: "Witte haai", marlin: "Marlijn", tuna: "Tonijn", barracuda: "Barracuda", coelacanth: "Coelacant",
     electricray: "Sidderrog", guitarfish: "Vioolrog", sawfish: "Zaagvis",
     sanddollar: "Zanddollar", brittlestar: "Slangster", seacucumber: "Zeekomkommer", featherstar: "Haarster",
@@ -609,7 +612,7 @@
     squid: "Inktvisjes", hermit: "Heremietkreeft", slugs: "Zeenaaktslak", comb: "Ribkwal", lantern: "Lantaarnvis",
     otters: "Zeeotter", seal: "Zeehond", penguins: "Pinguïns", clown: "Clownvis", mantis: "Bidsprinkhaankreeft",
     archer: "Schuttersvis", cleaners: "Poetsvisjes", grouper: "Tandbaars", flyingfish: "Vliegende vis",
-    whale: "Walvis", humpback: "Bultrug", shark: "Haai", turtle: "Zeeschildpad", manta: "Manta", dolphins: "Dolfijnen",
+    humpback: "Bultrug", turtle: "Zeeschildpad", manta: "Manta", dolphins: "Dolfijnen",
     swordfish: "Zeilvis", sub: "Duikboot", narwhal: "Narwal",
     giant: "Reuzeninktvis", baitball: "Bait-ball", spawning: "Paaiende vissen", coralspawn: "Koraalpaai",
     storm: "Onweer", eruption: "Vulkaanuitbarsting", task: "Alle zeepaardjes gevonden",
@@ -624,23 +627,23 @@
     ],
     "Dieren": [
       ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels",
-        "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish"]],
-      ["Haaien en grote vissen", "Sharks and big fish", ["shark", "hammerhead", "whaleshark", "thresher", "whitetip", "greatwhite", "swordfish", "marlin", "tuna", "barracuda", "sunfish", "coelacanth"]],
+        "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish"]],
+      ["Haaien en grote vissen", "Sharks and big fish", ["hammerhead", "whaleshark", "thresher", "whitetip", "greatwhite", "swordfish", "marlin", "tuna", "barracuda", "sunfish", "coelacanth"]],
       ["Roggen", "Rays", ["ray", "manta", "eagleray", "electricray", "guitarfish", "sawfish"]],
       ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
       ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
-      ["Inktvissen", "Cephalopods", ["octopus", "squid", "cuttlefish", "nautilus"]],
+      ["Inktvissen", "Cephalopods", ["octopus", "squid", "giant", "cuttlefish", "nautilus"]],
       ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
       ["Zeesterren, egels en slakken", "Starfish, urchins and slugs", ["starfish", "brittlestar", "featherstar", "urchin", "sanddollar", "seacucumber", "slugs"]],
       ["Koralen, sponzen en schelpen", "Corals, sponges and clams", ["coral", "anemone", "sponges", "clam"]],
       ["Reptielen", "Reptiles", ["turtle", "crocodile", "seasnake", "seakrait", "iguana"]],
-      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "falsekiller", "pilotwhale", "beluga", "narwhal", "humpback", "whale", "spermwhale", "finwhale", "bluewhale"]],
+      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "falsekiller", "pilotwhale", "beluga", "narwhal", "humpback", "spermwhale", "finwhale", "bluewhale"]],
       ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "walrus", "manatee", "polarbear", "penguins", "albatross", "cormorant", "pelican"]],
     ],
     "Momenten": [
       ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide", "aurora"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
-      ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings", "giant"]],
+      ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings"]],
       ["Speurtochten", "Quests", ["treasure", "task"]],
       ["Mensen op zee", "People at sea", ["sub"]],
     ],
@@ -652,8 +655,8 @@
   };
   const LOG_ALL = {
     "Wateren": WATERS.map(w => "w:" + w.name),
-    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
-    "Momenten": [...MOMENT_KEYS, "treasure", "sub", "aurora"],
+    "Dieren": ["fish", "jelly", ...LIFE_KEYS, "clown", "grouper", "giant", ...VIS_KEYS.filter(k => k !== "sub"), "coral", "anemone", "sponges", "clam"],
+    "Momenten": [...MOMENT_KEYS.filter(k => k !== "giant"), "treasure", "sub", "aurora"],
     "Zeldzaam": RARE_KEYS.filter(k => k !== "aurora"),
   };
   // anything not placed in a family yet still shows, at the end of its group
@@ -671,14 +674,14 @@
     fish: 1000, lantern: 1000, jelly: 1000, crab: 1500, starfish: 600, urchin: 450, octopus: 150, ray: 150, eels: 1200,
     seahorse: 300, puffer: 150, angler: 150, squid: 750, hermit: 300, slugs: 450, comb: 600, otters: 300, seal: 1500,
     penguins: 3000, clown: 300, mantis: 150, archer: 150, cleaners: 450, grouper: 150, flyingfish: 900,
-    whale: 450, humpback: 450, shark: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
+    humpback: 450, turtle: 450, manta: 450, dolphins: 1800, swordfish: 450, narwhal: 450, mermaid: 450,
     cassiopea: 600, lionfish: 150, cuttlefish: 150, lobster: 300, nautilus: 150, isopod: 300, seadragon: 150,
     manatee: 450, orca: 450, hammerhead: 450, sunfish: 450, beluga: 450,
     parrotfish: 150, boxfish: 150, pistol: 300, sargassumfish: 150, spidercrab: 300,
     crocodile: 450, whaleshark: 450, sealion: 450, eagleray: 450, spermwhale: 450,
     kraken: 100, ghost: 100, whalefall: 100, serpent: 100, megalodon: 100, goldpearl: 100, aurora: 100, mobydick: 100, ghostdiver: 100,
     hatchlings: 300, eelmigration: 1200, giant: 150,
-    triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, frogfish: 150, scorpionfish: 150, stonefish: 150, blenny: 300, goby: 450, needlefish: 150,
+    triggerfish: 150, wrasse: 150, surgeonfish: 150, mandarinfish: 150, scorpionfish: 150, stonefish: 150, goby: 450, needlefish: 150,
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
     albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
     thresher: 450, whitetip: 450, greatwhite: 450, marlin: 450, tuna: 450, barracuda: 450, coelacanth: 300, sawfish: 450, bluewhale: 450, finwhale: 450, pilotwhale: 450, falsekiller: 450,
@@ -689,12 +692,12 @@
   const shinyChance = key => 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
-    "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
+    "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
     "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga",
     "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale",
     "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "aurora", "mobydick", "ghostdiver",
     "hatchlings", "eelmigration", "giant",
-    "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
+    "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
     "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeenaaktslak", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
     hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis" };
@@ -723,12 +726,12 @@
     serpent: "Sea serpent", megalodon: "Megalodon", goldpearl: "Golden pearl",
     "w:lagune": "Lagoon", "w:sargasso": "Sargasso Sea",
     wheel: "Ship's wheel", idol: "Golden idol", phonebox: "Phone box", sponges: "Sponges",
-    parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
+    parrotfish: "Parrotfish", boxfish: "Boxfish", pistol: "Pistol shrimp and watchman goby", sargassumfish: "Sargassum fish", spidercrab: "Japanese spider crab",
     crocodile: "Saltwater crocodile", whaleshark: "Whale shark", sealion: "Sea lion", eagleray: "Spotted eagle ray", spermwhale: "Sperm whale",
     eelmigration: "Eel migration", quake: "Seaquake", crabmarch: "Crab march", bubblerings: "Bubble rings",
     aurora: "Northern lights", mobydick: "White sperm whale", ghostdiver: "Ghost diver",
-    triggerfish: "Triggerfish", wrasse: "Wrasse", surgeonfish: "Surgeonfish", mandarinfish: "Mandarinfish", frogfish: "Frogfish",
-    scorpionfish: "Scorpionfish", stonefish: "Stonefish", blenny: "Blenny", goby: "Goby", needlefish: "Needlefish",
+    triggerfish: "Triggerfish", wrasse: "Wrasse", surgeonfish: "Surgeonfish", mandarinfish: "Mandarinfish",
+    scorpionfish: "Scorpionfish", stonefish: "Stonefish", goby: "Goby", needlefish: "Needlefish",
     thresher: "Thresher shark", whitetip: "Whitetip reef shark", greatwhite: "Great white shark", marlin: "Marlin", tuna: "Tuna", barracuda: "Barracuda", coelacanth: "Coelacanth",
     electricray: "Electric ray", guitarfish: "Guitarfish", sawfish: "Sawfish",
     sanddollar: "Sand dollar", brittlestar: "Brittle star", seacucumber: "Sea cucumber", featherstar: "Feather star",
@@ -744,7 +747,7 @@
     squid: "Squid", hermit: "Hermit crab", slugs: "Sea slug", comb: "Comb jelly", lantern: "Lanternfish",
     otters: "Sea otter", seal: "Seal", penguins: "Penguins", clown: "Clownfish", mantis: "Mantis shrimp",
     archer: "Archerfish", cleaners: "Cleaner wrasse", grouper: "Grouper", flyingfish: "Flying fish",
-    whale: "Whale", humpback: "Humpback whale", shark: "Shark", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
+    humpback: "Humpback whale", turtle: "Sea turtle", manta: "Manta ray", dolphins: "Dolphins",
     swordfish: "Sailfish", sub: "Submarine", narwhal: "Narwhal",
     giant: "Giant squid", baitball: "Bait ball", spawning: "Spawning fish", coralspawn: "Coral spawning",
     storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
@@ -2083,6 +2086,8 @@
   };
 
   // ---- fish --------------------------------------------------------------
+  // the sharks that fish scatter from
+  const BIG_SHARKS = new Set(["greatwhite", "whitetip", "thresher"]);
   // A fish with a proper outline: a rounded head, a narrow tail stalk, a forked tail and fins.
   // L is half its body length; the shapes are drawn in units where L = 100.
   const FISH_BODY = "M 100 6 C 92 -22 56 -40 6 -40 C -36 -40 -66 -24 -84 -9 L -84 9 C -66 22 -36 36 6 36 C 56 36 92 22 100 6 Z";
@@ -2129,7 +2134,7 @@
     if (diverMode) list.push([diver.x, diver.y, 90 * u]);
     const v = scene.visitor;
     if (v) {
-      if (v.type === "shark") list.push([v.x, v.y, v.size * 1.1]);
+      if (BIG_SHARKS.has(v.type)) list.push([v.x, v.y, v.size * 1.1]);
       if (v.type === "swordfish") list.push([v.x, v.y, v.size * 1.5]);
       if (v.type === "dolphins") for (const d of v.pod) list.push([v.x + d.dx * v.dir, v.y + d.dy, v.size * 0.9]);
     }
@@ -2707,8 +2712,8 @@
   }
 
   // ---- big visitors ------------------------------------------------------
-  const VISITOR_SPEED = { whale: 0.35, humpback: 0.6, manta: 0.7, shark: 1.1, turtle: 0.55, dolphins: 1.7, swordfish: 2.4, sub: 0.6, narwhal: 0.8, mermaid: 0.7 };
-  const VISITOR_PHASE = { whale: 0.012, humpback: 0.01, manta: 0.025, shark: 0.05, swordfish: 0.06, dolphins: 0.03, sub: 0.02, narwhal: 0.03, mermaid: 0.03, turtle: 0.035 };
+  const VISITOR_SPEED = { humpback: 0.6, manta: 0.7, turtle: 0.55, dolphins: 1.7, swordfish: 2.4, sub: 0.6, narwhal: 0.8, mermaid: 0.7 };
+  const VISITOR_PHASE = { humpback: 0.01, manta: 0.025, swordfish: 0.06, dolphins: 0.03, sub: 0.02, narwhal: 0.03, mermaid: 0.03, turtle: 0.035 };
 
   function spawnVisitor() {
     const pool = scene.visitorPool;
@@ -2718,15 +2723,15 @@
     const dir = Math.random() < 0.5 ? 1 : -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
     const SIZE = {
-      whale: () => Math.min(W * 0.45, 620 * u), humpback: () => Math.min(W * 0.95, 950 * u),
-      manta: () => rnd(110, 170) * u, shark: () => rnd(150, 230) * u, turtle: () => rnd(70, 100) * u,
+      humpback: () => Math.min(W * 0.95, 950 * u),
+      manta: () => rnd(110, 170) * u, turtle: () => rnd(70, 100) * u,
       dolphins: () => rnd(70, 95) * u, swordfish: () => rnd(130, 180) * u, sub: () => rnd(120, 170) * u,
       narwhal: () => rnd(110, 150) * u, mermaid: () => rnd(110, 140) * u,
     };
     const size = (SIZE[type] || MORE_SIZE[type])();
     const v = {
       type, dir, size, ph: 0, yOff: 0,
-      y: H * (type === "whale" ? rnd(0.15, 0.35) : type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
+      y: H * (type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
       speed: VISITOR_SPEED[type] * u,
     };
     if (type === "dolphins") {
@@ -2766,7 +2771,7 @@
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
     if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
     // hunters steer towards the biggest school
-    if (v.type === "shark" || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
+    if (BIG_SHARKS.has(v.type) || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
       let best = null;
       for (const s of scene.species) if (!best || s.fish.length > best.fish.length) best = s;
       if (best && best.fish.length) {
@@ -2777,7 +2782,7 @@
       }
     }
     // the shark snaps up a fish now and then
-    if (v.type === "shark" && frameNo % 10 === 0) {
+    if (BIG_SHARKS.has(v.type) && frameNo % 10 === 0) {
       const mx = v.x + v.dir * v.size * 0.45, my = v.y + v.yOff;
       for (const s of scene.species) {
         if (s.lantern) continue;
@@ -2793,23 +2798,6 @@
       if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
       else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
     }
-  }
-
-  const WHALE_BODY = "M 50 1 C 49 -5 42 -9 30 -10.5 C 10 -12 -20 -9 -38 -4 C -44 -2.4 -50 -1 -53 0 C -46 2 -38 4 -22 6.5 C 2 10 30 10 44 6 C 48 4.5 50 3 50 1 Z";
-  const WHALE_FLUKE = "M 2 0 C -4 -3 -9 -7 -13 -11 C -12 -6 -10 -2 -9 0 C -10 2 -12 6 -13 11 C -9 7 -4 3 2 0 Z";
-  const WHALE_FLIPPER = "M 0 0 C -4 4 -14 9 -24 10 C -20 6 -10 2 0 -1 Z";
-  function drawWhale(v) {
-    const L = v.size;
-    ctx.save();
-    ctx.translate(v.x, v.y + v.yOff);
-    ctx.scale(v.dir * L / 100, L / 100);
-    ctx.rotate(Math.sin(v.ph) * 0.02);
-    ctx.fillStyle = `rgba(${water.whale},0.5)`;
-    ctx.save(); ctx.translate(-52, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.18); ctx.fill(P(WHALE_FLUKE)); ctx.restore();
-    ctx.fill(P(WHALE_BODY));
-    ctx.beginPath(); ctx.moveTo(-26, -6.5); ctx.quadraticCurveTo(-30, -9.5, -34, -10); ctx.lineTo(-32, -5.5); ctx.fill();
-    ctx.save(); ctx.translate(22, 6); ctx.rotate(0.15 + Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(WHALE_FLIPPER)); ctx.restore();
-    ctx.restore();
   }
 
   // A sea turtle: a domed shell with plates and a pale belly shield, long wing-like front flippers
@@ -3738,7 +3726,7 @@
     ctx.restore();
   }
 
-  const VISITOR_DRAW = { turtle: drawTurtle, manta: drawManta, shark: drawShark, dolphins: drawDolphins, swordfish: drawSwordfish, sub: drawSub, narwhal: drawNarwhal, mermaid: drawMermaid };
+  const VISITOR_DRAW = { turtle: drawTurtle, manta: drawManta, dolphins: drawDolphins, swordfish: drawSwordfish, sub: drawSub, narwhal: drawNarwhal, mermaid: drawMermaid };
 
   // ---- tentacles from the deep -------------------------------------------
   const smooth = x => x * x * (3 - 2 * x);
@@ -3983,15 +3971,7 @@
       ctx.fillStyle = sh("#5a3f26");
       for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(60 + ((i % 4) * 0.3 - 0.45) * 32, 42 + (Math.floor(i / 4) * 0.2 - 0.12) * 32, 1.6, 0, TAU); ctx.fill(); }
     },
-    whale: () => {
-      // in the ocean the whale is a far-off shadow; in the logbook it gets a clearer colour
-      water = Object.assign({}, water, { whale: "70,110,150" });
-      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
-      drawWhale({ x: 62, y: 42, dir: 1, size: 108, ph: 0, yOff: 0 });
-      ctx.fillStyle = "#0c1a26"; ctx.beginPath(); ctx.arc(100, 42, 1.4, 0, TAU); ctx.fill();
-    },
     humpback: () => drawHumpback({ x: 64, y: 38, dir: 1, size: 100, ph: 0, yOff: 0 }),
-    shark: () => drawShark({ x: 62, y: 44, dir: 1, size: 100, ph: 0, yOff: 0 }),
     turtle: () => drawTurtle({ x: 56, y: 44, dir: 1, size: 70, ph: 0, yOff: 0 }),
     manta: () => drawManta({ x: 66, y: 42, dir: 1, size: 64, ph: 0, yOff: 0 }),
     dolphins: () => drawDolphin(62, 42, 1, -0.1, 96, 0),
@@ -4562,7 +4542,7 @@
   function audioStep() {
     const now = audio.ac.currentTime, n = audio.next, v = scene.visitor;
     if (now > n.bubble) { sfxBubble(); n.bubble = now + 0.3 + Math.random() * 2.2; }
-    if (v && (v.type === "whale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
+    if (v && (v.type === "finwhale" || v.type === "bluewhale" || v.type === "humpback") && now > n.song) { sfxWhale(); n.song = now + 5 + Math.random() * 6; }
     if (v && v.type === "dolphins" && now > n.whistle) { sfxWhistle(); n.whistle = now + 0.5 + Math.random() * 1.4; }
     if (now > n.note) { playNote(); n.note = now + (restMode ? 5 : 3.5) + Math.random() * 4; }
   }
@@ -5536,7 +5516,7 @@
   const BASE_HUE = {
     octopus: 18, ray: 30, eels: 45, puffer: 45, squid: 340, hermit: 15, otters: 25, clown: 25, mantis: 140, archer: 190,
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
-    whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
+    humpback: 210, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
   // The rare things can be shiny too; they are rolled with the ocean, so a shared seed keeps them.
   function registerRareShinies(s, add) {
@@ -7015,10 +6995,10 @@
     ctx.fillStyle = sh(water.sand[0], 0.05);
     ctx.beginPath(); ctx.ellipse(0, 0, 16 * u, 5 * u, 0, Math.PI, TAU); ctx.fill();
     ctx.fillStyle = "rgba(0,0,0,0.55)"; ctx.beginPath(); ctx.ellipse(0, 0, 7 * u, 3 * u, 0, 0, TAU); ctx.fill();
-    // the goby keeps watch at the entrance
-    drawFishShape(-5 * u, -9 * u, -0.15, 11 * u, sh("#e8d8b0"), sh("#8a6a3a"), p.ph, false);
-    ctx.fillStyle = sh("#c8783a");
-    for (const dx of [-8, -4, 0]) { ctx.beginPath(); ctx.arc((dx - 5) * u, -9 * u, 0.9 * u, 0, TAU); ctx.fill(); }
+    // the yellow watchman goby keeps watch at the entrance
+    ctx.save(); ctx.translate(-5 * u, -6.5 * u); ctx.rotate(-0.12); ctx.scale(22 * u / 100, 22 * u / 100);
+    drawGobyShape(sh("#f2c830"), sh("#c8961a"), sh("#4aa8f0"), p.ph);
+    ctx.restore();
     // the shrimp comes out to push sand
     const sx = 4 * u + p.out * 9 * u, body = sh("#e8603a"), stripe = sh("#f2d0a0");
     ctx.save(); ctx.translate(sx, -2.5 * u);
@@ -7907,34 +7887,6 @@
   }
 
   // ---- animals on the floor ------------------------------------------------------
-  // A frogfish: a lumpy ball that walks on arm-like fins, with a huge upturned mouth and a fishing lure.
-  const FROG_BODY = "M 34 -30 C 36 -50 20 -66 0 -66 C -24 -66 -40 -48 -40 -28 C -40 -12 -30 -4 -16 -4 L 14 -4 C 28 -6 34 -16 34 -30 Z";
-  const FROG_ARM = "M 0 0 C 2 8 8 14 16 16 C 20 17 22 20 18 21 C 10 22 0 18 -4 8 Z";
-  const FROG_TAIL = "M 0 0 C -8 -10 -18 -8 -18 0 C -18 8 -8 10 0 4 Z";
-  function drawFrogfish(f) {
-    const s = f.s, gape = Math.max(0, Math.sin(f.ph)) * 4;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
-    const body = sh("#f0a030"), dark = sh("#c87018");
-    ctx.save(); ctx.translate(-36, -24); ctx.rotate(Math.sin(f.ph * 1.5) * 0.15); fillWith(P(FROG_TAIL), dark); ctx.restore();
-    ctx.save(); ctx.translate(-20, -14); ctx.rotate(0.3); fillWith(P(FROG_ARM), dark); ctx.restore();
-    fillWith(P(FROG_BODY), body);
-    ctx.save(); ctx.clip(P(FROG_BODY));
-    ctx.fillStyle = dark;
-    const warts = [[-26, -46], [-12, -56], [6, -58], [-30, -28], [-16, -36], [0, -44], [-4, -24], [16, -48], [-22, -14], [10, -30]];
-    for (const [x, y] of warts) { ctx.beginPath(); ctx.arc(x, y, 3.4, 0, TAU); ctx.fill(); }
-    ctx.restore();
-    // the near arm, the wide mouth and its lure
-    ctx.save(); ctx.translate(6, -16); fillWith(P(FROG_ARM), body); ctx.restore();
-    ctx.fillStyle = "#3a1a10"; ctx.beginPath(); ctx.moveTo(35, -30); ctx.quadraticCurveTo(28, -36 - gape, 18, -44 - gape); ctx.quadraticCurveTo(26, -38, 33, -26); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = sh("#e8b860"); ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(35, -29); ctx.quadraticCurveTo(28, -40 - gape, 16, -46 - gape); ctx.stroke();
-    ctx.strokeStyle = dark; ctx.lineWidth = 2;
-    const lx = 30 + Math.sin(f.ph * 2) * 5;
-    ctx.beginPath(); ctx.moveTo(8, -64); ctx.quadraticCurveTo(22, -82, lx, -72); ctx.stroke();
-    ctx.fillStyle = sh("#f2e8c0"); ctx.beginPath(); ctx.arc(lx, -72, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#f2d8a0"; ctx.beginPath(); ctx.arc(14, -52, 4.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(14.6, -52, 2.8, 0, TAU); ctx.fill();
-    ctx.restore();
-  }
   function drawScorpion(f) {
     const s = f.s;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
@@ -7976,38 +7928,35 @@
     ctx.restore();
   }
 
-  function drawBlenny(f) {
-    const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
-    // a little rock with a hole, and the blenny peeking out
-    ctx.fillStyle = sh("#8a8478");
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 1.0, s * 0.6, 0, Math.PI, TAU); ctx.fill();
-    ctx.fillStyle = "#14100c"; ctx.beginPath(); ctx.ellipse(s * 0.1, -s * 0.3, s * 0.25, s * 0.2, 0, 0, TAU); ctx.fill();
-    const peek = 0.6 + 0.4 * Math.sin(f.ph * 0.8);
-    ctx.save(); ctx.translate(s * 0.1 + peek * s * 0.15, -s * 0.3);
-    ctx.fillStyle = sh("#e8c050");
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.22, s * 0.17, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#fff"; for (const ey of [-0.06]) { ctx.beginPath(); ctx.arc(s * 0.08, s * ey, s * 0.06, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.1, -s * 0.06, s * 0.03, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#c86a3a"); ctx.lineWidth = Math.max(0.6, s * 0.03);
-    ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.13); ctx.lineTo(s * 0.0, -s * 0.24); ctx.moveTo(s * 0.12, -s * 0.13); ctx.lineTo(s * 0.12, -s * 0.25); ctx.stroke();
-    ctx.strokeStyle = "#5a3a20"; ctx.beginPath(); ctx.moveTo(s * 0.17, s * 0.06); ctx.lineTo(s * 0.21, s * 0.06); ctx.stroke();
+  // A goby: a long round body with a blunt head, big eyes high on top, two separate dorsal fins,
+  // a rounded tail, and fan-shaped flippers it props itself up on. Drawn where 100 units is its length.
+  const GOBY_BODY = "M 48 2 C 48 -8 40 -13 28 -13 C 12 -13 -14 -10 -36 -6 C -40 -5 -42 -3 -42 0 C -42 3 -40 5 -36 6 C -14 9 12 11 28 10 C 40 9 48 8 48 2 Z";
+  const GOBY_FIRST = "M 18 -12.5 C 16 -27 3 -29 -1 -12 Z";
+  const GOBY_SECOND = "M -4 -11.4 C -10 -20 -30 -16 -37 -6 L -30 -7 C -20 -10 -10 -11 -4 -11.4 Z";
+  const GOBY_ANAL = "M -6 9 C -12 15 -28 12 -36 6 L -30 6.5 C -20 8 -12 8.6 -6 9 Z";
+  const GOBY_TAIL = "M 2 -5.5 C -10 -12 -19 -9.5 -19 0 C -19 9.5 -10 12 2 5.5 Z";
+  const GOBY_PEC = "M 0 0 C 5 4 5 11 -2 13 C -7 11 -6 4 0 0 Z";
+  function drawGobyShape(main, dark, spot, ph) {
+    ctx.fillStyle = dark;
+    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); ctx.fill(P(GOBY_TAIL)); ctx.restore();
+    ctx.globalAlpha *= 0.85; ctx.fill(P(GOBY_FIRST)); ctx.fill(P(GOBY_SECOND)); ctx.fill(P(GOBY_ANAL)); ctx.globalAlpha /= 0.85;
+    ctx.fillStyle = main; ctx.fill(P(GOBY_BODY));
+    ctx.save(); ctx.clip(P(GOBY_BODY));
+    ctx.fillStyle = "rgba(255,255,255,0.22)"; ctx.beginPath(); ctx.ellipse(6, 9, 44, 5, 0.03, 0, TAU); ctx.fill();
+    ctx.fillStyle = spot;
+    for (const [x, y, r] of [[36, -4, 1.8], [30, 2, 1.5], [22, -6, 1.7], [14, 2, 1.6], [4, -5, 1.8], [-6, 2, 1.5], [-16, -4, 1.6], [-26, 1, 1.4], [42, 3, 1.3], [26, -9, 1.3]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
     ctx.restore();
-    ctx.restore();
+    ctx.save(); ctx.translate(22, 4); ctx.rotate(-0.2 + Math.sin(ph * 3) * 0.25); ctx.fillStyle = dark; ctx.globalAlpha *= 0.8; ctx.fill(P(GOBY_PEC)); ctx.restore();
+    ctx.strokeStyle = dark; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(48, 3.5); ctx.quadraticCurveTo(44, 5.5, 39, 4.5); ctx.stroke();
+    // the eyes bulge up out of the top of the head
+    ctx.fillStyle = main; ctx.beginPath(); ctx.arc(33, -12, 5, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#f6f0d8"; ctx.beginPath(); ctx.arc(33.5, -12.5, 3.8, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34.3, -12.5, 2.3, 0, TAU); ctx.fill();
   }
-
   function drawGoby(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir, 1);
-    ctx.fillStyle = sh("#d8c8a0");
-    ctx.beginPath(); ctx.moveTo(-s * 0.42, 0); ctx.lineTo(-s * 0.58, -s * 0.1); ctx.lineTo(-s * 0.58, s * 0.08); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.45, s * 0.13, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(220,200,160,0.7)";
-    ctx.beginPath(); ctx.moveTo(s * 0.0, -s * 0.1); ctx.quadraticCurveTo(-s * 0.1, -s * 0.32, -s * 0.22, -s * 0.12); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-s * 0.2, -s * 0.1); ctx.quadraticCurveTo(-s * 0.3, -s * 0.28, -s * 0.38, -s * 0.1); ctx.fill();
-    ctx.fillStyle = sh("#8a6a3a"); for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(s * (0.25 - i * 0.12), s * ((i % 2) * 0.04 - 0.02), s * 0.03, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = sh("#3a8ad8"); ctx.beginPath(); ctx.arc(s * 0.1, s * 0.03, s * 0.025, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.07, s * 0.035, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir * s / 100, s / 100);
+    drawGobyShape(sh("#d8c8a0"), sh("#9a7a4a"), sh("#8a6a3a"), f.ph);
     ctx.restore();
   }
 
@@ -8383,10 +8332,8 @@
     electricray: { kind: "glide", size: [28, 36], lift: [14, 26], speed: 0.3, draw: drawElectricRay, thumb: 70 },
     guitarfish: { kind: "glide", size: [44, 56], lift: [10, 20], speed: 0.35, draw: drawGuitar, thumb: 96 },
     iguana: { kind: "glide", size: [38, 46], lift: [20, 40], speed: 0.35, draw: drawIguana, thumb: 90 },
-    frogfish: { kind: "floor", size: [20, 26], draw: drawFrogfish, thumb: 56 },
     scorpionfish: { kind: "floor", size: [26, 32], draw: drawScorpion, thumb: 76 },
     stonefish: { kind: "floor", size: [22, 28], draw: drawStonefish, thumb: 70 },
-    blenny: { kind: "floor", size: [13, 17], count: [1, 2], draw: drawBlenny, thumb: 40 },
     goby: { kind: "floor", size: [13, 17], count: [1, 3], crawl: 0.12, draw: drawGoby, thumb: 64 },
     sanddollar: { kind: "floor", size: [9, 13], count: [2, 4], draw: drawSandDollar, thumb: 38 },
     brittlestar: { kind: "floor", size: [11, 15], count: [2, 4], crawl: 0.06, draw: drawBrittle, thumb: 40 },
@@ -8517,10 +8464,10 @@
     const F = FAUNA_VIS[key];
     THUMBS[key] = () => F.draw(key === "tuna" || key === "pilotwhale" || key === "falsekiller" ? 78 : 60, 44, 1, F.thumb, 0.5);
   }
-  for (const key of ["frogfish", "scorpionfish", "stonefish", "blenny", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
+  for (const key of ["scorpionfish", "stonefish", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
   Object.assign(BASE_HUE, {
     triggerfish: 40, wrasse: 150, surgeonfish: 225, mandarinfish: 25, needlefish: 195, seasnake: 50, seakrait: 215, electricray: 25, guitarfish: 35, iguana: 190,
-    frogfish: 35, scorpionfish: 8, stonefish: 40, blenny: 45, goby: 40, sanddollar: 300, brittlestar: 320, seacucumber: 20, featherstar: 25,
+    scorpionfish: 8, stonefish: 40, goby: 40, sanddollar: 300, brittlestar: 320, seacucumber: 20, featherstar: 25,
     albatross: 200, pelican: 40, walrus: 25, polarbear: 50, cormorant: 200,
     thresher: 215, whitetip: 205, greatwhite: 205, marlin: 220, tuna: 220, barracuda: 200, coelacanth: 220, sawfish: 40,
     bluewhale: 210, finwhale: 210, pilotwhale: 200, falsekiller: 200,
@@ -8609,7 +8556,6 @@
 
     updateVisitor(k, dtSec);
     const v = S.visitor;
-    if (v && v.type === "whale") shinyDraw(v, () => drawWhale(v));
     shinyDraw(S.megalodon, () => drawMegalodon(k));
     shinyDraw(S.moby, () => drawMoby(k));
 
@@ -9051,7 +8997,7 @@
     const card = (k, isNew, forceShiny) => {
       const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
       const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-      return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${shinyMode ? nm(sk) : nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
+      return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
     };
     const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
     let html = "";
@@ -9190,7 +9136,7 @@
     sponges: "Sponzen zijn dieren zonder organen. Ze pompen elke dag duizenden liters water door hun lichaam om voedsel eruit te halen.",
     parrotfish: "Een papegaaivis knabbelt aan koraal en poept het fijngemalen uit als wit zand. Veel witte stranden komen deels van hem.",
     boxfish: "Een koffervis zit in een stevig pantser van benen plaatjes en kan alleen zijn vinnen en staart bewegen.",
-    pistol: "De klik van een pistoolgarnaal is een van de hardste geluiden in de zee. Een grondel houdt voor hem de wacht.",
+    pistol: "De klik van een pistoolgarnaal is een van de hardste geluiden in de zee. Hij is bijna blind; de gele wachtersgrondel houdt bij de ingang van hun hol de wacht en waarschuwt hem met een tik van zijn staart.",
     sargassumfish: "De sargassumvis ziet er precies uit als het zeewier waarin hij woont, en klimt erin rond met zijn vinnen als armpjes.",
     spidercrab: "De Japanse reuzenkrab heeft de langste poten van alle geleedpotigen: van punt tot punt tot bijna vier meter.",
     crocodile: "Zeekrokodillen zijn de grootste reptielen ter wereld en zwemmen soms honderden kilometers over open zee.",
@@ -9245,10 +9191,8 @@
     wrasse: "Lipvissen slapen 's nachts soms in een slijmcocon of graven zich in het zand in.",
     surgeonfish: "Doktersvissen hebben bij hun staart een scherp stekeltje als een scalpel. Daar komt hun naam vandaan.",
     mandarinfish: "De mandarijnvis is een van de weinige dieren met echt blauw pigment. Hij komt vooral bij schemering tevoorschijn.",
-    frogfish: "Een kikvorsvis 'loopt' over de bodem op zijn borstvinnen en lokt prooi met een hengeltje op zijn kop.",
     scorpionfish: "Een schorpioenvis ligt doodstil en gecamoufleerd op de bodem, met gifstekels in zijn rugvin.",
     stonefish: "De steenvis is de giftigste vis ter wereld en lijkt precies op een begroeide steen.",
-    blenny: "Slijmvissen wonen in een gaatje in rots of koraal en steken alleen hun kop met 'wenkbrauwen' naar buiten.",
     goby: "Grondels zijn een van de grootste vissenfamilies. Sommige wonen samen met een garnaal in één hol.",
     needlefish: "Naaldvissen zwemmen vlak onder het oppervlak en kunnen met hun spitse snavel uit het water springen.",
     thresher: "Een voshaai slaat met zijn extreem lange staart zo hard dat hij vissen ermee verdoven kan.",
@@ -9288,9 +9232,7 @@
     flyingfish: "Vliegende vissen springen uit het water en zweven op hun grote borstvinnen tientallen meters ver, om roofvissen te ontwijken.",
     cleaners: "Poetsvisjes eten parasieten van grotere vissen, die daar speciaal voor naar hun poetsstation komen.",
     grouper: "Tandbaarzen kunnen heel groot worden. De reuzentandbaars wordt meer dan twee meter lang.",
-    whale: "Walvissen stammen af van landdieren die zo'n vijftig miljoen jaar geleden de zee weer in gingen.",
     humpback: "Mannetjes bultruggen zingen lange liederen, die soms meer dan twintig minuten duren en urenlang worden herhaald.",
-    shark: "Een haai heeft geen botten. Zijn skelet is van kraakbeen, net als je oorschelp.",
     turtle: "Zeeschildpadden komen om eieren te leggen vaak terug naar het strand waar ze zelf geboren zijn.",
     manta: "Een reuzenmanta kan een spanwijdte van zo'n zeven meter hebben.",
     dolphins: "Dolfijnen slapen met één hersenhelft tegelijk, zodat ze kunnen blijven ademen.",
@@ -9350,7 +9292,7 @@
     sponges: "Sponges are animals without organs. Every day they pump thousands of litres of water through their bodies to filter out food.",
     parrotfish: "A parrotfish nibbles coral and poops it out as fine white sand. Many white beaches come partly from parrotfish.",
     boxfish: "A boxfish lives in a stiff armour of bony plates and can only move its fins and tail.",
-    pistol: "The snap of a pistol shrimp is one of the loudest sounds in the sea. A goby keeps watch for it.",
+    pistol: "The snap of a pistol shrimp is one of the loudest sounds in the sea. It is almost blind; the yellow watchman goby guards the entrance of their burrow and warns it with a flick of its tail.",
     sargassumfish: "The sargassum fish looks just like the seaweed it lives in, and climbs around in it with arm-like fins.",
     spidercrab: "The Japanese spider crab has the longest legs of any arthropod: almost four metres from tip to tip.",
     crocodile: "Saltwater crocodiles are the largest reptiles in the world and sometimes swim hundreds of kilometres across open sea.",
@@ -9405,10 +9347,8 @@
     wrasse: "At night some wrasses sleep in a cocoon of mucus or bury themselves in the sand.",
     surgeonfish: "Surgeonfish have a sharp little spine near the tail, like a scalpel. That is where their name comes from.",
     mandarinfish: "The mandarinfish is one of the few animals with real blue pigment. It mostly comes out at dusk.",
-    frogfish: "A frogfish 'walks' over the floor on its fins and lures prey with a little fishing rod on its head.",
     scorpionfish: "A scorpionfish lies perfectly still and camouflaged on the floor, with venomous spines in its back fin.",
     stonefish: "The stonefish is the most venomous fish in the world and looks exactly like an overgrown stone.",
-    blenny: "Blennies live in a little hole in rock or coral and only poke out their head with its 'eyebrows'.",
     goby: "Gobies are one of the largest fish families. Some share a burrow with a shrimp.",
     needlefish: "Needlefish swim just under the surface and can leap out of the water with their pointed beak.",
     thresher: "A thresher shark whips its extremely long tail so hard that it can stun fish with it.",
@@ -9448,9 +9388,7 @@
     flyingfish: "Flying fish leap out of the water and glide for tens of metres on their big pectoral fins, to escape from predators.",
     cleaners: "Cleaner wrasse eat parasites off larger fish, which visit their cleaning station especially for that.",
     grouper: "Groupers can grow very large. The giant grouper reaches more than two metres.",
-    whale: "Whales descend from land animals that went back into the sea about fifty million years ago.",
     humpback: "Male humpback whales sing long songs that can last more than twenty minutes and are repeated for hours.",
-    shark: "A shark has no bones. Its skeleton is made of cartilage, like your ear.",
     turtle: "Sea turtles often return to lay eggs on the beach where they themselves were born.",
     manta: "A giant manta can have a wingspan of about seven metres.",
     dolphins: "Dolphins sleep with one half of their brain at a time, so they can keep breathing.",
@@ -9734,7 +9672,7 @@
     if (!mm) return null;
     let m = 0n;
     for (const ch of mm[3]) m = m * 36n + BigInt(parseInt(ch, 36));
-    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
+    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
   }
 
   let polaroidCanvas = null;
@@ -10016,7 +9954,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=40").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=41").catch(() => {}));
   }
 </script>
 </body>

@@ -285,34 +285,6 @@
   }
 
   // ---- animals on the floor ------------------------------------------------------
-  // A frogfish: a lumpy ball that walks on arm-like fins, with a huge upturned mouth and a fishing lure.
-  const FROG_BODY = "M 34 -30 C 36 -50 20 -66 0 -66 C -24 -66 -40 -48 -40 -28 C -40 -12 -30 -4 -16 -4 L 14 -4 C 28 -6 34 -16 34 -30 Z";
-  const FROG_ARM = "M 0 0 C 2 8 8 14 16 16 C 20 17 22 20 18 21 C 10 22 0 18 -4 8 Z";
-  const FROG_TAIL = "M 0 0 C -8 -10 -18 -8 -18 0 C -18 8 -8 10 0 4 Z";
-  function drawFrogfish(f) {
-    const s = f.s, gape = Math.max(0, Math.sin(f.ph)) * 4;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir * s / 100, s / 100);
-    const body = sh("#f0a030"), dark = sh("#c87018");
-    ctx.save(); ctx.translate(-36, -24); ctx.rotate(Math.sin(f.ph * 1.5) * 0.15); fillWith(P(FROG_TAIL), dark); ctx.restore();
-    ctx.save(); ctx.translate(-20, -14); ctx.rotate(0.3); fillWith(P(FROG_ARM), dark); ctx.restore();
-    fillWith(P(FROG_BODY), body);
-    ctx.save(); ctx.clip(P(FROG_BODY));
-    ctx.fillStyle = dark;
-    const warts = [[-26, -46], [-12, -56], [6, -58], [-30, -28], [-16, -36], [0, -44], [-4, -24], [16, -48], [-22, -14], [10, -30]];
-    for (const [x, y] of warts) { ctx.beginPath(); ctx.arc(x, y, 3.4, 0, TAU); ctx.fill(); }
-    ctx.restore();
-    // the near arm, the wide mouth and its lure
-    ctx.save(); ctx.translate(6, -16); fillWith(P(FROG_ARM), body); ctx.restore();
-    ctx.fillStyle = "#3a1a10"; ctx.beginPath(); ctx.moveTo(35, -30); ctx.quadraticCurveTo(28, -36 - gape, 18, -44 - gape); ctx.quadraticCurveTo(26, -38, 33, -26); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = sh("#e8b860"); ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(35, -29); ctx.quadraticCurveTo(28, -40 - gape, 16, -46 - gape); ctx.stroke();
-    ctx.strokeStyle = dark; ctx.lineWidth = 2;
-    const lx = 30 + Math.sin(f.ph * 2) * 5;
-    ctx.beginPath(); ctx.moveTo(8, -64); ctx.quadraticCurveTo(22, -82, lx, -72); ctx.stroke();
-    ctx.fillStyle = sh("#f2e8c0"); ctx.beginPath(); ctx.arc(lx, -72, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#f2d8a0"; ctx.beginPath(); ctx.arc(14, -52, 4.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(14.6, -52, 2.8, 0, TAU); ctx.fill();
-    ctx.restore();
-  }
   function drawScorpion(f) {
     const s = f.s;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
@@ -354,38 +326,35 @@
     ctx.restore();
   }
 
-  function drawBlenny(f) {
-    const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(f.dir, 1);
-    // a little rock with a hole, and the blenny peeking out
-    ctx.fillStyle = sh("#8a8478");
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 1.0, s * 0.6, 0, Math.PI, TAU); ctx.fill();
-    ctx.fillStyle = "#14100c"; ctx.beginPath(); ctx.ellipse(s * 0.1, -s * 0.3, s * 0.25, s * 0.2, 0, 0, TAU); ctx.fill();
-    const peek = 0.6 + 0.4 * Math.sin(f.ph * 0.8);
-    ctx.save(); ctx.translate(s * 0.1 + peek * s * 0.15, -s * 0.3);
-    ctx.fillStyle = sh("#e8c050");
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.22, s * 0.17, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#fff"; for (const ey of [-0.06]) { ctx.beginPath(); ctx.arc(s * 0.08, s * ey, s * 0.06, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.1, -s * 0.06, s * 0.03, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#c86a3a"); ctx.lineWidth = Math.max(0.6, s * 0.03);
-    ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.13); ctx.lineTo(s * 0.0, -s * 0.24); ctx.moveTo(s * 0.12, -s * 0.13); ctx.lineTo(s * 0.12, -s * 0.25); ctx.stroke();
-    ctx.strokeStyle = "#5a3a20"; ctx.beginPath(); ctx.moveTo(s * 0.17, s * 0.06); ctx.lineTo(s * 0.21, s * 0.06); ctx.stroke();
+  // A goby: a long round body with a blunt head, big eyes high on top, two separate dorsal fins,
+  // a rounded tail, and fan-shaped flippers it props itself up on. Drawn where 100 units is its length.
+  const GOBY_BODY = "M 48 2 C 48 -8 40 -13 28 -13 C 12 -13 -14 -10 -36 -6 C -40 -5 -42 -3 -42 0 C -42 3 -40 5 -36 6 C -14 9 12 11 28 10 C 40 9 48 8 48 2 Z";
+  const GOBY_FIRST = "M 18 -12.5 C 16 -27 3 -29 -1 -12 Z";
+  const GOBY_SECOND = "M -4 -11.4 C -10 -20 -30 -16 -37 -6 L -30 -7 C -20 -10 -10 -11 -4 -11.4 Z";
+  const GOBY_ANAL = "M -6 9 C -12 15 -28 12 -36 6 L -30 6.5 C -20 8 -12 8.6 -6 9 Z";
+  const GOBY_TAIL = "M 2 -5.5 C -10 -12 -19 -9.5 -19 0 C -19 9.5 -10 12 2 5.5 Z";
+  const GOBY_PEC = "M 0 0 C 5 4 5 11 -2 13 C -7 11 -6 4 0 0 Z";
+  function drawGobyShape(main, dark, spot, ph) {
+    ctx.fillStyle = dark;
+    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); ctx.fill(P(GOBY_TAIL)); ctx.restore();
+    ctx.globalAlpha *= 0.85; ctx.fill(P(GOBY_FIRST)); ctx.fill(P(GOBY_SECOND)); ctx.fill(P(GOBY_ANAL)); ctx.globalAlpha /= 0.85;
+    ctx.fillStyle = main; ctx.fill(P(GOBY_BODY));
+    ctx.save(); ctx.clip(P(GOBY_BODY));
+    ctx.fillStyle = "rgba(255,255,255,0.22)"; ctx.beginPath(); ctx.ellipse(6, 9, 44, 5, 0.03, 0, TAU); ctx.fill();
+    ctx.fillStyle = spot;
+    for (const [x, y, r] of [[36, -4, 1.8], [30, 2, 1.5], [22, -6, 1.7], [14, 2, 1.6], [4, -5, 1.8], [-6, 2, 1.5], [-16, -4, 1.6], [-26, 1, 1.4], [42, 3, 1.3], [26, -9, 1.3]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
     ctx.restore();
-    ctx.restore();
+    ctx.save(); ctx.translate(22, 4); ctx.rotate(-0.2 + Math.sin(ph * 3) * 0.25); ctx.fillStyle = dark; ctx.globalAlpha *= 0.8; ctx.fill(P(GOBY_PEC)); ctx.restore();
+    ctx.strokeStyle = dark; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(48, 3.5); ctx.quadraticCurveTo(44, 5.5, 39, 4.5); ctx.stroke();
+    // the eyes bulge up out of the top of the head
+    ctx.fillStyle = main; ctx.beginPath(); ctx.arc(33, -12, 5, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#f6f0d8"; ctx.beginPath(); ctx.arc(33.5, -12.5, 3.8, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34.3, -12.5, 2.3, 0, TAU); ctx.fill();
   }
-
   function drawGoby(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir, 1);
-    ctx.fillStyle = sh("#d8c8a0");
-    ctx.beginPath(); ctx.moveTo(-s * 0.42, 0); ctx.lineTo(-s * 0.58, -s * 0.1); ctx.lineTo(-s * 0.58, s * 0.08); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.45, s * 0.13, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(220,200,160,0.7)";
-    ctx.beginPath(); ctx.moveTo(s * 0.0, -s * 0.1); ctx.quadraticCurveTo(-s * 0.1, -s * 0.32, -s * 0.22, -s * 0.12); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-s * 0.2, -s * 0.1); ctx.quadraticCurveTo(-s * 0.3, -s * 0.28, -s * 0.38, -s * 0.1); ctx.fill();
-    ctx.fillStyle = sh("#8a6a3a"); for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(s * (0.25 - i * 0.12), s * ((i % 2) * 0.04 - 0.02), s * 0.03, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = sh("#3a8ad8"); ctx.beginPath(); ctx.arc(s * 0.1, s * 0.03, s * 0.025, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.07, s * 0.035, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12); ctx.scale(f.dir * s / 100, s / 100);
+    drawGobyShape(sh("#d8c8a0"), sh("#9a7a4a"), sh("#8a6a3a"), f.ph);
     ctx.restore();
   }
 
@@ -761,10 +730,8 @@
     electricray: { kind: "glide", size: [28, 36], lift: [14, 26], speed: 0.3, draw: drawElectricRay, thumb: 70 },
     guitarfish: { kind: "glide", size: [44, 56], lift: [10, 20], speed: 0.35, draw: drawGuitar, thumb: 96 },
     iguana: { kind: "glide", size: [38, 46], lift: [20, 40], speed: 0.35, draw: drawIguana, thumb: 90 },
-    frogfish: { kind: "floor", size: [20, 26], draw: drawFrogfish, thumb: 56 },
     scorpionfish: { kind: "floor", size: [26, 32], draw: drawScorpion, thumb: 76 },
     stonefish: { kind: "floor", size: [22, 28], draw: drawStonefish, thumb: 70 },
-    blenny: { kind: "floor", size: [13, 17], count: [1, 2], draw: drawBlenny, thumb: 40 },
     goby: { kind: "floor", size: [13, 17], count: [1, 3], crawl: 0.12, draw: drawGoby, thumb: 64 },
     sanddollar: { kind: "floor", size: [9, 13], count: [2, 4], draw: drawSandDollar, thumb: 38 },
     brittlestar: { kind: "floor", size: [11, 15], count: [2, 4], crawl: 0.06, draw: drawBrittle, thumb: 40 },
@@ -895,10 +862,10 @@
     const F = FAUNA_VIS[key];
     THUMBS[key] = () => F.draw(key === "tuna" || key === "pilotwhale" || key === "falsekiller" ? 78 : 60, 44, 1, F.thumb, 0.5);
   }
-  for (const key of ["frogfish", "scorpionfish", "stonefish", "blenny", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
+  for (const key of ["scorpionfish", "stonefish", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
   Object.assign(BASE_HUE, {
     triggerfish: 40, wrasse: 150, surgeonfish: 225, mandarinfish: 25, needlefish: 195, seasnake: 50, seakrait: 215, electricray: 25, guitarfish: 35, iguana: 190,
-    frogfish: 35, scorpionfish: 8, stonefish: 40, blenny: 45, goby: 40, sanddollar: 300, brittlestar: 320, seacucumber: 20, featherstar: 25,
+    scorpionfish: 8, stonefish: 40, goby: 40, sanddollar: 300, brittlestar: 320, seacucumber: 20, featherstar: 25,
     albatross: 200, pelican: 40, walrus: 25, polarbear: 50, cormorant: 200,
     thresher: 215, whitetip: 205, greatwhite: 205, marlin: 220, tuna: 220, barracuda: 200, coelacanth: 220, sawfish: 40,
     bluewhale: 210, finwhale: 210, pilotwhale: 200, falsekiller: 200,

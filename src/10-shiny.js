@@ -56,7 +56,7 @@
   const BASE_HUE = {
     octopus: 18, ray: 30, eels: 45, puffer: 45, squid: 340, hermit: 15, otters: 25, clown: 25, mantis: 140, archer: 190,
     cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
-    whale: 210, humpback: 210, shark: 205, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
+    humpback: 210, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
   };
   // The rare things can be shiny too; they are rolled with the ocean, so a shared seed keeps them.
   function registerRareShinies(s, add) {

@@ -82,7 +82,6 @@
 
     updateVisitor(k, dtSec);
     const v = S.visitor;
-    if (v && v.type === "whale") shinyDraw(v, () => drawWhale(v));
     shinyDraw(S.megalodon, () => drawMegalodon(k));
     shinyDraw(S.moby, () => drawMoby(k));
 

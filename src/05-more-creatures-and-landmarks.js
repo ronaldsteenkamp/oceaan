@@ -799,7 +799,7 @@
     ctx.restore();
   }
 
-  const VISITOR_DRAW = { turtle: drawTurtle, manta: drawManta, shark: drawShark, dolphins: drawDolphins, swordfish: drawSwordfish, sub: drawSub, narwhal: drawNarwhal, mermaid: drawMermaid };
+  const VISITOR_DRAW = { turtle: drawTurtle, manta: drawManta, dolphins: drawDolphins, swordfish: drawSwordfish, sub: drawSub, narwhal: drawNarwhal, mermaid: drawMermaid };
 
   // ---- tentacles from the deep -------------------------------------------
   const smooth = x => x * x * (3 - 2 * x);
