@@ -196,7 +196,6 @@
   .dtabs button.on { color: var(--text); background: var(--accent-soft); }
   .dtabs button.got { color: #ffd479; }
   .dtabs button.on.got { background: rgba(255, 212, 121, 0.18); }
-  .dtabs .tick { font-size: 11px; opacity: 0.85; }
   .detail .big.shinybig { box-shadow: 0 0 0 2px rgba(255, 212, 121, 0.75); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
   .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }

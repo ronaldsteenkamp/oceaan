@@ -325,17 +325,14 @@
     detailOpen = true;
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
-    const fact = key.startsWith("shiny:")
-      ? (RARE_KEYS.includes(base) ? L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} keer ziet het er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} times it looks like this. `)
-        : L(`Een shiny is een zeldzame kleurvariant: ongeveer 1 op de ${SHINY_N[base] || 200} van deze dieren ziet er zo uit. `, `A shiny is a rare colour variant: about 1 in ${SHINY_N[base] || 200} of these animals looks like this. `)) + (facts[base] || "")
-      : facts[key] || "";
+    const fact = key.startsWith("shiny:") ? L("Een shiny is een zeldzame kleurvariant. ", "A shiny is a rare colour variant. ") + (facts[base] || "") : facts[key] || "";
     const where = hintFor(key);
     const when = e && e.first ? dateText(e.first) : "";
     // an animal with a shiny gets two tabs: the ordinary one and its shiny
     const isShiny = key.startsWith("shiny:"), se = logbook.get("shiny:" + base);
     const tabs = SHINY_KEYS.includes(base) ? `<div class="dtabs" role="tablist" aria-label="${L("Kleur", "Colour")}">
         <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
-        <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny${se ? ` <span class="tick">${L("gevonden", "found")}</span>` : ""}</button>
+        <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny</button>
       </div>` : "";
     // everything on one screen: the picture beside the text (above it on a phone), no scrolling
     panelBody.innerHTML = `
@@ -347,7 +344,8 @@
             <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
             <p class="fact">${fact}</p>
             <dl>
-              <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
+              ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
+                : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
               ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
               ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
             </dl>
@@ -357,6 +355,11 @@
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
     (tabBtn || document.getElementById("detailBack")).focus();
+  }
+  function shinyOdds(base) {
+    const n = SHINY_N[base] || 200;
+    return RARE_KEYS.includes(base) ? L(`Ongeveer 1 op de ${n} keer is het shiny`, `About 1 in ${n} times it is shiny`)
+      : L(`Ongeveer 1 op de ${n} van deze dieren is shiny`, `About 1 in ${n} of these animals is shiny`);
   }
   function closeDetail() {
     detailOpen = false;
