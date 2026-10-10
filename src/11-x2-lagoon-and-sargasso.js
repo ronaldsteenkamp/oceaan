@@ -645,18 +645,21 @@
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
-  // The ghost of an old helmet diver drifts through the water and waves.
+  // The ghost of a diver: the same diver you swim with yourself, but pale green and see-through,
+  // with an empty dark mask, a slow lazy kick and a wisp of mist trailing from its fins.
   function drawGhostDiverShape(x, y, dir, s, ph, alpha) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.globalAlpha = alpha;
-    ctx.fillStyle = "rgba(150,255,215,0.9)"; ctx.strokeStyle = "rgba(150,255,215,0.9)";
+    const L = s * 1.55;
+    ctx.save(); ctx.translate(x + dir * L * 0.12, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph * 0.9) * 0.08);
+    ctx.globalAlpha = alpha;
+    // the mist it leaves behind, fading away
     ctx.lineCap = "round";
-    ctx.lineWidth = s * 0.22;
-    ctx.beginPath(); ctx.moveTo(-s * 0.1, s * 0.5); ctx.lineTo(-s * 0.2 + Math.sin(ph) * s * 0.1, s * 1.1); ctx.moveTo(s * 0.12, s * 0.5); ctx.lineTo(s * 0.2 - Math.sin(ph) * s * 0.1, s * 1.1); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(0, s * 0.15, s * 0.32, s * 0.45, 0, 0, TAU); ctx.fill();
-    // one arm waves
-    ctx.beginPath(); ctx.moveTo(s * 0.2, -s * 0.05); ctx.lineTo(s * 0.55, -s * 0.35 + Math.sin(ph * 3) * s * 0.15); ctx.moveTo(-s * 0.2, 0); ctx.lineTo(-s * 0.4, s * 0.35); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, -s * 0.45, s * 0.34, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(10,40,40,0.8)"; ctx.beginPath(); ctx.arc(s * 0.1, -s * 0.45, s * 0.17, 0, TAU); ctx.fill();
+    for (let i = 0; i < 3; i++) {
+      ctx.strokeStyle = `rgba(150,255,215,${0.35 - i * 0.1})`; ctx.lineWidth = L * (0.06 - i * 0.015);
+      ctx.beginPath(); ctx.moveTo(-L * 0.55, (i - 1) * L * 0.03);
+      ctx.bezierCurveTo(-L * 0.75, Math.sin(ph * 2 + i) * L * 0.08, -L * 0.9, -Math.sin(ph * 2 + i) * L * 0.08, -L * (1.05 + i * 0.08), Math.sin(ph * 3 + i * 2) * L * 0.06);
+      ctx.stroke();
+    }
+    drawDiverBody(L, ph * 2.2, { suit: "rgba(150,255,215,0.8)", fin: "rgba(150,255,215,0.55)", tank: "rgba(205,255,235,0.85)", gear: "rgba(150,255,215,0.6)", mask: `rgba(6,30,32,${0.85 * alpha})`, hollow: true });
     ctx.restore();
   }
   function drawGhostDiver(g, k) {
@@ -852,5 +855,5 @@
       ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.beginPath(); ctx.moveTo(0, 10); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 10 + Math.sin(x * 0.12) * 1.5); ctx.stroke();
     },
     mobydick: () => drawSpermWhaleShape(58, 44, 1, 100, 0, "#eceae4", "#a8a6a0"),
-    ghostdiver: () => drawGhostDiverShape(60, 40, 1, 26, 1, 0.8),
+    ghostdiver: () => drawGhostDiverShape(66, 44, 1, 34, 1, 0.9),
   });

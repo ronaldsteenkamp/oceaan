@@ -709,29 +709,40 @@
     ctx.translate(d.x, d.y);
     ctx.rotate(d.heading);
     ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
+    drawDiverBody(L, d.kick, { suit, fin: sh("#2f6fe0"), tank: sh("#e8b52a", -0.1), gear: "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
+    ctx.restore();
+  }
+
+  // The diver seen from the side, facing right, in local coordinates where L is its length.
+  // c holds the colours, so the ghost diver can be drawn with exactly the same shape.
+  function drawDiverBody(L, kick, c) {
+    const suit = c.suit;
     for (const off of [0, 1]) {
       ctx.save();
       ctx.translate(-L * 0.25, off ? L * 0.04 : -L * 0.02);
-      ctx.rotate(Math.sin(d.kick + off * Math.PI) * 0.35);
+      ctx.rotate(Math.sin(kick + off * Math.PI) * 0.35);
       ctx.fillStyle = suit; ctx.fillRect(-L * 0.35, -L * 0.035, L * 0.35, L * 0.07);
-      ctx.fillStyle = sh("#2f6fe0");
+      ctx.fillStyle = c.fin;
       ctx.beginPath(); ctx.moveTo(-L * 0.33, -L * 0.04); ctx.lineTo(-L * 0.6, -L * 0.09); ctx.lineTo(-L * 0.6, L * 0.06); ctx.lineTo(-L * 0.33, L * 0.04); ctx.fill();
       ctx.restore();
     }
-    ctx.fillStyle = sh("#e8b52a", -0.1);
+    ctx.fillStyle = c.tank;
     ctx.beginPath(); ctx.roundRect(-L * 0.2, -L * 0.13, L * 0.36, L * 0.08, L * 0.04); ctx.fill();
     ctx.fillStyle = suit;
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.27, L * 0.07, 0, 0, TAU); ctx.fill();
     ctx.strokeStyle = suit; ctx.lineWidth = L * 0.05; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(L * 0.15, L * 0.02); ctx.lineTo(L * 0.32, L * 0.06); ctx.stroke();
-    ctx.fillStyle = "#4a4a4a"; ctx.fillRect(L * 0.3, L * 0.035, L * 0.1, L * 0.045);
+    ctx.fillStyle = c.gear; ctx.fillRect(L * 0.3, L * 0.035, L * 0.1, L * 0.045);
     ctx.fillStyle = suit;
     ctx.beginPath(); ctx.arc(L * 0.33, -L * 0.03, L * 0.07, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(170,220,240,0.85)";
+    // the mask; a ghost has a dark, empty mask instead of glass
+    ctx.save();
+    if (c.hollow) ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = c.mask;
     ctx.beginPath(); ctx.ellipse(L * 0.38, -L * 0.04, L * 0.035, L * 0.03, 0, 0, TAU); ctx.fill();
-    // the lamp on the helmet; its beam is drawn with the other lights
-    ctx.fillStyle = "#fff6d0"; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill();
     ctx.restore();
+    // the lamp on the helmet; its beam is drawn with the other lights
+    if (c.lamp) { ctx.fillStyle = c.lamp; ctx.beginPath(); ctx.arc(L * 0.37, -L * 0.1, L * 0.02, 0, TAU); ctx.fill(); }
   }
 
   // ---- hidden seahorses, the treasure map and digging --------------------
