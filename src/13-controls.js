@@ -81,6 +81,7 @@
 
   addEventListener("keydown", e => {
     if (e.key === "Escape") {
+      if (waterPickEl && !waterPickEl.hidden) { closeWaterPick(); return; }
       if (!panelEl.hidden && detailOpen) { closeDetail(); return; }
       if (!panelEl.hidden) closePanel();
       welcomeEl.hidden = true;
@@ -102,6 +103,8 @@
     if (focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const k = e.key.toLowerCase();
       if (k === "l") { e.preventDefault(); bookBtn.click(); return; }
+      if (k === "b" && rewards.has("gv")) { e.preventDefault(); callVisitor(); return; }
+      if (k === "m" && rewards.has("gm")) { e.preventDefault(); callMoment(); return; }
       if (k === "f" && photoView.hidden) { e.preventDefault(); photoBtn.click(); return; }
       if (k === "g") { e.preventDefault(); if (!soundBtn.disabled) soundBtn.click(); return; }
     }
@@ -252,10 +255,74 @@
       buzz(15);
       return;
     }
+    if (rewards.has("gw")) { openWaterPick(); return; }
     store.set(LOCK_KEY, Date.now());
     newVariant(randomSeed(), true);
     updateLockBadge();
   }
+  // Globetrotter: choose which water the next ocean has. The water follows from the first number of a seed,
+  // so a seed with the chosen water is easy to find.
+  function seedForWater(wi) {
+    for (let i = 0; i < 20000; i++) { const s = randomSeed(); if (Math.floor(mulberry32(s >>> 0)() * WATERS.length) === wi) return s; }
+    return randomSeed();
+  }
+  let waterPickEl = null;
+  function openWaterPick() {
+    if (!waterPickEl) {
+      waterPickEl = document.createElement("div");
+      waterPickEl.id = "waterPick"; waterPickEl.setAttribute("role", "dialog"); waterPickEl.setAttribute("aria-label", L("Kies een water", "Choose a water"));
+      document.body.append(waterPickEl);
+      waterPickEl.addEventListener("click", e => {
+        const bt = e.target.closest("button");
+        if (!bt) return;
+        closeWaterPick();
+        if (bt.dataset.pick === "x") return;
+        store.set(LOCK_KEY, Date.now());
+        newVariant(bt.dataset.pick === "r" ? randomSeed() : seedForWater(Number(bt.dataset.pick)), true);
+        updateLockBadge();
+      });
+    }
+    waterPickEl.innerHTML = `<p>${L("Waar duik je nu?", "Where do you dive next?")}</p><div class="chips">` +
+      WATERS.map((w, i) => `<button type="button" class="chip pick" data-pick="${i}">${nm("w:" + w.name)}</button>`).join("") +
+      `<button type="button" class="chip pick" data-pick="r">${L("Verras me", "Surprise me")}</button><button type="button" class="chip" data-pick="x">${L("Annuleren", "Cancel")}</button></div>`;
+    waterPickEl.hidden = false;
+    waterPickEl.querySelector("button").focus();
+  }
+  function closeWaterPick() { if (waterPickEl) waterPickEl.hidden = true; }
+
+  // Welcoming host: call a visitor. Moment catcher: call up a moment that fits this ocean.
+  let callCool = 0;
+  function callVisitor() {
+    if (!rewards.has("gv")) return;
+    if (performance.now() < callCool) { toast(L("Even geduld, je riep net al iemand", "Just a moment, you only just called")); return; }
+    if (scene.visitor) { toast(L("Er zwemt al een bezoeker langs", "A visitor is already passing by")); return; }
+    const pool = water.visitors.filter(v => VISITOR_DRAW[v] || v === "humpback");
+    if (!pool.length) { toast(L("Hier komen geen bezoekers", "No visitors come here")); return; }
+    scene.forceVisitor = pool[Math.floor(Math.random() * pool.length)]; scene.visitorTimer = 0;
+    callCool = performance.now() + 15000;
+    toast(L("Je roept een bezoeker...", "You call a visitor..."));
+  }
+  function callMoment() {
+    if (!rewards.has("gm")) return;
+    if (performance.now() < callCool) { toast(L("Even geduld, je riep net al iets op", "Just a moment, you only just called")); return; }
+    const S = scene, opts = [];
+    if (S.storm.enabled && !S.storm.active) opts.push(() => { S.storm.timer = 0; });
+    if (S.bait.enabled && !S.bait.active) opts.push(() => { S.bait.timer = 0; });
+    if (S.bloom) opts.push(() => { S.bloom.timer = 0; });
+    if (S.eels.enabled && !S.eels.list.length) opts.push(() => { S.eels.timer = 0; });
+    if (S.march.enabled && !S.march.list.length) opts.push(() => { S.march.timer = 0; });
+    if (S.hatch.enabled && !S.hatch.list.length) opts.push(() => { S.hatch.timer = 0; });
+    if (S.quake.age < 0) opts.push(() => { S.quake.timer = 0; });
+    if (S.glowtide.enabled && !S.glowtide.active && night > 0.85) opts.push(() => { S.glowtide.timer = 0; });
+    if (S.aurora.enabled && !S.aurora.active && night > 0.6) opts.push(() => { S.aurora.timer = 0; });
+    if (!opts.length) { toast(L("Er is nu geen moment om op te roepen", "There is no moment to call up right now")); return; }
+    busyUntil = 0;
+    opts[Math.floor(Math.random() * opts.length)]();
+    callCool = performance.now() + 30000;
+    toast(L("Je roept een moment op...", "You call up a moment..."));
+  }
+  document.getElementById("callVisitor").addEventListener("click", callVisitor);
+  document.getElementById("callMoment").addEventListener("click", callMoment);
   function updateLockBadge() {
     const left = lockLeft();
     nextTimeEl.hidden = left <= 0;

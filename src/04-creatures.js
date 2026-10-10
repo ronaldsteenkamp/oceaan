@@ -649,7 +649,8 @@
     if (!pool.length && !scene.forceVisitor) { scene.visitorTimer = 30; return; }
     const type = scene.forceVisitor || pool[Math.floor(Math.random() * pool.length)];
     scene.forceVisitor = null;
-    const dir = Math.random() < 0.5 ? 1 : -1;
+    // a mermaid comes in from the side the sonar heard her
+    const dir = type === "mermaid" ? -rareSide() : Math.random() < 0.5 ? 1 : -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
     const SIZE = {
       humpback: () => Math.min(W * 0.95, 950 * u),

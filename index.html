@@ -409,6 +409,14 @@
   }
 
   #panel.book.gilded { background-color: #6a5422; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 6px rgba(230, 190, 90, 0.35); }
+
+  /* the scientific name on an animal's page (Biologist reward) */
+  .nb-sci { margin: -4px 0 0; font-style: italic; font-size: 14px; color: var(--ink-soft); }
+  /* choosing the water for a new ocean (Globetrotter reward) */
+  #waterPick { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 36; width: min(560px, calc(100% - 32px)); padding: 14px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  #waterPick[hidden] { display: none; }
+  #waterPick p { margin: 0 0 10px; font-family: "Caveat", cursive; font-size: 24px; color: var(--text); }
+  @media (max-width: 600px) { #waterPick { bottom: calc(124px + env(safe-area-inset-bottom, 0px)); } }
 </style>
 </head>
 <body>
@@ -431,6 +439,8 @@
   <button id="sound" class="tool" data-short="Geluid" type="button" aria-pressed="false" aria-label="Geluid aanzetten" data-tip="Geluid aanzetten"><svg class="off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><svg class="on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
   <button id="diver" class="tool" data-short="Duiker" type="button" aria-pressed="false" aria-label="Duiker" data-tip="Duiker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5C3.5 8.1 4.6 7 6 7h10c1.4 0 2.5 1.1 2.5 2.5v2c0 1.9-1.6 3.5-3.5 3.5h-1.6c-.8 0-1.5-.4-1.9-1.1l-.4-.7a.7.7 0 0 0-1.2 0l-.4.7c-.4.7-1.1 1.1-1.9 1.1H7c-1.9 0-3.5-1.6-3.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M18.5 10H20a.5.5 0 0 1 .5.5v6a3 3 0 0 1-3 3H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <button id="sonar" class="tool" data-short="Sonar" type="button" hidden aria-label="Sonar (Q): zoek naar iets zeldzaams" data-tip="Sonar (Q): zoek naar iets zeldzaams"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.8" fill="currentColor"/><path d="M10 8.5a5 5 0 0 1 0 7M13.5 6a8.5 8.5 0 0 1 0 12M17 3.5a12 12 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="callVisitor" class="tool" data-short="Bezoeker" type="button" hidden aria-label="Roep een bezoeker (B)" data-tip="Roep een bezoeker (B)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20c0-4 0-7-2.5-10.5M12 20c0-4 0-7 2.5-10.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9.5 9.5C7.5 9.5 4.5 8.5 3.5 5.5c2.5-.5 5 .5 6 4zM14.5 9.5c2 0 5-1 6-4-2.5-.5-5 .5-6 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>
+  <button id="callMoment" class="tool" data-short="Moment" type="button" hidden aria-label="Roep een moment op (M)" data-tip="Roep een moment op (M)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 3 6 13.5h5.2L10 21l8-10.8h-5.4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>
   <button id="photo" class="tool" data-short="Foto" type="button" aria-label="Foto maken" data-tip="Foto maken"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5C4 7.7 4.7 7 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 19 4 18.3 4 17.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
   <span class="divider" aria-hidden="true"></span>
   <button id="book" class="tool" data-short="Logboek" type="button" aria-haspopup="dialog" aria-label="Logboek" data-tip="Logboek"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5c-.8 0-1.5.5-1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5.5 1.5 1.2V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="bookDot" hidden></span></button>
@@ -460,6 +470,7 @@
 </div>
 <div id="photoView" hidden role="dialog" aria-modal="true" aria-label="Foto">
   <img id="polaroid" alt="Polaroid van de huidige oceaan">
+  <div class="photo-actions" id="photoFilters" hidden></div>
   <div class="photo-actions">
     <button type="button" id="savePolaroid" class="primary">Opslaan met lijstje</button>
     <button type="button" id="savePlain">Zonder lijstje</button>
@@ -967,7 +978,7 @@
   // Each milestone says how far along you are; the ones with a reward change something you can see.
   const tier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`${n} vondsten`, `${n} finds`], prog: () => [foundCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
-  const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
+  const allOf = (id, nl, en, title, wordNl, wordEn, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
@@ -975,17 +986,17 @@
     tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 7,5 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 7.5 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
-    shinyTier("s1", "Eerste shiny", "First shiny", 1),
-    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
-    shinyTier("s15", "Shinyjager", "Shiny hunter", 15),
+    shinyTier("s1", "Eerste shiny", "First shiny", 1, "een belletje als er een shiny in beeld komt", "a little bell when a shiny comes into view"),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "je sonar merkt ook shiny's op", "your sonar also picks up shinies"),
+    shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
-    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: null },
-    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
-    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
-    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: null },
-    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),
-    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things"),
-    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: null },
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
+    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen bij een nieuwe oceaan", "choosing the water yourself for a new ocean"),
+    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam van elk dier in je logboek", "the scientific name of every animal in your logbook"),
+    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: ["een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"] },
+    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
+    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things", "een pijl die altijd naar iets zeldzaams wijst", "an arrow that always points to something rare"),
+    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: ["fotofilters voor je camera", "photo filters for your camera"] },
   ];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
@@ -995,6 +1006,12 @@
     bookBtn.dataset.rank = MILESTONES.every(m => rewards.has(m.id)) ? "gold" : "";
     bookBtn.classList.remove("glitter");
     panelEl.classList.toggle("gilded", rewards.has("m100"));
+    // the call buttons only appear once they are earned
+    const vb = document.getElementById("callVisitor"), mb = document.getElementById("callMoment");
+    if (vb) vb.hidden = !rewards.has("gv");
+    if (mb) mb.hidden = !rewards.has("gm");
+    const pf = document.getElementById("photoFilters");
+    if (pf) pf.hidden = !rewards.has("ph");
   }
   function checkMilestones(before) {
     for (const id of reached()) {
@@ -1098,6 +1115,30 @@
 
   // The colour scheme of the shiny that is being drawn right now (see 10-shiny.js), or null.
   let shinyPal = null;
+
+  // Scientific names, shown in the logbook with the Biologist reward. For a group with many kinds the family or class is given.
+  const SCI = {
+    fish: "Actinopterygii", lantern: "Myctophidae", clown: "Amphiprion ocellaris", cleaners: "Labroides dimidiatus", grouper: "Epinephelus lanceolatus",
+    archer: "Toxotes jaculatrix", parrotfish: "Scaridae", boxfish: "Ostracion cubicus", puffer: "Tetraodontidae", lionfish: "Pterois volitans",
+    flyingfish: "Exocoetidae", angler: "Melanocetus johnsonii", sargassumfish: "Histrio histrio", moray: "Gymnothorax funebris", eels: "Heteroconger hassi",
+    triggerfish: "Rhinecanthus aculeatus", wrasse: "Thalassoma lunare", surgeonfish: "Paracanthurus hepatus", mandarinfish: "Synchiropus splendidus",
+    scorpionfish: "Scorpaena scrofa", stonefish: "Synanceia verrucosa", goby: "Pomatoschistus minutus", needlefish: "Tylosurus crocodilus",
+    hammerhead: "Sphyrna lewini", whaleshark: "Rhincodon typus", thresher: "Alopias vulpinus", whitetip: "Triaenodon obesus", greatwhite: "Carcharodon carcharias",
+    swordfish: "Istiophorus platypterus", marlin: "Makaira nigricans", tuna: "Thunnus albacares", barracuda: "Sphyraena barracuda", sunfish: "Mola mola",
+    coelacanth: "Latimeria chalumnae", ray: "Dasyatis pastinaca", manta: "Mobula birostris", eagleray: "Aetobatus narinari", electricray: "Torpedo marmorata",
+    guitarfish: "Rhinobatos rhinobatos", sawfish: "Pristis pristis", seahorse: "Hippocampus kuda", seadragon: "Phycodurus eques", jelly: "Aurelia aurita",
+    cassiopea: "Cassiopea andromeda", comb: "Mnemiopsis leidyi", octopus: "Octopus vulgaris", mimic: "Thaumoctopus mimicus", squid: "Loligo vulgaris",
+    giant: "Architeuthis dux", cuttlefish: "Sepia officinalis", nautilus: "Nautilus pompilius", crab: "Brachyura", hermit: "Pagurus bernhardus",
+    lobster: "Homarus gammarus", spidercrab: "Macrocheira kaempferi", mantis: "Odontodactylus scyllarus", pistol: "Alpheus & Cryptocentrus cinctus",
+    isopod: "Bathynomus giganteus", starfish: "Asterias rubens", brittlestar: "Ophiothrix fragilis", featherstar: "Antedon bifida", urchin: "Diadema setosum",
+    sanddollar: "Echinarachnius parma", seacucumber: "Pseudocolochirus violaceus", slugs: "Flabellina iodinea", coral: "Anthozoa", anemone: "Heteractis magnifica",
+    sponges: "Porifera", clam: "Tridacna gigas", turtle: "Chelonia mydas", crocodile: "Crocodylus porosus", seasnake: "Hydrophis platurus",
+    seakrait: "Laticauda colubrina", iguana: "Amblyrhynchus cristatus", dolphins: "Tursiops truncatus", orca: "Orcinus orca", falsekiller: "Pseudorca crassidens",
+    pilotwhale: "Globicephala melas", beluga: "Delphinapterus leucas", narwhal: "Monodon monoceros", humpback: "Megaptera novaeangliae",
+    spermwhale: "Physeter macrocephalus", finwhale: "Balaenoptera physalus", bluewhale: "Balaenoptera musculus", otters: "Enhydra lutris", seal: "Phoca vitulina",
+    sealion: "Zalophus californianus", walrus: "Odobenus rosmarus", manatee: "Trichechus manatus", polarbear: "Ursus maritimus", penguins: "Aptenodytes forsteri",
+    albatross: "Diomedea exulans", cormorant: "Phalacrocorax carbo", pelican: "Pelecanus onocrotalus",
+  };
   // ---- state -------------------------------------------------------------
   let W = 0, H = 0, dpr = 1, u = 1;
   let seed, rng, water, scene;
@@ -1556,7 +1597,9 @@
     W = innerWidth; H = innerHeight;
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
-    u = Math.max(0.6, Math.min(1.6, Math.min(W, H) / 700));
+    // everything is sized by the window, with no upper limit: zooming the browser out (a bigger window in CSS pixels)
+    // makes everything bigger in step, so you always see the same ocean, as at 100%. Small phones keep a lower limit.
+    u = Math.max(0.6, Math.min(W, H) / 700);
     // the same ocean rebuilt at a new size is not a new encounter
     if (seed !== undefined) { rng = mulberry32(seed); rebuilding = true; buildScene(); rebuilding = false; }
   }
@@ -2980,7 +3023,8 @@
     if (!pool.length && !scene.forceVisitor) { scene.visitorTimer = 30; return; }
     const type = scene.forceVisitor || pool[Math.floor(Math.random() * pool.length)];
     scene.forceVisitor = null;
-    const dir = Math.random() < 0.5 ? 1 : -1;
+    // a mermaid comes in from the side the sonar heard her
+    const dir = type === "mermaid" ? -rareSide() : Math.random() < 0.5 ? 1 : -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
     const SIZE = {
       humpback: () => Math.min(W * 0.95, 950 * u),
@@ -3996,7 +4040,7 @@
   const KRAKEN = {
     rise: 5, hold: 9, gap: () => 25 + Math.random() * 25, col: "#6a1f2e", sucker: "#e0a0a0", alpha: 1,
     make: T => {
-      const side = Math.random() < 0.5 ? -1 : 1;
+      const side = rareSide();
       T.side = side;
       return Array.from({ length: 5 }, (_, i) => {
         const curl = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random());
@@ -5536,7 +5580,7 @@
     }
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
 
-    const L = 46 * u, suit = "#1d2228";
+    const gold = rewards.has("sall"), L = 46 * u, suit = gold ? "#c8961a" : "#1d2228";
     if (rewards.has("s30")) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
@@ -5556,7 +5600,7 @@
     ctx.translate(d.x, d.y);
     ctx.rotate(d.heading);
     ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
-    drawDiverBody(L, d.kick, { suit, fin: sh("#2f6fe0"), tank: sh("#e8b52a", -0.1), gear: "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
+    drawDiverBody(L, d.kick, { suit, fin: gold ? "#f2d060" : sh("#2f6fe0"), tank: gold ? "#fff0b8" : sh("#e8b52a", -0.1), gear: gold ? "#8a6410" : "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
     ctx.restore();
   }
 
@@ -6145,12 +6189,34 @@
     else fn();
   }
 
+  let shinyTrail = [];
+  function drawShinyTrail(k) {
+    if (!shinyTrail.length) return;
+    if (shinyTrail.length > 160) shinyTrail.splice(0, shinyTrail.length - 160);
+    shinyTrail = shinyTrail.filter(p => {
+      p.a -= 0.012 * k; p.y -= 0.08 * u * k;
+      if (p.a <= 0) return false;
+      star(p.x, p.y, (1.5 + 3 * p.a) * u * (0.6 + 0.4 * Math.sin(t * 7 + p.ph)), `rgba(255,248,210,${0.85 * p.a})`);
+      return true;
+    });
+  }
   function drawShinies() {
+    drawShinyTrail(frameK);
     for (const e of scene.shinies) {
       if (e.alive && !e.alive()) continue;
       const [x, y] = e.get();
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
+      // First shiny reward: a little bell the moment a shiny comes into view
+      if (!e.rang && !e.told && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
+        e.rang = true;
+        try { tone({ type: "sine", freqs: [[1760, 0], [2349, 0.12]], dur: 0.9, gain: 0.05, attack: 0.005, release: 0.8, verb: 0.9 }); } catch (err) {}
+        toast(L("Er klinkt een belletje: er glinstert iets in de buurt...", "A little bell rings: something glitters nearby..."));
+      }
+      // Shiny hunter reward: a glittering trail behind every shiny
+      if (rewards.has("s15")) {
+        if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
+      }
       if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
@@ -6944,7 +7010,7 @@
       if (Sp.timer <= 0) {
         Sp.timer = 45 + Math.random() * 40;
         if (claim(22)) {
-          Sp.active = true; Sp.dir = Math.random() < 0.5 ? 1 : -1; Sp.len = Math.min(W * 1.1, 1100 * u);
+          Sp.active = true; Sp.dir = -rareSide(); Sp.len = Math.min(W * 1.1, 1100 * u);
           Sp.x = Sp.dir > 0 ? -40 * u : W + 40 * u; Sp.y0 = H * (0.3 + Math.random() * 0.25); Sp.logged = false;
         }
       }
@@ -6956,7 +7022,7 @@
       if (M.timer <= 0) {
         M.timer = 50 + Math.random() * 40;
         if (claim(20)) {
-          M.active = true; M.dir = Math.random() < 0.5 ? 1 : -1; M.size = Math.min(W * 1.1, 1000 * u);
+          M.active = true; M.dir = -rareSide(); M.size = Math.min(W * 1.1, 1000 * u);
           M.x = M.dir > 0 ? -M.size * 0.6 : W + M.size * 0.6; M.y = H * (0.35 + Math.random() * 0.2); M.ph = 0; M.logged = false;
         }
       }
@@ -7787,7 +7853,7 @@
       if (M.timer <= 0) {
         M.timer = 60 + Math.random() * 50;
         if (claim(25)) {
-          M.active = true; M.dir = Math.random() < 0.5 ? 1 : -1; M.size = Math.min(W * 0.75, 650 * u);
+          M.active = true; M.dir = -rareSide(); M.size = Math.min(W * 0.75, 650 * u);
           M.x = M.dir > 0 ? -M.size * 0.6 : W + M.size * 0.6; M.y = H * (0.3 + Math.random() * 0.2); M.ph = 0; M.logged = false;
         }
       }
@@ -7979,18 +8045,27 @@
     ghostsub: ["Een oude sonar pingt terug... maar er vaart niets.", "An old sonar pings back... but nothing is sailing there."],
   };
 
+  // The side a rare thing comes in from, chosen once per ocean. The sonar echo comes from that side,
+  // and the thing itself really does arrive from there.
+  function rareSide() {
+    const so = scene.sonar;
+    if (!so.side) so.side = Math.random() < 0.5 ? -1 : 1;
+    return so.side;
+  }
   function sonarSource(S) {
-    const r = S.rares[0], side = (S.sonar.side = S.sonar.side || (Math.random() < 0.5 ? -1 : 1));
+    const r = S.rares[0], side = rareSide(), off = side < 0 ? -80 * u : W + 80 * u;
     const g = S.ground.find(x => x.kind === (r === "goldpearl" ? "clam" : "whalefall") && (r !== "goldpearl" || x.pearl === "gold"));
     if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
-    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
+    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y - (S.ghost.img ? S.ghost.img.height * 0.3 : 0)];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
     if (r === "ghostsub" && S.ghostSub) return [S.ghostSub.x, S.ghostSub.cy || S.ghostSub.y];
-    if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
-    if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
-    if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
-    if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
-    return [side < 0 ? -80 * u : W + 80 * u, H * 0.45];
+    // the kraken reaches up from the bottom, on its side of the ocean
+    if (r === "kraken") return S.kraken.active && S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [side < 0 ? W * 0.15 : W * 0.85, H + 60 * u];
+    if (r === "megalodon") return S.megalodon.active ? [S.megalodon.x, S.megalodon.y] : [off, H * 0.45];
+    if (r === "mobydick") return S.moby.active ? [S.moby.x, S.moby.y] : [off, H * 0.4];
+    if (r === "serpent") return S.serpent.active ? [S.serpent.hx || off, S.serpent.hy || H * 0.4] : [off, H * 0.4];
+    if (r === "mermaid") { const v = S.visitor; return v && v.type === "mermaid" ? [v.x, v.y + v.yOff] : [off, H * 0.4]; }
+    return [off, H * 0.45];
   }
 
   function sonarPing() {
@@ -8022,7 +8097,14 @@
         } else {
           toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
         }
+        if (rewards.has("s5") && S.shinies.some(e => !e.told && (!e.alive || e.alive())))
+          toast(L("...en je sonar vangt een glinstering op: er zwemt hier een shiny!", "...and your sonar picks up a glitter: a shiny is swimming here!"));
       }
+    }
+    // Myth hunter reward: the arrow keeps pointing to the rare thing in this ocean
+    if (rewards.has("gr") && diverMode && S.rares.length) {
+      const [sx, sy] = sonarSource(S);
+      so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = Math.max(so.arrow || 0, 1.2);
     }
     if (!so.rings.length && !(so.arrow > 0)) return;
     ctx.globalCompositeOperation = "lighter";
@@ -9248,6 +9330,7 @@
 
   addEventListener("keydown", e => {
     if (e.key === "Escape") {
+      if (waterPickEl && !waterPickEl.hidden) { closeWaterPick(); return; }
       if (!panelEl.hidden && detailOpen) { closeDetail(); return; }
       if (!panelEl.hidden) closePanel();
       welcomeEl.hidden = true;
@@ -9269,6 +9352,8 @@
     if (focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const k = e.key.toLowerCase();
       if (k === "l") { e.preventDefault(); bookBtn.click(); return; }
+      if (k === "b" && rewards.has("gv")) { e.preventDefault(); callVisitor(); return; }
+      if (k === "m" && rewards.has("gm")) { e.preventDefault(); callMoment(); return; }
       if (k === "f" && photoView.hidden) { e.preventDefault(); photoBtn.click(); return; }
       if (k === "g") { e.preventDefault(); if (!soundBtn.disabled) soundBtn.click(); return; }
     }
@@ -9419,10 +9504,74 @@
       buzz(15);
       return;
     }
+    if (rewards.has("gw")) { openWaterPick(); return; }
     store.set(LOCK_KEY, Date.now());
     newVariant(randomSeed(), true);
     updateLockBadge();
   }
+  // Globetrotter: choose which water the next ocean has. The water follows from the first number of a seed,
+  // so a seed with the chosen water is easy to find.
+  function seedForWater(wi) {
+    for (let i = 0; i < 20000; i++) { const s = randomSeed(); if (Math.floor(mulberry32(s >>> 0)() * WATERS.length) === wi) return s; }
+    return randomSeed();
+  }
+  let waterPickEl = null;
+  function openWaterPick() {
+    if (!waterPickEl) {
+      waterPickEl = document.createElement("div");
+      waterPickEl.id = "waterPick"; waterPickEl.setAttribute("role", "dialog"); waterPickEl.setAttribute("aria-label", L("Kies een water", "Choose a water"));
+      document.body.append(waterPickEl);
+      waterPickEl.addEventListener("click", e => {
+        const bt = e.target.closest("button");
+        if (!bt) return;
+        closeWaterPick();
+        if (bt.dataset.pick === "x") return;
+        store.set(LOCK_KEY, Date.now());
+        newVariant(bt.dataset.pick === "r" ? randomSeed() : seedForWater(Number(bt.dataset.pick)), true);
+        updateLockBadge();
+      });
+    }
+    waterPickEl.innerHTML = `<p>${L("Waar duik je nu?", "Where do you dive next?")}</p><div class="chips">` +
+      WATERS.map((w, i) => `<button type="button" class="chip pick" data-pick="${i}">${nm("w:" + w.name)}</button>`).join("") +
+      `<button type="button" class="chip pick" data-pick="r">${L("Verras me", "Surprise me")}</button><button type="button" class="chip" data-pick="x">${L("Annuleren", "Cancel")}</button></div>`;
+    waterPickEl.hidden = false;
+    waterPickEl.querySelector("button").focus();
+  }
+  function closeWaterPick() { if (waterPickEl) waterPickEl.hidden = true; }
+
+  // Welcoming host: call a visitor. Moment catcher: call up a moment that fits this ocean.
+  let callCool = 0;
+  function callVisitor() {
+    if (!rewards.has("gv")) return;
+    if (performance.now() < callCool) { toast(L("Even geduld, je riep net al iemand", "Just a moment, you only just called")); return; }
+    if (scene.visitor) { toast(L("Er zwemt al een bezoeker langs", "A visitor is already passing by")); return; }
+    const pool = water.visitors.filter(v => VISITOR_DRAW[v] || v === "humpback");
+    if (!pool.length) { toast(L("Hier komen geen bezoekers", "No visitors come here")); return; }
+    scene.forceVisitor = pool[Math.floor(Math.random() * pool.length)]; scene.visitorTimer = 0;
+    callCool = performance.now() + 15000;
+    toast(L("Je roept een bezoeker...", "You call a visitor..."));
+  }
+  function callMoment() {
+    if (!rewards.has("gm")) return;
+    if (performance.now() < callCool) { toast(L("Even geduld, je riep net al iets op", "Just a moment, you only just called")); return; }
+    const S = scene, opts = [];
+    if (S.storm.enabled && !S.storm.active) opts.push(() => { S.storm.timer = 0; });
+    if (S.bait.enabled && !S.bait.active) opts.push(() => { S.bait.timer = 0; });
+    if (S.bloom) opts.push(() => { S.bloom.timer = 0; });
+    if (S.eels.enabled && !S.eels.list.length) opts.push(() => { S.eels.timer = 0; });
+    if (S.march.enabled && !S.march.list.length) opts.push(() => { S.march.timer = 0; });
+    if (S.hatch.enabled && !S.hatch.list.length) opts.push(() => { S.hatch.timer = 0; });
+    if (S.quake.age < 0) opts.push(() => { S.quake.timer = 0; });
+    if (S.glowtide.enabled && !S.glowtide.active && night > 0.85) opts.push(() => { S.glowtide.timer = 0; });
+    if (S.aurora.enabled && !S.aurora.active && night > 0.6) opts.push(() => { S.aurora.timer = 0; });
+    if (!opts.length) { toast(L("Er is nu geen moment om op te roepen", "There is no moment to call up right now")); return; }
+    busyUntil = 0;
+    opts[Math.floor(Math.random() * opts.length)]();
+    callCool = performance.now() + 30000;
+    toast(L("Je roept een moment op...", "You call up a moment..."));
+  }
+  document.getElementById("callVisitor").addEventListener("click", callVisitor);
+  document.getElementById("callMoment").addEventListener("click", callMoment);
   function updateLockBadge() {
     const left = lockLeft();
     nextTimeEl.hidden = left <= 0;
@@ -9886,7 +10035,7 @@
       <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
     renderBookDetail(photo, {
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
-      body: `<h2 class="nb-title small">${nm(key)}</h2>
+      body: `<h2 class="nb-title small">${nm(key)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
         <dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
@@ -10134,6 +10283,10 @@
   }
 
   let polaroidCanvas = null;
+  // Photographer reward: a few filters for the camera
+  const PHOTO_FILTERS = [["none", "Gewoon", "Plain"], ["grayscale(1) contrast(1.1)", "Zwart-wit", "Black and white"], ["sepia(0.85) saturate(1.1)", "Sepia", "Sepia"],
+    ["saturate(1.8) contrast(1.12)", "Levendig", "Vivid"], ["hue-rotate(40deg) saturate(1.4) brightness(1.05)", "Droomzee", "Dream sea"]];
+  let photoFilter = "none";
   async function makePolaroid() {
     try { await document.fonts.load("600 40px Caveat"); } catch (e) {}
     const scale = Math.min(1, 1400 / canvas.width);
@@ -10143,7 +10296,9 @@
     c.width = iw + pad * 2; c.height = ih + pad + bottom;
     const g = c.getContext("2d");
     g.fillStyle = "#f7f4ec"; g.fillRect(0, 0, c.width, c.height);
+    if (photoFilter !== "none" && "filter" in g) g.filter = photoFilter;
     g.drawImage(canvas, pad, pad, iw, ih);
+    g.filter = "none";
     g.strokeStyle = "rgba(0,0,0,0.08)"; g.strokeRect(pad, pad, iw, ih);
     const date = new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
     g.fillStyle = "#2b2a33"; g.textBaseline = "middle";
@@ -10215,10 +10370,25 @@
 
   photoBtn.addEventListener("click", async () => {
     paused = true;
+    photoFilter = "none";
+    renderPhotoFilters();
     polaroidCanvas = await makePolaroid();
     polaroidImg.src = polaroidCanvas.toDataURL("image/png");
     photoView.hidden = false;
     document.getElementById("savePolaroid").focus();
+  });
+  function renderPhotoFilters() {
+    const el = document.getElementById("photoFilters");
+    el.hidden = !rewards.has("ph");
+    el.innerHTML = PHOTO_FILTERS.map(([f, nl, en]) => `<button type="button" class="chip pick ${photoFilter === f ? "on" : ""}" data-filter-css="${f}" aria-pressed="${photoFilter === f}">${L(nl, en)}</button>`).join("");
+  }
+  document.getElementById("photoFilters").addEventListener("click", async e => {
+    const bt = e.target.closest("button");
+    if (!bt) return;
+    photoFilter = bt.dataset.filterCss;
+    renderPhotoFilters();
+    polaroidCanvas = await makePolaroid();
+    polaroidImg.src = polaroidCanvas.toDataURL("image/png");
   });
   document.getElementById("savePolaroid").addEventListener("click", () => saveCanvas(polaroidCanvas, `oceaan-${seed}-polaroid.png`));
   document.getElementById("savePlain").addEventListener("click", () => saveCanvas(canvas, `oceaan-${seed}.png`));
@@ -10683,7 +10853,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=53").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=55").catch(() => {}));
   }
 </script>
 </body>

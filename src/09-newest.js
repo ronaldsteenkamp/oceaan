@@ -689,7 +689,7 @@
     }
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
 
-    const L = 46 * u, suit = "#1d2228";
+    const gold = rewards.has("sall"), L = 46 * u, suit = gold ? "#c8961a" : "#1d2228";
     if (rewards.has("s30")) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
@@ -709,7 +709,7 @@
     ctx.translate(d.x, d.y);
     ctx.rotate(d.heading);
     ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
-    drawDiverBody(L, d.kick, { suit, fin: sh("#2f6fe0"), tank: sh("#e8b52a", -0.1), gear: "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
+    drawDiverBody(L, d.kick, { suit, fin: gold ? "#f2d060" : sh("#2f6fe0"), tank: gold ? "#fff0b8" : sh("#e8b52a", -0.1), gear: gold ? "#8a6410" : "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
     ctx.restore();
   }
 

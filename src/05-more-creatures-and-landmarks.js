@@ -809,7 +809,7 @@
   const KRAKEN = {
     rise: 5, hold: 9, gap: () => 25 + Math.random() * 25, col: "#6a1f2e", sucker: "#e0a0a0", alpha: 1,
     make: T => {
-      const side = Math.random() < 0.5 ? -1 : 1;
+      const side = rareSide();
       T.side = side;
       return Array.from({ length: 5 }, (_, i) => {
         const curl = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random());

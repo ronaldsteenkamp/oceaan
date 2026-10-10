@@ -599,7 +599,7 @@
       if (M.timer <= 0) {
         M.timer = 60 + Math.random() * 50;
         if (claim(25)) {
-          M.active = true; M.dir = Math.random() < 0.5 ? 1 : -1; M.size = Math.min(W * 0.75, 650 * u);
+          M.active = true; M.dir = -rareSide(); M.size = Math.min(W * 0.75, 650 * u);
           M.x = M.dir > 0 ? -M.size * 0.6 : W + M.size * 0.6; M.y = H * (0.3 + Math.random() * 0.2); M.ph = 0; M.logged = false;
         }
       }
@@ -791,18 +791,27 @@
     ghostsub: ["Een oude sonar pingt terug... maar er vaart niets.", "An old sonar pings back... but nothing is sailing there."],
   };
 
+  // The side a rare thing comes in from, chosen once per ocean. The sonar echo comes from that side,
+  // and the thing itself really does arrive from there.
+  function rareSide() {
+    const so = scene.sonar;
+    if (!so.side) so.side = Math.random() < 0.5 ? -1 : 1;
+    return so.side;
+  }
   function sonarSource(S) {
-    const r = S.rares[0], side = (S.sonar.side = S.sonar.side || (Math.random() < 0.5 ? -1 : 1));
+    const r = S.rares[0], side = rareSide(), off = side < 0 ? -80 * u : W + 80 * u;
     const g = S.ground.find(x => x.kind === (r === "goldpearl" ? "clam" : "whalefall") && (r !== "goldpearl" || x.pearl === "gold"));
     if ((r === "goldpearl" || r === "whalefall") && g) return [g.x, sandY(g.x) - 10 * u];
-    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y];
+    if (r === "ghost" && S.ghost) return [S.ghost.x, S.ghost.y - (S.ghost.img ? S.ghost.img.height * 0.3 : 0)];
     if (r === "ghostdiver" && S.ghostDiver) return [S.ghostDiver.x, S.ghostDiver.cy || S.ghostDiver.y];
     if (r === "ghostsub" && S.ghostSub) return [S.ghostSub.x, S.ghostSub.cy || S.ghostSub.y];
-    if (r === "kraken") return S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [W * 0.5, H + 60 * u];
-    if (r === "megalodon" && S.megalodon.active) return [S.megalodon.x, S.megalodon.y];
-    if (r === "mobydick" && S.moby.active) return [S.moby.x, S.moby.y];
-    if (r === "serpent" && S.serpent.active) return [S.serpent.hx || W / 2, S.serpent.hy || H / 2];
-    return [side < 0 ? -80 * u : W + 80 * u, H * 0.45];
+    // the kraken reaches up from the bottom, on its side of the ocean
+    if (r === "kraken") return S.kraken.active && S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [side < 0 ? W * 0.15 : W * 0.85, H + 60 * u];
+    if (r === "megalodon") return S.megalodon.active ? [S.megalodon.x, S.megalodon.y] : [off, H * 0.45];
+    if (r === "mobydick") return S.moby.active ? [S.moby.x, S.moby.y] : [off, H * 0.4];
+    if (r === "serpent") return S.serpent.active ? [S.serpent.hx || off, S.serpent.hy || H * 0.4] : [off, H * 0.4];
+    if (r === "mermaid") { const v = S.visitor; return v && v.type === "mermaid" ? [v.x, v.y + v.yOff] : [off, H * 0.4]; }
+    return [off, H * 0.45];
   }
 
   function sonarPing() {
@@ -834,7 +843,14 @@
         } else {
           toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
         }
+        if (rewards.has("s5") && S.shinies.some(e => !e.told && (!e.alive || e.alive())))
+          toast(L("...en je sonar vangt een glinstering op: er zwemt hier een shiny!", "...and your sonar picks up a glitter: a shiny is swimming here!"));
       }
+    }
+    // Myth hunter reward: the arrow keeps pointing to the rare thing in this ocean
+    if (rewards.has("gr") && diverMode && S.rares.length) {
+      const [sx, sy] = sonarSource(S);
+      so.dir = Math.atan2(sy - diver.y, sx - diver.x); so.arrow = Math.max(so.arrow || 0, 1.2);
     }
     if (!so.rings.length && !(so.arrow > 0)) return;
     ctx.globalCompositeOperation = "lighter";

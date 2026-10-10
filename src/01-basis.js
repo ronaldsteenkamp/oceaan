@@ -495,7 +495,7 @@
   // Each milestone says how far along you are; the ones with a reward change something you can see.
   const tier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`${n} vondsten`, `${n} finds`], prog: () => [foundCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
-  const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
+  const allOf = (id, nl, en, title, wordNl, wordEn, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
@@ -503,17 +503,17 @@
     tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 7,5 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 7.5 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
-    shinyTier("s1", "Eerste shiny", "First shiny", 1),
-    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
-    shinyTier("s15", "Shinyjager", "Shiny hunter", 15),
+    shinyTier("s1", "Eerste shiny", "First shiny", 1, "een belletje als er een shiny in beeld komt", "a little bell when a shiny comes into view"),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "je sonar merkt ook shiny's op", "your sonar also picks up shinies"),
+    shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
-    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: null },
-    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters"),
-    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals"),
-    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: null },
-    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments"),
-    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things"),
-    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: null },
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
+    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen bij een nieuwe oceaan", "choosing the water yourself for a new ocean"),
+    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam van elk dier in je logboek", "the scientific name of every animal in your logbook"),
+    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: ["een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"] },
+    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
+    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things", "een pijl die altijd naar iets zeldzaams wijst", "an arrow that always points to something rare"),
+    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: ["fotofilters voor je camera", "photo filters for your camera"] },
   ];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
@@ -523,6 +523,12 @@
     bookBtn.dataset.rank = MILESTONES.every(m => rewards.has(m.id)) ? "gold" : "";
     bookBtn.classList.remove("glitter");
     panelEl.classList.toggle("gilded", rewards.has("m100"));
+    // the call buttons only appear once they are earned
+    const vb = document.getElementById("callVisitor"), mb = document.getElementById("callMoment");
+    if (vb) vb.hidden = !rewards.has("gv");
+    if (mb) mb.hidden = !rewards.has("gm");
+    const pf = document.getElementById("photoFilters");
+    if (pf) pf.hidden = !rewards.has("ph");
   }
   function checkMilestones(before) {
     for (const id of reached()) {
@@ -626,3 +632,27 @@
 
   // The colour scheme of the shiny that is being drawn right now (see 10-shiny.js), or null.
   let shinyPal = null;
+
+  // Scientific names, shown in the logbook with the Biologist reward. For a group with many kinds the family or class is given.
+  const SCI = {
+    fish: "Actinopterygii", lantern: "Myctophidae", clown: "Amphiprion ocellaris", cleaners: "Labroides dimidiatus", grouper: "Epinephelus lanceolatus",
+    archer: "Toxotes jaculatrix", parrotfish: "Scaridae", boxfish: "Ostracion cubicus", puffer: "Tetraodontidae", lionfish: "Pterois volitans",
+    flyingfish: "Exocoetidae", angler: "Melanocetus johnsonii", sargassumfish: "Histrio histrio", moray: "Gymnothorax funebris", eels: "Heteroconger hassi",
+    triggerfish: "Rhinecanthus aculeatus", wrasse: "Thalassoma lunare", surgeonfish: "Paracanthurus hepatus", mandarinfish: "Synchiropus splendidus",
+    scorpionfish: "Scorpaena scrofa", stonefish: "Synanceia verrucosa", goby: "Pomatoschistus minutus", needlefish: "Tylosurus crocodilus",
+    hammerhead: "Sphyrna lewini", whaleshark: "Rhincodon typus", thresher: "Alopias vulpinus", whitetip: "Triaenodon obesus", greatwhite: "Carcharodon carcharias",
+    swordfish: "Istiophorus platypterus", marlin: "Makaira nigricans", tuna: "Thunnus albacares", barracuda: "Sphyraena barracuda", sunfish: "Mola mola",
+    coelacanth: "Latimeria chalumnae", ray: "Dasyatis pastinaca", manta: "Mobula birostris", eagleray: "Aetobatus narinari", electricray: "Torpedo marmorata",
+    guitarfish: "Rhinobatos rhinobatos", sawfish: "Pristis pristis", seahorse: "Hippocampus kuda", seadragon: "Phycodurus eques", jelly: "Aurelia aurita",
+    cassiopea: "Cassiopea andromeda", comb: "Mnemiopsis leidyi", octopus: "Octopus vulgaris", mimic: "Thaumoctopus mimicus", squid: "Loligo vulgaris",
+    giant: "Architeuthis dux", cuttlefish: "Sepia officinalis", nautilus: "Nautilus pompilius", crab: "Brachyura", hermit: "Pagurus bernhardus",
+    lobster: "Homarus gammarus", spidercrab: "Macrocheira kaempferi", mantis: "Odontodactylus scyllarus", pistol: "Alpheus & Cryptocentrus cinctus",
+    isopod: "Bathynomus giganteus", starfish: "Asterias rubens", brittlestar: "Ophiothrix fragilis", featherstar: "Antedon bifida", urchin: "Diadema setosum",
+    sanddollar: "Echinarachnius parma", seacucumber: "Pseudocolochirus violaceus", slugs: "Flabellina iodinea", coral: "Anthozoa", anemone: "Heteractis magnifica",
+    sponges: "Porifera", clam: "Tridacna gigas", turtle: "Chelonia mydas", crocodile: "Crocodylus porosus", seasnake: "Hydrophis platurus",
+    seakrait: "Laticauda colubrina", iguana: "Amblyrhynchus cristatus", dolphins: "Tursiops truncatus", orca: "Orcinus orca", falsekiller: "Pseudorca crassidens",
+    pilotwhale: "Globicephala melas", beluga: "Delphinapterus leucas", narwhal: "Monodon monoceros", humpback: "Megaptera novaeangliae",
+    spermwhale: "Physeter macrocephalus", finwhale: "Balaenoptera physalus", bluewhale: "Balaenoptera musculus", otters: "Enhydra lutris", seal: "Phoca vitulina",
+    sealion: "Zalophus californianus", walrus: "Odobenus rosmarus", manatee: "Trichechus manatus", polarbear: "Ursus maritimus", penguins: "Aptenodytes forsteri",
+    albatross: "Diomedea exulans", cormorant: "Phalacrocorax carbo", pelican: "Pelecanus onocrotalus",
+  };

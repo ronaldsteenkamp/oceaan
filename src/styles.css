@@ -387,3 +387,11 @@
   }
 
   #panel.book.gilded { background-color: #6a5422; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 6px rgba(230, 190, 90, 0.35); }
+
+  /* the scientific name on an animal's page (Biologist reward) */
+  .nb-sci { margin: -4px 0 0; font-style: italic; font-size: 14px; color: var(--ink-soft); }
+  /* choosing the water for a new ocean (Globetrotter reward) */
+  #waterPick { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 36; width: min(560px, calc(100% - 32px)); padding: 14px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  #waterPick[hidden] { display: none; }
+  #waterPick p { margin: 0 0 10px; font-family: "Caveat", cursive; font-size: 24px; color: var(--text); }
+  @media (max-width: 600px) { #waterPick { bottom: calc(124px + env(safe-area-inset-bottom, 0px)); } }

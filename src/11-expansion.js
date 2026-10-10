@@ -766,7 +766,7 @@
       if (Sp.timer <= 0) {
         Sp.timer = 45 + Math.random() * 40;
         if (claim(22)) {
-          Sp.active = true; Sp.dir = Math.random() < 0.5 ? 1 : -1; Sp.len = Math.min(W * 1.1, 1100 * u);
+          Sp.active = true; Sp.dir = -rareSide(); Sp.len = Math.min(W * 1.1, 1100 * u);
           Sp.x = Sp.dir > 0 ? -40 * u : W + 40 * u; Sp.y0 = H * (0.3 + Math.random() * 0.25); Sp.logged = false;
         }
       }
@@ -778,7 +778,7 @@
       if (M.timer <= 0) {
         M.timer = 50 + Math.random() * 40;
         if (claim(20)) {
-          M.active = true; M.dir = Math.random() < 0.5 ? 1 : -1; M.size = Math.min(W * 1.1, 1000 * u);
+          M.active = true; M.dir = -rareSide(); M.size = Math.min(W * 1.1, 1000 * u);
           M.x = M.dir > 0 ? -M.size * 0.6 : W + M.size * 0.6; M.y = H * (0.35 + Math.random() * 0.2); M.ph = 0; M.logged = false;
         }
       }

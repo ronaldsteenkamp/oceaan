@@ -336,7 +336,7 @@
       <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
     renderBookDetail(photo, {
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
-      body: `<h2 class="nb-title small">${nm(key)}</h2>
+      body: `<h2 class="nb-title small">${nm(key)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
         <dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
@@ -584,6 +584,10 @@
   }
 
   let polaroidCanvas = null;
+  // Photographer reward: a few filters for the camera
+  const PHOTO_FILTERS = [["none", "Gewoon", "Plain"], ["grayscale(1) contrast(1.1)", "Zwart-wit", "Black and white"], ["sepia(0.85) saturate(1.1)", "Sepia", "Sepia"],
+    ["saturate(1.8) contrast(1.12)", "Levendig", "Vivid"], ["hue-rotate(40deg) saturate(1.4) brightness(1.05)", "Droomzee", "Dream sea"]];
+  let photoFilter = "none";
   async function makePolaroid() {
     try { await document.fonts.load("600 40px Caveat"); } catch (e) {}
     const scale = Math.min(1, 1400 / canvas.width);
@@ -593,7 +597,9 @@
     c.width = iw + pad * 2; c.height = ih + pad + bottom;
     const g = c.getContext("2d");
     g.fillStyle = "#f7f4ec"; g.fillRect(0, 0, c.width, c.height);
+    if (photoFilter !== "none" && "filter" in g) g.filter = photoFilter;
     g.drawImage(canvas, pad, pad, iw, ih);
+    g.filter = "none";
     g.strokeStyle = "rgba(0,0,0,0.08)"; g.strokeRect(pad, pad, iw, ih);
     const date = new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
     g.fillStyle = "#2b2a33"; g.textBaseline = "middle";
@@ -665,10 +671,25 @@
 
   photoBtn.addEventListener("click", async () => {
     paused = true;
+    photoFilter = "none";
+    renderPhotoFilters();
     polaroidCanvas = await makePolaroid();
     polaroidImg.src = polaroidCanvas.toDataURL("image/png");
     photoView.hidden = false;
     document.getElementById("savePolaroid").focus();
+  });
+  function renderPhotoFilters() {
+    const el = document.getElementById("photoFilters");
+    el.hidden = !rewards.has("ph");
+    el.innerHTML = PHOTO_FILTERS.map(([f, nl, en]) => `<button type="button" class="chip pick ${photoFilter === f ? "on" : ""}" data-filter-css="${f}" aria-pressed="${photoFilter === f}">${L(nl, en)}</button>`).join("");
+  }
+  document.getElementById("photoFilters").addEventListener("click", async e => {
+    const bt = e.target.closest("button");
+    if (!bt) return;
+    photoFilter = bt.dataset.filterCss;
+    renderPhotoFilters();
+    polaroidCanvas = await makePolaroid();
+    polaroidImg.src = polaroidCanvas.toDataURL("image/png");
   });
   document.getElementById("savePolaroid").addEventListener("click", () => saveCanvas(polaroidCanvas, `oceaan-${seed}-polaroid.png`));
   document.getElementById("savePlain").addEventListener("click", () => saveCanvas(canvas, `oceaan-${seed}.png`));

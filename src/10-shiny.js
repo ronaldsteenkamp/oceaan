@@ -412,12 +412,34 @@
     else fn();
   }
 
+  let shinyTrail = [];
+  function drawShinyTrail(k) {
+    if (!shinyTrail.length) return;
+    if (shinyTrail.length > 160) shinyTrail.splice(0, shinyTrail.length - 160);
+    shinyTrail = shinyTrail.filter(p => {
+      p.a -= 0.012 * k; p.y -= 0.08 * u * k;
+      if (p.a <= 0) return false;
+      star(p.x, p.y, (1.5 + 3 * p.a) * u * (0.6 + 0.4 * Math.sin(t * 7 + p.ph)), `rgba(255,248,210,${0.85 * p.a})`);
+      return true;
+    });
+  }
   function drawShinies() {
+    drawShinyTrail(frameK);
     for (const e of scene.shinies) {
       if (e.alive && !e.alive()) continue;
       const [x, y] = e.get();
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
+      // First shiny reward: a little bell the moment a shiny comes into view
+      if (!e.rang && !e.told && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
+        e.rang = true;
+        try { tone({ type: "sine", freqs: [[1760, 0], [2349, 0.12]], dur: 0.9, gain: 0.05, attack: 0.005, release: 0.8, verb: 0.9 }); } catch (err) {}
+        toast(L("Er klinkt een belletje: er glinstert iets in de buurt...", "A little bell rings: something glitters nearby..."));
+      }
+      // Shiny hunter reward: a glittering trail behind every shiny
+      if (rewards.has("s15")) {
+        if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
+      }
       if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;

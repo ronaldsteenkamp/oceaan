@@ -456,7 +456,9 @@
     W = innerWidth; H = innerHeight;
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
-    u = Math.max(0.6, Math.min(1.6, Math.min(W, H) / 700));
+    // everything is sized by the window, with no upper limit: zooming the browser out (a bigger window in CSS pixels)
+    // makes everything bigger in step, so you always see the same ocean, as at 100%. Small phones keep a lower limit.
+    u = Math.max(0.6, Math.min(W, H) / 700);
     // the same ocean rebuilt at a new size is not a new encounter
     if (seed !== undefined) { rng = mulberry32(seed); rebuilding = true; buildScene(); rebuilding = false; }
   }
