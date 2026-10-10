@@ -546,6 +546,9 @@
   // What was found since the logbook was last opened; it shows at the top of the logbook.
   let fresh = new Set(store.get("oceaan-nieuw", []));
   const saveFresh = () => store.set("oceaan-nieuw", [...fresh]);
+  // Animals whose shiny you chose to show in the logbook (by picking the Shiny tab).
+  let shinyPick = new Set(store.get("oceaan-shinykeuze", []));
+  const saveShinyPick = () => store.set("oceaan-shinykeuze", [...shinyPick]);
 
   // Dutch or English. The first visit follows the browser's language.
   let LANG = store.get("oceaan-taal", String(navigator.language || "nl").toLowerCase().startsWith("nl") ? "nl" : "en");

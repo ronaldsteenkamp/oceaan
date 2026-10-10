@@ -338,9 +338,10 @@
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
     // A card is always the animal itself. Its shiny shows as a golden sparkle on the card;
     // in shiny mode (the Shiny filter, or a new shiny) the card shows the shiny picture instead.
-    const card = (k, isNew, shinyMode) => {
-      const sk = "shiny:" + k, e = logbook.get(shinyMode ? sk : k), se = logbook.get(sk);
-      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦${se.n > 1 ? `<small>${se.n > 99 ? "99+" : se.n + "×"}</small>` : ""}</span>` : "";
+    // An animal whose Shiny tab you picked shows its shiny here too.
+    const card = (k, isNew, forceShiny) => {
+      const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
+      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
       return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${shinyMode ? nm(sk) : nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
     };
     const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));

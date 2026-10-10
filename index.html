@@ -221,13 +221,15 @@
   .dtabs .tick { font-size: 11px; opacity: 0.85; }
   .detail .big.shinybig { box-shadow: 0 0 0 2px rgba(255, 212, 121, 0.75); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
-  .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
-  .detail #detailBack { align-self: flex-start; }
+  .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }
+  .dtop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .dmain { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .dinfo { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .detail .big { width: 100%; aspect-ratio: 120 / 84; border-radius: 14px; display: block; background: #0d3a52; }
-  .detail h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
-  .detail .fact { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.6; color: var(--text); }
-  .detail dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 0; }
-  .detail dl div { min-width: 0; padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); }
+  .detail h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+  .detail .fact { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--text); }
+  .detail dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin: 0; }
+  .detail dl div { min-width: 0; padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); }
   .detail dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
   .detail dd { margin: 4px 0 0; color: var(--text); overflow-wrap: anywhere; }
 
@@ -273,6 +275,12 @@
     .panel-head { padding-left: 18px; }
     #panelBody { padding: 4px 18px 22px; }
     .cards { grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px; }
+    .detail { gap: 10px; padding-top: 10px; }
+    .dmain { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .detail .big { width: auto; max-width: 100%; max-height: 30vh; justify-self: center; }
+    .detail h2 { font-size: 19px; }
+    .detail .fact { font-size: 13px; }
+    .detail dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
@@ -885,6 +893,9 @@
   // What was found since the logbook was last opened; it shows at the top of the logbook.
   let fresh = new Set(store.get("oceaan-nieuw", []));
   const saveFresh = () => store.set("oceaan-nieuw", [...fresh]);
+  // Animals whose shiny you chose to show in the logbook (by picking the Shiny tab).
+  let shinyPick = new Set(store.get("oceaan-shinykeuze", []));
+  const saveShinyPick = () => store.set("oceaan-shinykeuze", [...shinyPick]);
 
   // Dutch or English. The first visit follows the browser's language.
   let LANG = store.get("oceaan-taal", String(navigator.language || "nl").toLowerCase().startsWith("nl") ? "nl" : "en");
@@ -9049,9 +9060,10 @@
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
     // A card is always the animal itself. Its shiny shows as a golden sparkle on the card;
     // in shiny mode (the Shiny filter, or a new shiny) the card shows the shiny picture instead.
-    const card = (k, isNew, shinyMode) => {
-      const sk = "shiny:" + k, e = logbook.get(shinyMode ? sk : k), se = logbook.get(sk);
-      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦${se.n > 1 ? `<small>${se.n > 99 ? "99+" : se.n + "×"}</small>` : ""}</span>` : "";
+    // An animal whose Shiny tab you picked shows its shiny here too.
+    const card = (k, isNew, forceShiny) => {
+      const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
+      const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
       return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${shinyMode ? nm(sk) : nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
     };
     const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
@@ -9489,19 +9501,22 @@
         <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
         <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny${se ? ` <span class="tick">${L("gevonden", "found")}</span>` : ""}</button>
       </div>` : "";
+    // everything on one screen: the picture beside the text (above it on a phone), no scrolling
     panelBody.innerHTML = `
       <div class="detail">
-        <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
-        ${tabs}
-        <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
-        <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
-        <p class="fact">${fact}</p>
-        <dl>
-          <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
-          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>`
-            : key.startsWith("shiny:") ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${e.n === 1 ? L("1 keer", "once") : e.n > 99 ? L("99+ keer", "99+ times") : L(e.n + " keer", e.n + " times")}</dd></div>` : ""}
-          ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-        </dl>
+        <div class="dtop"><button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>${tabs}</div>
+        <div class="dmain">
+          <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
+          <div class="dinfo">
+            <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
+            <p class="fact">${fact}</p>
+            <dl>
+              <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
+              ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
+              ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
+            </dl>
+          </div>
+        </div>
       </div>`;
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
@@ -9656,7 +9671,13 @@
     const b = e.target.closest("button");
     if (!b) return;
     if (b.dataset.detail) { openDetail(b.dataset.detail); return; }
-    if (b.dataset.dtab) { openDetail(b.dataset.dtab, true); return; }
+    if (b.dataset.dtab) {
+      // the tab you pick is remembered: a found shiny then also shows on the logbook page
+      const k = b.dataset.dtab, base = k.replace("shiny:", "");
+      if (k.startsWith("shiny:") && logbook.has(k)) shinyPick.add(base); else shinyPick.delete(base);
+      saveShinyPick();
+      openDetail(k, true); return;
+    }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
@@ -10005,7 +10026,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=37").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=38").catch(() => {}));
   }
 </script>
 </body>

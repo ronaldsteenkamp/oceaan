@@ -337,19 +337,22 @@
         <button type="button" role="tab" aria-selected="${!isShiny}" class="${isShiny ? "" : "on"}" data-dtab="${base}">${L("Gewoon", "Ordinary")}</button>
         <button type="button" role="tab" aria-selected="${isShiny}" class="${isShiny ? "on" : ""}${se ? " got" : ""}" data-dtab="shiny:${base}">✦ Shiny${se ? ` <span class="tick">${L("gevonden", "found")}</span>` : ""}</button>
       </div>` : "";
+    // everything on one screen: the picture beside the text (above it on a phone), no scrolling
     panelBody.innerHTML = `
       <div class="detail">
-        <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
-        ${tabs}
-        <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
-        <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
-        <p class="fact">${fact}</p>
-        <dl>
-          <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
-          ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>`
-            : key.startsWith("shiny:") ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${e.n === 1 ? L("1 keer", "once") : e.n > 99 ? L("99+ keer", "99+ times") : L(e.n + " keer", e.n + " times")}</dd></div>` : ""}
-          ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-        </dl>
+        <div class="dtop"><button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>${tabs}</div>
+        <div class="dmain">
+          <img class="big${isShiny && e ? " shinybig" : ""}" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}">
+          <div class="dinfo">
+            <h2>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</h2>
+            <p class="fact">${fact}</p>
+            <dl>
+              <div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>
+              ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
+              ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
+            </dl>
+          </div>
+        </div>
       </div>`;
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
@@ -504,7 +507,13 @@
     const b = e.target.closest("button");
     if (!b) return;
     if (b.dataset.detail) { openDetail(b.dataset.detail); return; }
-    if (b.dataset.dtab) { openDetail(b.dataset.dtab, true); return; }
+    if (b.dataset.dtab) {
+      // the tab you pick is remembered: a found shiny then also shows on the logbook page
+      const k = b.dataset.dtab, base = k.replace("shiny:", "");
+      if (k.startsWith("shiny:") && logbook.has(k)) shinyPick.add(base); else shinyPick.delete(base);
+      saveShinyPick();
+      openDetail(k, true); return;
+    }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }

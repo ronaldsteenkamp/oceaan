@@ -199,13 +199,15 @@
   .dtabs .tick { font-size: 11px; opacity: 0.85; }
   .detail .big.shinybig { box-shadow: 0 0 0 2px rgba(255, 212, 121, 0.75); }
   .card .count { position: absolute; top: 9px; right: 9px; padding: 1px 6px; border-radius: 999px; font-family: var(--mono); font-size: 10px; font-weight: 400; background: rgba(4, 20, 34, 0.82); color: var(--text); }
-  .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; }
-  .detail #detailBack { align-self: flex-start; }
+  .detail { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }
+  .dtop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .dmain { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .dinfo { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .detail .big { width: 100%; aspect-ratio: 120 / 84; border-radius: 14px; display: block; background: #0d3a52; }
-  .detail h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
-  .detail .fact { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.6; color: var(--text); }
-  .detail dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 0; }
-  .detail dl div { min-width: 0; padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); }
+  .detail h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+  .detail .fact { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--text); }
+  .detail dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin: 0; }
+  .detail dl div { min-width: 0; padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); }
   .detail dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
   .detail dd { margin: 4px 0 0; color: var(--text); overflow-wrap: anywhere; }
 
@@ -251,6 +253,12 @@
     .panel-head { padding-left: 18px; }
     #panelBody { padding: 4px 18px 22px; }
     .cards { grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: 8px; }
+    .detail { gap: 10px; padding-top: 10px; }
+    .dmain { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .detail .big { width: auto; max-width: 100%; max-height: 30vh; justify-self: center; }
+    .detail h2 { font-size: 19px; }
+    .detail .fact { font-size: 13px; }
+    .detail dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @keyframes sheet { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #panel { animation: none; } }
