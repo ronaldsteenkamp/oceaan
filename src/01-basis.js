@@ -473,15 +473,23 @@
   const foundCount = () => BASE_LOG_KEYS.filter(k => logbook.has(k)).length;
   const shinyCount = () => SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
   // How long the wait for a new ocean is, depending on how many finds are in the logbook.
-  const LOCK_STEPS = [[0, 600], [10, 300], [25, 120], [50, 60], [75, 30], [90, 20]];
+  const LOCK_STEPS = [[0, 150], [10, 75], [25, 30], [50, 15], [75, 7.5], [90, 5]];
   function lockSeconds() {
     const n = foundCount();
     if (n >= BASE_LOG_KEYS.length) return 1;
-    let sec = 600;
+    let sec = 150;
     for (const [need, s] of LOCK_STEPS) if (n >= need) sec = s;
     return sec;
   }
-  const durationText = sec => sec >= 60 ? (sec === 60 ? L("minuut", "minute") : L(`${sec / 60} minuten`, `${sec / 60} minutes`)) : sec === 1 ? L("seconde", "second") : L(`${sec} seconden`, `${sec} seconds`);
+  // "2,5 minuten", "1 minuut en 15 seconden", "7,5 seconden"
+  const durationText = sec => {
+    const num = v => LANG === "en" ? String(v) : String(v).replace(".", ",");
+    if (sec < 60) return sec === 1 ? L("seconde", "second") : L(`${num(sec)} seconden`, `${num(sec)} seconds`);
+    const m = Math.floor(sec / 60), r = sec % 60;
+    if (!r) return m === 1 ? L("minuut", "minute") : L(`${m} minuten`, `${m} minutes`);
+    if (r === 30) return L(`${num(m + 0.5)} minuten`, `${num(m + 0.5)} minutes`);
+    return L(`${m === 1 ? "1 minuut" : m + " minuten"} en ${num(r)} seconden`, `${m === 1 ? "1 minute" : m + " minutes"} and ${num(r)} seconds`);
+  };
   const groupKeys = title => (LOG_GROUPS.find(g => g[0] === title) || [0, []])[1];
   const groupHave = title => groupKeys(title).filter(k => logbook.has(k)).length;
   // Each milestone says how far along you are; the ones with a reward change something you can see.
@@ -489,11 +497,11 @@
   const shinyTier = (id, nl, en, n, rewardNl, rewardEn) => ({ id, name: [nl, en], goal: [n === 1 ? "1 shiny" : `${n} shiny's`, n === 1 ? "1 shiny" : `${n} shinies`], prog: () => [shinyCount(), n], reward: rewardNl ? [rewardNl, rewardEn] : null });
   const allOf = (id, nl, en, title, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${groupKeys(title).length} ${wordNl}`, `all ${groupKeys(title).length} ${wordEn}`], prog: () => [groupHave(title), groupKeys(title).length], reward: null });
   const MILESTONES = [
-    tier("m10", "Ontdekker", "Explorer", 10, "elke 5 minuten een nieuwe oceaan", "a new ocean every 5 minutes"),
-    tier("m25", "Zeekenner", "Sea expert", 25, "elke 2 minuten een nieuwe oceaan", "a new ocean every 2 minutes"),
-    tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke minuut een nieuwe oceaan", "a proper torch for your diver and a new ocean every minute"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 30 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 30 seconds"),
-    tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 20 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 20 seconds"),
+    tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
+    tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke 15 seconden een nieuwe oceaan", "a proper torch for your diver and a new ocean every 15 seconds"),
+    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 7,5 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 7.5 seconds"),
+    tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),

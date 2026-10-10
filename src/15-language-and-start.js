@@ -22,7 +22,7 @@
     document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
-      L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tien minuten; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every ten minutes; the fuller your logbook, the more often."),
+      L("De <b>pijltjesknop</b> (of R) geeft een nieuwe oceaan. In het begin om de tweeënhalve minuut; hoe voller je logboek, hoe vaker.", "The <b>arrow button</b> (or R) gives a new ocean. At first every two and a half minutes; the fuller your logbook, the more often."),
       L("Roep de <b>duiker</b> (D) en zwem rond: alles wat in het licht van zijn lamp komt, gaat in je logboek. <b>Houd ingedrukt</b> om de vissen te voeren.", "Call the <b>diver</b> (D) and swim around: everything that comes into the light of its lamp goes into your logbook. <b>Press and hold</b> to feed the fish."),
       L("<b>Zwem met je duiker naar een schatkist om hem open te maken. Tik op een fles of een verstopt zeepaardje.</b>", "<b>Swim to a treasure chest with your diver to open it. Tap a bottle or a hidden seahorse.</b>"),
       L("Het <b>boekje</b> is je logboek, met alles wat je hebt gevonden.", "The <b>book</b> is your logbook, with everything you have found."),

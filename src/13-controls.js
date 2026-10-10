@@ -238,7 +238,7 @@
   // ---- new ocean, diver, menu and photo buttons --------------------------
   document.getElementById("next").addEventListener("click", tryNewOcean);
 
-  // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from ten minutes down to ten seconds.
+  // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from two and a half minutes down to five seconds (one second with everything found).
   const LOCK_KEY = "oceaan-gewisseld";
   const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
   if (!store.get(LOCK_KEY, 0)) store.set(LOCK_KEY, Date.now());
