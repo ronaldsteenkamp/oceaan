@@ -845,8 +845,6 @@
         } else {
           toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
         }
-        if (rewards.has("s5") && S.shinies.some(e => !e.told && (!e.alive || e.alive())))
-          toast(L("...en je sonar vangt een glinstering op: er zwemt hier een shiny!", "...and your sonar picks up a glitter: a shiny is swimming here!"));
       }
     }
     // Myth hunter reward: the arrow keeps pointing to the rare thing in this ocean

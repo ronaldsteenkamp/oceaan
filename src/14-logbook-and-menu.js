@@ -409,10 +409,10 @@
     // a page of the notebook: the photo taped in, the name in pencil, and the notes beside it
     const group = (LOG_GROUPS.find(g => g[0] !== "Shiny" && g[1].includes(base)) || ["Dieren"])[0];
     const photo = `<div class="nb-run">${groupName(group)}</div>${tabs}
-      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(key)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(key)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
+      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(base)}" src="${thumbURL(key, !!e, 4)}"><figcaption>${nm(base)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>`;
     renderBookDetail(photo, {
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
-      body: `<h2 class="nb-title small">${nm(key)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
+      body: `<h2 class="nb-title small">${nm(base)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
         ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>` : ""}
         <dl class="nb-dl">

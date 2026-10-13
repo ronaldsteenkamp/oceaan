@@ -255,9 +255,8 @@
   function detailNeighbours(key) {
     const base = key.replace("shiny:", ""), order = bookOrder(), i = order.indexOf(base);
     if (i < 0 || order.length < 2) return null;
-    // on the shiny tab you stay on the shiny tab, wherever there is one
-    const pick = k => key.startsWith("shiny:") && SHINY_KEYS.includes(k) ? "shiny:" + k : k;
-    return [pick(order[(i - 1 + order.length) % order.length]), pick(order[(i + 1) % order.length])];
+    // always the ordinary page of the next animal, also from the shiny tab
+    return [order[(i - 1 + order.length) % order.length], order[(i + 1) % order.length]];
   }
   function detailNavHTML(key) {
     const nb = detailNeighbours(key);
