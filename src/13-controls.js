@@ -111,7 +111,18 @@
     }
     if ((e.key === "e" || e.key === "E") && focusTag !== "INPUT") { e.preventDefault(); if (diverMode) diverInteract(); else diverBtn.click(); return; }
     if ((e.key === "q" || e.key === "Q") && diverMode && focusTag !== "INPUT") { e.preventDefault(); sonarPing(); return; }
-    if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) { e.preventDefault(); tryNewOcean(); }
+    if ((e.key === "r" || e.key === "R") && focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && photoView.hidden) {
+      // a tap of R gives a random ocean; holding it down lets you choose the water (with the Globetrotter reward)
+      e.preventDefault();
+      if (e.repeat || rHold) return;
+      rHold = { fired: false, timer: setTimeout(() => { if (rHold) { rHold.fired = true; tryNewOcean(true); } }, HOLD_MS) };
+    }
+  });
+  addEventListener("keyup", e => {
+    if ((e.key !== "r" && e.key !== "R") || !rHold) return;
+    clearTimeout(rHold.timer);
+    if (!rHold.fired) tryNewOcean(false);
+    rHold = null;
   });
 
   addEventListener("hashchange", () => {
@@ -240,7 +251,21 @@
   const wait = ms => new Promise(r => setTimeout(r, ms));
 
   // ---- new ocean, diver, menu and photo buttons --------------------------
-  document.getElementById("next").addEventListener("click", tryNewOcean);
+  // R and the new-ocean button: a tap gives a random ocean, holding them down lets you choose the water
+  const HOLD_MS = 450;
+  let rHold = null, btnHold = null;
+  const nextEl = document.getElementById("next");
+  nextEl.addEventListener("pointerdown", () => {
+    clearTimeout(btnHold && btnHold.timer);
+    btnHold = { fired: false, timer: setTimeout(() => { btnHold.fired = true; buzz(20); tryNewOcean(true); }, HOLD_MS) };
+  });
+  for (const ev of ["pointerup", "pointerleave", "pointercancel"]) nextEl.addEventListener(ev, () => { if (btnHold) clearTimeout(btnHold.timer); });
+  nextEl.addEventListener("contextmenu", e => e.preventDefault());
+  nextEl.addEventListener("click", () => {
+    const held = btnHold && btnHold.fired;
+    btnHold = null;
+    if (!held) tryNewOcean(false);
+  });
 
   // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from two and a half minutes down to five seconds (one second with everything found).
   const LOCK_KEY = "oceaan-gewisseld";
@@ -248,7 +273,7 @@
   if (!store.get(LOCK_KEY, 0)) store.set(LOCK_KEY, Date.now());
   function lockLeft() { return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now()); }
   function clockText(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
-  function tryNewOcean() {
+  function tryNewOcean(choose) {
     const left = lockLeft();
     if (left > 0) {
       toast(L(`Een nieuwe oceaan kan over ${clockText(left)}. Hoe meer je vindt, hoe korter je wacht: nu elke ${durationText(lockSeconds())}.`,
@@ -256,7 +281,11 @@
       buzz(15);
       return;
     }
-    if (rewards.has("gw")) { openWaterPick(); return; }
+    if (choose) {
+      if (rewards.has("gw")) { openWaterPick(); return; }
+      toast(L("Zelf het water kiezen kan met de beloning Wereldreiziger: vind alle wateren.", "Choosing the water yourself comes with the Globetrotter reward: find every water."));
+      return;
+    }
     store.set(LOCK_KEY, Date.now());
     newVariant(randomSeed(), true);
     updateLockBadge();

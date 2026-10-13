@@ -531,7 +531,7 @@
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
     { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
-    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen bij een nieuwe oceaan", "choosing the water yourself for a new ocean"),
+    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam en een extra veldnotitie bij elk dier in je logboek", "the scientific name and an extra field note for every animal in your logbook"),
     { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: ["een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"] },
     allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
