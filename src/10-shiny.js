@@ -49,6 +49,11 @@
     registerWave2Shinies(s, add);
     registerRareShinies(s, add);
     registerFaunaShinies(s, add);
+    // The moray in the wreck's hole. Rolled last, so the shinies of older shared seeds stay the same.
+    if (s.wreck && s.wreck.moray) {
+      const w = s.wreck, m = w.moray;
+      add("moray", m, 14 * u, () => [w.x, sandY(w.x) - 40 * u], () => m.e > 0.3);
+    }
     registerWave6Shinies(s, add);
     s.shinies = list;
   }
@@ -78,6 +83,8 @@
     lionfish: pal("#c84a3a>#2a2230 #b8392c>#161218 #f2e6d8>#f2e6d8 #e8c8b0>#c8a6ec"),
     flyingfish: pal("#4f86c6>#e8583a #24466e>#8a1c2a #dfe8ef>#fff2e2"),
     angler: pal("#1b1e26>#5c2c14 #070709>#2a0e06 #b8d8e8>#ff9a3a #e9e4d2>#fff6d8"),
+    // a golden moray, after the yellow colour morphs of real morays
+    moray: pal("#6f7d3a>#e0b020 #3d4520>#7a4a10 #2a1a12>#4a1a0a"),
     sargassumfish: pal("#b8902e>#c84a2a #6a5218>#6a1c12 #c8a840>#c8a840 #a89030>#a89030 #7a6a24>#7a6a24"),
     triggerfish: pal("#f2ead6>#2c2c3c #bfae7a>#5c4c8c #1e1e22>#f2f0e8 #3a7fe0>#f2b820 #f2b820>#e84a8a #6a6450>#c8c0e0"),
     wrasse: pal("#3fbf8a>#ec9a2c #2fa0b0>#d84a6a #e8609a>#3a8ad8 #f070b0>#5ad0f0 #f2c840>#7a3ad8"),

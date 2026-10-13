@@ -275,7 +275,7 @@
       const target = near(wx, wy, 110 * u) ? 0 : 0.55 + 0.45 * Math.sin(t * 0.35 + m.ph);
       m.e += (target - m.e) * (target < m.e ? 0.15 : 0.02);
       const len = m.e * 0.13 * L;
-      if (len > 2) {
+      if (len > 2) shinyDraw(m, () => {
         const body = sh("#6f7d3a"), spot = sh("#3d4520");
         ctx.save();
         ctx.translate(hx, hy);
@@ -300,7 +300,7 @@
         ctx.fillStyle = "#111";
         ctx.beginPath(); ctx.arc(0.031 * L, -0.007 * L, 0.002 * L, 0, TAU); ctx.fill();
         ctx.restore();
-      }
+      });
     }
     ctx.restore();
   }

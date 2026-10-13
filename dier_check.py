@@ -1,9 +1,12 @@
 """Controleert of een of meer dier-sleutels overal in src/ geregistreerd zijn.
-Gebruik (vanuit de repo): python dier_check.py bruinvis platvis"""
+Gebruik: python dier_check.py bruinvis platvis
+
+Bedoeld voor dieren in het FAUNA-systeem (11-x3-fauna.js en later). Oudere dieren met een eigen
+systeem, zoals lionfish of moray, kunnen hier en daar MIST geven zonder dat er iets fout is."""
 import re, sys
 from pathlib import Path
 
-SRC = Path("src")
+SRC = Path(__file__).parent / "src"
 text = {p.name: p.read_text(encoding="utf-8") for p in SRC.glob("*.js")}
 
 def block(name):
