@@ -352,18 +352,34 @@
       for (let i = 0; i < 5; i++) { const a = -0.6 + i * 0.3; ctx.moveTo(len * 0.48, -s * 0.3); ctx.lineTo(len * 0.48 + Math.cos(a) * s * 0.25, -s * 0.3 + Math.sin(a) * s * 0.25); }
       ctx.stroke();
     } else {
-      ctx.fillStyle = sh(o.body);
-      ctx.beginPath(); ctx.ellipse(0, -s * 0.2, s * 0.8, s * 0.2, 0, 0, TAU); ctx.fill();
+      // a Spanish shawl: a slim purple body, clusters of orange finger-like cerata along the back,
+      // two ringed horns (rhinophores) on the head and long feelers at the mouth
+      ctx.scale(s / 100, s / 100);
+      const body = sh(o.body), tip = sh(o.tip), crawl = Math.sin(o.ph * 2) * 2;
       ctx.lineCap = "round";
-      for (let i = 0; i < 9; i++) {
-        const cx = -s * 0.6 + i * s * 0.15, sway = Math.sin(t * 2 + i) * s * 0.05;
-        ctx.strokeStyle = sh(o.body); ctx.lineWidth = Math.max(1.5, s * 0.1);
-        ctx.beginPath(); ctx.moveTo(cx, -s * 0.3); ctx.lineTo(cx + sway, -s * 0.62); ctx.stroke();
-        ctx.fillStyle = sh(o.tip);
-        ctx.beginPath(); ctx.arc(cx + sway, -s * 0.64, s * 0.07, 0, TAU); ctx.fill();
+      ctx.strokeStyle = body; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(68, -10); ctx.quadraticCurveTo(84, -10, 92 + crawl, -2); ctx.moveTo(66, -6); ctx.quadraticCurveTo(80, -2, 88 + crawl, 2); ctx.stroke();
+      ctx.fillStyle = body;
+      ctx.beginPath(); ctx.moveTo(-82, 0); ctx.bezierCurveTo(-60, -10, -20, -20, 30, -20); ctx.bezierCurveTo(56, -20, 74, -14, 74, -6);
+      ctx.bezierCurveTo(74, 0, 60, 2, 30, 2); ctx.lineTo(-60, 2); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.ellipse(10, -14, 50, 3, 0, 0, TAU); ctx.fill();
+      // the cerata: six bunches of tapering fingers, swaying gently
+      for (let g = 0; g < 6; g++) {
+        const gx = 44 - g * 18, gy = -18 + g * 2.4;
+        for (let j = 0; j < 4; j++) {
+          const a = -Math.PI / 2 + (j - 1.5) * 0.32 + Math.sin(t * 1.6 + g + j) * 0.08, len = 22 - Math.abs(j - 1.5) * 4 - g * 1.2;
+          const ex = gx + Math.cos(a) * len, ey = gy + Math.sin(a) * len;
+          ctx.strokeStyle = tip; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex + Math.cos(a) * 3, ey + Math.sin(a) * 3); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.arc(ex, ey, 1.2, 0, TAU); ctx.fill();
+        }
       }
-      ctx.strokeStyle = sh(o.tip); ctx.lineWidth = Math.max(1, s * 0.06);
-      ctx.beginPath(); ctx.moveTo(s * 0.65, -s * 0.3); ctx.lineTo(s * 0.75, -s * 0.6); ctx.moveTo(s * 0.55, -s * 0.3); ctx.lineTo(s * 0.6, -s * 0.6); ctx.stroke();
+      // two rhinophores with rings
+      for (const rx of [58, 66]) {
+        ctx.strokeStyle = tip; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(rx, -18); ctx.lineTo(rx + 4, -36); ctx.stroke();
+        ctx.strokeStyle = body; ctx.lineWidth = 1; ctx.beginPath(); for (let r = 0; r < 4; r++) { const ry = -24 - r * 3.5; ctx.moveTo(rx + 0.8 + r * 0.8, ry); ctx.lineTo(rx + 5.2 + r * 0.8, ry - 1); } ctx.stroke();
+      }
     }
     ctx.restore();
   }

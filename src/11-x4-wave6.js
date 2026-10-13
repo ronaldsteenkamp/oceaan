@@ -42,6 +42,15 @@
     ctx.restore();
   }
 
+  // A soft arm along a curve from (x0, y0) to (x1, y1), tapering from w0 to a thin tip, with a row of pale suckers.
+  function softArm(x0, y0, cx, cy, x1, y1, w0, col, sucker) {
+    const pts = [];
+    for (let i = 0; i <= 14; i++) { const f = i / 14, a = (1 - f) * (1 - f), b = 2 * (1 - f) * f, c = f * f; pts.push([a * x0 + b * cx + c * x1, a * y0 + b * cy + c * y1, w0 * (1 - f * 0.85)]); }
+    ctx.fillStyle = col;
+    for (const [px, py, w] of pts) { ctx.beginPath(); ctx.arc(px, py, w / 2, 0, TAU); ctx.fill(); }
+    if (sucker) { ctx.fillStyle = sucker; for (let i = 2; i < pts.length - 1; i += 2) { const [px, py, w] = pts[i]; ctx.beginPath(); ctx.arc(px + w * 0.25, py + w * 0.2, w * 0.2, 0, TAU); ctx.fill(); } }
+  }
+
   // A coconut octopus walks on two arms with half a coconut shell held under it like a bowl. When the diver
   // comes close, it pulls two halves together around itself and peeks out through the crack.
   const COCO_MANTLE = "M -2 -36 C -16 -38 -26 -50 -20 -60 C -14 -68 2 -68 8 -60 C 14 -52 12 -40 -2 -36 Z";
@@ -51,9 +60,9 @@
     const scared = near(f.x, f.cy - s * 0.3, 120 * u) > 0;
     f.hide = Math.max(0, Math.min(1, f.hide + (scared ? 0.08 : -0.005) * frameK));
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
-    const shell = sh("#7a4a26"), inner = sh("#e8d8b8"), fibre = sh("#4a2a12"), skin = sh("#b8763a"), dark = sh("#6a3a18");
+    const shell = sh("#7a4a26"), inner = sh("#e8d8b8"), fibre = sh("#4a2a12"), skin = sh("#b8763a"), dark = sh("#6a3a18"), suck = sh("#e8c8a0");
     if (f.hide > 0.5) {
-      // shut tight: a coconut on the sand, with an eye in the crack and the tip of an arm hanging out
+      // shut tight: a coconut on the sand, with an eye in the crack and the tip of an arm curling out
       ctx.save(); ctx.translate(0, -24); ctx.scale(1, 1 + Math.sin(f.ph * 2) * 0.02);
       ctx.fillStyle = shell; ctx.beginPath(); ctx.ellipse(0, 0, 30, 24, 0, 0, TAU); ctx.fill();
       ctx.strokeStyle = fibre; ctx.lineWidth = 1.1; ctx.globalAlpha *= 0.6;
@@ -62,14 +71,16 @@
       ctx.fillStyle = "#1a0e06"; ctx.beginPath(); ctx.ellipse(0, 0, 30, 2.2, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = sh("#f2d070"); ctx.beginPath(); ctx.ellipse(12, 0, 4, 1.8, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = "#101010"; ctx.fillRect(11, -1, 3, 2);
-      ctx.strokeStyle = skin; ctx.lineWidth = 3; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(-24, 1); ctx.quadraticCurveTo(-36, 6, -38 + Math.sin(f.ph * 3) * 2, 18); ctx.stroke();
+      softArm(-26, 1, -40, 4, -36 + Math.sin(f.ph * 3) * 2, 18, 5, skin, suck);
       ctx.restore();
     } else {
       const walk = f.ph * 4;
-      // two arms walk on the sand like legs
-      ctx.strokeStyle = dark; ctx.lineCap = "round"; ctx.lineWidth = 4.5;
-      for (let i = 0; i < 2; i++) { const a = Math.sin(walk + i * Math.PI); ctx.beginPath(); ctx.moveTo(-6 + i * 8, -26); ctx.quadraticCurveTo(-8 + a * 10 + i * 6, -14, -4 + a * 16 + i * 6, 0); ctx.stroke(); }
+      // two arms walk on the sand like legs: curving down and rolling out at the tips, suckers underneath
+      for (let i = 0; i < 2; i++) {
+        const a = Math.sin(walk + i * Math.PI), fx = -6 + a * 14 + i * 8;
+        softArm(-4 + i * 7, -30, -14 + a * 8 + i * 6, -14, fx, -1, 8, i ? skin : dark, suck);
+        softArm(fx, -1, fx + 6, 1, fx + 9, -4, 3, i ? skin : dark, null);
+      }
       // the shell half, carried like a bowl under the body
       ctx.save(); ctx.translate(-2, -36); ctx.rotate(Math.sin(walk) * 0.05);
       ctx.fillStyle = shell; ctx.beginPath(); ctx.ellipse(0, 0, 24, 15, 0, 0, Math.PI); ctx.closePath(); ctx.fill();
@@ -77,13 +88,12 @@
       ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.moveTo(-16 + i * 8, 4); ctx.lineTo(-14 + i * 8, 10); } ctx.stroke(); ctx.globalAlpha /= 0.6;
       ctx.fillStyle = inner; ctx.beginPath(); ctx.ellipse(0, 0, 24, 3, 0, 0, TAU); ctx.fill();
       ctx.restore();
-      // the body sits in the bowl, mottled brown, with the other arms hugging the rim
+      // the body sits in the bowl, mottled brown, with the other arms curling over the rim
       fillWith(P(COCO_MANTLE), skin);
       ctx.save(); ctx.clip(P(COCO_MANTLE)); ctx.fillStyle = dark;
       for (const [x, y, r] of [[-12, -54, 3], [-4, -60, 2.4], [2, -48, 2.6], [-16, -44, 2], [6, -56, 2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
       ctx.restore();
-      ctx.strokeStyle = skin; ctx.lineWidth = 3.4;
-      for (const [x0, x1, b] of [[-8, -28, -40], [4, 24, -42], [0, 18, -34]]) { ctx.beginPath(); ctx.moveTo(x0, -37); ctx.quadraticCurveTo((x0 + x1) / 2, b - 2, x1 + Math.sin(f.ph * 2 + x0) * 1.5, -30); ctx.stroke(); }
+      for (const [x0, x1, y1] of [[-8, -27, -26], [4, 25, -28], [0, 16, -24]]) softArm(x0, -38, (x0 + x1) / 2, -45, x1 + Math.sin(f.ph * 2 + x0) * 1.5, y1, 5, skin, null);
       ctx.fillStyle = sh("#f2d070"); ctx.beginPath(); ctx.arc(8, -44, 3.4, 0, TAU); ctx.fill();
       ctx.fillStyle = "#101010"; ctx.fillRect(6.4, -45, 3.4, 2);
     }
@@ -180,8 +190,11 @@
     ctx.save(); ctx.translate(14, 2); ctx.rotate(-0.3 + stroke * 0.5); fillWith(P(HAWK_FRONT), dark); ctx.restore();
     ctx.save(); ctx.translate(-36, 3); ctx.rotate(0.2 - stroke * 0.25); fillWith(P(HAWK_HIND), dark); ctx.restore();
     fillWith(P(HAWK_HEAD), skin);
-    ctx.save(); ctx.clip(P(HAWK_HEAD)); ctx.strokeStyle = yellow; ctx.lineWidth = 0.9;
-    ctx.beginPath(); for (const [x, y] of [[36, -6], [42, -8], [48, -6], [40, -2], [46, -2]]) { ctx.moveTo(x + 2.4, y); ctx.arc(x, y, 2.4, 0, TAU); } ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.clip(P(HAWK_HEAD));
+    ctx.fillStyle = sh("#7a5634"); ctx.fill(P("M 38 -11 L 46 -12 L 50 -7 L 44 -4 L 38 -6 Z"));
+    ctx.strokeStyle = yellow; ctx.lineWidth = 0.8; ctx.lineJoin = "round";
+    ctx.stroke(P("M 32 -8 L 38 -6 L 38 -11 M 38 -6 L 44 -4 L 50 -7 L 46 -12 L 38 -11 M 44 -4 L 43 2 M 50 -7 L 54 -4 M 36 -1 L 38 -6 M 36 -1 L 43 2 L 50 1"));
+    ctx.restore();
     fillWith(P(HAWK_BEAK), sh("#3a2a1a"));
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(47, -8.5, 1.6, 0, TAU); ctx.fill();
     fillWith(P(HAWK_PLASTRON), sh("#e8d8a0"));
@@ -728,27 +741,32 @@
   // inside out over its body, so only soft spines show.
   const VAMP_MANTLE = "M 44 0 C 44 -12 32 -18 16 -18 C 4 -18 -4 -14 -8 -8 L -8 8 C -4 14 4 18 16 18 C 32 18 44 12 44 0 Z";
   const VAMP_FIN = "M 30 -15 C 34 -26 26 -30 20 -24 C 18 -21 20 -17 24 -16 Z";
-  const VAMP_WEB = "M -6 -10 C -20 -26 -40 -30 -56 -22 C -50 -16 -54 -8 -50 0 C -54 8 -50 16 -56 22 C -40 30 -20 26 -6 10 Z";
   function drawVampire(f) {
     const s = f.s, cloak = Math.max(0, Math.min(1, (Math.sin(f.ph * 0.12) - 0.55) / 0.35));
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100); ctx.rotate(Math.sin(f.ph * 0.6) * 0.05);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100); ctx.rotate(-1.15 + Math.sin(f.ph * 0.6) * 0.06);
     const body = sh("#5a1424"), web = sh("#2a0810"), spine = sh("#e8c8d0");
     const flap = Math.sin(f.ph * 2) * 0.25;
     for (const sd of [1, -1]) { ctx.save(); ctx.scale(1, sd); ctx.translate(26, -18); ctx.rotate(flap * sd); ctx.translate(-26, 18); fillWith(P(VAMP_FIN), body); ctx.restore(); }
     fillWith(P(VAMP_MANTLE), body);
     ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.beginPath(); ctx.ellipse(20, -8, 18, 5, 0, 0, TAU); ctx.fill();
-    // the cape folds from behind the body (normal) over the top of it (cloaked)
-    ctx.save(); ctx.translate(-6, 0); ctx.scale(1 - 2 * cloak, 1 + Math.sin(f.ph * 1.5) * 0.12 * (1 - cloak)); ctx.translate(6, 0);
-    fillWith(P(VAMP_WEB), web);
-    ctx.strokeStyle = body; ctx.lineWidth = 1.4; ctx.stroke(P(VAMP_WEB));
-    if (cloak > 0.4) {
-      ctx.strokeStyle = spine; ctx.lineWidth = 1.2; ctx.lineCap = "round";
-      ctx.beginPath(); for (let i = 0; i < 8; i++) { const x = -14 - i * 5, y = -14 - i * 1.4; ctx.moveTo(x, y); ctx.lineTo(x - 1, y - 4); ctx.moveTo(x, -y); ctx.lineTo(x - 1, -y + 4); } ctx.stroke();
-    } else {
-      // little lights at the arm tips
-      ctx.fillStyle = sca("#7ae8ff", 0.85);
-      for (const [x, y] of [[-56, -22], [-50, 0], [-56, 22]]) { ctx.beginPath(); ctx.arc(x, y, 2.2, 0, TAU); ctx.fill(); }
-    }
+    // eight arms spread like the ribs of an umbrella, with the dark web stretched between them.
+    // Normally the umbrella trails behind; when it is startled it folds forward over the body like a cape.
+    const open = 1 + Math.sin(f.ph * 1.5) * 0.12 * (1 - cloak);
+    const tips = [];
+    for (let i = 0; i < 8; i++) { const a = Math.PI + (i - 3.5) * 0.17 * open, len = 40 - Math.abs(i - 3.5) * 2.2; tips.push([-6 + Math.cos(a) * len, Math.sin(a) * len * 1.25]); }
+    ctx.save(); ctx.translate(-6, 0); ctx.scale(1 - 2 * cloak, 1); ctx.translate(6, 0);
+    ctx.fillStyle = web; ctx.globalAlpha *= 0.9;
+    ctx.beginPath(); ctx.moveTo(-6, -9);
+    tips.forEach(([tx, ty], i) => { if (i === 0) ctx.lineTo(tx, ty); else { const [px, py] = tips[i - 1]; ctx.quadraticCurveTo((px + tx) / 2 + 6, (py + ty) / 2, tx, ty); } });
+    ctx.lineTo(-6, 9); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha /= 0.9;
+    ctx.strokeStyle = body; ctx.lineWidth = 2.6; ctx.lineCap = "round";
+    ctx.beginPath(); for (const [tx, ty] of tips) { ctx.moveTo(-6, ty * 0.12); ctx.quadraticCurveTo(-6 + (tx + 6) * 0.5, ty * 0.6, tx, ty); } ctx.stroke();
+    // soft spines (cirri) along the arms, on the side that shows when it is cloaked
+    ctx.strokeStyle = spine; ctx.lineWidth = 0.9; ctx.globalAlpha *= 0.4 + cloak * 0.6;
+    ctx.beginPath(); for (const [tx, ty] of tips) for (let j = 1; j < 4; j++) { const fx = -6 + (tx + 6) * j / 4, fy = ty * j / 4; ctx.moveTo(fx, fy); ctx.lineTo(fx - 1.5, fy + (ty > 0 ? 3 : -3)); } ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (cloak < 0.4) { ctx.fillStyle = sca("#7ae8ff", 0.85); for (const [tx, ty] of tips) { ctx.beginPath(); ctx.arc(tx, ty, 1.6, 0, TAU); ctx.fill(); } }
     ctx.restore();
     if (cloak < 0.7) {
       ctx.fillStyle = sca("#58d8ff", 0.25); ctx.beginPath(); ctx.arc(2, -5, 9, 0, TAU); ctx.fill();
@@ -803,10 +821,10 @@
   function drawGulper(f) {
     const s = f.s, open = Math.max(0, Math.sin(f.ph * 0.35)) ** 2, swim = f.ph * 2.5;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
-    const body = sh("#16141a"), pouch = sh("#2a1a24");
-    // the whip tail, as a tapering wave
+    const body = sh("#16141a"), pouch = sh("#2a1a24"), rim = sh("#5a4a5a");
+    // the whip tail, as a tapering wave behind the head
     const pts = [];
-    for (let i = 0; i <= 18; i++) { const fr = i / 18; pts.push([26 - fr * 80, Math.sin(swim - fr * 5) * 6 * fr, 4.2 * (1 - fr) + 0.4]); }
+    for (let i = 0; i <= 18; i++) { const fr = i / 18; pts.push([8 - fr * 62, Math.sin(swim - fr * 5) * 6 * fr, 5 * (1 - fr) + 0.4]); }
     ctx.fillStyle = body; ctx.beginPath();
     pts.forEach(([x, y, w], i) => i ? ctx.lineTo(x, y - w) : ctx.moveTo(x, y - w));
     for (let i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i][0], pts[i][1] + pts[i][2]);
@@ -814,15 +832,24 @@
     const [tx, ty] = pts[pts.length - 1];
     ctx.fillStyle = sca("#ff5a8a", 0.35); ctx.beginPath(); ctx.arc(tx, ty, 4.5, 0, TAU); ctx.fill();
     ctx.fillStyle = sc("#ff8ab0"); ctx.beginPath(); ctx.arc(tx, ty, 1.8, 0, TAU); ctx.fill();
-    // the jaws, with the dark pouch stretched between them
-    const up = -0.18 - open * 0.45, lo = 0.12 + open * 0.75;
-    ctx.fillStyle = pouch; ctx.beginPath(); ctx.moveTo(22, -2);
-    ctx.lineTo(22 + Math.cos(up) * 30, Math.sin(up) * 30);
-    ctx.quadraticCurveTo(30 + open * 6, 4 + open * 8, 22 + Math.cos(lo) * 28, Math.sin(lo) * 28); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = body; ctx.lineWidth = 2.4; ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(22, -2); ctx.lineTo(22 + Math.cos(up) * 30, Math.sin(up) * 30); ctx.moveTo(22, 1); ctx.lineTo(22 + Math.cos(lo) * 28, Math.sin(lo) * 28); ctx.stroke();
-    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(20, -1, 6, 4.4, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = sh("#8a96a0"); ctx.beginPath(); ctx.arc(23, -3, 1.1, 0, TAU); ctx.fill();
+    // the head, then the long jaws from a hinge just behind the eye
+    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(10, -1, 9, 6, 0, 0, TAU); ctx.fill();
+    const hx = 12, hy = -2, up = -0.04 - open * 0.22, jaw = 36;
+    const ux = hx + Math.cos(up) * jaw, uy = hy + Math.sin(up) * jaw, lx = hx + jaw * 0.98, ly = hy + 4 + open * 6;
+    // the pouch hangs between the jaws like a pelican's, and swells as it gulps
+    ctx.fillStyle = pouch; ctx.beginPath(); ctx.moveTo(hx, hy);
+    ctx.lineTo(ux, uy); ctx.lineTo(lx, ly);
+    ctx.quadraticCurveTo(hx + jaw * 0.55, ly + 6 + open * 8, hx - 2, hy + 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = sh("#4a2a3a"); ctx.beginPath(); ctx.moveTo(hx + 3, hy + 0.5); ctx.lineTo(ux - 3, uy + 1.2); ctx.lineTo(lx - 3, ly - 1.2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rim; ctx.lineWidth = 1.2; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.quadraticCurveTo(hx + jaw * 0.55, ly + 6 + open * 8, hx - 2, hy + 5); ctx.stroke();
+    ctx.fillStyle = sh("#d8d0c8");
+    for (let i = 1; i < 8; i++) { const f2 = i / 8, tx2 = hx + (ux - hx) * f2, ty2 = hy + (uy - hy) * f2; ctx.beginPath(); ctx.moveTo(tx2 - 0.8, ty2 + 1); ctx.lineTo(tx2, ty2 + 2.6); ctx.lineTo(tx2 + 0.8, ty2 + 1); ctx.fill(); }
+    ctx.strokeStyle = body; ctx.lineWidth = 2.6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(ux, uy); ctx.moveTo(hx, hy + 1); ctx.lineTo(lx, ly); ctx.stroke();
+    ctx.strokeStyle = rim; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(hx + 2, hy - 1.4); ctx.lineTo(ux, uy - 1.2); ctx.stroke();
+    ctx.fillStyle = sh("#8a96a0"); ctx.beginPath(); ctx.arc(14, -4, 1.3, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // Hatchetfish: small, flat and silver, shaped like the blade of a hatchet, with tube eyes that look up
@@ -1025,7 +1052,7 @@
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
   THUMBS.hatchet = () => { for (const [x, y, sz] of [[36, 38, 42], [82, 50, 46], [70, 20, 34]]) drawHatchet({ x, cy: y, dir: 1, s: sz, ph: x }); };
-  THUMBS.gulper = () => drawGulper({ x: 66, cy: 42, dir: 1, s: 92, ph: 4.4 });
+  THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
   for (const key of ["xmastree", "coconut", "crownthorns", "horseshoe", "dugong", "mudskipper", "flatfish", "wolffish", "leopardshark", "icefish"]) FLOOR_THUMBS.add(key);
   Object.assign(BASE_HUE, {
     xmastree: 10, coconut: 25, moorish: 50, angelfish: 225, crownthorns: 320, hawksbill: 30, horseshoe: 45, dugong: 25,

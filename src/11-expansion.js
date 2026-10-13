@@ -565,28 +565,28 @@
 
   function drawHammerhead(v) {
     const L = v.size, skin = sh("#7a8a94"), belly = sh("#d8dde0"), dark = sh("#4a5862");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.02);
+    sharkForm(L, skin, belly, { upper: 0.24 });
+    // the tall, sickle-shaped first dorsal fin of a great hammerhead
     ctx.fillStyle = skin;
-    ctx.save(); ctx.translate(-L * 0.38, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-L * 0.12, -L * 0.17); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.13, L * 0.07); ctx.closePath(); ctx.fill();
-    ctx.restore();
-    ctx.beginPath(); ctx.moveTo(L * 0.4, 0);
-    ctx.bezierCurveTo(L * 0.3, -L * 0.09, -L * 0.1, -L * 0.08, -L * 0.4, -L * 0.01);
-    ctx.lineTo(-L * 0.4, L * 0.02);
-    ctx.bezierCurveTo(-L * 0.1, L * 0.07, L * 0.3, L * 0.07, L * 0.4, 0); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.08, -L * 0.07); ctx.lineTo(-L * 0.04, -L * 0.24); ctx.lineTo(-L * 0.08, -L * 0.06); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.15, L * 0.04); ctx.lineTo(L * 0.02, L * 0.16); ctx.lineTo(L * 0.05, L * 0.04); ctx.fill();
-    // the wide hammer-shaped head, seen a little from above, with an eye at each end
+    ctx.beginPath(); ctx.moveTo(L * 0.12, -L * 0.075); ctx.quadraticCurveTo(L * 0.06, -L * 0.3, -L * 0.06, -L * 0.33); ctx.quadraticCurveTo(-L * 0.01, -L * 0.2, -L * 0.06, -L * 0.07); ctx.fill();
+    // the hammer, seen a little from the front: a wide crescent across the snout with an eye at each tip
+    const hx = L * 0.45, half = L * 0.16;
     ctx.fillStyle = skin;
-    ctx.beginPath(); ctx.moveTo(L * 0.32, -L * 0.04); ctx.lineTo(L * 0.38, -L * 0.1); ctx.quadraticCurveTo(L * 0.46, -L * 0.12, L * 0.45, -L * 0.07);
-    ctx.lineTo(L * 0.44, L * 0.07); ctx.quadraticCurveTo(L * 0.45, L * 0.12, L * 0.38, L * 0.1); ctx.lineTo(L * 0.32, L * 0.04); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = dark;
-    ctx.beginPath(); ctx.ellipse(L * 0.44, 0, L * 0.012, L * 0.1, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(L * 0.15, L * 0.04, L * 0.2, L * 0.022, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(L * 0.36, -L * 0.04);
+    ctx.quadraticCurveTo(L * 0.4, -half * 0.9, hx - L * 0.01, -half);
+    ctx.quadraticCurveTo(hx + L * 0.035, -half * 0.98, hx + L * 0.04, -half * 0.7);
+    ctx.quadraticCurveTo(hx + L * 0.07, 0, hx + L * 0.04, half * 0.7);
+    ctx.quadraticCurveTo(hx + L * 0.035, half * 0.98, hx - L * 0.01, half);
+    ctx.quadraticCurveTo(L * 0.4, half * 0.9, L * 0.36, L * 0.04); ctx.closePath(); ctx.fill();
+    // the underside of the far half is in shadow
+    ctx.fillStyle = dark; ctx.globalAlpha *= 0.55;
+    ctx.beginPath(); ctx.moveTo(L * 0.4, L * 0.02); ctx.quadraticCurveTo(L * 0.42, half * 0.85, hx - L * 0.01, half); ctx.quadraticCurveTo(hx + L * 0.035, half * 0.98, hx + L * 0.04, half * 0.7); ctx.quadraticCurveTo(hx + L * 0.05, half * 0.3, L * 0.44, L * 0.02); ctx.fill();
+    ctx.globalAlpha /= 0.55;
+    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.7, L * 0.004);
+    ctx.beginPath(); ctx.moveTo(hx + L * 0.045, -half * 0.6); ctx.quadraticCurveTo(hx + L * 0.065, 0, hx + L * 0.045, half * 0.6); ctx.stroke();
     ctx.fillStyle = "#0b0f12";
-    for (const ey of [-0.09, 0.09]) { ctx.beginPath(); ctx.arc(L * 0.42, L * ey, L * 0.013, 0, TAU); ctx.fill(); }
-    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.7, L * 0.005);
-    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(L * (0.3 - i * 0.025), -L * 0.03); ctx.lineTo(L * (0.29 - i * 0.025), L * 0.02); ctx.stroke(); }
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(hx + L * 0.02, sd * half * 0.9, L * 0.012, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 

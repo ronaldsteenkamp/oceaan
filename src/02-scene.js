@@ -364,10 +364,12 @@
     s.spawnTimer = range(25, 50);
     s.treasure = null;
     if (s.ground.some(g => g.kind === "bottle")) {
-      for (let i = 0; i < 25 && !s.treasure; i++) {
-        const x = range(s.floorL + 40 * u, s.floorR - 40 * u);
-        if (s.ground.every(g => Math.abs(g.x - x) > g.w * 0.5 + 45 * u)) s.treasure = { x, dug: false };
+      for (let i = 0; i < 60 && !s.treasure; i++) {
+        const x = range(s.floorL + 40 * u, s.floorR - 40 * u), room = i < 30 ? 45 * u : 20 * u;
+        if (s.ground.every(g => g.kind === "bottle" || Math.abs(g.x - x) > g.w * 0.5 + room)) s.treasure = { x, dug: false };
       }
+      // a bottle only lies on the floor when it holds a map to a treasure
+      if (!s.treasure) s.ground = s.ground.filter(g => g.kind !== "bottle");
     }
 
     s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : 1)) }, () => ({

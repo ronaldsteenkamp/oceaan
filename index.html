@@ -1540,10 +1540,12 @@
     s.spawnTimer = range(25, 50);
     s.treasure = null;
     if (s.ground.some(g => g.kind === "bottle")) {
-      for (let i = 0; i < 25 && !s.treasure; i++) {
-        const x = range(s.floorL + 40 * u, s.floorR - 40 * u);
-        if (s.ground.every(g => Math.abs(g.x - x) > g.w * 0.5 + 45 * u)) s.treasure = { x, dug: false };
+      for (let i = 0; i < 60 && !s.treasure; i++) {
+        const x = range(s.floorL + 40 * u, s.floorR - 40 * u), room = i < 30 ? 45 * u : 20 * u;
+        if (s.ground.every(g => g.kind === "bottle" || Math.abs(g.x - x) > g.w * 0.5 + room)) s.treasure = { x, dug: false };
       }
+      // a bottle only lies on the floor when it holds a map to a treasure
+      if (!s.treasure) s.ground = s.ground.filter(g => g.kind !== "bottle");
     }
 
     s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : 1)) }, () => ({
@@ -3619,18 +3621,34 @@
       for (let i = 0; i < 5; i++) { const a = -0.6 + i * 0.3; ctx.moveTo(len * 0.48, -s * 0.3); ctx.lineTo(len * 0.48 + Math.cos(a) * s * 0.25, -s * 0.3 + Math.sin(a) * s * 0.25); }
       ctx.stroke();
     } else {
-      ctx.fillStyle = sh(o.body);
-      ctx.beginPath(); ctx.ellipse(0, -s * 0.2, s * 0.8, s * 0.2, 0, 0, TAU); ctx.fill();
+      // a Spanish shawl: a slim purple body, clusters of orange finger-like cerata along the back,
+      // two ringed horns (rhinophores) on the head and long feelers at the mouth
+      ctx.scale(s / 100, s / 100);
+      const body = sh(o.body), tip = sh(o.tip), crawl = Math.sin(o.ph * 2) * 2;
       ctx.lineCap = "round";
-      for (let i = 0; i < 9; i++) {
-        const cx = -s * 0.6 + i * s * 0.15, sway = Math.sin(t * 2 + i) * s * 0.05;
-        ctx.strokeStyle = sh(o.body); ctx.lineWidth = Math.max(1.5, s * 0.1);
-        ctx.beginPath(); ctx.moveTo(cx, -s * 0.3); ctx.lineTo(cx + sway, -s * 0.62); ctx.stroke();
-        ctx.fillStyle = sh(o.tip);
-        ctx.beginPath(); ctx.arc(cx + sway, -s * 0.64, s * 0.07, 0, TAU); ctx.fill();
+      ctx.strokeStyle = body; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(68, -10); ctx.quadraticCurveTo(84, -10, 92 + crawl, -2); ctx.moveTo(66, -6); ctx.quadraticCurveTo(80, -2, 88 + crawl, 2); ctx.stroke();
+      ctx.fillStyle = body;
+      ctx.beginPath(); ctx.moveTo(-82, 0); ctx.bezierCurveTo(-60, -10, -20, -20, 30, -20); ctx.bezierCurveTo(56, -20, 74, -14, 74, -6);
+      ctx.bezierCurveTo(74, 0, 60, 2, 30, 2); ctx.lineTo(-60, 2); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.ellipse(10, -14, 50, 3, 0, 0, TAU); ctx.fill();
+      // the cerata: six bunches of tapering fingers, swaying gently
+      for (let g = 0; g < 6; g++) {
+        const gx = 44 - g * 18, gy = -18 + g * 2.4;
+        for (let j = 0; j < 4; j++) {
+          const a = -Math.PI / 2 + (j - 1.5) * 0.32 + Math.sin(t * 1.6 + g + j) * 0.08, len = 22 - Math.abs(j - 1.5) * 4 - g * 1.2;
+          const ex = gx + Math.cos(a) * len, ey = gy + Math.sin(a) * len;
+          ctx.strokeStyle = tip; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex + Math.cos(a) * 3, ey + Math.sin(a) * 3); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.arc(ex, ey, 1.2, 0, TAU); ctx.fill();
+        }
       }
-      ctx.strokeStyle = sh(o.tip); ctx.lineWidth = Math.max(1, s * 0.06);
-      ctx.beginPath(); ctx.moveTo(s * 0.65, -s * 0.3); ctx.lineTo(s * 0.75, -s * 0.6); ctx.moveTo(s * 0.55, -s * 0.3); ctx.lineTo(s * 0.6, -s * 0.6); ctx.stroke();
+      // two rhinophores with rings
+      for (const rx of [58, 66]) {
+        ctx.strokeStyle = tip; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(rx, -18); ctx.lineTo(rx + 4, -36); ctx.stroke();
+        ctx.strokeStyle = body; ctx.lineWidth = 1; ctx.beginPath(); for (let r = 0; r < 4; r++) { const ry = -24 - r * 3.5; ctx.moveTo(rx + 0.8 + r * 0.8, ry); ctx.lineTo(rx + 5.2 + r * 0.8, ry - 1); } ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -4281,7 +4299,7 @@
     angler: () => drawAngler({ x: 50, y: 50, dir: 1, s: 30, ph: 0 }, 0),
     squid: () => { scene.squids = [{ x: 74, y: 42, vx: 0.5, vy: 0, dir: 1, s: 34, pulse: 1e9, hue: 340, face: 1 }]; updateAndDrawSquids(0); },
     hermit: () => drawHermit({ x: 62, dir: 1, s: 24, hide: 0, leg: 0, shell: "#d8b48a" }, 0),
-    slugs: () => drawSlug({ x: 60, dir: 1, s: 26, type: "nudi", ph: 1, body: "#7b4fd6", tip: "#ff9a3c", color: "#7a3b2e" }, 0),
+    slugs: () => drawSlug({ x: 56, dir: 1, s: 62, type: "nudi", ph: 1, body: "#7b4fd6", tip: "#ff9a3c", color: "#7a3b2e" }, 0),
     comb: () => { scene.combs = [{ x: 60, y: 42, r: 24, ph: 0, drift: 0 }]; drawCombs(0, false); drawCombs(0, true); },
     otters: () => { ctx.translate(0, 26); scene.otters = [{ x: 60, vx: 0, s: 50, ph: 0, shell: true }]; drawSurface(0, 0); },
     seal: () => drawSeal({ x: 60, y0: -28, ph: Math.PI / 2, dir: 1, s: 80 }, 0),
@@ -5998,11 +6016,11 @@
     eelmigration: pal("", { body: "#f2c040" }),
     // the sixth wave
     xmastree: pal("#a89880>#5a6a8a #8a7a62>#3a4a6a #c8b8a0>#8aa0c8 #6a5a48>#2a3448 #fff8f0>#fff8f0 #c8a868>#e8e8f0", { hue: 48, sat: 1.2 }),
-    coconut: pal("#7a4a26>#e8e0d0 #4a2a12>#b8a888 #e8d8b8>#fff8ec #b8763a>#d85a9a #6a3a18>#8a2a5a #f2d070>#7ae8f0"),
+    coconut: pal("#e8c8a0>#f8d0e8 #7a4a26>#e8e0d0 #4a2a12>#b8a888 #e8d8b8>#fff8ec #b8763a>#d85a9a #6a3a18>#8a2a5a #f2d070>#7ae8f0"),
     moorish: pal("#f4f0e2>#f4f0e2 #18181c>#2a3a8a #f2d030>#5ad0f0 #f08a30>#f2507a"),
     angelfish: pal("#2a48b8>#1a1a2a #f2d040>#f2f2f8 #141828>#e8a020 #58b0f0>#f2c040 #dfe8ee>#f8e0a0"),
     crownthorns: pal("#8a3a6a>#2a6ad8 #e05a4a>#f2d040 #f2c060>#f8f8f8"),
-    hawksbill: pal("#6a4a2a>#2a4a5a #e8b048>#8ae8d0 #b8783a>#3a8a8a #4a2a14>#1a3a40 #3a2410>#123034 #e8d8a0>#d8f0e8 #3a2a1a>#1a2a30"),
+    hawksbill: pal("#7a5634>#3a6a7a #6a4a2a>#2a4a5a #e8b048>#8ae8d0 #b8783a>#3a8a8a #4a2a14>#1a3a40 #3a2410>#123034 #e8d8a0>#d8f0e8 #3a2a1a>#1a2a30"),
     horseshoe: pal("#7a6a3a>#3a5ab8 #4a3e22>#1a2a6a #a8946a>#8ab0f0"),
     dugong: pal("#8a7a6e>#e8d8e0 #b8aca0>#fff4f8 #6a5c52>#b8a0b0"),
     mudskipper: pal("#8a7a5a>#3a3a44 #5a4a32>#1c1c24 #5ac0e8>#f2d040 #5a7a9a>#c84a3a #e05a3a>#f2d040 #7ad8f8>#f8f0a0"),
@@ -6022,7 +6040,7 @@
     vampire: pal("#5a1424>#1a2a5a #2a0810>#0a1030 #e8c8d0>#c8e0f8 #7ae8ff>#ff8a3a #58d8ff>#ffb040"),
     dumbo: pal("#f0a888>#a8d8f8 #d8806a>#6aa8e0"),
     viperfish: pal("#1a2428>#3a1a3a #3a4c58>#7a3a7a #e8eef0>#f2d040 #7ad8ff>#7aff9a #bdf2ff>#d8ffe0 #6ad8ff>#7aff9a #9aa8b0>#e8c0f0"),
-    gulper: pal("#16141a>#3a1a1a #2a1a24>#6a1a1a #ff5a8a>#5af0ff #ff8ab0>#bff8ff #8a96a0>#f2d040"),
+    gulper: pal("#5a4a5a>#c8784a #16141a>#3a1a1a #2a1a24>#6a1a1a #ff5a8a>#5af0ff #ff8ab0>#bff8ff #8a96a0>#f2d040"),
     hatchet: pal("#c8d4dc>#f2d070 #3a4a58>#8a5a10 #9aa8b4>#e8b040 #6ad0ff>#ff7a5a #e8eef2>#fff4d0"),
     herring: pal("#2e5a6a>#6a2a6a #c8d6de>#f8e0f0"),
     greenland: pal("#4e4a44>#c8d8e8 #7a766c>#f2f6fa #36322e>#8aa0b8 #e8e0b0>#f25a5a"),
@@ -6887,28 +6905,28 @@
 
   function drawHammerhead(v) {
     const L = v.size, skin = sh("#7a8a94"), belly = sh("#d8dde0"), dark = sh("#4a5862");
-    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
+    ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1); ctx.rotate(Math.sin(v.ph) * 0.02);
+    sharkForm(L, skin, belly, { upper: 0.24 });
+    // the tall, sickle-shaped first dorsal fin of a great hammerhead
     ctx.fillStyle = skin;
-    ctx.save(); ctx.translate(-L * 0.38, 0); ctx.rotate(Math.sin(v.ph * 2) * 0.12);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-L * 0.12, -L * 0.17); ctx.lineTo(-L * 0.08, 0); ctx.lineTo(-L * 0.13, L * 0.07); ctx.closePath(); ctx.fill();
-    ctx.restore();
-    ctx.beginPath(); ctx.moveTo(L * 0.4, 0);
-    ctx.bezierCurveTo(L * 0.3, -L * 0.09, -L * 0.1, -L * 0.08, -L * 0.4, -L * 0.01);
-    ctx.lineTo(-L * 0.4, L * 0.02);
-    ctx.bezierCurveTo(-L * 0.1, L * 0.07, L * 0.3, L * 0.07, L * 0.4, 0); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.08, -L * 0.07); ctx.lineTo(-L * 0.04, -L * 0.24); ctx.lineTo(-L * 0.08, -L * 0.06); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(L * 0.15, L * 0.04); ctx.lineTo(L * 0.02, L * 0.16); ctx.lineTo(L * 0.05, L * 0.04); ctx.fill();
-    // the wide hammer-shaped head, seen a little from above, with an eye at each end
+    ctx.beginPath(); ctx.moveTo(L * 0.12, -L * 0.075); ctx.quadraticCurveTo(L * 0.06, -L * 0.3, -L * 0.06, -L * 0.33); ctx.quadraticCurveTo(-L * 0.01, -L * 0.2, -L * 0.06, -L * 0.07); ctx.fill();
+    // the hammer, seen a little from the front: a wide crescent across the snout with an eye at each tip
+    const hx = L * 0.45, half = L * 0.16;
     ctx.fillStyle = skin;
-    ctx.beginPath(); ctx.moveTo(L * 0.32, -L * 0.04); ctx.lineTo(L * 0.38, -L * 0.1); ctx.quadraticCurveTo(L * 0.46, -L * 0.12, L * 0.45, -L * 0.07);
-    ctx.lineTo(L * 0.44, L * 0.07); ctx.quadraticCurveTo(L * 0.45, L * 0.12, L * 0.38, L * 0.1); ctx.lineTo(L * 0.32, L * 0.04); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = dark;
-    ctx.beginPath(); ctx.ellipse(L * 0.44, 0, L * 0.012, L * 0.1, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(L * 0.15, L * 0.04, L * 0.2, L * 0.022, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(L * 0.36, -L * 0.04);
+    ctx.quadraticCurveTo(L * 0.4, -half * 0.9, hx - L * 0.01, -half);
+    ctx.quadraticCurveTo(hx + L * 0.035, -half * 0.98, hx + L * 0.04, -half * 0.7);
+    ctx.quadraticCurveTo(hx + L * 0.07, 0, hx + L * 0.04, half * 0.7);
+    ctx.quadraticCurveTo(hx + L * 0.035, half * 0.98, hx - L * 0.01, half);
+    ctx.quadraticCurveTo(L * 0.4, half * 0.9, L * 0.36, L * 0.04); ctx.closePath(); ctx.fill();
+    // the underside of the far half is in shadow
+    ctx.fillStyle = dark; ctx.globalAlpha *= 0.55;
+    ctx.beginPath(); ctx.moveTo(L * 0.4, L * 0.02); ctx.quadraticCurveTo(L * 0.42, half * 0.85, hx - L * 0.01, half); ctx.quadraticCurveTo(hx + L * 0.035, half * 0.98, hx + L * 0.04, half * 0.7); ctx.quadraticCurveTo(hx + L * 0.05, half * 0.3, L * 0.44, L * 0.02); ctx.fill();
+    ctx.globalAlpha /= 0.55;
+    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.7, L * 0.004);
+    ctx.beginPath(); ctx.moveTo(hx + L * 0.045, -half * 0.6); ctx.quadraticCurveTo(hx + L * 0.065, 0, hx + L * 0.045, half * 0.6); ctx.stroke();
     ctx.fillStyle = "#0b0f12";
-    for (const ey of [-0.09, 0.09]) { ctx.beginPath(); ctx.arc(L * 0.42, L * ey, L * 0.013, 0, TAU); ctx.fill(); }
-    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.7, L * 0.005);
-    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(L * (0.3 - i * 0.025), -L * 0.03); ctx.lineTo(L * (0.29 - i * 0.025), L * 0.02); ctx.stroke(); }
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(hx + L * 0.02, sd * half * 0.9, L * 0.012, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 
@@ -9194,6 +9212,15 @@
     ctx.restore();
   }
 
+  // A soft arm along a curve from (x0, y0) to (x1, y1), tapering from w0 to a thin tip, with a row of pale suckers.
+  function softArm(x0, y0, cx, cy, x1, y1, w0, col, sucker) {
+    const pts = [];
+    for (let i = 0; i <= 14; i++) { const f = i / 14, a = (1 - f) * (1 - f), b = 2 * (1 - f) * f, c = f * f; pts.push([a * x0 + b * cx + c * x1, a * y0 + b * cy + c * y1, w0 * (1 - f * 0.85)]); }
+    ctx.fillStyle = col;
+    for (const [px, py, w] of pts) { ctx.beginPath(); ctx.arc(px, py, w / 2, 0, TAU); ctx.fill(); }
+    if (sucker) { ctx.fillStyle = sucker; for (let i = 2; i < pts.length - 1; i += 2) { const [px, py, w] = pts[i]; ctx.beginPath(); ctx.arc(px + w * 0.25, py + w * 0.2, w * 0.2, 0, TAU); ctx.fill(); } }
+  }
+
   // A coconut octopus walks on two arms with half a coconut shell held under it like a bowl. When the diver
   // comes close, it pulls two halves together around itself and peeks out through the crack.
   const COCO_MANTLE = "M -2 -36 C -16 -38 -26 -50 -20 -60 C -14 -68 2 -68 8 -60 C 14 -52 12 -40 -2 -36 Z";
@@ -9203,9 +9230,9 @@
     const scared = near(f.x, f.cy - s * 0.3, 120 * u) > 0;
     f.hide = Math.max(0, Math.min(1, f.hide + (scared ? 0.08 : -0.005) * frameK));
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
-    const shell = sh("#7a4a26"), inner = sh("#e8d8b8"), fibre = sh("#4a2a12"), skin = sh("#b8763a"), dark = sh("#6a3a18");
+    const shell = sh("#7a4a26"), inner = sh("#e8d8b8"), fibre = sh("#4a2a12"), skin = sh("#b8763a"), dark = sh("#6a3a18"), suck = sh("#e8c8a0");
     if (f.hide > 0.5) {
-      // shut tight: a coconut on the sand, with an eye in the crack and the tip of an arm hanging out
+      // shut tight: a coconut on the sand, with an eye in the crack and the tip of an arm curling out
       ctx.save(); ctx.translate(0, -24); ctx.scale(1, 1 + Math.sin(f.ph * 2) * 0.02);
       ctx.fillStyle = shell; ctx.beginPath(); ctx.ellipse(0, 0, 30, 24, 0, 0, TAU); ctx.fill();
       ctx.strokeStyle = fibre; ctx.lineWidth = 1.1; ctx.globalAlpha *= 0.6;
@@ -9214,14 +9241,16 @@
       ctx.fillStyle = "#1a0e06"; ctx.beginPath(); ctx.ellipse(0, 0, 30, 2.2, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = sh("#f2d070"); ctx.beginPath(); ctx.ellipse(12, 0, 4, 1.8, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = "#101010"; ctx.fillRect(11, -1, 3, 2);
-      ctx.strokeStyle = skin; ctx.lineWidth = 3; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(-24, 1); ctx.quadraticCurveTo(-36, 6, -38 + Math.sin(f.ph * 3) * 2, 18); ctx.stroke();
+      softArm(-26, 1, -40, 4, -36 + Math.sin(f.ph * 3) * 2, 18, 5, skin, suck);
       ctx.restore();
     } else {
       const walk = f.ph * 4;
-      // two arms walk on the sand like legs
-      ctx.strokeStyle = dark; ctx.lineCap = "round"; ctx.lineWidth = 4.5;
-      for (let i = 0; i < 2; i++) { const a = Math.sin(walk + i * Math.PI); ctx.beginPath(); ctx.moveTo(-6 + i * 8, -26); ctx.quadraticCurveTo(-8 + a * 10 + i * 6, -14, -4 + a * 16 + i * 6, 0); ctx.stroke(); }
+      // two arms walk on the sand like legs: curving down and rolling out at the tips, suckers underneath
+      for (let i = 0; i < 2; i++) {
+        const a = Math.sin(walk + i * Math.PI), fx = -6 + a * 14 + i * 8;
+        softArm(-4 + i * 7, -30, -14 + a * 8 + i * 6, -14, fx, -1, 8, i ? skin : dark, suck);
+        softArm(fx, -1, fx + 6, 1, fx + 9, -4, 3, i ? skin : dark, null);
+      }
       // the shell half, carried like a bowl under the body
       ctx.save(); ctx.translate(-2, -36); ctx.rotate(Math.sin(walk) * 0.05);
       ctx.fillStyle = shell; ctx.beginPath(); ctx.ellipse(0, 0, 24, 15, 0, 0, Math.PI); ctx.closePath(); ctx.fill();
@@ -9229,13 +9258,12 @@
       ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.moveTo(-16 + i * 8, 4); ctx.lineTo(-14 + i * 8, 10); } ctx.stroke(); ctx.globalAlpha /= 0.6;
       ctx.fillStyle = inner; ctx.beginPath(); ctx.ellipse(0, 0, 24, 3, 0, 0, TAU); ctx.fill();
       ctx.restore();
-      // the body sits in the bowl, mottled brown, with the other arms hugging the rim
+      // the body sits in the bowl, mottled brown, with the other arms curling over the rim
       fillWith(P(COCO_MANTLE), skin);
       ctx.save(); ctx.clip(P(COCO_MANTLE)); ctx.fillStyle = dark;
       for (const [x, y, r] of [[-12, -54, 3], [-4, -60, 2.4], [2, -48, 2.6], [-16, -44, 2], [6, -56, 2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
       ctx.restore();
-      ctx.strokeStyle = skin; ctx.lineWidth = 3.4;
-      for (const [x0, x1, b] of [[-8, -28, -40], [4, 24, -42], [0, 18, -34]]) { ctx.beginPath(); ctx.moveTo(x0, -37); ctx.quadraticCurveTo((x0 + x1) / 2, b - 2, x1 + Math.sin(f.ph * 2 + x0) * 1.5, -30); ctx.stroke(); }
+      for (const [x0, x1, y1] of [[-8, -27, -26], [4, 25, -28], [0, 16, -24]]) softArm(x0, -38, (x0 + x1) / 2, -45, x1 + Math.sin(f.ph * 2 + x0) * 1.5, y1, 5, skin, null);
       ctx.fillStyle = sh("#f2d070"); ctx.beginPath(); ctx.arc(8, -44, 3.4, 0, TAU); ctx.fill();
       ctx.fillStyle = "#101010"; ctx.fillRect(6.4, -45, 3.4, 2);
     }
@@ -9332,8 +9360,11 @@
     ctx.save(); ctx.translate(14, 2); ctx.rotate(-0.3 + stroke * 0.5); fillWith(P(HAWK_FRONT), dark); ctx.restore();
     ctx.save(); ctx.translate(-36, 3); ctx.rotate(0.2 - stroke * 0.25); fillWith(P(HAWK_HIND), dark); ctx.restore();
     fillWith(P(HAWK_HEAD), skin);
-    ctx.save(); ctx.clip(P(HAWK_HEAD)); ctx.strokeStyle = yellow; ctx.lineWidth = 0.9;
-    ctx.beginPath(); for (const [x, y] of [[36, -6], [42, -8], [48, -6], [40, -2], [46, -2]]) { ctx.moveTo(x + 2.4, y); ctx.arc(x, y, 2.4, 0, TAU); } ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.clip(P(HAWK_HEAD));
+    ctx.fillStyle = sh("#7a5634"); ctx.fill(P("M 38 -11 L 46 -12 L 50 -7 L 44 -4 L 38 -6 Z"));
+    ctx.strokeStyle = yellow; ctx.lineWidth = 0.8; ctx.lineJoin = "round";
+    ctx.stroke(P("M 32 -8 L 38 -6 L 38 -11 M 38 -6 L 44 -4 L 50 -7 L 46 -12 L 38 -11 M 44 -4 L 43 2 M 50 -7 L 54 -4 M 36 -1 L 38 -6 M 36 -1 L 43 2 L 50 1"));
+    ctx.restore();
     fillWith(P(HAWK_BEAK), sh("#3a2a1a"));
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(47, -8.5, 1.6, 0, TAU); ctx.fill();
     fillWith(P(HAWK_PLASTRON), sh("#e8d8a0"));
@@ -9880,27 +9911,32 @@
   // inside out over its body, so only soft spines show.
   const VAMP_MANTLE = "M 44 0 C 44 -12 32 -18 16 -18 C 4 -18 -4 -14 -8 -8 L -8 8 C -4 14 4 18 16 18 C 32 18 44 12 44 0 Z";
   const VAMP_FIN = "M 30 -15 C 34 -26 26 -30 20 -24 C 18 -21 20 -17 24 -16 Z";
-  const VAMP_WEB = "M -6 -10 C -20 -26 -40 -30 -56 -22 C -50 -16 -54 -8 -50 0 C -54 8 -50 16 -56 22 C -40 30 -20 26 -6 10 Z";
   function drawVampire(f) {
     const s = f.s, cloak = Math.max(0, Math.min(1, (Math.sin(f.ph * 0.12) - 0.55) / 0.35));
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100); ctx.rotate(Math.sin(f.ph * 0.6) * 0.05);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100); ctx.rotate(-1.15 + Math.sin(f.ph * 0.6) * 0.06);
     const body = sh("#5a1424"), web = sh("#2a0810"), spine = sh("#e8c8d0");
     const flap = Math.sin(f.ph * 2) * 0.25;
     for (const sd of [1, -1]) { ctx.save(); ctx.scale(1, sd); ctx.translate(26, -18); ctx.rotate(flap * sd); ctx.translate(-26, 18); fillWith(P(VAMP_FIN), body); ctx.restore(); }
     fillWith(P(VAMP_MANTLE), body);
     ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.beginPath(); ctx.ellipse(20, -8, 18, 5, 0, 0, TAU); ctx.fill();
-    // the cape folds from behind the body (normal) over the top of it (cloaked)
-    ctx.save(); ctx.translate(-6, 0); ctx.scale(1 - 2 * cloak, 1 + Math.sin(f.ph * 1.5) * 0.12 * (1 - cloak)); ctx.translate(6, 0);
-    fillWith(P(VAMP_WEB), web);
-    ctx.strokeStyle = body; ctx.lineWidth = 1.4; ctx.stroke(P(VAMP_WEB));
-    if (cloak > 0.4) {
-      ctx.strokeStyle = spine; ctx.lineWidth = 1.2; ctx.lineCap = "round";
-      ctx.beginPath(); for (let i = 0; i < 8; i++) { const x = -14 - i * 5, y = -14 - i * 1.4; ctx.moveTo(x, y); ctx.lineTo(x - 1, y - 4); ctx.moveTo(x, -y); ctx.lineTo(x - 1, -y + 4); } ctx.stroke();
-    } else {
-      // little lights at the arm tips
-      ctx.fillStyle = sca("#7ae8ff", 0.85);
-      for (const [x, y] of [[-56, -22], [-50, 0], [-56, 22]]) { ctx.beginPath(); ctx.arc(x, y, 2.2, 0, TAU); ctx.fill(); }
-    }
+    // eight arms spread like the ribs of an umbrella, with the dark web stretched between them.
+    // Normally the umbrella trails behind; when it is startled it folds forward over the body like a cape.
+    const open = 1 + Math.sin(f.ph * 1.5) * 0.12 * (1 - cloak);
+    const tips = [];
+    for (let i = 0; i < 8; i++) { const a = Math.PI + (i - 3.5) * 0.17 * open, len = 40 - Math.abs(i - 3.5) * 2.2; tips.push([-6 + Math.cos(a) * len, Math.sin(a) * len * 1.25]); }
+    ctx.save(); ctx.translate(-6, 0); ctx.scale(1 - 2 * cloak, 1); ctx.translate(6, 0);
+    ctx.fillStyle = web; ctx.globalAlpha *= 0.9;
+    ctx.beginPath(); ctx.moveTo(-6, -9);
+    tips.forEach(([tx, ty], i) => { if (i === 0) ctx.lineTo(tx, ty); else { const [px, py] = tips[i - 1]; ctx.quadraticCurveTo((px + tx) / 2 + 6, (py + ty) / 2, tx, ty); } });
+    ctx.lineTo(-6, 9); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha /= 0.9;
+    ctx.strokeStyle = body; ctx.lineWidth = 2.6; ctx.lineCap = "round";
+    ctx.beginPath(); for (const [tx, ty] of tips) { ctx.moveTo(-6, ty * 0.12); ctx.quadraticCurveTo(-6 + (tx + 6) * 0.5, ty * 0.6, tx, ty); } ctx.stroke();
+    // soft spines (cirri) along the arms, on the side that shows when it is cloaked
+    ctx.strokeStyle = spine; ctx.lineWidth = 0.9; ctx.globalAlpha *= 0.4 + cloak * 0.6;
+    ctx.beginPath(); for (const [tx, ty] of tips) for (let j = 1; j < 4; j++) { const fx = -6 + (tx + 6) * j / 4, fy = ty * j / 4; ctx.moveTo(fx, fy); ctx.lineTo(fx - 1.5, fy + (ty > 0 ? 3 : -3)); } ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (cloak < 0.4) { ctx.fillStyle = sca("#7ae8ff", 0.85); for (const [tx, ty] of tips) { ctx.beginPath(); ctx.arc(tx, ty, 1.6, 0, TAU); ctx.fill(); } }
     ctx.restore();
     if (cloak < 0.7) {
       ctx.fillStyle = sca("#58d8ff", 0.25); ctx.beginPath(); ctx.arc(2, -5, 9, 0, TAU); ctx.fill();
@@ -9955,10 +9991,10 @@
   function drawGulper(f) {
     const s = f.s, open = Math.max(0, Math.sin(f.ph * 0.35)) ** 2, swim = f.ph * 2.5;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
-    const body = sh("#16141a"), pouch = sh("#2a1a24");
-    // the whip tail, as a tapering wave
+    const body = sh("#16141a"), pouch = sh("#2a1a24"), rim = sh("#5a4a5a");
+    // the whip tail, as a tapering wave behind the head
     const pts = [];
-    for (let i = 0; i <= 18; i++) { const fr = i / 18; pts.push([26 - fr * 80, Math.sin(swim - fr * 5) * 6 * fr, 4.2 * (1 - fr) + 0.4]); }
+    for (let i = 0; i <= 18; i++) { const fr = i / 18; pts.push([8 - fr * 62, Math.sin(swim - fr * 5) * 6 * fr, 5 * (1 - fr) + 0.4]); }
     ctx.fillStyle = body; ctx.beginPath();
     pts.forEach(([x, y, w], i) => i ? ctx.lineTo(x, y - w) : ctx.moveTo(x, y - w));
     for (let i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i][0], pts[i][1] + pts[i][2]);
@@ -9966,15 +10002,24 @@
     const [tx, ty] = pts[pts.length - 1];
     ctx.fillStyle = sca("#ff5a8a", 0.35); ctx.beginPath(); ctx.arc(tx, ty, 4.5, 0, TAU); ctx.fill();
     ctx.fillStyle = sc("#ff8ab0"); ctx.beginPath(); ctx.arc(tx, ty, 1.8, 0, TAU); ctx.fill();
-    // the jaws, with the dark pouch stretched between them
-    const up = -0.18 - open * 0.45, lo = 0.12 + open * 0.75;
-    ctx.fillStyle = pouch; ctx.beginPath(); ctx.moveTo(22, -2);
-    ctx.lineTo(22 + Math.cos(up) * 30, Math.sin(up) * 30);
-    ctx.quadraticCurveTo(30 + open * 6, 4 + open * 8, 22 + Math.cos(lo) * 28, Math.sin(lo) * 28); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = body; ctx.lineWidth = 2.4; ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(22, -2); ctx.lineTo(22 + Math.cos(up) * 30, Math.sin(up) * 30); ctx.moveTo(22, 1); ctx.lineTo(22 + Math.cos(lo) * 28, Math.sin(lo) * 28); ctx.stroke();
-    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(20, -1, 6, 4.4, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = sh("#8a96a0"); ctx.beginPath(); ctx.arc(23, -3, 1.1, 0, TAU); ctx.fill();
+    // the head, then the long jaws from a hinge just behind the eye
+    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(10, -1, 9, 6, 0, 0, TAU); ctx.fill();
+    const hx = 12, hy = -2, up = -0.04 - open * 0.22, jaw = 36;
+    const ux = hx + Math.cos(up) * jaw, uy = hy + Math.sin(up) * jaw, lx = hx + jaw * 0.98, ly = hy + 4 + open * 6;
+    // the pouch hangs between the jaws like a pelican's, and swells as it gulps
+    ctx.fillStyle = pouch; ctx.beginPath(); ctx.moveTo(hx, hy);
+    ctx.lineTo(ux, uy); ctx.lineTo(lx, ly);
+    ctx.quadraticCurveTo(hx + jaw * 0.55, ly + 6 + open * 8, hx - 2, hy + 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = sh("#4a2a3a"); ctx.beginPath(); ctx.moveTo(hx + 3, hy + 0.5); ctx.lineTo(ux - 3, uy + 1.2); ctx.lineTo(lx - 3, ly - 1.2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rim; ctx.lineWidth = 1.2; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.quadraticCurveTo(hx + jaw * 0.55, ly + 6 + open * 8, hx - 2, hy + 5); ctx.stroke();
+    ctx.fillStyle = sh("#d8d0c8");
+    for (let i = 1; i < 8; i++) { const f2 = i / 8, tx2 = hx + (ux - hx) * f2, ty2 = hy + (uy - hy) * f2; ctx.beginPath(); ctx.moveTo(tx2 - 0.8, ty2 + 1); ctx.lineTo(tx2, ty2 + 2.6); ctx.lineTo(tx2 + 0.8, ty2 + 1); ctx.fill(); }
+    ctx.strokeStyle = body; ctx.lineWidth = 2.6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(ux, uy); ctx.moveTo(hx, hy + 1); ctx.lineTo(lx, ly); ctx.stroke();
+    ctx.strokeStyle = rim; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(hx + 2, hy - 1.4); ctx.lineTo(ux, uy - 1.2); ctx.stroke();
+    ctx.fillStyle = sh("#8a96a0"); ctx.beginPath(); ctx.arc(14, -4, 1.3, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // Hatchetfish: small, flat and silver, shaped like the blade of a hatchet, with tube eyes that look up
@@ -10177,7 +10222,7 @@
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
   THUMBS.hatchet = () => { for (const [x, y, sz] of [[36, 38, 42], [82, 50, 46], [70, 20, 34]]) drawHatchet({ x, cy: y, dir: 1, s: sz, ph: x }); };
-  THUMBS.gulper = () => drawGulper({ x: 66, cy: 42, dir: 1, s: 92, ph: 4.4 });
+  THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
   for (const key of ["xmastree", "coconut", "crownthorns", "horseshoe", "dugong", "mudskipper", "flatfish", "wolffish", "leopardshark", "icefish"]) FLOOR_THUMBS.add(key);
   Object.assign(BASE_HUE, {
     xmastree: 10, coconut: 25, moorish: 50, angelfish: 225, crownthorns: 320, hawksbill: 30, horseshoe: 45, dugong: 25,
@@ -12799,7 +12844,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=61").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=62").catch(() => {}));
   }
 </script>
 </body>
