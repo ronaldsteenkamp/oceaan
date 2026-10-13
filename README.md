@@ -41,6 +41,8 @@ Dit voegt `src/` samen tot `../oceaan.html` (de versie die ook als claude.ai-art
 
 Alleen controleren kan ook: `python check.py`.
 
+Een nieuw dier toegevoegd? `python dier_check.py sleutel` kijkt of het overal geregistreerd staat: namen, logboek, shiny, aquarium, een water, tekening, weetje en veldnotitie. De zelftest vangt dat niet altijd op.
+
 ## Credits
 
 Gemaakt door Ronald.
