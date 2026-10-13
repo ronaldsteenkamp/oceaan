@@ -89,8 +89,9 @@
       return;
     }
     const focusTag = document.activeElement && document.activeElement.tagName;
-    if (!panelEl.hidden && panelTab === "log" && !detailOpen && (e.key === "ArrowLeft" || e.key === "ArrowRight") && focusTag !== "INPUT") {
-      e.preventDefault(); turnBook(e.key === "ArrowRight" ? 1 : -1); return;
+    if (!panelEl.hidden && panelTab === "log" && (e.key === "ArrowLeft" || e.key === "ArrowRight") && focusTag !== "INPUT") {
+      if (!detailOpen) { e.preventDefault(); turnBook(e.key === "ArrowRight" ? 1 : -1); return; }
+      if (detailKey) { e.preventDefault(); detailStep(e.key === "ArrowRight" ? 1 : -1); return; }
     }
     if (e.key in keys && focusTag !== "INPUT") {
       e.preventDefault();
@@ -315,6 +316,11 @@
     if (S.quake.age < 0) opts.push(() => { S.quake.timer = 0; });
     if (S.glowtide.enabled && !S.glowtide.active && night > 0.85) opts.push(() => { S.glowtide.timer = 0; });
     if (S.aurora.enabled && !S.aurora.active && night > 0.6) opts.push(() => { S.aurora.timer = 0; });
+    if (S.net.enabled && !S.net.active) opts.push(() => { S.net.timer = 0; });
+    if (S.whirl.enabled && !S.whirl.active) opts.push(() => { S.whirl.timer = 0; });
+    if (S.sardines.enabled && !S.sardines.active) opts.push(() => { S.sardines.timer = 0; });
+    if (S.meteor.enabled && night > 0.7) opts.push(() => { S.meteor.timer = 0; });
+    if (S.eclipse.enabled && !S.eclipse.active && night > 0.7) opts.push(() => { S.eclipse.timer = 0; });
     if (!opts.length) { toast(L("Er is nu geen moment om op te roepen", "There is no moment to call up right now")); return; }
     busyUntil = 0;
     opts[Math.floor(Math.random() * opts.length)]();

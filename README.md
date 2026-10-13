@@ -26,6 +26,8 @@ De bron staat in `src/`:
 | `03` tot en met `10` | water, bodem, dieren, bezoekers, geluid, licht en shiny's |
 | `11-expansion.js` | mangrove, grot, nieuwe vondsten, dieren, bezoekers, momenten en zeldzame dingen |
 | `11-x2-lagoon-and-sargasso.js` | lagune, Sargassozee en de derde ronde nieuwe dingen |
+| `11-x3-fauna.js` | de vierde ronde dieren en het systeem dat ze laat zwemmen, kruipen en drijven |
+| `11-x4-wave6.js` | de zesde ronde: dertig dieren, de klimmende ijsbeer, zes momenten en twee legendes |
 | `12-frame.js` | de animatielus, snelheid en automatische kwaliteit |
 | `13-controls.js` | aanraken, duiker, foto en knoppen |
 | `14-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |

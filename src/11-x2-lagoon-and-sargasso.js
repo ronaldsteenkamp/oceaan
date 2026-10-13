@@ -807,6 +807,8 @@
     if (r === "ghostsub" && S.ghostSub) return [S.ghostSub.x, S.ghostSub.cy || S.ghostSub.y];
     // the kraken reaches up from the bottom, on its side of the ocean
     if (r === "kraken") return S.kraken.active && S.kraken.eye ? [S.kraken.eye.x, S.kraken.eye.y] : [side < 0 ? W * 0.15 : W * 0.85, H + 60 * u];
+    if (r === "leviathan") return S.leviathan && S.leviathan.active && S.leviathan.eye ? S.leviathan.eye : [off, H * 0.55];
+    if (r === "lighthouse" && S.lighthouse) return [S.lighthouse.x, waveY(S.lighthouse.x) + 40 * u];
     if (r === "megalodon") return S.megalodon.active ? [S.megalodon.x, S.megalodon.y] : [off, H * 0.45];
     if (r === "mobydick") return S.moby.active ? [S.moby.x, S.moby.y] : [off, H * 0.4];
     if (r === "serpent") return S.serpent.active ? [S.serpent.hx || off, S.serpent.hy || H * 0.4] : [off, H * 0.4];

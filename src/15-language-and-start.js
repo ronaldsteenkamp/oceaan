@@ -76,6 +76,17 @@
         S.eels.enabled = true; S.eels.timer = 0; S.quake.timer = 0; S.march.enabled = true; S.march.timer = 0; S.moby.enabled = true; S.moby.timer = 0;
         if (!S.ghostDiver) S.ghostDiver = { x: W / 2, y: H / 2, dir: 1, ph: 0, logged: false };
         if (!S.ghostSub) S.ghostSub = { x: W * 0.3, y: H * 0.4, dir: -1, ph: 0, logged: false };
+        startNet(S.net); S.net.x = W * 0.5; S.net.y = H * 0.5;
+        S.whirl.enabled = true; S.whirl.timer = 0; S.sardines.enabled = true; S.sardines.timer = 0;
+        S.meteor.list.push({ x: W / 2, dir: 1, age: 0.2 });
+        S.eclipse.active = true; S.eclipse.age = 10; S.eclipse.fade = 1;
+        S.leviathan.enabled = true; S.leviathan.timer = 0;
+        if (!S.lighthouse) S.lighthouse = { x: W * 0.4, ph: 0, logged: false };
+        if (water.surface) Object.assign(S.spout, { active: true, age: 5, x: W * 0.6, vx: 0, fade: 1, depth: H * 0.3 });
+        for (const f of S.fauna) {
+          if (f.key === "polarbear" && S.floes[0]) { f.st = "ice"; f.floe = S.floes[0]; f.off = 0; f.tm = 0.3; f.x = S.floes[0].x; }
+          if (f.key === "gannet") { f.st = "wait"; f.tm = 0; }
+        }
         if (sd % 3 === 0) [S.kraken, S.serpent, S.megalodon, S.moby, S.ghostDiver][(sd / 3) % 5].shiny = "kraken";
         if (S.aurora.enabled) { S.aurora.active = true; S.aurora.age = 10; S.aurora.fade = 1; }
         if (S.glowtide.enabled) { S.glowtide.active = true; S.glowtide.age = 5; }

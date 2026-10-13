@@ -389,6 +389,7 @@
     buildMore(s, Lf, clumps, remap);
     buildWave2(s, Lf, remap);
     buildFauna(s, Lf, remap);
+    buildWave6(s);
 
     s.watch = [];
     // the water itself is logged as soon as the diver goes in

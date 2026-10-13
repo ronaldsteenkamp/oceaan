@@ -202,6 +202,18 @@
       visitors: ["coelacanth"] },
   };
   WATERS.forEach(w => { const e = WAVE4[w.name]; if (!e) return; Object.assign(w.life, e.life); w.visitors.push(...e.visitors); });
+  // The sixth wave: thirty animals, each in the waters where it really lives.
+  const WAVE6 = {
+    rif: { life: { xmastree: 0.6, coconut: 0.2, moorish: 0.5, angelfish: 0.5, crownthorns: 0.3, hawksbill: 0.3 }, visitors: [] },
+    lagune: { life: { xmastree: 0.3, coconut: 0.5, angelfish: 0.3, hawksbill: 0.3, horseshoe: 0.3, dugong: 0.35 }, visitors: ["leatherback"] },
+    mangrove: { life: { mudskipper: 0.7, horseshoe: 0.4 }, visitors: [] },
+    noordzee: { life: { puffin: 0.4, gannet: 0.5, porpoise: 0.45, flatfish: 0.6, cod: 0.5, wolffish: 0.3 }, visitors: ["herring", "herring", "leatherback"] },
+    kelpwoud: { life: { garibaldi: 0.6, leopardshark: 0.4 }, visitors: [] },
+    sargasso: { life: { manowar: 0.5, glaucus: 0.35 }, visitors: ["leatherback"] },
+    ijszee: { life: { puffin: 0.3, wolffish: 0.3, icefish: 0.4, leopardseal: 0.3, krill: 0.5 }, visitors: ["greenland", "greenland"] },
+    diepzee: { life: { vampire: 0.4, dumbo: 0.4, viperfish: 0.45, gulper: 0.3, hatchet: 0.5 }, visitors: [] },
+  };
+  WATERS.forEach(w => { const e = WAVE6[w.name]; if (!e) return; Object.assign(w.life, e.life); w.visitors.push(...e.visitors); });
 
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon"];
@@ -224,6 +236,11 @@
   AQ_ALL.push(...NEW_PROPS, ...NEW_LIFE, ...NEW_VIS, ...NEW_RARE, ...W3_PROPS, ...W3_LIFE, ...W3_VIS, ...W3_RARE, ...W4_LIFE, ...W4_VIS);
   const W5_RARE = ["ghostsub"];
   RARE_KEYS.push(...W5_RARE); AQ_ALL.push(...W5_RARE);
+  const W6_LIFE = ["xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet"];
+  const W6_VIS = ["herring", "greenland", "leatherback"];
+  const W6_RARE = ["leviathan", "lighthouse"];
+  LIFE_KEYS.push(...W6_LIFE); VIS_KEYS.push(...W6_VIS); RARE_KEYS.push(...W6_RARE);
+  AQ_ALL.push(...W6_LIFE, ...W6_VIS, ...W6_RARE);
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_ALL, so older aquarium links still read correctly.
   const RETIRED = new Set(["whale", "shark", "frogfish", "blenny", "aurora"]);
@@ -231,12 +248,12 @@
   // Only a few oceans hold something rare, and every rare thing has its own waters.
   const RARE_RATE = 0.15;
   const RARES_BY_WATER = {
-    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall", "ghostsub"],
-    noordzee: ["ghost", "ghostdiver", "ghostsub"], kelpwoud: ["mermaid", "serpent"], ijszee: ["mobydick", "ghostsub"],
-    mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall"],
+    rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall", "ghostsub", "leviathan"],
+    noordzee: ["ghost", "ghostdiver", "ghostsub", "lighthouse"], kelpwoud: ["mermaid", "serpent", "lighthouse"], ijszee: ["mobydick", "ghostsub", "lighthouse"],
+    mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall", "leviathan"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
-    "eelmigration", "quake", "crabmarch", "bubblerings"];
+    "eelmigration", "quake", "crabmarch", "bubblerings", "ghostnet", "waterspout", "whirlpool", "sardinerun", "meteor", "eclipse"];
   const NAMES = {
     "w:rif": "Koraalrif", "w:diepzee": "Diepzee", "w:noordzee": "Noordzee", "w:kelpwoud": "Kelpwoud", "w:ijszee": "IJszee",
     "w:mangrove": "Mangrove", "w:grot": "Onderwatergrot",
@@ -274,6 +291,7 @@
     giant: "Reuzeninktvis", baitball: "Bait-ball", spawning: "Paaiende vissen", coralspawn: "Koraalpaai",
     storm: "Onweer", eruption: "Vulkaanuitbarsting", task: "Alle zeepaardjes gevonden",
     mermaid: "Zeemeermin", kraken: "Kraken", ghost: "Spookschip", whalefall: "Walvisval",
+    xmastree: "Kerstboomwormpjes", coconut: "Kokosnootoctopus", moorish: "Wimpelvis", angelfish: "Keizersvis", crownthorns: "Doornenkroon", hawksbill: "Karetschildpad", horseshoe: "Degenkrab", dugong: "Doejong", mudskipper: "Slijkspringer", puffin: "Papegaaiduiker", gannet: "Jan-van-gent", porpoise: "Bruinvis", flatfish: "Schol", cod: "Kabeljauw", wolffish: "Zeewolf", garibaldi: "Garibaldi", leopardshark: "Luipaardhaai", manowar: "Portugees oorlogsschip", glaucus: "Blauwe zeedraak", icefish: "IJsvis", leopardseal: "Luipaardrob", krill: "Krill", vampire: "Vampierinktvis", dumbo: "Dumbo-octopus", viperfish: "Addervis", gulper: "Pelikaanaal", hatchet: "Bijlvisjes", herring: "Haring", greenland: "Groenlandse haai", leatherback: "Lederschildpad", leviathan: "Leviathan", lighthouse: "Spookvuurtoren", ghostnet: "Spooknet", waterspout: "Waterhoos", whirlpool: "Draaikolk", sardinerun: "Sardinetrek", meteor: "Vallende sterren", eclipse: "Maansverduistering",
   };
   // The logbook in a sensible order: each group is split into small families, from warm to cold, from fish to mammals.
   const LOG_SUBS = {
@@ -284,29 +302,30 @@
     ],
     "Dieren": [
       ["Vissen", "Fish", ["fish", "lantern", "clown", "cleaners", "grouper", "archer", "parrotfish", "boxfish", "puffer", "lionfish", "flyingfish", "angler", "sargassumfish", "moray", "eels",
-        "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish"]],
-      ["Haaien en grote vissen", "Sharks and big fish", ["hammerhead", "whaleshark", "thresher", "whitetip", "greatwhite", "swordfish", "marlin", "tuna", "barracuda", "sunfish", "coelacanth"]],
+        "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish",
+        "moorish", "angelfish", "garibaldi", "mudskipper", "herring", "cod", "flatfish", "wolffish", "icefish", "hatchet", "viperfish", "gulper"]],
+      ["Haaien en grote vissen", "Sharks and big fish", ["hammerhead", "whaleshark", "thresher", "whitetip", "greatwhite", "swordfish", "marlin", "tuna", "barracuda", "sunfish", "coelacanth", "leopardshark", "greenland"]],
       ["Roggen", "Rays", ["ray", "manta", "eagleray", "electricray", "guitarfish", "sawfish"]],
       ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
-      ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb"]],
-      ["Inktvissen", "Cephalopods", ["octopus", "mimic", "squid", "giant", "cuttlefish", "nautilus"]],
-      ["Schaaldieren", "Crustaceans", ["crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod"]],
-      ["Zeesterren, egels en slakken", "Starfish, urchins and slugs", ["starfish", "brittlestar", "featherstar", "urchin", "sanddollar", "seacucumber", "slugs"]],
+      ["Kwallen", "Jellies", ["jelly", "cassiopea", "comb", "manowar"]],
+      ["Inktvissen", "Cephalopods", ["octopus", "coconut", "mimic", "squid", "giant", "cuttlefish", "nautilus", "vampire", "dumbo"]],
+      ["Schaaldieren en degenkrab", "Crustaceans and horseshoe crab", ["krill", "crab", "hermit", "lobster", "spidercrab", "mantis", "pistol", "isopod", "horseshoe"]],
+      ["Zeesterren, egels, slakken en wormen", "Starfish, urchins, slugs and worms", ["starfish", "crownthorns", "brittlestar", "featherstar", "urchin", "sanddollar", "seacucumber", "slugs", "glaucus", "xmastree"]],
       ["Koralen, sponzen en schelpen", "Corals, sponges and clams", ["coral", "anemone", "sponges", "clam"]],
-      ["Reptielen", "Reptiles", ["turtle", "crocodile", "seasnake", "seakrait", "iguana"]],
-      ["Walvissen en dolfijnen", "Whales and dolphins", ["dolphins", "orca", "falsekiller", "pilotwhale", "beluga", "narwhal", "humpback", "spermwhale", "finwhale", "bluewhale"]],
-      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "walrus", "manatee", "polarbear", "penguins", "albatross", "cormorant", "pelican"]],
+      ["Reptielen", "Reptiles", ["turtle", "hawksbill", "leatherback", "crocodile", "seasnake", "seakrait", "iguana"]],
+      ["Walvissen en dolfijnen", "Whales and dolphins", ["porpoise", "dolphins", "orca", "falsekiller", "pilotwhale", "beluga", "narwhal", "humpback", "spermwhale", "finwhale", "bluewhale"]],
+      ["Zoogdieren en vogels", "Mammals and birds", ["otters", "seal", "sealion", "leopardseal", "walrus", "manatee", "dugong", "polarbear", "penguins", "puffin", "gannet", "albatross", "cormorant", "pelican"]],
     ],
     "Momenten": [
-      ["Weer en aarde", "Weather and earth", ["storm", "quake", "eruption", "glowtide", "aurora"]],
-      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings"]],
+      ["Weer en aarde", "Weather and earth", ["storm", "waterspout", "quake", "eruption", "whirlpool", "glowtide", "meteor", "eclipse", "aurora"]],
+      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings", "sardinerun"]],
       ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings"]],
       ["Speurtochten", "Quests", ["treasure", "task"]],
-      ["Mensen op zee", "People at sea", ["sub"]],
+      ["Mensen op zee", "People at sea", ["sub", "ghostnet"]],
     ],
     "Zeldzaam": [
-      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick"]],
-      ["Spoken", "Ghosts", ["ghost", "ghostdiver", "ghostsub"]],
+      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick", "leviathan"]],
+      ["Spoken", "Ghosts", ["ghost", "ghostdiver", "ghostsub", "lighthouse"]],
       ["Wonderen", "Wonders", ["goldpearl", "whalefall"]],
     ],
   };
@@ -342,6 +361,7 @@
     electricray: 150, guitarfish: 150, sanddollar: 600, brittlestar: 600, seacucumber: 450, featherstar: 300, seasnake: 150, seakrait: 150, iguana: 150,
     albatross: 150, cormorant: 150, pelican: 150, walrus: 150, polarbear: 150,
     thresher: 450, whitetip: 450, greatwhite: 450, marlin: 450, tuna: 450, barracuda: 450, coelacanth: 300, sawfish: 450, bluewhale: 450, finwhale: 450, pilotwhale: 450, falsekiller: 450,
+    xmastree: 450, coconut: 150, moorish: 150, angelfish: 150, crownthorns: 300, hawksbill: 300, horseshoe: 150, dugong: 300, mudskipper: 300, puffin: 150, gannet: 150, porpoise: 150, flatfish: 300, cod: 150, wolffish: 150, garibaldi: 150, leopardshark: 150, manowar: 150, glaucus: 150, icefish: 150, leopardseal: 150, krill: 150, vampire: 150, dumbo: 150, viperfish: 150, gulper: 150, hatchet: 450, herring: 450, greenland: 450, leatherback: 450, leviathan: 100, lighthouse: 100,
   };
   // shinies are twice as easy to find as the base table above (it used to be five times: they had become too common)
   const SHINY_EASE = 2;
@@ -355,9 +375,11 @@
     "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub",
     "hatchlings", "eelmigration", "giant", "mimic",
     "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "scorpionfish", "stonefish", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear",
-    "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller"];
+    "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller",
+    "xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet", "herring", "greenland", "leatherback", "leviathan", "lighthouse"];
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeenaaktslak", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
-    hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis" };
+    hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis",
+    xmastree: "kerstboomwormpje", hatchet: "bijlvisje", herring: "haring" };
   for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
   // the shinies follow the same order as the animals, visitors, moments and rare things
   {
@@ -409,6 +431,7 @@
     giant: "Giant squid", baitball: "Bait ball", spawning: "Spawning fish", coralspawn: "Coral spawning",
     storm: "Thunderstorm", eruption: "Volcanic eruption", task: "All seahorses found",
     mermaid: "Mermaid", kraken: "Kraken", ghost: "Ghost ship", whalefall: "Whale fall",
+    xmastree: "Christmas tree worms", coconut: "Coconut octopus", moorish: "Moorish idol", angelfish: "Emperor angelfish", crownthorns: "Crown-of-thorns starfish", hawksbill: "Hawksbill turtle", horseshoe: "Horseshoe crab", dugong: "Dugong", mudskipper: "Mudskipper", puffin: "Puffin", gannet: "Northern gannet", porpoise: "Harbour porpoise", flatfish: "Plaice", cod: "Cod", wolffish: "Atlantic wolffish", garibaldi: "Garibaldi", leopardshark: "Leopard shark", manowar: "Portuguese man o' war", glaucus: "Blue dragon", icefish: "Icefish", leopardseal: "Leopard seal", krill: "Krill", vampire: "Vampire squid", dumbo: "Dumbo octopus", viperfish: "Viperfish", gulper: "Pelican eel", hatchet: "Hatchetfish", herring: "Herring", greenland: "Greenland shark", leatherback: "Leatherback turtle", leviathan: "Leviathan", lighthouse: "Ghost lighthouse", ghostnet: "Ghost net", waterspout: "Waterspout", whirlpool: "Whirlpool", sardinerun: "Sardine run", meteor: "Shooting stars", eclipse: "Lunar eclipse",
   };
   const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea slug", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
     hatchlings: "turtle hatchling", eelmigration: "glass eel", giant: "giant squid" };
@@ -655,4 +678,5 @@
     spermwhale: "Physeter macrocephalus", finwhale: "Balaenoptera physalus", bluewhale: "Balaenoptera musculus", otters: "Enhydra lutris", seal: "Phoca vitulina",
     sealion: "Zalophus californianus", walrus: "Odobenus rosmarus", manatee: "Trichechus manatus", polarbear: "Ursus maritimus", penguins: "Aptenodytes forsteri",
     albatross: "Diomedea exulans", cormorant: "Phalacrocorax carbo", pelican: "Pelecanus onocrotalus",
+    xmastree: "Spirobranchus giganteus", coconut: "Amphioctopus marginatus", moorish: "Zanclus cornutus", angelfish: "Pomacanthus imperator", crownthorns: "Acanthaster planci", hawksbill: "Eretmochelys imbricata", horseshoe: "Limulus polyphemus", dugong: "Dugong dugon", mudskipper: "Boleophthalmus boddarti", puffin: "Fratercula arctica", gannet: "Morus bassanus", porpoise: "Phocoena phocoena", flatfish: "Pleuronectes platessa", cod: "Gadus morhua", wolffish: "Anarhichas lupus", garibaldi: "Hypsypops rubicundus", leopardshark: "Triakis semifasciata", manowar: "Physalia physalis", glaucus: "Glaucus atlanticus", icefish: "Chaenocephalus aceratus", leopardseal: "Hydrurga leptonyx", krill: "Euphausia superba", vampire: "Vampyroteuthis infernalis", dumbo: "Grimpoteuthis", viperfish: "Chauliodus sloani", gulper: "Eurypharynx pelecanoides", hatchet: "Argyropelecus", herring: "Clupea harengus", greenland: "Somniosus microcephalus", leatherback: "Dermochelys coriacea",
   };

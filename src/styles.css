@@ -357,6 +357,13 @@
   .nb-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(40, 25, 5, 0.45), rgba(40, 25, 5, 0) 70%); opacity: 0; }
   /* one animal's page */
   .nb-detail { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .nb-dnav { margin-top: auto; display: flex; justify-content: space-between; gap: 8px; padding-top: 6px; }
+  .nb-dnav button { flex: 0 1 auto; min-width: 0; max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nb-slide-l { animation: nbSlideL 0.28s ease-out; }
+  .nb-slide-r { animation: nbSlideR 0.28s ease-out; }
+  @keyframes nbSlideL { from { opacity: 0.3; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+  @keyframes nbSlideR { from { opacity: 0.3; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .nb-slide-l, .nb-slide-r { animation: none; } }
   .nb-detail .dtabs { background: rgba(80, 70, 50, 0.07); border-color: rgba(80, 70, 50, 0.25); }
   .nb-detail .dtabs button { color: var(--ink-soft); }
   .nb-detail .dtabs button:hover { color: var(--ink); background: rgba(41, 80, 122, 0.08); }

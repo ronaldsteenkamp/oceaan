@@ -27,7 +27,8 @@
       f.x += (f.sp + current * 0.2) * u * k;
       if (f.x - f.w / 2 > W + 20) f.x = -f.w / 2 - 10;
       if (f.x + f.w / 2 < -20) f.x = W + f.w / 2;
-      const top = waveY(f.x) - 4 * u;
+      if (f.dip) f.dip *= Math.pow(0.95, k);
+      const top = waveY(f.x) - 4 * u + (f.dip || 0);
       const g = ctx.createLinearGradient(0, top, 0, top + f.d);
       g.addColorStop(0, "rgba(240,250,255,0.97)");
       g.addColorStop(1, "rgba(150,200,225,0.9)");

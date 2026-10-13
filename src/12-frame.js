@@ -75,6 +75,7 @@
     updateTurnover(dtSec);
     updateMore(k, dtSec);
     updateWave2(k, dtSec);
+    updateWave6(k, dtSec);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = bgGrad;
@@ -85,6 +86,7 @@
     const v = S.visitor;
     shinyDraw(S.megalodon, () => drawMegalodon(k));
     shinyDraw(S.moby, () => drawMoby(k));
+    shinyDraw(S.leviathan, () => drawLeviathan(k));
 
     drawSnow(k);
     drawKelp(S.kelpBack, 0.7);
@@ -131,6 +133,7 @@
     shinyDraw(S.serpent, () => drawSerpent(k));
     drawSongRings(k);
     drawWave2Front(k);
+    drawWave6Front(k);
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     if (v && v.type === "humpback") shinyDraw(v, () => drawHumpback(v));
     updateAndDrawDiver(k);
@@ -149,6 +152,7 @@
     drawWave2Top(k);
     drawCaveRoof();
     drawSurface(k, dtSec);
+    drawIceWalkers();
     updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
@@ -166,6 +170,7 @@
     drawLights(k);
     drawGlowtide(k);
     drawAurora();
+    drawWave6Sky(k);
     if (S.storm.flash > 0) { ctx.fillStyle = `rgba(225,235,255,${S.storm.flash * 0.4})`; ctx.fillRect(0, 0, W, H); }
     drawMap(k);
 

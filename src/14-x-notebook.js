@@ -246,14 +246,47 @@
     else { left.innerHTML = `<div class="nb-detail">${photoHTML}</div>`; right.innerHTML = `<div class="nb-detail">${notesHTML.back}${notesHTML.body}</div>`; }
   }
 
-  // leafing with a swipe on a touch screen
+  // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.
+  function bookOrder() {
+    const shinyMode = logFilter === "shiny";
+    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    return ["Dieren", "Momenten", "Zeldzaam", "Wateren"].flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
+  }
+  function detailNeighbours(key) {
+    const base = key.replace("shiny:", ""), order = bookOrder(), i = order.indexOf(base);
+    if (i < 0 || order.length < 2) return null;
+    // on the shiny tab you stay on the shiny tab, wherever there is one
+    const pick = k => key.startsWith("shiny:") && SHINY_KEYS.includes(k) ? "shiny:" + k : k;
+    return [pick(order[(i - 1 + order.length) % order.length]), pick(order[(i + 1) % order.length])];
+  }
+  function detailNavHTML(key) {
+    const nb = detailNeighbours(key);
+    if (!nb) return "";
+    const label = k => nm(k);
+    return `<div class="nb-dnav"><button type="button" class="nb-back" data-dnav="-1" aria-label="${L("Vorige", "Previous")}: ${label(nb[0])}">‹ ${label(nb[0])}</button>` +
+      `<button type="button" class="nb-back" data-dnav="1" aria-label="${L("Volgende", "Next")}: ${label(nb[1])}">${label(nb[1])} ›</button></div>`;
+  }
+  function detailStep(d) {
+    if (!detailOpen || !detailKey) return;
+    const nb = detailNeighbours(detailKey);
+    if (!nb) return;
+    sfxPage();
+    openDetail(nb[d > 0 ? 1 : 0], true, d);
+    const page = panelBody.querySelector(".nb-spread");
+    if (page) { page.classList.remove("nb-slide-l", "nb-slide-r"); void page.offsetWidth; page.classList.add(d > 0 ? "nb-slide-l" : "nb-slide-r"); }
+  }
+
+  // leafing with a swipe on a touch screen, through the book or from one animal to the next
   let swipe = null;
-  panelBody.addEventListener("pointerdown", e => { if (panelTab === "log" && !detailOpen && e.target.closest(".nb-spread")) swipe = { x: e.clientX, y: e.clientY }; });
+  panelBody.addEventListener("pointerdown", e => {
+    if (panelTab !== "log") return;
+    if ((!detailOpen && e.target.closest(".nb-spread")) || (detailKey && e.target.closest(".nb-detail"))) swipe = { x: e.clientX, y: e.clientY };
+  });
   panelBody.addEventListener("pointerup", e => {
     if (!swipe) return;
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
     swipe = null;
-    if (Math.abs(dx) > 50 && Math.abs(dy) < 70) turnBook(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 50 && Math.abs(dy) < 70) { if (detailKey) detailStep(dx < 0 ? 1 : -1); else turnBook(dx < 0 ? 1 : -1); }
   });
   panelBody.addEventListener("click", e => {
     const b = e.target.closest("button");

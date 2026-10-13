@@ -757,13 +757,34 @@
     pilotwhale: { size: () => (110 + Math.random() * 30) * u, speed: 1.1, draw: drawPilotGroup, thumb: 48 },
     falsekiller: { size: () => (120 + Math.random() * 30) * u, speed: 1.4, draw: drawFalseKiller, thumb: 52 },
   };
-  for (const key in FAUNA) FAUNA[key].layer = FAUNA[key].kind === "floor" || FAUNA[key].kind === "glide" ? "floor" : FAUNA[key].kind === "swim" ? "mid" : "top";
-  for (const key in FAUNA_VIS) {
-    const F = FAUNA_VIS[key];
-    VISITOR_DRAW[key] = v => F.draw(v.x, v.y + v.yOff, v.dir, v.size, v.ph);
-    VISITOR_SPEED[key] = F.speed;
-    VISITOR_PHASE[key] = 0.03;
-    MORE_SIZE[key] = F.size;
+  // Hooks a table of animals and a table of visitors into the game: layers, visitor drawing, and the logbook pictures.
+  function hookFauna(fauna, visitors) {
+    for (const key in fauna) fauna[key].layer = fauna[key].kind === "floor" || fauna[key].kind === "glide" ? "floor" : fauna[key].kind === "swim" ? "mid" : "top";
+    for (const key in visitors) {
+      const F = visitors[key];
+      VISITOR_DRAW[key] = v => F.draw(v.x, v.y + v.yOff, v.dir, v.size, v.ph);
+      VISITOR_SPEED[key] = F.speed;
+      VISITOR_PHASE[key] = 0.03;
+      MORE_SIZE[key] = F.size;
+    }
+    for (const key in fauna) {
+      const F = fauna[key];
+      THUMBS[key] = () => {
+        const o = { key, x: 60, dir: 1, s: F.thumb, ph: 1.2, under: 0 };
+        if (F.kind === "floor") o.cy = sandY(60) + 4;
+        else if (F.kind === "glide") o.cy = 54;
+        else if (F.kind === "surface" || F.kind === "dive") {
+          o.cy = 40;
+          ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.moveTo(0, 40); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 40 + Math.sin(x * 0.15) * 1.5); ctx.stroke();
+        } else o.cy = 42;
+        F.draw(o);
+      };
+    }
+    for (const key in visitors) {
+      const F = visitors[key];
+      THUMBS[key] = () => F.draw(F.thumbX || 60, 44, 1, F.thumb, 0.5);
+    }
   }
 
   function buildFauna(s, Lf, remap) {
@@ -797,6 +818,8 @@
   }
 
   function moveFauna(f, F, k) {
+    if (F.move) { F.move(f, F, k); return; }
+    if (F.react) F.react(f, F, k);
     f.ph += 0.05 * k;
     const edge = 30 * u;
     if (F.kind === "floor") {
@@ -849,24 +872,8 @@
   }
 
   // ---- logbook pictures -------------------------------------------------------
-  for (const key in FAUNA) {
-    const F = FAUNA[key];
-    THUMBS[key] = () => {
-      const o = { key, x: 60, dir: 1, s: F.thumb, ph: 1.2, under: 0 };
-      if (F.kind === "floor") o.cy = sandY(60) + 4;
-      else if (F.kind === "glide") o.cy = 54;
-      else if (F.kind === "surface" || F.kind === "dive") {
-        o.cy = 40;
-        ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1.2;
-        ctx.beginPath(); ctx.moveTo(0, 40); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 40 + Math.sin(x * 0.15) * 1.5); ctx.stroke();
-      } else o.cy = 42;
-      F.draw(o);
-    };
-  }
-  for (const key in FAUNA_VIS) {
-    const F = FAUNA_VIS[key];
-    THUMBS[key] = () => F.draw(key === "tuna" || key === "pilotwhale" || key === "falsekiller" ? 78 : 60, 44, 1, F.thumb, 0.5);
-  }
+  for (const key of ["tuna", "pilotwhale", "falsekiller"]) FAUNA_VIS[key].thumbX = 78;
+  hookFauna(FAUNA, FAUNA_VIS);
   for (const key of ["scorpionfish", "stonefish", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
   Object.assign(BASE_HUE, {
     triggerfish: 40, wrasse: 150, surgeonfish: 225, mandarinfish: 25, needlefish: 195, seasnake: 50, seakrait: 215, electricray: 25, guitarfish: 35, iguana: 190,

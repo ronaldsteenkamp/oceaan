@@ -2,3 +2,5 @@ checks/
 __pycache__/
 .claude/
 _animtest.html
+_t*.html
+_live.html

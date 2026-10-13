@@ -155,6 +155,44 @@
     kraken: "De Kraken komt uit Noorse zeemansverhalen. Waarschijnlijk is het verhaal geïnspireerd door de echte reuzeninktvis.",
     ghost: "De Vliegende Hollander is het beroemdste spookschip uit de zeemansverhalen.",
     whalefall: "Een dode walvis op de bodem kan tientallen jaren lang voedsel zijn voor honderden soorten dieren.",
+    xmastree: "Kerstboomwormpjes zijn kokerwormen. Bij het minste gevaar trekken ze hun kroontjes in een flits terug in hun koker.",
+    coconut: "De kokosnootoctopus sjouwt halve kokosnoten en schelpen mee en kruipt erin als hij schrikt. Hij gebruikt ze dus als gereedschap.",
+    moorish: "De wimpelvis heeft een lange witte sliert aan zijn rugvin. Hij is de enige soort in zijn hele familie.",
+    angelfish: "Een jonge keizersvis ziet er heel anders uit: donkerblauw met witte kringen. Pas als hij groot is, krijgt hij zijn gele strepen.",
+    crownthorns: "De doornenkroon is een zeester die koraal eet. Hij duwt zijn maag naar buiten en verteert het koraal ter plekke.",
+    hawksbill: "De karetschildpad dankt zijn naam aan zijn smalle, gebogen bek. Daarmee haalt hij sponzen uit spleten in het koraal.",
+    horseshoe: "Degenkrabben bestaan al meer dan 400 miljoen jaar, veel langer dan de dinosauriërs. Hun bloed is blauw.",
+    dugong: "De doejong is een zeekoe die vooral zeegras eet. Hij heeft een staart als een walvis; de lamantijn heeft een ronde staart.",
+    mudskipper: "De slijkspringer is een vis die een groot deel van de tijd buiten het water leeft. Hij hupt over de modder op zijn vinnen.",
+    puffin: "Een papegaaiduiker kan wel tien visjes tegelijk in zijn snavel houden, dwars naast elkaar, en soms nog veel meer.",
+    gannet: "Een jan-van-gent duikt met bijna 100 kilometer per uur het water in. Luchtzakjes onder zijn huid vangen de klap op.",
+    porpoise: "De bruinvis is de kleinste walvis van de Noordzee en ook de walvis die je daar het vaakst ziet. Hij is schuw en laat zich maar kort zien.",
+    flatfish: "Een jonge schol zwemt rechtop, met een oog aan elke kant. Als hij groeit, schuift één oog naar de andere kant en gaat hij plat op de bodem liggen.",
+    cod: "Een grote kabeljauw kan miljoenen eitjes per jaar leggen. Toch is hij door overbevissing veel zeldzamer geworden.",
+    wolffish: "De zeewolf heeft enorme tanden waarmee hij krabben, schelpen en zee-egels kraakt. Elk jaar krijgt hij nieuwe tanden.",
+    garibaldi: "De garibaldi is fel oranje en verdedigt zijn stukje kelpwoud tegen indringers, zelfs tegen duikers.",
+    leopardshark: "De luipaardhaai is ongevaarlijk voor mensen. Hij zwemt vaak in groepjes door ondiepe baaien.",
+    manowar: "Het Portugees oorlogsschip lijkt op een kwal, maar is een kolonie van heel veel kleine diertjes die samenwerken.",
+    glaucus: "De blauwe zeedraak is een slakje van een paar centimeter. Hij eet Portugese oorlogsschepen en bewaart hun gif voor zichzelf.",
+    icefish: "Het bloed van een ijsvis is doorzichtig, omdat er geen rode kleurstof in zit. Ze zijn de enige gewervelde dieren zonder.",
+    leopardseal: "De luipaardrob is een van de grootste jagers rond de Zuidpool. Hij eet pinguïns, vis en krill.",
+    krill: "Krill zijn kleine garnaaltjes, maar samen wegen ze misschien wel meer dan alle mensen op aarde bij elkaar.",
+    vampire: "Ondanks zijn naam zuigt de vampierinktvis geen bloed. Hij eet de 'zeesneeuw' van dode deeltjes die naar de diepte dwarrelt.",
+    dumbo: "De dumbo-octopus zwemt door met zijn oorvormige vinnen te klapperen, net als Dumbo de olifant met zijn oren.",
+    viperfish: "De tanden van de addervis zijn zo lang dat ze niet in zijn bek passen. Ze steken voor zijn ogen uit.",
+    gulper: "De pelikaanaal heeft een enorme bek die opengaat als een zak, en een maag die flink kan uitrekken.",
+    hatchet: "Bijlvisjes hebben lichtjes op hun buik. Zo valt hun silhouet weg tegen het zwakke licht dat van boven komt.",
+    herring: "Haring zwemt in scholen van soms miljoenen vissen. Haringen maken geluid door luchtbelletjes uit hun achterste te laten.",
+    greenland: "De Groenlandse haai kan wel 400 jaar oud worden. Sommige die nu rondzwemmen, waren al geboren toen Rembrandt nog leefde.",
+    leatherback: "De lederschildpad is de grootste schildpad ter wereld en kan meer dan 600 kilo wegen. Hij heeft geen hard schild, maar een leerachtige huid.",
+    ghostnet: "Verloren visnetten, spooknetten, drijven soms jaren door de zee en blijven al die tijd dieren vangen. Duikers ruimen ze op.",
+    waterspout: "Een waterhoos is een kleine tornado boven zee. Aan de voet wervelt het zeewater op tot een wolk van druppels.",
+    whirlpool: "De Maelstrom bij de Lofoten in Noorwegen is een van de sterkste draaikolken ter wereld. Hij ontstaat door het getij tussen de eilanden.",
+    sardinerun: "Elke winter trekken miljarden sardines langs de kust van Zuid-Afrika. Dolfijnen, haaien, walvissen en jan-van-genten komen erop af.",
+    meteor: "Een vallende ster is geen ster, maar een steentje uit de ruimte dat verbrandt in de lucht. De meeste zijn niet groter dan een zandkorrel.",
+    eclipse: "Bij een maansverduistering schuift de aarde tussen de zon en de maan. De maan wordt dan niet zwart, maar donker koperrood.",
+    leviathan: "De Leviathan is een zeemonster uit eeuwenoude verhalen, zo groot dat het de diepe zee kon laten koken als een pot.",
+    lighthouse: "Zeelieden vertellen over een vuurtoren die 's nachts schijnt op een plek waar helemaal geen land is. Wie het licht volgt, vindt nooit de kust.",
   };
 
   const FACTS_EN = {
@@ -313,12 +351,50 @@
     kraken: "The Kraken comes from Norwegian sea tales. The story was probably inspired by the real giant squid.",
     ghost: "The Flying Dutchman is the most famous ghost ship in sea tales.",
     whalefall: "A dead whale on the seabed can feed hundreds of kinds of animals for decades.",
+    xmastree: "Christmas tree worms are tube worms. At the slightest danger they pull their little crowns back into their tube in a flash.",
+    coconut: "The coconut octopus carries coconut halves and shells around and hides inside them when it is startled. So it uses them as tools.",
+    moorish: "The Moorish idol has a long white streamer on its dorsal fin. It is the only species in its whole family.",
+    angelfish: "A young emperor angelfish looks completely different: dark blue with white rings. Only when it is grown does it get its yellow stripes.",
+    crownthorns: "The crown-of-thorns is a starfish that eats coral. It pushes its stomach out and digests the coral on the spot.",
+    hawksbill: "The hawksbill turtle is named after its narrow, hooked beak. It uses it to pull sponges out of cracks in the coral.",
+    horseshoe: "Horseshoe crabs have been around for more than 400 million years, far longer than the dinosaurs. Their blood is blue.",
+    dugong: "The dugong is a sea cow that eats mostly seagrass. It has a tail like a whale's; the manatee has a round tail.",
+    mudskipper: "The mudskipper is a fish that spends much of its time out of the water. It hops over the mud on its fins.",
+    puffin: "A puffin can hold ten little fish at once in its bill, crosswise side by side, and sometimes many more.",
+    gannet: "A gannet dives into the water at almost 100 kilometres an hour. Air sacs under its skin soften the blow.",
+    porpoise: "The harbour porpoise is the smallest whale in the North Sea and also the one you see there most often. It is shy and only shows itself briefly.",
+    flatfish: "A young plaice swims upright, with an eye on each side. As it grows, one eye moves to the other side and it lies down flat on the seabed.",
+    cod: "A big cod can lay millions of eggs a year. Even so, overfishing has made it much rarer.",
+    wolffish: "The wolffish has huge teeth that crack crabs, shells and sea urchins. It grows new teeth every year.",
+    garibaldi: "The garibaldi is bright orange and defends its patch of kelp forest against intruders, even against divers.",
+    leopardshark: "The leopard shark is harmless to people. It often swims in small groups through shallow bays.",
+    manowar: "The Portuguese man o' war looks like a jellyfish, but it is a colony of many small animals working together.",
+    glaucus: "The blue dragon is a sea slug just a few centimetres long. It eats Portuguese men o' war and keeps their venom for itself.",
+    icefish: "An icefish's blood is see-through, because it has no red colouring in it. They are the only vertebrates without it.",
+    leopardseal: "The leopard seal is one of the biggest hunters around the South Pole. It eats penguins, fish and krill.",
+    krill: "Krill are tiny shrimp-like animals, but together they may well weigh more than all the people on Earth.",
+    vampire: "Despite its name, the vampire squid does not suck blood. It eats the 'marine snow' of dead particles drifting down into the deep.",
+    dumbo: "The dumbo octopus swims by flapping its ear-shaped fins, just like Dumbo the elephant with his ears.",
+    viperfish: "The viperfish's teeth are so long that they do not fit in its mouth. They stick out in front of its eyes.",
+    gulper: "The pelican eel has an enormous mouth that opens like a bag, and a stomach that can stretch a long way.",
+    hatchet: "Hatchetfish have lights on their bellies. That way their outline disappears against the faint light coming from above.",
+    herring: "Herring swim in schools of sometimes millions of fish. Herring make sounds by letting little air bubbles out of their bottoms.",
+    greenland: "The Greenland shark can live for 400 years. Some of the ones swimming around today were already born while Rembrandt was still alive.",
+    leatherback: "The leatherback is the biggest turtle in the world and can weigh more than 600 kilos. It has no hard shell, but leathery skin.",
+    ghostnet: "Lost fishing nets, ghost nets, sometimes drift through the sea for years and keep catching animals all that time. Divers clean them up.",
+    waterspout: "A waterspout is a small tornado over the sea. At its foot the seawater whirls up into a cloud of spray.",
+    whirlpool: "The Maelstrom off the Lofoten islands in Norway is one of the strongest whirlpools in the world. The tide between the islands causes it.",
+    sardinerun: "Every winter billions of sardines travel along the coast of South Africa. Dolphins, sharks, whales and gannets come to feast.",
+    meteor: "A shooting star is not a star, but a little stone from space burning up in the air. Most are no bigger than a grain of sand.",
+    eclipse: "In a lunar eclipse the Earth moves between the Sun and the Moon. The Moon does not turn black, but a deep copper red.",
+    leviathan: "The Leviathan is a sea monster from age-old stories, so big that it could make the deep sea boil like a pot.",
+    lighthouse: "Sailors tell of a lighthouse that shines at night in a place where there is no land at all. Whoever follows the light never finds the coast.",
   };
 
-  let detailOpen = false, logScroll = 0;
-  function openDetail(key, sameAnimal) {
+  let detailOpen = false, logScroll = 0, detailKey = null;
+  function openDetail(key, sameAnimal, step) {
     if (!sameAnimal) logScroll = panelBody.scrollTop;
-    detailOpen = true;
+    detailOpen = true; detailKey = key;
     const base = key.startsWith("shiny:") ? key.slice(6) : key, e = logbook.get(key);
     const facts = LANG === "en" ? FACTS_EN : FACTS;
     const fact = key.startsWith("shiny:") ? L("Een shiny is een zeldzame kleurvariant. ", "A shiny is a rare colour variant. ") + (facts[base] || "") : facts[key] || "";
@@ -344,11 +420,11 @@
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
           ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-        </dl>`,
+        </dl>${detailNavHTML(key)}`,
     });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
-    (tabBtn || document.getElementById("detailBack")).focus();
+    (step && panelBody.querySelector(`[data-dnav="${step > 0 ? 1 : -1}"]`) || tabBtn || document.getElementById("detailBack")).focus();
   }
   function shinyOdds(base) {
     const n = SHINY_N[base] || 200;
@@ -356,7 +432,7 @@
       : L(`Ongeveer 1 op de ${n} van deze dieren is shiny`, `About 1 in ${n} of these animals is shiny`);
   }
   function closeDetail() {
-    detailOpen = false;
+    detailOpen = false; detailKey = null;
     renderPanel();
     panelBody.scrollTop = logScroll;
   }
@@ -379,6 +455,13 @@
     quake: "heel af en toe, in elk water", crabmarch: "steekt af en toe de bodem over, als er geen afgrond is",
     bubblerings: "dolfijnen blazen ze soms als ze langszwemmen",
     sargassumfish: "verstopt zich in drijvend sargassumwier",
+    ghostnet: "drijft af en toe voorbij met een dier erin; zwem er met de duiker naartoe om het dier te bevrijden",
+    waterspout: "soms tijdens onweer, in wateren met een oppervlak",
+    whirlpool: "af en toe in de Noordzee, het kelpwoud en de IJszee",
+    sardinerun: "trekt af en toe voorbij in het kelpwoud en de Sargassozee",
+    meteor: "op een heldere nacht, in wateren met een oppervlak",
+    eclipse: "heel af en toe, op een nacht met volle maan",
+    polarbear: "zwemt in de IJszee, klimt soms op een ijsschots en springt er weer af",
   };
   function hintFor(key) {
     if (key.startsWith("shiny:")) {
@@ -419,6 +502,13 @@
     quake: "very now and then, in any water", crabmarch: "crosses the floor now and then, where there is no abyss",
     bubblerings: "dolphins sometimes blow them as they swim past",
     sargassumfish: "hides in floating sargassum weed",
+    ghostnet: "drifts by now and then with an animal caught in it; swim the diver up to it to set the animal free",
+    waterspout: "sometimes during a storm, in waters with a surface",
+    whirlpool: "now and then in the North Sea, the kelp forest and the Arctic Sea",
+    sardinerun: "passes by now and then in the kelp forest and the Sargasso Sea",
+    meteor: "on a clear night, in waters with a surface",
+    eclipse: "very now and then, on a night with a full moon",
+    polarbear: "swims in the Arctic Sea, sometimes climbs onto an ice floe and jumps off again",
   };
 
   // "Maken en delen": sharing, settings and your own aquarium on one page.
@@ -522,6 +612,7 @@
     if (b.id === "photoDelete") { document.getElementById("photoDeleteConfirm").hidden = false; b.hidden = true; return; }
     if (b.id === "photoDeleteYes") { album = album.filter(x => x.id !== b.dataset.id); saveAlbum(); closeDetail(); toast(L("Foto verwijderd", "Photo removed")); return; }
     if (b.id === "detailBack") { closeDetail(); return; }
+    if (b.dataset.dnav) { detailStep(Number(b.dataset.dnav)); return; }
     if (b.id === "logExport") { exportLog(); return; }
     if (b.id === "logImport") { document.getElementById("logFile").click(); return; }
     if (b.id === "logReset") {
@@ -646,7 +737,7 @@
     const ph = album.find(x => x.id === id);
     if (!ph) return;
     logScroll = panelBody.scrollTop;
-    detailOpen = true;
+    detailOpen = true; detailKey = null;
     panelEl.classList.remove("book");
     const when = dateText(ph.d);
     panelBody.innerHTML = `

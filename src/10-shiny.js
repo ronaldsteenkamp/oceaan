@@ -49,6 +49,7 @@
     registerWave2Shinies(s, add);
     registerRareShinies(s, add);
     registerFaunaShinies(s, add);
+    registerWave6Shinies(s, add);
     s.shinies = list;
   }
 
@@ -174,6 +175,39 @@
     ghostdiver: pal("#96ffd7>#c8a0ff #cdffeb>#ecdcff #061e20>#1a0830"),
     ghostsub: pal("#9affd8>#ff9a5a #3a8a74>#a83a1a #5ad0a0>#ffc060 #061e20>#2a0a04 #d8fff0>#fff0c8 #e8fff4>#ffe08a"),
     eelmigration: pal("", { body: "#f2c040" }),
+    // the sixth wave
+    xmastree: pal("#a89880>#5a6a8a #8a7a62>#3a4a6a #c8b8a0>#8aa0c8 #6a5a48>#2a3448 #fff8f0>#fff8f0 #c8a868>#e8e8f0", { hue: 48, sat: 1.2 }),
+    coconut: pal("#7a4a26>#e8e0d0 #4a2a12>#b8a888 #e8d8b8>#fff8ec #b8763a>#d85a9a #6a3a18>#8a2a5a #f2d070>#7ae8f0"),
+    moorish: pal("#f4f0e2>#f4f0e2 #18181c>#2a3a8a #f2d030>#5ad0f0 #f08a30>#f2507a"),
+    angelfish: pal("#2a48b8>#1a1a2a #f2d040>#f2f2f8 #141828>#e8a020 #58b0f0>#f2c040 #dfe8ee>#f8e0a0"),
+    crownthorns: pal("#8a3a6a>#2a6ad8 #e05a4a>#f2d040 #f2c060>#f8f8f8"),
+    hawksbill: pal("#6a4a2a>#2a4a5a #e8b048>#8ae8d0 #b8783a>#3a8a8a #4a2a14>#1a3a40 #3a2410>#123034 #e8d8a0>#d8f0e8 #3a2a1a>#1a2a30"),
+    horseshoe: pal("#7a6a3a>#3a5ab8 #4a3e22>#1a2a6a #a8946a>#8ab0f0"),
+    dugong: pal("#8a7a6e>#e8d8e0 #b8aca0>#fff4f8 #6a5c52>#b8a0b0"),
+    mudskipper: pal("#8a7a5a>#3a3a44 #5a4a32>#1c1c24 #5ac0e8>#f2d040 #5a7a9a>#c84a3a #e05a3a>#f2d040 #7ad8f8>#f8f0a0"),
+    puffin: pal("#1a1c20>#f2f0ea #f2f0ea>#2a3a5a #f0602a>#5ad0f0 #56647a>#f2c040 #f2c040>#f05a2a #e05040>#3a8ad8"),
+    gannet: pal("#f2f2ec>#2a2a32 #1e1e22>#f2f2ec #f0d890>#f2702a #a8b4c4>#f2c040 #c8e0f0>#f2d040 #2a2a2e>#e8e8e8"),
+    porpoise: pal("#3e464e>#f2f0ec #d8dcde>#f8e0e4"),
+    flatfish: pal("#8a7050>#3a4a7a #a08868>#5a6a9a #e8783a>#f2d040 #c8b890>#d8e0f0"),
+    cod: pal("#8a8458>#c8502a #6e6a44>#8a2a1a #5e5a38>#6a1a10 #e8e2cc>#f8e0c8 #f0ead0>#f8d0a0 #d8c890>#f2d040"),
+    wolffish: pal("#6a7480>#c8a8d8 #3a424c>#6a3a8a #5a646e>#9a7ab0 #9aa2aa>#f0e0f8 #4a525c>#4a2a5a #c8c0a0>#f2d040"),
+    garibaldi: pal("#f2701e>#2a6ad8 #e05a14>#1a3a9a #f8a050>#7ab8f8 #f8b070>#f2d040"),
+    leopardshark: pal("#8a8676>#3a3a40 #e8e4d8>#e8d8b0 #2e2a26>#f2c040"),
+    manowar: pal("#5a6ae0>#f25a8a #8a5ad8>#f2a03a #6a5ad8>#e85a5a #8a9ae8>#f8b8d0 #b8a8f0>#ffd8e8 #e87ab0>#5ad0f0 #d8c8f8>#fff0f8"),
+    glaucus: pal("#1a3ad8>#d82a8a #8ab8f0>#f8c8e0 #2a5ae8>#a81a6a"),
+    icefish: pal("#dfe8ea>#ffe0c8 #a8b8bc>#e8a878 #3a4a50>#8a3a1a"),
+    leopardseal: pal("#5a626a>#e8e4dc #c8ccd0>#ffffff #2e343a>#8a8a92 #4a5258>#c8c4bc"),
+    krill: pal("#e86a5a>#5ad8f0"),
+    vampire: pal("#5a1424>#1a2a5a #2a0810>#0a1030 #e8c8d0>#c8e0f8 #7ae8ff>#ff8a3a #58d8ff>#ffb040"),
+    dumbo: pal("#f0a888>#a8d8f8 #d8806a>#6aa8e0"),
+    viperfish: pal("#1a2428>#3a1a3a #3a4c58>#7a3a7a #e8eef0>#f2d040 #7ad8ff>#7aff9a #bdf2ff>#d8ffe0 #6ad8ff>#7aff9a #9aa8b0>#e8c0f0"),
+    gulper: pal("#16141a>#3a1a1a #2a1a24>#6a1a1a #ff5a8a>#5af0ff #ff8ab0>#bff8ff #8a96a0>#f2d040"),
+    hatchet: pal("#c8d4dc>#f2d070 #3a4a58>#8a5a10 #9aa8b4>#e8b040 #6ad0ff>#ff7a5a #e8eef2>#fff4d0"),
+    herring: pal("#2e5a6a>#6a2a6a #c8d6de>#f8e0f0"),
+    greenland: pal("#4e4a44>#c8d8e8 #7a766c>#f2f6fa #36322e>#8aa0b8 #e8e0b0>#f25a5a"),
+    leatherback: pal("#1e2630>#3a2a1a #5a6a78>#c8a060 #d8dee2>#f8e8b0 #161c24>#2a1e10 #e8a0a0>#5ad0f0"),
+    leviathan: pal("#0a141c>#2a0a1a #ffd27a>#7affd8"),
+    lighthouse: pal("#dcffe6>#ffc8f0 #e8f8f0>#ffe0f4 #c85a5a>#5a5ac8"),
   };
   // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).
   function shinySwap(hex) {
