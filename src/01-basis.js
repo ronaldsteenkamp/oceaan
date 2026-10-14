@@ -267,7 +267,14 @@
   }
   let logbook = new Map();
   try { logbook = loadLog(JSON.parse(localStorage.getItem(LOG_KEY) || "[]")); } catch (e) {}
-  function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(Object.fromEntries(logbook))); } catch (e) {} }
+  // The logbook matters more than photos: when the browser storage is full, the oldest album photo makes room (see 17).
+  function saveLog() {
+    const data = JSON.stringify(Object.fromEntries(logbook));
+    for (let tries = 0; tries < 30; tries++) {
+      try { localStorage.setItem(LOG_KEY, data); return true; } catch (e) { if (!makeRoomInAlbum()) return false; }
+    }
+    return false;
+  }
 
   let rebuilding = false;
   function seen(key, pos) {
@@ -354,11 +361,16 @@
     tier("m50", "Oceanograaf", "Oceanographer", 50, "elke 15 seconden een nieuwe oceaan", "a new ocean every 15 seconds"),
     tier("m75", "Duikmeester", "Dive master", 75, "elke 7,5 seconden een nieuwe oceaan", "a new ocean every 7.5 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
+    // between 90 and everything: steps to keep going for
+    tier("m110", "Rifwachter", "Reef keeper", 110),
+    tier("m130", "Diepzeeverkenner", "Deep explorer", 130),
+    tier("m150", "Levende encyclopedie", "Living encyclopedia", 150),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een belletje als er een shiny in beeld komt", "a little bell when a shiny comes into view"),
     shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
+    shinyTier("s50", "Glanskenner", "Shine connoisseur", 50),
     { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
     allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam en een extra veldnotitie bij elk dier in je logboek", "the scientific name and an extra field note for every animal in your logbook"),

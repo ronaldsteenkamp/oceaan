@@ -513,6 +513,14 @@
     try { localStorage.removeItem(ALBUM_KEY); } catch (e) {}
     return true;
   }
+  // Called when the logbook cannot be saved because storage is full: drop the oldest photo.
+  function makeRoomInAlbum() {
+    if (typeof album === "undefined" || !album.length) return false;
+    album.pop();
+    try { if (album.length) localStorage.setItem(ALBUM_KEY, JSON.stringify(album)); else localStorage.removeItem(ALBUM_KEY); } catch (e) {}
+    toast(L("De opslag was vol: de oudste foto uit je album is eruit gegaan, zodat je logboek bewaard blijft", "Storage was full: the oldest photo in your album was removed so your logbook stays saved"), "important");
+    return true;
+  }
   function addToAlbum() {
     const w = 520, h = Math.round(polaroidCanvas.height * (w / polaroidCanvas.width));
     const c = document.createElement("canvas");

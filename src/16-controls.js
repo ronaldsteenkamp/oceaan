@@ -265,10 +265,14 @@
   });
 
   // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from two and a half minutes down to five seconds (one second with everything found).
-  const LOCK_KEY = "oceaan-gewisseld";
+  // A new player first gets a few oceans for free, to look around; the lock only starts after that.
+  const LOCK_KEY = "oceaan-gewisseld", FREE_KEY = "oceaan-wissels", FREE_OCEANS = 5;
   const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
-  if (!store.get(LOCK_KEY, 0)) store.set(LOCK_KEY, Date.now());
-  function lockLeft() { return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now()); }
+  function lockLeft() {
+    if (store.get(FREE_KEY, 0) < FREE_OCEANS) return 0;
+    return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now());
+  }
+  function countSwitch() { store.set(LOCK_KEY, Date.now()); store.set(FREE_KEY, store.get(FREE_KEY, 0) + 1); }
   function clockText(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
   function tryNewOcean(choose) {
     const left = lockLeft();
@@ -283,7 +287,7 @@
       toast(L("Zelf het water kiezen kan met de beloning Wereldreiziger: vind alle wateren.", "Choosing the water yourself comes with the Globetrotter reward: find every water."));
       return;
     }
-    store.set(LOCK_KEY, Date.now());
+    countSwitch();
     newVariant(randomSeed(), true);
     updateLockBadge();
   }
@@ -304,7 +308,7 @@
         if (!bt) return;
         closeWaterPick();
         if (bt.dataset.pick === "x") return;
-        store.set(LOCK_KEY, Date.now());
+        countSwitch();
         newVariant(bt.dataset.pick === "r" ? randomSeed() : seedForWater(Number(bt.dataset.pick)), true);
         updateLockBadge();
       });
@@ -403,6 +407,7 @@
   bookBtn.addEventListener("click", () => {
     if (!panelEl.hidden && panelTab === "log") { closePanel(); return; }
     bookDot.hidden = true;
+    remindBackup();
     logFilter = "all"; bookFilter = "all"; bookAt = 0; // the book opens at the first page
     openPanel("log", bookBtn);
     panelBody.scrollTop = 0; // new finds are at the top
@@ -456,10 +461,24 @@
     applyRewards();
   }
 
+  // The backup holds everything you have collected: the logbook and also the album, rescued animals,
+  // quests of the day, the photo book and the shinies you picked. Settings (volume, language) stay out.
+  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze"];
   function exportLog() {
     const d = new Date().toISOString().slice(0, 10);
-    const blob = new Blob([JSON.stringify({ app: "oceaan", versie: 1, opgeslagen: d, logboek: Object.fromEntries(logbook) }, null, 1)], { type: "application/json" });
+    const voortgang = {};
+    for (const k of PROGRESS_KEYS) { const v = store.get(k, null); if (v !== null) voortgang[k] = v; }
+    const blob = new Blob([JSON.stringify({ app: "oceaan", versie: 2, opgeslagen: d, logboek: Object.fromEntries(logbook), voortgang }, null, 1)], { type: "application/json" });
     saveBlob(blob, `oceaan-logboek-${d}.json`);
+    store.set("oceaan-export", d);
+  }
+  // Now and then, when there is something to lose, a reminder to make a backup (once a week at most).
+  function remindBackup() {
+    const last = store.get("oceaan-export", null), told = store.get("oceaan-herinnerd", 0);
+    if (foundCount() < 20 || Date.now() - told < 7 * 864e5) return;
+    if (last && Date.now() - new Date(last).getTime() < 30 * 864e5) return;
+    store.set("oceaan-herinnerd", Date.now());
+    toast(L("Tip: je logboek staat alleen in deze browser. Achterin het logboek, onder Bewaren, sla je het op als bestand.", "Tip: your logbook only lives in this browser. At the back of the logbook, under Keep, you can save it as a file."));
   }
 
   // Loading a file adds to what is already there: the highest count and the earliest date win.
@@ -474,6 +493,19 @@
         cur.n = Math.max(cur.n, v.n);
         if (v.first && (!cur.first || v.first < cur.first)) cur.first = v.first;
       }
+    }
+    // a backup of version 2 also holds the rest of your progress; merge it so nothing you had gets lost
+    const p = data && data.voortgang;
+    if (p && typeof p === "object") {
+      for (const k of ["oceaan-gered", "oceaan-dagen"]) if (typeof p[k] === "number") store.set(k, Math.max(store.get(k, 0), p[k]));
+      for (const k of ["oceaan-fotoboek", "oceaan-shinykeuze"]) if (Array.isArray(p[k])) store.set(k, [...new Set([...store.get(k, []), ...p[k].filter(x => typeof x === "string")])]);
+      if (Array.isArray(p["oceaan-album"])) {
+        const have = new Set(album.map(x => x.id));
+        for (const ph of p["oceaan-album"]) if (ph && typeof ph.img === "string" && ph.img.startsWith("data:image/jpeg") && !have.has(ph.id)) album.push(ph);
+        album.sort((a, b) => Number(b.id) - Number(a.id)); album.length = Math.min(album.length, ALBUM_MAX);
+        saveAlbum();
+      }
+      shinyPick = new Set(store.get("oceaan-shinykeuze", []));
     }
     saveLog();
     applyRewards();

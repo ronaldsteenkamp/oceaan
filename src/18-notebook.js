@@ -30,15 +30,18 @@
       <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
       ${questHTML()}
-      <p class="nb-note">${L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
+      <p class="nb-note">${store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
-      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>` + waterFilterHTML();
+      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
+    blocks.push({ html: intro, newPage: true, group: "intro", jump: "intro" });
+    // the water filter and the new finds are blocks of their own, so on a phone they carry on overleaf instead of falling off the page
+    intro = waterFilterHTML();
     if (news.length) {
       const show = news.slice(0, 6);
       intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
       if (news.length > show.length) intro += `<p class="nb-note">${L(`…en nog ${news.length - show.length}, verderop in het boek.`, `…and ${news.length - show.length} more, further on in the book.`)}</p>`;
     }
-    blocks.push({ html: intro, newPage: true, group: "intro", jump: "intro" });
+    blocks.push({ html: intro, group: "intro" });
 
     const msItems = MILESTONES.map(m => {
       const [have, need] = m.prog(), done = have >= need;
@@ -76,7 +79,7 @@
     blocks.push({ html: photoBookHTML(), newPage: true, group: "album", jump: "album" });
     blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, group: "album" });
     blocks.push({ html: `<h4 class="nb-fam">${L("Bewaren", "Keep")}</h4>
-      <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
+      <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden. Het bestand bevat alles: je vondsten, je album, je fotoboek en je geredde dieren.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device. The file holds everything: your finds, your album, your photo book and your rescued animals.")} ${store.get("oceaan-export", null) ? L(`Laatst opgeslagen: ${dateText(store.get("oceaan-export"))}.`, `Last saved: ${dateText(store.get("oceaan-export"))}.`) : L("Nog nooit opgeslagen.", "Never saved yet.")}</p>
       <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>
       <h4 class="nb-fam">${L("Opnieuw beginnen", "Start over")}</h4>
       <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
@@ -101,7 +104,8 @@
       if (b.jump && !(b.jump in jumps)) jumps[b.jump] = pages.length;
       curGroup = b.group;
       if (b.html !== undefined) {
-        // fixed pages: the overview, milestones, photos and the back of the book
+        // fixed blocks (the overview, milestones, photos, the back of the book) go on the next page when they no longer fit
+        if (cur && !fits(cur + b.html)) flush();
         cur = (cur || run(b.group)) + b.html;
         continue;
       }
