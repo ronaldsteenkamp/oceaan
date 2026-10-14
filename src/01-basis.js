@@ -522,8 +522,8 @@
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
-    tier("m50", "Oceanograaf", "Oceanographer", 50, "een echte zaklamp voor je duiker en elke 15 seconden een nieuwe oceaan", "a proper torch for your diver and a new ocean every 15 seconds"),
-    tier("m75", "Duikmeester", "Dive master", 75, "een fellere, bredere duiklamp en elke 7,5 seconden een nieuwe oceaan", "a brighter, wider diving lamp and a new ocean every 7.5 seconds"),
+    tier("m50", "Oceanograaf", "Oceanographer", 50, "elke 15 seconden een nieuwe oceaan", "a new ocean every 15 seconds"),
+    tier("m75", "Duikmeester", "Dive master", 75, "elke 7,5 seconden een nieuwe oceaan", "a new ocean every 7.5 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een belletje als er een shiny in beeld komt", "a little bell when a shiny comes into view"),

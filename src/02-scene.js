@@ -12,9 +12,8 @@
 
   // The diver's lamp: only what comes into its beam goes into the logbook. A brighter lamp reaches further.
   function lightCone() {
-    if (rewards.has("m75")) return { len: 340 * u, half: 0.62, near: 46 * u, level: 3 };
-    if (rewards.has("m50")) return { len: 240 * u, half: 0.46, near: 46 * u, level: 2 };
-    return { len: 150 * u, half: 0.32, near: 40 * u, level: 1 }; // the small headlamp you start with
+    // the diver keeps the small headlamp: finding things in its narrow beam is part of the challenge
+    return { len: 150 * u, half: 0.32, near: 40 * u, level: 1 };
   }
   function inBeam(x, y, r, ox, oy, th, len, half, nearR) {
     const dx = x - ox, dy = y - oy, d = Math.hypot(dx, dy);

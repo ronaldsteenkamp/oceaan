@@ -956,12 +956,13 @@
         if (f.x > W - 80 * u) { f.dir = -1; f.vx = -1.6 * u; }
       }
     } else if (f.st === "jump") {
-      f.x += f.vx * k; f.vy += 0.12 * u * k; f.y += f.vy * k;
+      f.x += f.vx * k; if (!f.wet) f.vy += 0.12 * u * k; f.y += f.vy * k;
       if (!f.wet && f.y > waveY(f.x)) {
         f.wet = true; splash(f.x); splash(f.x - 10 * u); splash(f.x + 10 * u);
         for (let i = 0; i < 26; i++) bubbles.push({ x: f.x + (Math.random() - 0.5) * f.s * 0.8, y: waveY(f.x) + Math.random() * f.s * 0.6, r: (1 + Math.random() * 3) * u, ph: Math.random() * TAU });
       }
-      if (f.wet) { f.vy *= Math.pow(0.94, k); f.vx *= Math.pow(0.97, k); if (f.vy < 0.3 * u) f.st = "rise"; }
+      // under water it brakes hard: a short dive, not all the way to the bottom
+      if (f.wet) { f.vy *= Math.pow(0.95, k); f.vx *= Math.pow(0.97, k); if (f.vy < 0.3 * u) f.st = "rise"; }
       f.cy = f.y;
     } else if (f.st === "rise") {
       f.vy = Math.max(-1 * u, f.vy - 0.04 * u * k); f.x += f.vx * k; f.vx *= Math.pow(0.99, k); f.y += f.vy * k;
@@ -986,20 +987,10 @@
     // water streams off its fur
     if (Math.random() < 0.3) ripples.push({ x: f.x + (Math.random() - 0.5) * s * 0.3, r: 1, a: 0.5 });
   }
-  // seen from under the water: the bear climbing out over the edge, and its shadow walking on the floe
+  // seen from under the water: the bear climbing out over the edge of the floe
   function drawIceWalkers() {
     if (!water.ice) return;
-    for (const f of scene.fauna || []) {
-      if (f.key === "polarbear" && f.st === "climb" && f.cy !== undefined) shinyDraw(f, () => drawBearClimb(f));
-      if (f.key !== "polarbear" || f.st !== "ice" || !f.floe) continue;
-      const top = waveY(f.x) - 4 * u + (f.floe.dip || 0), y = top + f.floe.d * 0.3, s = f.s;
-      ctx.save(); ctx.translate(f.x, y); ctx.scale(f.dir, 1);
-      ctx.fillStyle = "rgba(40,70,90,0.22)";
-      ctx.beginPath(); ctx.ellipse(0, 0, s * 0.42, s * 0.1, 0, 0, TAU); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(s * 0.42, -s * 0.02, s * 0.12, s * 0.07, 0, 0, TAU); ctx.fill();
-      for (const [lx, p] of [[0.25, 0], [0.12, Math.PI], [-0.2, Math.PI], [-0.32, 0]]) { ctx.beginPath(); ctx.ellipse(s * lx + Math.sin(f.ph * 4 + p) * s * 0.04, s * 0.08, s * 0.05, s * 0.035, 0, 0, TAU); ctx.fill(); }
-      ctx.restore();
-    }
+    for (const f of scene.fauna || []) if (f.key === "polarbear" && f.st === "climb" && f.cy !== undefined) shinyDraw(f, () => drawBearClimb(f));
   }
   FAUNA.polarbear.move = moveBear;
   FAUNA.polarbear.draw = drawBearAll;
