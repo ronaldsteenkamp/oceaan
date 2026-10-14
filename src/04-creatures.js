@@ -774,31 +774,33 @@
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
-    ctx.fillStyle = sca("#121a22", 0.88);
+    const back = sca("#121a22", 0.92), white = sca("#dce6eb", 0.9);
+    // the short tail
+    ctx.strokeStyle = back; ctx.lineWidth = Math.max(1, L * 0.014); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-L * 0.28, 0); ctx.quadraticCurveTo(-L * 0.42, Math.sin(v.ph * 2) * L * 0.03, -L * 0.56, 0); ctx.stroke();
+    // the wings, swept back like a bird's, with a pointed tip
+    ctx.fillStyle = back;
     ctx.beginPath();
-    ctx.moveTo(L * 0.3, -L * 0.07);
-    ctx.quadraticCurveTo(L * 0.12, -L * 0.42 * flap, -L * 0.06, -L * 0.62 * flap);
-    ctx.quadraticCurveTo(-L * 0.12, -L * 0.24, -L * 0.3, -L * 0.06);
-    ctx.lineTo(-L * 0.3, L * 0.06);
-    ctx.quadraticCurveTo(-L * 0.12, L * 0.24, -L * 0.06, L * 0.62 * flap);
-    ctx.quadraticCurveTo(L * 0.12, L * 0.42 * flap, L * 0.3, L * 0.07);
-    ctx.closePath();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(L * 0.33, -L * 0.06, L * 0.07, L * 0.025, 0.3, 0, TAU);
-    ctx.ellipse(L * 0.33, L * 0.06, L * 0.07, L * 0.025, -0.3, 0, TAU);
-    ctx.fill();
-    ctx.strokeStyle = sca("#121a22", 0.88);
-    ctx.lineWidth = Math.max(1, L * 0.012);
-    ctx.beginPath();
-    ctx.moveTo(-L * 0.3, 0);
-    ctx.quadraticCurveTo(-L * 0.55, Math.sin(v.ph * 2) * L * 0.05, -L * 0.85, 0);
-    ctx.stroke();
-    ctx.fillStyle = sca("#dce6eb", 0.25);
-    ctx.beginPath();
-    ctx.ellipse(L * 0.05, -L * 0.12, L * 0.06, L * 0.035, 0.4, 0, TAU);
-    ctx.ellipse(L * 0.05, L * 0.12, L * 0.06, L * 0.035, -0.4, 0, TAU);
-    ctx.fill();
+    ctx.moveTo(L * 0.3, -L * 0.08);
+    ctx.quadraticCurveTo(L * 0.18, -L * 0.36 * flap, -L * 0.04, -L * 0.62 * flap);
+    ctx.quadraticCurveTo(-L * 0.08, -L * 0.3, -L * 0.3, -L * 0.07);
+    ctx.lineTo(-L * 0.3, L * 0.07);
+    ctx.quadraticCurveTo(-L * 0.08, L * 0.3, -L * 0.04, L * 0.62 * flap);
+    ctx.quadraticCurveTo(L * 0.18, L * 0.36 * flap, L * 0.3, L * 0.08);
+    ctx.closePath(); ctx.fill();
+    // the white shoulder marks, like a V on its back
+    ctx.fillStyle = white;
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(L * 0.2, sd * L * 0.07); ctx.quadraticCurveTo(L * 0.12, sd * L * 0.2 * flap, -L * 0.02, sd * L * 0.3 * flap);
+      ctx.quadraticCurveTo(L * 0.06, sd * L * 0.16, L * 0.08, sd * L * 0.07); ctx.closePath(); ctx.fill();
+    }
+    // the head and the two head fins, curled forward like horns
+    ctx.fillStyle = back;
+    ctx.beginPath(); ctx.ellipse(L * 0.28, 0, L * 0.07, L * 0.085, 0, 0, TAU); ctx.fill();
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(L * 0.32, sd * L * 0.04); ctx.quadraticCurveTo(L * 0.42, sd * L * 0.07, L * 0.41, sd * L * 0.02);
+      ctx.quadraticCurveTo(L * 0.4, sd * L * 0.045, L * 0.34, sd * L * 0.075); ctx.closePath(); ctx.fill();
+    }
     ctx.restore();
   }
 

@@ -119,7 +119,7 @@
     seahorse: pal("", { hue: 332, hueDark: 300, lit: 0.05, sat: 1.1 }),
     seadragon: pal("#9aa040>#c8508a #d8a040>#e85a3a"),
     jelly: pal("", { hue: 42, hueLight: 46, sat: 1.5, lit: -0.24 }),
-    cassiopea: pal("#c8bc90>#3a6ad8 #a89c70>#2a4aa8 #f0ecc0>#f2f0ff", { hue: 222 }),
+    cassiopea: pal("#8a9a70>#3a6ad8 #6a7a52>#2a4aa8 #d8e4b8>#c8d8ff #f0ecc0>#f2f0ff", { hue: 222 }),
     comb: pal("", { body: "#ffd24a" }),
     octopus: pal("#f2c34a>#d8203a #f4ecd8>#fff0f2", { hue: 340, sat: 0.4, lit: 0.28, bodyHue: 345, bodySat: 40, bodyLight: 1.45 }),
     squid: pal("", { body: "#4a7af0" }),

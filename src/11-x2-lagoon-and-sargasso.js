@@ -215,7 +215,12 @@
     ctx.save(); ctx.translate(b.x, y); ctx.scale(faceOf(b), 1);
     const yel = sh("#f2d030"), dark = sh("#b89818");
     ctx.fillStyle = dark;
-    ctx.save(); ctx.translate(-s * 0.6, 0); ctx.rotate(Math.sin(b.ph) * 0.4); ctx.beginPath(); ctx.ellipse(-s * 0.15, 0, s * 0.18, s * 0.12, 0, 0, TAU); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.translate(-s * 0.6, 0); ctx.rotate(Math.sin(b.ph) * 0.4);
+    ctx.beginPath(); ctx.moveTo(0, -s * 0.06); ctx.quadraticCurveTo(-s * 0.2, -s * 0.24, -s * 0.34, -s * 0.2); ctx.quadraticCurveTo(-s * 0.28, 0, -s * 0.34, s * 0.2); ctx.quadraticCurveTo(-s * 0.2, s * 0.24, 0, s * 0.06); ctx.fill();
+    ctx.restore();
+    // a small dorsal and anal fin near the tail, rippling
+    ctx.fillStyle = "rgba(230,200,90,0.75)";
+    for (const sd of [-1, 1]) { ctx.save(); ctx.translate(-s * 0.42, sd * s * 0.38); ctx.scale(1, -sd); ctx.rotate(Math.sin(b.ph * 1.5 + sd) * 0.25); ctx.beginPath(); ctx.moveTo(s * 0.08, 0); ctx.quadraticCurveTo(0, -s * 0.2, -s * 0.12, -s * 0.12); ctx.lineTo(-s * 0.08, 0); ctx.fill(); ctx.restore(); }
     ctx.fillStyle = yel;
     const r = s * 0.12;
     ctx.beginPath();
@@ -301,6 +306,11 @@
     // arm-like fins grip the weed
     ctx.strokeStyle = body; ctx.lineWidth = s * 0.08; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.3); ctx.lineTo(-s * 0.25, -s * 0.6); ctx.moveTo(s * 0.15, -s * 0.3); ctx.lineTo(s * 0.3, -s * 0.58); ctx.stroke();
+    ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.8, s * 0.03);
+    ctx.beginPath(); ctx.ellipse(0, 0, s * 0.45, s * 0.38, 0, -0.9, 1.6); ctx.stroke();
+    // the little fishing rod on its head, with a tuft at the tip
+    ctx.beginPath(); ctx.moveTo(s * 0.28, -s * 0.3); ctx.quadraticCurveTo(s * 0.42, -s * 0.5, s * 0.52, -s * 0.46 + Math.sin(f.ph * 2) * s * 0.03); ctx.stroke();
+    ctx.fillStyle = sh("#e8d070"); ctx.beginPath(); ctx.arc(s * 0.53, -s * 0.46 + Math.sin(f.ph * 2) * s * 0.03, s * 0.05, 0, TAU); ctx.fill();
     ctx.fillStyle = "#1a1408"; ctx.beginPath(); ctx.ellipse(s * 0.38, s * 0.05, s * 0.06, s * (0.03 + f.gulp * 0.12), 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "#f0e8a0"; ctx.beginPath(); ctx.arc(s * 0.22, -s * 0.12, s * 0.06, 0, TAU); ctx.fill();
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.23, -s * 0.12, s * 0.03, 0, TAU); ctx.fill();
@@ -482,16 +492,30 @@
     ctx.save(); ctx.translate(-L * 0.48, 0); ctx.rotate(Math.sin(ph * 2) * 0.18);
     ctx.beginPath(); ctx.moveTo(L * 0.03, 0); ctx.quadraticCurveTo(-L * 0.05, -L * 0.03, -L * 0.12, -L * 0.09); ctx.quadraticCurveTo(-L * 0.08, 0, -L * 0.12, L * 0.09); ctx.quadraticCurveTo(-L * 0.05, L * 0.03, L * 0.03, 0); ctx.fill();
     ctx.restore();
-    // the huge boxy head holds the biggest brain on earth
+    // the huge boxy head holds the biggest brain on earth; a low hump and a row of knuckles run down the back
     ctx.beginPath();
-    ctx.moveTo(L * 0.5, -L * 0.08); ctx.quadraticCurveTo(L * 0.52, L * 0.0, L * 0.48, L * 0.06);
+    ctx.moveTo(L * 0.5, -L * 0.08); ctx.quadraticCurveTo(L * 0.52, L * 0.0, L * 0.48, L * 0.05);
     ctx.lineTo(L * 0.15, L * 0.1); ctx.quadraticCurveTo(-L * 0.2, L * 0.08, -L * 0.48, L * 0.01);
-    ctx.lineTo(-L * 0.48, -L * 0.02); ctx.quadraticCurveTo(-L * 0.2, -L * 0.07, L * 0.05, -L * 0.1);
-    ctx.quadraticCurveTo(L * 0.4, -L * 0.13, L * 0.5, -L * 0.08); ctx.fill();
+    ctx.lineTo(-L * 0.48, -L * 0.02);
+    ctx.quadraticCurveTo(-L * 0.3, -L * 0.05, -L * 0.2, -L * 0.07);
+    for (let i = 0; i < 5; i++) { const kx = -L * (0.2 - i * 0.035); ctx.quadraticCurveTo(kx + L * 0.012, -L * 0.088, kx + L * 0.03, -L * 0.075); }
+    ctx.quadraticCurveTo(L * 0.0, -L * 0.1, L * 0.04, -L * 0.112);
+    ctx.quadraticCurveTo(L * 0.4, -L * 0.135, L * 0.5, -L * 0.08); ctx.fill();
+    // the narrow lower jaw, paler, tucked under the head
+    ctx.fillStyle = "rgba(255,255,255,0.16)";
+    ctx.beginPath(); ctx.moveTo(L * 0.46, L * 0.045); ctx.lineTo(L * 0.16, L * 0.085); ctx.quadraticCurveTo(L * 0.14, L * 0.1, L * 0.2, L * 0.1); ctx.lineTo(L * 0.47, L * 0.055); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = dark; ctx.lineWidth = Math.max(0.7, L * 0.003);
-    for (let i = 0; i < 9; i++) { const x0 = -L * (0.05 + i * 0.045); ctx.beginPath(); ctx.moveTo(x0, -L * 0.05); ctx.quadraticCurveTo(x0 - L * 0.01, 0, x0, L * 0.05); ctx.stroke(); }
-    ctx.beginPath(); ctx.moveTo(L * 0.47, L * 0.05); ctx.lineTo(L * 0.2, L * 0.08); ctx.stroke();
-    ctx.fillStyle = dark; ctx.beginPath(); ctx.arc(L * 0.2, L * 0.02, L * 0.008, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(L * 0.47, L * 0.045); ctx.lineTo(L * 0.17, L * 0.083); ctx.stroke();
+    // wrinkled skin on the body behind the head
+    ctx.globalAlpha *= 0.55;
+    ctx.beginPath();
+    for (let i = 0; i < 14; i++) { const x0 = L * (0.08 - i * 0.035), h = L * (0.05 - i * 0.002); ctx.moveTo(x0, -h); ctx.quadraticCurveTo(x0 - L * 0.012, 0, x0 + L * 0.004, h); }
+    ctx.stroke();
+    ctx.globalAlpha /= 0.55;
+    // the blowhole sits at the front of the head, a little to the left
+    ctx.lineWidth = Math.max(1, L * 0.005);
+    ctx.beginPath(); ctx.moveTo(L * 0.47, -L * 0.095); ctx.quadraticCurveTo(L * 0.49, -L * 0.105, L * 0.48, -L * 0.088); ctx.stroke();
+    ctx.fillStyle = dark; ctx.beginPath(); ctx.arc(L * 0.18, L * 0.04, L * 0.008, 0, TAU); ctx.fill();
     ctx.fillStyle = col; ctx.save(); ctx.translate(L * 0.12, L * 0.08); ctx.rotate(0.8 + Math.sin(ph * 1.5) * 0.15); ctx.beginPath(); ctx.ellipse(0, L * 0.03, L * 0.015, L * 0.04, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.restore();
   }
@@ -892,9 +916,10 @@
     pistol: () => { ctx.save(); ctx.translate(56, 58); ctx.scale(1.7, 1.7); ctx.translate(-58, -72); drawPistol({ x: 58, ph: 1, cool: 1e9, snap: 0.8, out: 1 }, 0); ctx.restore(); },
     sargassumfish: () => {
       const m = { x: 60, w: 110, ph: 0, leaves: Array.from({ length: 26 }, (_, i) => ({ dx: ((i * 37) % 100) / 100 - 0.5, dy: ((i * 53) % 100) / 100, a: i * 1.3, b: i % 3 === 0 })) };
-      scene.sargassum = [m]; drawSargassum(0);
-      drawFrog({ mat: m, dx: 0, s: 36, ph: 0, gulp: 0.5, cool: 1e9 }, 0);
+      scene.sargassum = [m]; ctx.save(); ctx.globalAlpha = 0.55; drawSargassum(0); ctx.restore();
+      drawFrog({ mat: m, dx: 0, s: 46, ph: 0, gulp: 0.5, cool: 1e9 }, 0);
     },
+
     spidercrab: () => drawSpider({ x: 60, dir: 1, s: 30, leg: 0.5, speed: 0, pause: 9 }, 0),
     crocodile: () => drawCrocodile({ x: 64, y: 40, dir: 1, size: 120, ph: 0, yOff: 0 }),
     whaleshark: () => drawWhaleshark({ x: 60, y: 42, dir: 1, size: 116, ph: 0, yOff: 0 }),

@@ -289,24 +289,26 @@
   // An upside-down jellyfish lies on the sand with its arms up towards the light.
   function drawCassio(c, k) {
     c.ph += 0.03 * k;
-    const s = c.s, p = 1 + Math.sin(c.ph) * 0.08;
+    const s = c.s, p = 1 + Math.sin(c.ph) * 0.07;
     ctx.save(); ctx.translate(c.x, sandY(c.x) + 4 * u);
-    // the bell lies flat on the sand, pulsing
-    ctx.fillStyle = sh("#c8bc90");
-    ctx.beginPath(); ctx.ellipse(0, 0, s * p, s * 0.26, 0, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#a89c70"); ctx.lineWidth = Math.max(0.6, s * 0.03);
-    for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(i * s * 0.14, s * 0.05); ctx.lineTo(i * s * 0.28 * p, s * 0.2); ctx.stroke(); }
-    // frilly arms point up towards the light, like little bushes
+    // the bell lies upside down on the sand, seen at a slant, pulsing: a scalloped rim and radial canals
+    ctx.fillStyle = sh("#8a9a70");
+    ctx.beginPath();
+    for (let i = 0; i <= 24; i++) { const a = i / 24 * TAU, r = 1 + (i % 2) * 0.06; ctx.lineTo(Math.cos(a) * s * 1.05 * p * r, -s * 0.06 + Math.sin(a) * s * 0.3 * r); }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = sh("#6a7a52"); ctx.beginPath(); ctx.ellipse(0, -s * 0.06, s * 0.6 * p, s * 0.17, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sh("#d8e4b8"); ctx.lineWidth = Math.max(0.6, s * 0.025);
+    ctx.beginPath(); for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; ctx.moveTo(Math.cos(a) * s * 0.6 * p, -s * 0.06 + Math.sin(a) * s * 0.17); ctx.lineTo(Math.cos(a) * s * 0.98 * p, -s * 0.06 + Math.sin(a) * s * 0.28); } ctx.stroke();
+    // eight frilly arms sit on the middle of the bell like little cauliflowers, reaching for the light
     const arms = sh(c.col), dark = sh(c.col, 0.2);
     for (let i = 0; i < 8; i++) {
-      const ax = (i - 3.5) * s * 0.2, h = s * (0.32 + ((i * 5) % 3) * 0.08) + Math.sin(c.ph + i) * s * 0.03;
-      ctx.strokeStyle = dark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(ax * 0.6, -s * 0.05); ctx.lineTo(ax, -h); ctx.stroke();
+      const a = i / 8 * TAU + 0.2, ax = Math.cos(a) * s * 0.42, ay = -s * 0.08 + Math.sin(a) * s * 0.1, h = s * (0.18 + (i % 3) * 0.05) + Math.sin(c.ph + i) * s * 0.02;
+      ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(ax, ay - h * 0.4, s * 0.08, h * 0.55, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = arms;
-      for (const [dx, dy, r] of [[0, 0, 0.11], [-0.08, 0.05, 0.08], [0.08, 0.05, 0.08]]) { ctx.beginPath(); ctx.arc(ax + dx * s, -h + dy * s, r * s, 0, TAU); ctx.fill(); }
+      for (const [dx, dy, r] of [[0, -1, 0.1], [-0.09, -0.7, 0.08], [0.09, -0.7, 0.08], [-0.05, -1.25, 0.065], [0.06, -1.2, 0.06]]) { ctx.beginPath(); ctx.arc(ax + dx * s, ay + dy * h, r * s, 0, TAU); ctx.fill(); }
     }
     ctx.fillStyle = sh("#f0ecc0");
-    for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc((i - 2.5) * s * 0.27, -s * 0.36 - (i % 2) * s * 0.08, s * 0.045, 0, TAU); ctx.fill(); }
+    for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; ctx.beginPath(); ctx.arc(Math.cos(a) * s * 0.4, -s * 0.3 + Math.sin(a) * s * 0.06, s * 0.035, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 
@@ -963,7 +965,7 @@
     clam: () => drawClam({ x: 60, s: 30, ph: Math.PI / 2, open: 1, shut: 0, pearl: "white", mantle: "#3fa0d8" }, 0),
     goldpearl: () => drawClam({ x: 60, s: 30, ph: Math.PI / 2, open: 1, shut: 0, pearl: "gold", mantle: "#7a5ad8" }, 0),
     seagrass: () => drawSeagrass({ x: 60, blades: Array.from({ length: 18 }, (_, i) => ({ dx: (i - 9) * 5, h: 24 + (i * 7) % 22, ph: i, c: ["#6a9a3a", "#7aaa48", "#5a8a32"][i % 3] })) }),
-    cassiopea: () => drawCassio({ x: 60, s: 36, ph: 1, col: "#8aa86a" }, 0),
+    cassiopea: () => drawCassio({ x: 60, s: 40, ph: 1, col: "#a8c87a" }, 0),
     lionfish: () => drawLionfish({ x: 60, y: 44, dir: 1, s: 52, ph: 1, tx: 1000 }, 0),
     cuttlefish: () => drawCuttle({ x: 52, y: 42, dir: 1, s: 56, ph: 1, tx: 1000, flash: 0 }, 0),
     lobster: () => drawLobster({ x: 58, dir: 1, s: 52, leg: 0, pause: 9, speed: 0 }, 0),

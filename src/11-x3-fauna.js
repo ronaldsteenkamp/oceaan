@@ -5,7 +5,7 @@
   // ---- shared shapes ------------------------------------------------------------
   // A shark seen from the side, facing right, in local coordinates where L is its length.
   function sharkForm(L, top, belly, o = {}) {
-    const upper = o.upper || 0.2, tip = o.tip;
+    const upper = o.upper || 0.2, tip = o.tip, fin = o.fin || 1;
     ctx.fillStyle = top;
     // tail
     ctx.beginPath(); ctx.moveTo(-L * 0.36, -L * 0.01);
@@ -18,7 +18,7 @@
     ctx.lineTo(-L * 0.37, L * 0.02);
     ctx.bezierCurveTo(L * 0.05, L * 0.09, L * 0.42, L * 0.08, L * 0.5, 0); ctx.fill();
     // fins
-    ctx.beginPath(); ctx.moveTo(L * 0.1, -L * 0.08); ctx.quadraticCurveTo(L * 0.02, -L * 0.22, -L * 0.06, -L * 0.24); ctx.lineTo(-L * 0.06, -L * 0.07); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(L * 0.1, -L * 0.08); ctx.quadraticCurveTo(L * 0.02, -L * (0.08 + 0.14 * fin), -L * 0.06, -L * (0.08 + 0.16 * fin)); ctx.lineTo(-L * 0.06, -L * 0.07); ctx.fill();
     ctx.beginPath(); ctx.moveTo(L * 0.18, L * 0.05); ctx.quadraticCurveTo(L * 0.06, L * 0.18, -L * 0.02, L * 0.19); ctx.lineTo(L * 0.06, L * 0.05); ctx.fill();
     ctx.beginPath(); ctx.moveTo(-L * 0.2, -L * 0.04); ctx.lineTo(-L * 0.25, -L * 0.1); ctx.lineTo(-L * 0.27, -L * 0.035); ctx.fill();
     if (tip) {
@@ -360,13 +360,19 @@
 
   function drawSandDollar(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy);
-    ctx.fillStyle = sh("#c8b8c8");
-    ctx.beginPath(); ctx.ellipse(0, -s * 0.12, s, s * 0.3, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = sh("#a898a8");
-    ctx.beginPath(); ctx.ellipse(0, -s * 0.16, s * 0.85, s * 0.22, 0, 0, TAU); ctx.fill();
-    ctx.strokeStyle = sh("#f0e8f0"); ctx.lineWidth = Math.max(0.6, s * 0.06);
-    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * TAU / 5; ctx.beginPath(); ctx.ellipse(Math.cos(a) * s * 0.3, -s * 0.16 + Math.sin(a) * s * 0.08, s * 0.16, s * 0.04, a, 0, TAU); ctx.stroke(); }
+    ctx.save(); ctx.translate(f.x, f.cy - s * 0.12);
+    // a thin flat disc seen at a slant, with a five-petal flower of pores and two small slits
+    ctx.fillStyle = sh("#a898a8"); ctx.beginPath(); ctx.ellipse(0, s * 0.04, s, s * 0.28, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = sh("#c8b8c8"); ctx.beginPath(); ctx.ellipse(0, 0, s * 0.97, s * 0.26, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.14)"; ctx.beginPath(); ctx.ellipse(-s * 0.15, -s * 0.06, s * 0.5, s * 0.09, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = sh("#f0e8f0");
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + i * TAU / 5, ex = Math.cos(a) * s * 0.52, ey = Math.sin(a) * s * 0.15;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(ex * 0.5 - ey * 1.3, ey * 0.5 + ex * 0.08, ex, ey); ctx.quadraticCurveTo(ex * 0.5 + ey * 1.3, ey * 0.5 - ex * 0.08, 0, 0); ctx.fill();
+    }
+    ctx.fillStyle = sh("#8a7a8a");
+    ctx.beginPath(); ctx.arc(0, 0, s * 0.04, 0, TAU); ctx.fill();
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * s * 0.42, s * 0.12, s * 0.09, s * 0.02, 0, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 
@@ -496,7 +502,7 @@
   }
 
   const BEAR_BODY = "M -60 4 C -40 1 -10 1 12 -1 C 20 -3 27 -13 35 -18 L 36 -23 C 38 -27 42 -27 43 -22 C 52 -22 61 -17 68 -12 C 72 -10 75 -7 72 -4 C 66 -2 58 -1 52 1 C 46 4 41 10 36 16 C 30 24 18 30 0 32 C -20 34 -38 32 -50 28 C -60 24 -64 12 -60 4 Z";
-  const BEAR_LEG = "M -7 -4 C -8 8 -7 18 -6 25 C -5 31 7 31 8 25 C 8 17 7 7 6 -4 Z";
+  const BEAR_LEG = "M -8 -4 C -9 6 -6 13 -6 19 C -8 23 -7 29 0 30 C 7 30 10 27 8 22 C 6 17 8 8 7 -4 Z";
   function drawPolarBear(f) {
     const s = f.s, sw = Math.sin(f.ph * 2);
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
@@ -599,18 +605,26 @@
   }
   // A small school of tuna, swimming as one.
   function drawTuna(x, y, dir, L, ph) {
-    const spots = [[0, 0], [-0.9, -0.35], [-0.8, 0.4], [-1.7, 0.05], [0.7, 0.3]];
+    // a loose diagonal formation, drawn from the back to the front so they never cross messily
+    const spots = [[-2.3, -0.55], [-1.2, -0.75], [-1.3, 0.6], [0, 0], [1.0, 0.7]];
     for (let i = 0; i < spots.length; i++) {
       const [ox, oy] = spots[i];
-      ctx.save(); ctx.translate(x + dir * ox * L * 0.6, y + oy * L * 0.4 + Math.sin(ph * 2 + i) * L * 0.03); ctx.scale(dir, 1);
-      const l = L * (0.9 + (i % 2) * 0.12);
-      ctx.fillStyle = sh("#1e3050");
+      ctx.save(); ctx.translate(x + dir * ox * L * 0.62, y + oy * L * 0.5 + Math.sin(ph * 2 + i) * L * 0.03); ctx.scale(dir, 1);
+      const l = L * (0.9 + (i % 2) * 0.12), back = sh("#1e3050"), fin = sh("#f2d030");
+      // a crescent tail on a slim stalk
+      ctx.fillStyle = back;
       ctx.save(); ctx.translate(-l * 0.42, 0); ctx.rotate(Math.sin(ph * 4 + i) * 0.2);
-      ctx.beginPath(); ctx.moveTo(l * 0.02, 0); ctx.lineTo(-l * 0.14, -l * 0.18); ctx.quadraticCurveTo(-l * 0.07, 0, -l * 0.14, l * 0.18); ctx.closePath(); ctx.fill(); ctx.restore();
-      ctx.beginPath(); ctx.ellipse(0, 0, l * 0.45, l * 0.13, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = sh("#c8d4dc"); ctx.beginPath(); ctx.ellipse(l * 0.02, l * 0.05, l * 0.38, l * 0.06, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = sh("#f2d030"); for (let j = 0; j < 5; j++) { ctx.beginPath(); ctx.arc(-l * (0.15 + j * 0.05), -l * 0.1, l * 0.012, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(-l * (0.15 + j * 0.05), l * 0.1, l * 0.012, 0, TAU); ctx.fill(); }
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.32, -l * 0.02, l * 0.02, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(l * 0.03, 0); ctx.quadraticCurveTo(-l * 0.06, -l * 0.08, -l * 0.13, -l * 0.2); ctx.quadraticCurveTo(-l * 0.06, 0, -l * 0.13, l * 0.2); ctx.quadraticCurveTo(-l * 0.06, l * 0.08, l * 0.03, 0); ctx.fill(); ctx.restore();
+      // the torpedo body, dark blue above and silver below
+      ctx.beginPath(); ctx.moveTo(l * 0.46, 0); ctx.bezierCurveTo(l * 0.36, -l * 0.15, -l * 0.15, -l * 0.15, -l * 0.42, -l * 0.02); ctx.lineTo(-l * 0.42, l * 0.02); ctx.bezierCurveTo(-l * 0.15, l * 0.14, l * 0.36, l * 0.14, l * 0.46, 0); ctx.fill();
+      ctx.fillStyle = sh("#c8d4dc"); ctx.beginPath(); ctx.moveTo(l * 0.44, l * 0.02); ctx.bezierCurveTo(l * 0.3, l * 0.1, -l * 0.15, l * 0.1, -l * 0.4, l * 0.02); ctx.bezierCurveTo(-l * 0.1, l * 0.03, l * 0.3, l * 0.01, l * 0.44, l * 0.02); ctx.fill();
+      // the long yellow sickle fins and the little yellow finlets along the tail
+      ctx.fillStyle = fin;
+      ctx.beginPath(); ctx.moveTo(-l * 0.02, -l * 0.11); ctx.quadraticCurveTo(-l * 0.1, -l * 0.26, -l * 0.18, -l * 0.28); ctx.quadraticCurveTo(-l * 0.12, -l * 0.16, -l * 0.12, -l * 0.08); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-l * 0.02, l * 0.1); ctx.quadraticCurveTo(-l * 0.1, l * 0.24, -l * 0.18, l * 0.26); ctx.quadraticCurveTo(-l * 0.12, l * 0.14, -l * 0.12, l * 0.07); ctx.fill();
+      for (let j = 0; j < 5; j++) { const fx = -l * (0.2 + j * 0.045); ctx.beginPath(); ctx.moveTo(fx, -l * 0.07 + j * l * 0.01); ctx.lineTo(fx - l * 0.02, -l * 0.1 + j * l * 0.012); ctx.lineTo(fx - l * 0.03, -l * 0.06 + j * l * 0.01); ctx.fill(); ctx.beginPath(); ctx.moveTo(fx, l * 0.06 - j * l * 0.01); ctx.lineTo(fx - l * 0.02, l * 0.09 - j * l * 0.012); ctx.lineTo(fx - l * 0.03, l * 0.05 - j * l * 0.01); ctx.fill(); }
+      ctx.fillStyle = back; ctx.beginPath(); ctx.ellipse(l * 0.16, l * 0.03, l * 0.07, l * 0.02, 0.4 + Math.sin(ph * 3 + i) * 0.2, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.34, -l * 0.02, l * 0.02, 0, TAU); ctx.fill();
       ctx.restore();
     }
   }
@@ -710,11 +724,42 @@
     ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(L * 0.36, -L * 0.03, L * 0.012, 0, TAU); ctx.fill();
     ctx.restore();
   }
+  const PILOT_BODY = "M 46 2 C 48 -8 42 -14 32 -14 C 22 -14 14 -12 4 -11 C -14 -9 -32 -5 -46 0 C -34 4 -16 8 6 10 C 24 11 38 10 44 7 C 46 6 46 4 46 2 Z";
+  const PILOT_FIN = "M 18 -13 C 14 -22 4 -26 -6 -24 C -2 -20 0 -15 -2 -10 Z";
+  const PILOT_FLIP = "M 0 0 C -2 6 -8 12 -16 14 C -10 8 -5 3 -2 -1 Z";
+  const WHALE_FLUKE = "M 2 0 C -4 -4 -10 -8 -16 -11 C -13 -5 -13 5 -16 11 C -10 8 -4 4 2 0 Z";
+  function drawPilot(x, y, dir, L, ph) {
+    const black = sh("#22262a");
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.04);
+    ctx.save(); ctx.translate(-44, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); fillWith(P(WHALE_FLUKE), black); ctx.restore();
+    fillWith(P(PILOT_FIN), black);
+    fillWith(P(PILOT_BODY), black);
+    // a pale grey saddle behind the fin and a pale anchor mark on the throat
+    ctx.fillStyle = "rgba(200,205,210,0.22)"; ctx.beginPath(); ctx.ellipse(-12, -8, 10, 3, -0.1, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(28, 8, 8, 2, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(26, 6); ctx.rotate(0.3 + Math.sin(ph * 1.5) * 0.15); fillWith(P(PILOT_FLIP), black); ctx.restore();
+    ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(36, -3, 1.2, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  const FALSE_BODY = "M 50 0 C 50 -5 44 -9 34 -10 C 16 -11 -10 -9 -30 -5 C -40 -3 -46 -1 -48 0 C -40 3 -26 5 -6 7 C 16 8 36 7 46 4 C 49 3 50 2 50 0 Z";
+  const FALSE_FIN = "M 4 -10 C 2 -18 -2 -24 -8 -27 C -7 -20 -9 -14 -14 -9 Z";
+  const FALSE_FLIP = "M 0 0 C -1 3 -2 5 -5 6 C -8 9 -12 12 -16 13 C -11 8 -6 4 -2 -1 Z";
+  function drawFalseOne(x, y, dir, L, ph) {
+    const black = sh("#16181a");
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.04);
+    ctx.save(); ctx.translate(-46, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); fillWith(P(WHALE_FLUKE), black); ctx.restore();
+    fillWith(P(FALSE_FIN), black);
+    fillWith(P(FALSE_BODY), black);
+    ctx.fillStyle = "rgba(200,205,210,0.18)"; ctx.beginPath(); ctx.ellipse(30, 6, 9, 1.8, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(28, 5); ctx.rotate(0.3 + Math.sin(ph * 1.5) * 0.15); fillWith(P(FALSE_FLIP), black); ctx.restore();
+    ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(40, -2, 1.1, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
   function drawPilotGroup(x, y, dir, L, ph) {
-    for (const [ox, oy, sc] of [[0, 0, 1], [-1.0, -0.25, 0.9], [-0.7, 0.35, 0.85]]) drawDolphinLike(x + dir * ox * L, y + oy * L * 0.5 + Math.sin(ph * 1.5 + ox) * L * 0.05, dir, L * sc, ph + ox, sh("#22262a"), true);
+    for (const [ox, oy, sc] of [[-1.0, -0.3, 0.9], [-0.7, 0.4, 0.85], [0, 0, 1]]) drawPilot(x + dir * ox * L, y + oy * L * 0.5 + Math.sin(ph * 1.5 + ox) * L * 0.05, dir, L * sc, ph + ox);
   }
   function drawFalseKiller(x, y, dir, L, ph) {
-    for (const [ox, oy, sc] of [[0, 0, 1], [-0.95, 0.2, 0.92]]) drawDolphinLike(x + dir * ox * L, y + oy * L * 0.5 + Math.sin(ph * 1.5 + ox) * L * 0.05, dir, L * sc, ph + ox, sh("#16181a"), false);
+    for (const [ox, oy, sc] of [[-0.95, 0.25, 0.92], [0, 0, 1]]) drawFalseOne(x + dir * ox * L, y + oy * L * 0.5 + Math.sin(ph * 1.5 + ox) * L * 0.05, dir, L * sc, ph + ox);
   }
 
   // ---- the system that runs them ---------------------------------------------------

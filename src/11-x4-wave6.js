@@ -510,7 +510,7 @@
 
   // An Atlantic cod: olive and mottled, with three dorsal fins, two anal fins, a pale line along its side and a chin barbel.
   const COD_BODY = "M 50 2 C 48 -6 40 -11 26 -12 C 8 -13 -18 -10 -36 -5 C -40 -4 -42 -2 -42 0 C -42 2 -40 4 -36 5 C -18 9 8 12 26 11 C 40 10 48 8 50 2 Z";
-  const COD_FINS = ["M 22 -11.5 C 20 -22 12 -23 8 -12 Z", "M 4 -12 C 0 -21 -10 -21 -14 -10.5 Z", "M -17 -9.8 C -21 -17 -30 -16 -33 -6.5 Z", "M 2 11.6 C -2 19 -10 19 -14 10.5 Z", "M -17 9.6 C -21 16 -29 15 -33 6.5 Z"];
+  const COD_FINS = ["M 23 -11.5 L 19 -22 C 16 -23 12 -21 8 -12 Z", "M 4 -12 L -1 -21 C -5 -22 -10 -19 -14 -10.5 Z", "M -17 -9.8 L -22 -17 C -26 -17 -30 -13 -33 -6.5 Z", "M 2 11.6 L -3 19 C -7 19 -11 16 -14 10.5 Z", "M -17 9.6 L -22 16 C -26 16 -30 12 -33 6.5 Z"];
   const COD_TAIL = "M 2 -5 L -14 -13 C -11 -5 -11 5 -14 13 L 2 5 Z";
   function drawCod(f) {
     const s = f.s;
@@ -562,16 +562,18 @@
   const HERRING = Array.from({ length: 18 }, (_, i) => [((i * 37) % 19) / 9.5 - 1, ((i * 53) % 17) / 8.5 - 1, i * 1.7]);
   function drawHerring(x, y, dir, L, ph) {
     for (const [ox, oy, p] of HERRING) {
-      const fx = x + dir * ox * L * 2.2 + Math.sin(ph * 1.3 + p) * L * 0.08, fy = y + oy * L * 0.8 + Math.cos(ph + p) * L * 0.06, l = L * (0.85 + (p % 1) * 0.3);
-      ctx.save(); ctx.translate(fx, fy); ctx.scale(dir, 1);
+      const fx = x + dir * ox * L * 2.2 + Math.sin(ph * 1.3 + p) * L * 0.08, fy = y + oy * L * 0.8 + Math.cos(ph + p) * L * 0.06, l = L * (0.8 + (p % 1) * 0.4);
+      ctx.save(); ctx.translate(fx, fy); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph * 0.9 + p * 2) * 0.18);
       ctx.fillStyle = sh("#2e5a6a");
-      ctx.save(); ctx.translate(-l * 0.42, 0); ctx.rotate(Math.sin(ph * 5 + p) * 0.25);
-      ctx.beginPath(); ctx.moveTo(l * 0.02, 0); ctx.lineTo(-l * 0.14, -l * 0.12); ctx.lineTo(-l * 0.08, 0); ctx.lineTo(-l * 0.14, l * 0.12); ctx.closePath(); ctx.fill(); ctx.restore();
-      ctx.fillStyle = sh("#c8d6de"); ctx.beginPath(); ctx.ellipse(0, 0, l * 0.45, l * 0.11, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = sh("#2e5a6a"); ctx.beginPath(); ctx.ellipse(-l * 0.02, -l * 0.055, l * 0.4, l * 0.045, 0, 0, TAU); ctx.fill();
+      // a deeply forked tail
+      ctx.save(); ctx.translate(-l * 0.4, 0); ctx.rotate(Math.sin(ph * 5 + p) * 0.25);
+      ctx.beginPath(); ctx.moveTo(l * 0.03, 0); ctx.lineTo(-l * 0.16, -l * 0.15); ctx.lineTo(-l * 0.08, 0); ctx.lineTo(-l * 0.16, l * 0.15); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.fillStyle = sh("#c8d6de"); ctx.beginPath(); ctx.moveTo(l * 0.46, 0); ctx.bezierCurveTo(l * 0.35, -l * 0.15, -l * 0.2, -l * 0.13, -l * 0.42, 0); ctx.bezierCurveTo(-l * 0.2, l * 0.12, l * 0.35, l * 0.13, l * 0.46, 0); ctx.fill();
+      ctx.fillStyle = sh("#2e5a6a"); ctx.beginPath(); ctx.moveTo(l * 0.44, -l * 0.02); ctx.bezierCurveTo(l * 0.3, -l * 0.13, -l * 0.2, -l * 0.12, -l * 0.4, -l * 0.01); ctx.bezierCurveTo(-l * 0.1, -l * 0.06, l * 0.3, -l * 0.06, l * 0.44, -l * 0.02); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(l * 0.02, -l * 0.1); ctx.lineTo(-l * 0.06, -l * 0.2); ctx.lineTo(-l * 0.1, -l * 0.09); ctx.fill();
       const flash = Math.sin(ph * 2 + p * 3);
-      if (flash > 0.8) { ctx.fillStyle = `rgba(255,255,255,${((flash - 0.8) * 3).toFixed(2)})`; ctx.beginPath(); ctx.ellipse(0, l * 0.02, l * 0.3, l * 0.05, 0, 0, TAU); ctx.fill(); }
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.34, -l * 0.01, l * 0.025, 0, TAU); ctx.fill();
+      if (flash > 0.75) { ctx.fillStyle = `rgba(255,255,255,${((flash - 0.75) * 2.6).toFixed(2)})`; ctx.beginPath(); ctx.ellipse(0, l * 0.02, l * 0.3, l * 0.05, 0, 0, TAU); ctx.fill(); }
+      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.34, -l * 0.01, l * 0.028, 0, TAU); ctx.fill();
       ctx.restore();
     }
   }
@@ -725,7 +727,7 @@
   function drawGreenland(x, y, dir, L, ph) {
     ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(Math.sin(ph) * 0.015);
     ctx.save(); ctx.scale(1, 1.2);
-    sharkForm(L, sh("#4e4a44"), sh("#7a766c"), { upper: 0.12 });
+    sharkForm(L, sh("#4e4a44"), sh("#7a766c"), { upper: 0.12, fin: 0.45 });
     ctx.fillStyle = sh("#36322e");
     for (const [sx, sy] of [[0.25, -0.04], [0.12, -0.05], [0.0, -0.03], [-0.12, -0.04], [-0.22, -0.02], [0.18, -0.01], [0.05, 0.0], [-0.06, -0.01]]) { ctx.beginPath(); ctx.arc(L * sx, L * sy, L * 0.008, 0, TAU); ctx.fill(); }
     ctx.restore();
@@ -1006,7 +1008,7 @@
   const W6_FAUNA = {
     xmastree: { kind: "floor", size: [18, 24], count: [2, 4], draw: drawXmasTree, thumb: 70 },
     coconut: { kind: "floor", size: [20, 26], crawl: 0.1, draw: drawCoconut, thumb: 62 },
-    moorish: { kind: "swim", size: [22, 28], band: [0.3, 0.6], speed: 0.45, draw: drawMoorish, thumb: 50 },
+    moorish: { kind: "swim", size: [22, 28], band: [0.3, 0.6], speed: 0.45, draw: drawMoorish, thumb: 44 },
     angelfish: { kind: "swim", size: [24, 30], band: [0.35, 0.7], speed: 0.35, draw: drawEmperor, thumb: 72 },
     crownthorns: { kind: "floor", size: [20, 26], crawl: 0.02, draw: drawCrownThorns, thumb: 62 },
     hawksbill: { kind: "swim", size: [44, 54], band: [0.35, 0.65], speed: 0.4, draw: drawHawksbill, thumb: 80 },
@@ -1047,7 +1049,7 @@
     drawManowar({ x: 60, cy: 22, dir: 1, s: 46, ph: 1.2, tl: 120 });
   };
   THUMBS.gannet = () => {
-    drawGannet({ x: 56, cy: 40, dir: 1, s: 66, ph: 1.2, st: "plunge", vx: 2, vy: 2.6 });
+    drawGannet({ x: 58, cy: 42, dir: 1, s: 84, ph: 1.2, st: "plunge", vx: 2, vy: 1.8 });
     ctx.fillStyle = "rgba(235,248,255,0.7)"; for (const [x, y, r] of [[22, 16, 2.4], [28, 10, 1.6], [16, 8, 1.4], [32, 20, 1.2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
