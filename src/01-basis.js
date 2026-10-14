@@ -460,6 +460,7 @@
   let rebuilding = false;
   function seen(key, pos) {
     if (!NAMES[key] || rebuilding || !LOGGABLE.has(key)) return;
+    questEvent("seen", key);
     const entry = logbook.get(key);
     if (entry) { entry.n++; saveLog(); return; }
     const before = reached();
@@ -524,6 +525,17 @@
   const rescued = () => store.get("oceaan-gered", 0);
   const waterTier = (id, nl, en, name, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${waterAnimals(name).length} dieren van de ${wordNl}`, `all ${waterAnimals(name).length} animals of the ${wordEn}`],
     prog: () => { const keys = waterAnimals(name); return [keys.filter(k => logbook.has(k)).length, keys.length]; }, reward: ["een sticker in je logboek", "a sticker in your logbook"] });
+  // the photo tasks of the photo book (checked in 14-z-quests.js)
+  const PHOTO_TASKS = [
+    ["whale", "Een walvis of dolfijn en je duiker samen op één foto", "A whale or dolphin and your diver together in one photo"],
+    ["shiny", "Een shiny op de foto", "A shiny in the photo"],
+    ["lamp3", "Drie soorten tegelijk in je lamp", "Three kinds at once in your lamp"],
+    ["freed", "Een dier dat je net hebt bevrijd", "An animal you have just set free"],
+    ["bear", "De ijsbeer die in het water springt", "The polar bear jumping into the water"],
+    ["sardine", "De sardinetrek", "The sardine run"],
+    ["aurora", "Een foto onder het noorderlicht", "A photo under the northern lights"],
+    ["leviathan", "De Leviathan in beeld", "The Leviathan in view"],
+  ];
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
@@ -545,10 +557,12 @@
     { id: "rd", name: ["Redder", "Rescuer"], goal: ["5 dieren uit een spooknet bevrijd", "5 animals freed from a ghost net"], prog: () => [rescued(), 5], reward: ["een sticker, en bevrijde dieren zwemmen eerst een bedankrondje om je duiker", "a sticker, and freed animals first swim a thank-you lap round your diver"] },
     waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "Noordzee", "North Sea"),
     waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "diepzee", "deep sea"),
+    { id: "vh", name: ["Volhouder", "Keeper-upper"], goal: ["7 opdrachten van de dag", "7 quests of the day"], prog: () => [store.get("oceaan-dagen", 0), 7], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
+    { id: "fj", name: ["Fotojager", "Photo hunter"], goal: ["het hele fotoboek", "the whole photo book"], prog: () => [PHOTO_TASKS.filter(x => store.get("oceaan-fotoboek", []).includes(x[0])).length, PHOTO_TASKS.length], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "sk", name: ["Sterrenkijker", "Stargazer"], goal: ["vallende sterren, maansverduistering en noorderlicht", "shooting stars, lunar eclipse and northern lights"], prog: () => [["meteor", "eclipse", "aurora"].filter(k => logbook.has(k)).length, 3], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
   ];
   // the stickers that milestones give, with the animal or moment shown on each
-  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["sk", "meteor"]];
+  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);

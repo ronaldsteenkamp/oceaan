@@ -29,9 +29,10 @@
       <p class="nb-sub">${L("Logboek van een onderzoeker onder water", "Logbook of an underwater researcher")}</p>
       <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
+      ${questHTML()}
       <p class="nb-note">${L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
-      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
+      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>` + waterFilterHTML();
     if (news.length) {
       const show = news.slice(0, 6);
       intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
@@ -53,7 +54,7 @@
     // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
     const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     // in the same order as the tabs: animals, moments, rare things, and then the waters
     for (const title of ["Dieren", "Momenten", "Zeldzaam", "Wateren"]) {
       const grp = LOG_GROUPS.find(g => g[0] === title);
@@ -72,7 +73,8 @@
     const photos = album.length
       ? `<div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" style="--tilt:${tiltOf(ph.id)}deg" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`
       : `<p class="nb-note">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
-    blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, newPage: true, group: "album", jump: "album" });
+    blocks.push({ html: photoBookHTML(), newPage: true, group: "album", jump: "album" });
+    blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, group: "album" });
     blocks.push({ html: `<h4 class="nb-fam">${L("Bewaren", "Keep")}</h4>
       <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
       <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>
@@ -252,7 +254,7 @@
   // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.
   function bookOrder() {
     const shinyMode = logFilter === "shiny";
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     return ["Dieren", "Momenten", "Zeldzaam", "Wateren"].flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
   }
   function detailNeighbours(key) {

@@ -31,6 +31,8 @@ De bron staat in `src/`:
 | `12-frame.js` | de animatielus, snelheid en automatische kwaliteit |
 | `13-controls.js` | aanraken, duiker, foto en knoppen |
 | `14-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |
+| `14-x-notebook.js`, `14-y-fieldnotes.js` | het logboek als notitieboek, en de veldnotities |
+| `14-z-quests.js` | opdracht van de dag, fotoboek en het waterfilter van het logboek |
 | `15-language-and-start.js` | taal, zelftest en opstarten |
 
 ## Bijwerken

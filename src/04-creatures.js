@@ -65,7 +65,8 @@
     for (const sp of scene.species) {
       const S = sp.size * u * 3.2;
       const list = sp.fish;
-      const top = H * (sp.bandC - sp.bandH), bottom = H * (sp.bandC + sp.bandH);
+      const rise = sp.lantern ? Math.min(sp.bandC - sp.bandH - 0.06, 0.25) * night : 0;
+      const top = H * (sp.bandC - sp.bandH - rise), bottom = H * (sp.bandC + sp.bandH - rise);
       for (const f of list) {
         let ax = 0, ay = 0, cx = 0, cy = 0, avx = 0, avy = 0, n = 0;
         for (const g of list) {
@@ -411,7 +412,7 @@
         o.x += o.dir * 0.3 * u * k;
         if (Math.abs(o.goal - o.x) < 12 * u) { o.goal = null; o.holding = true; o.holdT = 20; }
       } else {
-        o.x += o.dir * 0.12 * u * k;
+        o.x += o.dir * 0.12 * u * k * (1 + 2 * night);
         if (Math.random() < 0.002 * k) o.dir *= -1;
       }
     }

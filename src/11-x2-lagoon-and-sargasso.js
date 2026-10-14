@@ -170,15 +170,24 @@
   const PARROT_TAIL = "M 2 0 C -6 -8 -12 -16 -20 -20 C -15 -8 -15 8 -20 20 C -12 16 -6 8 2 0 Z";
   const PARROT_BEAK = "M 47 -5 C 55 -5 60 -1 60 2 C 60 5 55 8 47 7 C 49 3 49 -1 47 -5 Z";
   function drawParrot(p, k) {
-    p.ph += 0.06 * k;
+    // at night it sleeps near the floor, wrapped in a see-through bubble of slime that it blows around itself
+    p.sleep = (p.sleep || 0) + ((night > 0.6 ? 1 : 0) - (p.sleep || 0)) * Math.min(1, 0.01 * k);
+    p.ph += 0.06 * k * (1 - p.sleep * 0.8);
     p.cool -= k / 60;
     if (p.nibble > 0) p.nibble -= k / 60;
-    else if (p.cool <= 0) { p.cool = 4 + Math.random() * 6; p.nibble = 1.4; }
+    else if (p.cool <= 0 && p.sleep < 0.2) { p.cool = 4 + Math.random() * 6; p.nibble = 1.4; }
     if (Math.abs(p.tx - p.x) < 10 * u) p.tx = Math.max(40 * u, Math.min(W - 40 * u, p.x + (Math.random() - 0.5) * 420 * u));
     const dx = p.tx - p.x;
-    if (p.nibble <= 0) { p.x += Math.sign(dx) * 0.5 * u * k; if (Math.abs(dx) > 5 * u) p.dir = Math.sign(dx); }
+    if (p.nibble <= 0) { p.x += Math.sign(dx) * 0.5 * u * k * (1 - p.sleep); if (Math.abs(dx) > 5 * u && p.sleep < 0.5) p.dir = Math.sign(dx); }
     const floor = sandY(p.x), dip = p.nibble > 0 ? Math.sin(Math.min(1, (1.4 - p.nibble) / 1.4) * Math.PI) : 0;
-    const y = floor - 46 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
+    const y = floor - 46 * u + p.sleep * 24 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
+    if (p.sleep > 0.05) {
+      ctx.save(); ctx.globalAlpha = p.sleep;
+      ctx.fillStyle = "rgba(220,240,255,0.14)"; ctx.strokeStyle = "rgba(230,245,255,0.45)"; ctx.lineWidth = 1.2 * u;
+      ctx.beginPath(); ctx.ellipse(p.x, y, s * 0.72, s * 0.42, 0, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.beginPath(); ctx.ellipse(p.x - s * 0.25, y - s * 0.22, s * 0.16, s * 0.05, -0.4, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
     p.cy = y;
     if (dip > 0.95 && k > 0 && Math.random() < 0.3) puff(p.x + p.dir * s * 0.5, floor + 2 * u, 2);
     ctx.save(); ctx.translate(p.x, y); ctx.scale(faceOf(p) * s / 100, s / 100); ctx.rotate(dip * 0.5);

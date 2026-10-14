@@ -1218,7 +1218,7 @@
       if (N.tear >= 1) {
         N.state = "free"; a.vx = N.dir * 2.4 * u;
         seen("ghostnet", [N.x, N.y]); sight(a.key, [a.x, a.cy]);
-        if (!rebuilding) { const before = reached(); store.set("oceaan-gered", rescued() + 1); checkMilestones(before); }
+        if (!rebuilding) { const before = reached(); store.set("oceaan-gered", rescued() + 1); checkMilestones(before); questEvent("rescue"); }
         if (rewards.has("rd") && diverMode) { a.lap = 0; a.lapA = Math.atan2(a.cy - diver.y, a.x - diver.x); }
         toast(L("Bevrijd! Het dier zwemt weg.", "Set free! The animal swims away.")); sfxChest();
       }

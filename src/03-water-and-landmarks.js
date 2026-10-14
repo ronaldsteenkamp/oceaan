@@ -272,7 +272,7 @@
       const hx = 0.13 * L, hy = -0.05 * L;
       const c = Math.cos(g.tilt), s = Math.sin(g.tilt);
       const wx = g.x + g.dir * (hx * c - hy * s), wy = y0 + (hx * s + hy * c);
-      const target = near(wx, wy, 110 * u) ? 0 : 0.55 + 0.45 * Math.sin(t * 0.35 + m.ph);
+      const target = near(wx, wy, 110 * u) ? 0 : 0.35 + 0.45 * night + (0.35 - 0.15 * night) * Math.sin(t * 0.35 + m.ph);
       m.e += (target - m.e) * (target < m.e ? 0.15 : 0.02);
       const len = m.e * 0.13 * L;
       if (len > 2) shinyDraw(m, () => {
@@ -633,6 +633,12 @@
         for (const [x1, y1, x2, y2, w] of p.segs) {
           ctx.lineWidth = w;
           ctx.beginPath(); ctx.moveTo(bx + x1, by + y1); ctx.lineTo(bx + x2, by + y2); ctx.stroke();
+        }
+        // at night the coral opens its polyps: tiny pale stars of tentacles along the branches, catching food
+        if (night > 0.4) {
+          ctx.fillStyle = `rgba(250,240,220,${((night - 0.4) * 1.2).toFixed(2)})`; ctx.beginPath();
+          for (const [x1, y1, x2, y2, w] of p.segs) for (const f of [0.4, 1]) { const px = bx + x1 + (x2 - x1) * f, py = by + y1 + (y2 - y1) * f, r = Math.max(1, w * 0.45); ctx.moveTo(px + r, py); ctx.arc(px, py, r, 0, TAU); }
+          ctx.fill();
         }
       } else if (p.type === "brain") {
         ctx.fillStyle = c;

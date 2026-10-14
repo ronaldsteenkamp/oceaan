@@ -1,5 +1,11 @@
   // ---- sound -------------------------------------------------------------
   const audio = { ac: null, on: false };
+  // the melody and the sounds (the sea, animals and moments) each have their own volume
+  let musicVol = store.get("oceaan-muziek", 1), fxVol = store.get("oceaan-geluiden", 1);
+  function setMixVolume(which, v) {
+    if (which === "music") { musicVol = v; store.set("oceaan-muziek", v); }
+    else { fxVol = v; store.set("oceaan-geluiden", v); if (audio.sea && audio.ac) audio.sea.gain.setTargetAtTime(0.55 * v, audio.ac.currentTime, 0.1); }
+  }
 
   function initAudio() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -26,7 +32,7 @@
     const lfo = ac.createOscillator(), lg = ac.createGain();
     lfo.frequency.value = 0.06; lg.gain.value = 140;
     lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
-    const ng = ac.createGain(); ng.gain.value = 0.55;
+    const ng = ac.createGain(); ng.gain.value = 0.55 * fxVol; audio.sea = ng;
     src.connect(lp); lp.connect(ng); ng.connect(audio.master); src.start();
     audio.next = { bubble: 0, song: 0, whistle: 0, note: 2 };
     return true;
@@ -36,6 +42,9 @@
     const ac = audio.ac;
     if (!ac || !audio.on) return;
     if (!o.freqs.every(([f, at]) => isFinite(f) && isFinite(at)) || !isFinite(o.gain) || !isFinite(o.dur)) return;
+    const mix = o.music ? musicVol : fxVol;
+    if (mix <= 0.001) return;
+    o = Object.assign({}, o, { gain: o.gain * mix });
     const now = ac.currentTime + (o.delay || 0);
     const osc = ac.createOscillator();
     osc.type = o.type || "sine";
@@ -72,6 +81,8 @@
   function noiseBurst(o) {
     const ac = audio.ac;
     if (!ac || !audio.on) return;
+    if (fxVol <= 0.001) return;
+    o = Object.assign({}, o, { gain: o.gain * fxVol });
     const now = ac.currentTime, len = Math.floor(ac.sampleRate * o.dur);
     const b = ac.createBuffer(1, len, ac.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
@@ -111,8 +122,8 @@
   function playNote() {
     const sc = SCALES[water.name] || SCALES.rif;
     const f = (ROOT[water.name] || ROOT.rif) * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
-    tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85 });
-    if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6 });
+    tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85, music: true });
+    if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6, music: true });
   }
   const sfxInk = () => noiseBurst({ freq: 600, dur: 0.5, gain: 0.12, attack: 0.02 });
   const sfxDig = () => noiseBurst({ freq: 350, dur: 0.7, gain: 0.25, attack: 0.03 });

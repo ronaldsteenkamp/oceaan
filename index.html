@@ -355,6 +355,9 @@
   .nb .row button:hover, .nb .nb-back:hover { background: #fff; border-color: rgba(80, 70, 50, 0.6); }
   .nb .row button.primary { background: var(--pencil); color: #fff; border-color: var(--pencil); }
   .nb-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+  .nb-quest { margin: 6px 0 2px; padding: 6px 10px; border: 1px dashed rgba(41, 80, 122, 0.45); border-radius: 6px; font-family: var(--hand); font-size: 18px; color: var(--ink); }
+  .nb-quest b { color: var(--pencil); margin-right: 6px; }
+  .nb-quest span { float: right; color: var(--pencil); }
   .nb-stickers { display: flex; flex-wrap: wrap; gap: 12px; margin: 4px 0 6px; }
   .nb-sticker { margin: 0; width: 84px; text-align: center; font-family: var(--hand); font-size: 14px; line-height: 1.05; color: var(--ink-soft); overflow-wrap: anywhere; }
   .nb-sticker img, .nb-sticker span { display: block; width: 60px; height: 60px; margin: 0 auto 4px; border-radius: 50%; transform: rotate(var(--tilt)); }
@@ -960,6 +963,7 @@
   let rebuilding = false;
   function seen(key, pos) {
     if (!NAMES[key] || rebuilding || !LOGGABLE.has(key)) return;
+    questEvent("seen", key);
     const entry = logbook.get(key);
     if (entry) { entry.n++; saveLog(); return; }
     const before = reached();
@@ -1024,6 +1028,17 @@
   const rescued = () => store.get("oceaan-gered", 0);
   const waterTier = (id, nl, en, name, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${waterAnimals(name).length} dieren van de ${wordNl}`, `all ${waterAnimals(name).length} animals of the ${wordEn}`],
     prog: () => { const keys = waterAnimals(name); return [keys.filter(k => logbook.has(k)).length, keys.length]; }, reward: ["een sticker in je logboek", "a sticker in your logbook"] });
+  // the photo tasks of the photo book (checked in 14-z-quests.js)
+  const PHOTO_TASKS = [
+    ["whale", "Een walvis of dolfijn en je duiker samen op één foto", "A whale or dolphin and your diver together in one photo"],
+    ["shiny", "Een shiny op de foto", "A shiny in the photo"],
+    ["lamp3", "Drie soorten tegelijk in je lamp", "Three kinds at once in your lamp"],
+    ["freed", "Een dier dat je net hebt bevrijd", "An animal you have just set free"],
+    ["bear", "De ijsbeer die in het water springt", "The polar bear jumping into the water"],
+    ["sardine", "De sardinetrek", "The sardine run"],
+    ["aurora", "Een foto onder het noorderlicht", "A photo under the northern lights"],
+    ["leviathan", "De Leviathan in beeld", "The Leviathan in view"],
+  ];
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
@@ -1045,10 +1060,12 @@
     { id: "rd", name: ["Redder", "Rescuer"], goal: ["5 dieren uit een spooknet bevrijd", "5 animals freed from a ghost net"], prog: () => [rescued(), 5], reward: ["een sticker, en bevrijde dieren zwemmen eerst een bedankrondje om je duiker", "a sticker, and freed animals first swim a thank-you lap round your diver"] },
     waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "Noordzee", "North Sea"),
     waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "diepzee", "deep sea"),
+    { id: "vh", name: ["Volhouder", "Keeper-upper"], goal: ["7 opdrachten van de dag", "7 quests of the day"], prog: () => [store.get("oceaan-dagen", 0), 7], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
+    { id: "fj", name: ["Fotojager", "Photo hunter"], goal: ["het hele fotoboek", "the whole photo book"], prog: () => [PHOTO_TASKS.filter(x => store.get("oceaan-fotoboek", []).includes(x[0])).length, PHOTO_TASKS.length], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "sk", name: ["Sterrenkijker", "Stargazer"], goal: ["vallende sterren, maansverduistering en noorderlicht", "shooting stars, lunar eclipse and northern lights"], prog: () => [["meteor", "eclipse", "aurora"].filter(k => logbook.has(k)).length, 3], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
   ];
   // the stickers that milestones give, with the animal or moment shown on each
-  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["sk", "meteor"]];
+  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
@@ -1932,7 +1949,7 @@
       const hx = 0.13 * L, hy = -0.05 * L;
       const c = Math.cos(g.tilt), s = Math.sin(g.tilt);
       const wx = g.x + g.dir * (hx * c - hy * s), wy = y0 + (hx * s + hy * c);
-      const target = near(wx, wy, 110 * u) ? 0 : 0.55 + 0.45 * Math.sin(t * 0.35 + m.ph);
+      const target = near(wx, wy, 110 * u) ? 0 : 0.35 + 0.45 * night + (0.35 - 0.15 * night) * Math.sin(t * 0.35 + m.ph);
       m.e += (target - m.e) * (target < m.e ? 0.15 : 0.02);
       const len = m.e * 0.13 * L;
       if (len > 2) shinyDraw(m, () => {
@@ -2294,6 +2311,12 @@
           ctx.lineWidth = w;
           ctx.beginPath(); ctx.moveTo(bx + x1, by + y1); ctx.lineTo(bx + x2, by + y2); ctx.stroke();
         }
+        // at night the coral opens its polyps: tiny pale stars of tentacles along the branches, catching food
+        if (night > 0.4) {
+          ctx.fillStyle = `rgba(250,240,220,${((night - 0.4) * 1.2).toFixed(2)})`; ctx.beginPath();
+          for (const [x1, y1, x2, y2, w] of p.segs) for (const f of [0.4, 1]) { const px = bx + x1 + (x2 - x1) * f, py = by + y1 + (y2 - y1) * f, r = Math.max(1, w * 0.45); ctx.moveTo(px + r, py); ctx.arc(px, py, r, 0, TAU); }
+          ctx.fill();
+        }
       } else if (p.type === "brain") {
         ctx.fillStyle = c;
         ctx.beginPath(); ctx.ellipse(bx, by, p.r, p.r * 0.75, 0, Math.PI, TAU); ctx.fill();
@@ -2493,7 +2516,8 @@
     for (const sp of scene.species) {
       const S = sp.size * u * 3.2;
       const list = sp.fish;
-      const top = H * (sp.bandC - sp.bandH), bottom = H * (sp.bandC + sp.bandH);
+      const rise = sp.lantern ? Math.min(sp.bandC - sp.bandH - 0.06, 0.25) * night : 0;
+      const top = H * (sp.bandC - sp.bandH - rise), bottom = H * (sp.bandC + sp.bandH - rise);
       for (const f of list) {
         let ax = 0, ay = 0, cx = 0, cy = 0, avx = 0, avy = 0, n = 0;
         for (const g of list) {
@@ -2839,7 +2863,7 @@
         o.x += o.dir * 0.3 * u * k;
         if (Math.abs(o.goal - o.x) < 12 * u) { o.goal = null; o.holding = true; o.holdT = 20; }
       } else {
-        o.x += o.dir * 0.12 * u * k;
+        o.x += o.dir * 0.12 * u * k * (1 + 2 * night);
         if (Math.random() < 0.002 * k) o.dir *= -1;
       }
     }
@@ -4833,6 +4857,12 @@
 
   // ---- sound -------------------------------------------------------------
   const audio = { ac: null, on: false };
+  // the melody and the sounds (the sea, animals and moments) each have their own volume
+  let musicVol = store.get("oceaan-muziek", 1), fxVol = store.get("oceaan-geluiden", 1);
+  function setMixVolume(which, v) {
+    if (which === "music") { musicVol = v; store.set("oceaan-muziek", v); }
+    else { fxVol = v; store.set("oceaan-geluiden", v); if (audio.sea && audio.ac) audio.sea.gain.setTargetAtTime(0.55 * v, audio.ac.currentTime, 0.1); }
+  }
 
   function initAudio() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -4859,7 +4889,7 @@
     const lfo = ac.createOscillator(), lg = ac.createGain();
     lfo.frequency.value = 0.06; lg.gain.value = 140;
     lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
-    const ng = ac.createGain(); ng.gain.value = 0.55;
+    const ng = ac.createGain(); ng.gain.value = 0.55 * fxVol; audio.sea = ng;
     src.connect(lp); lp.connect(ng); ng.connect(audio.master); src.start();
     audio.next = { bubble: 0, song: 0, whistle: 0, note: 2 };
     return true;
@@ -4869,6 +4899,9 @@
     const ac = audio.ac;
     if (!ac || !audio.on) return;
     if (!o.freqs.every(([f, at]) => isFinite(f) && isFinite(at)) || !isFinite(o.gain) || !isFinite(o.dur)) return;
+    const mix = o.music ? musicVol : fxVol;
+    if (mix <= 0.001) return;
+    o = Object.assign({}, o, { gain: o.gain * mix });
     const now = ac.currentTime + (o.delay || 0);
     const osc = ac.createOscillator();
     osc.type = o.type || "sine";
@@ -4905,6 +4938,8 @@
   function noiseBurst(o) {
     const ac = audio.ac;
     if (!ac || !audio.on) return;
+    if (fxVol <= 0.001) return;
+    o = Object.assign({}, o, { gain: o.gain * fxVol });
     const now = ac.currentTime, len = Math.floor(ac.sampleRate * o.dur);
     const b = ac.createBuffer(1, len, ac.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
@@ -4944,8 +4979,8 @@
   function playNote() {
     const sc = SCALES[water.name] || SCALES.rif;
     const f = (ROOT[water.name] || ROOT.rif) * Math.pow(2, sc[Math.floor(Math.random() * sc.length)] / 12) * (night > 0.6 ? 0.5 : 1);
-    tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85 });
-    if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6 });
+    tone({ type: "triangle", freqs: [[f, 0]], dur: 4.5, gain: 0.035, attack: 1.2, release: 2.8, lp: 1600, verb: 0.85, music: true });
+    if (Math.random() < 0.4) tone({ type: "sine", freqs: [[f * 1.5, 0]], dur: 4, gain: 0.02, attack: 1.5, release: 2.2, verb: 0.9, delay: 0.6, music: true });
   }
   const sfxInk = () => noiseBurst({ freq: 600, dur: 0.5, gain: 0.12, attack: 0.02 });
   const sfxDig = () => noiseBurst({ freq: 350, dur: 0.7, gain: 0.25, attack: 0.03 });
@@ -7560,15 +7595,24 @@
   const PARROT_TAIL = "M 2 0 C -6 -8 -12 -16 -20 -20 C -15 -8 -15 8 -20 20 C -12 16 -6 8 2 0 Z";
   const PARROT_BEAK = "M 47 -5 C 55 -5 60 -1 60 2 C 60 5 55 8 47 7 C 49 3 49 -1 47 -5 Z";
   function drawParrot(p, k) {
-    p.ph += 0.06 * k;
+    // at night it sleeps near the floor, wrapped in a see-through bubble of slime that it blows around itself
+    p.sleep = (p.sleep || 0) + ((night > 0.6 ? 1 : 0) - (p.sleep || 0)) * Math.min(1, 0.01 * k);
+    p.ph += 0.06 * k * (1 - p.sleep * 0.8);
     p.cool -= k / 60;
     if (p.nibble > 0) p.nibble -= k / 60;
-    else if (p.cool <= 0) { p.cool = 4 + Math.random() * 6; p.nibble = 1.4; }
+    else if (p.cool <= 0 && p.sleep < 0.2) { p.cool = 4 + Math.random() * 6; p.nibble = 1.4; }
     if (Math.abs(p.tx - p.x) < 10 * u) p.tx = Math.max(40 * u, Math.min(W - 40 * u, p.x + (Math.random() - 0.5) * 420 * u));
     const dx = p.tx - p.x;
-    if (p.nibble <= 0) { p.x += Math.sign(dx) * 0.5 * u * k; if (Math.abs(dx) > 5 * u) p.dir = Math.sign(dx); }
+    if (p.nibble <= 0) { p.x += Math.sign(dx) * 0.5 * u * k * (1 - p.sleep); if (Math.abs(dx) > 5 * u && p.sleep < 0.5) p.dir = Math.sign(dx); }
     const floor = sandY(p.x), dip = p.nibble > 0 ? Math.sin(Math.min(1, (1.4 - p.nibble) / 1.4) * Math.PI) : 0;
-    const y = floor - 46 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
+    const y = floor - 46 * u + p.sleep * 24 * u + dip * 30 * u + Math.sin(p.ph * 0.4) * 4 * u, s = p.s;
+    if (p.sleep > 0.05) {
+      ctx.save(); ctx.globalAlpha = p.sleep;
+      ctx.fillStyle = "rgba(220,240,255,0.14)"; ctx.strokeStyle = "rgba(230,245,255,0.45)"; ctx.lineWidth = 1.2 * u;
+      ctx.beginPath(); ctx.ellipse(p.x, y, s * 0.72, s * 0.42, 0, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.beginPath(); ctx.ellipse(p.x - s * 0.25, y - s * 0.22, s * 0.16, s * 0.05, -0.4, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
     p.cy = y;
     if (dip > 0.95 && k > 0 && Math.random() < 0.3) puff(p.x + p.dir * s * 0.5, floor + 2 * u, 2);
     ctx.save(); ctx.translate(p.x, y); ctx.scale(faceOf(p) * s / 100, s / 100); ctx.rotate(dip * 0.5);
@@ -10515,7 +10559,7 @@
       if (N.tear >= 1) {
         N.state = "free"; a.vx = N.dir * 2.4 * u;
         seen("ghostnet", [N.x, N.y]); sight(a.key, [a.x, a.cy]);
-        if (!rebuilding) { const before = reached(); store.set("oceaan-gered", rescued() + 1); checkMilestones(before); }
+        if (!rebuilding) { const before = reached(); store.set("oceaan-gered", rescued() + 1); checkMilestones(before); questEvent("rescue"); }
         if (rewards.has("rd") && diverMode) { a.lap = 0; a.lapA = Math.atan2(a.cy - diver.y, a.x - diver.x); }
         toast(L("Bevrijd! Het dier zwemt weg.", "Set free! The animal swims away.")); sfxChest();
       }
@@ -12001,6 +12045,8 @@
       <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>${L("Rustmodus", "Calm mode")}</button></div>
       <p class="sum">${L("Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.", "Slower, without big events or messages. Nice as a background.")}</p>
       <div class="row"><label for="vol">${L("Volume", "Volume")}</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
+      <div class="row"><label for="volMusic">${L("Muziek", "Music")}</label><input id="volMusic" type="range" min="0" max="100" value="${Math.round(musicVol * 100)}"></div>
+      <div class="row"><label for="volFx">${L("Geluiden", "Sounds")}</label><input id="volFx" type="range" min="0" max="100" value="${Math.round(fxVol * 100)}"></div>
       <h3>${L("Taal", "Language")}</h3>
       <div class="chips" role="group" aria-label="${L("Taal", "Language")}">
         <button type="button" class="chip pick ${LANG === "nl" ? "on" : ""}" data-lang="nl" aria-pressed="${LANG === "nl"}" lang="nl">Nederlands</button>
@@ -12019,7 +12065,11 @@
     return false;
   }
 
-  panelBody.addEventListener("input", e => { if (e.target.id === "vol") setVolume(Number(e.target.value) / 100); });
+  panelBody.addEventListener("input", e => {
+    if (e.target.id === "vol") setVolume(Number(e.target.value) / 100);
+    if (e.target.id === "volMusic") setMixVolume("music", Number(e.target.value) / 100);
+    if (e.target.id === "volFx") setMixVolume("fx", Number(e.target.value) / 100);
+  });
   panelBody.addEventListener("change", e => {
     if (e.target.id !== "logFile" || !e.target.files || !e.target.files[0]) return;
     const reader = new FileReader();
@@ -12072,6 +12122,7 @@
       openDetail(k, true); return;
     }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
+    if (b.dataset.water !== undefined) { logWater = b.dataset.water; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
@@ -12192,6 +12243,8 @@
     const before = reached();
     album.unshift({ id: String(Date.now()), d: d.toISOString().slice(0, 10), seed, water: water.name, img: c.toDataURL("image/jpeg", 0.78) });
     album.length = Math.min(album.length, ALBUM_MAX);
+    photoBookAdd(lastPhotoHits); lastPhotoHits = [];
+    questEvent("photo");
     toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
     checkMilestones(before);
   }
@@ -12229,6 +12282,7 @@
 
   photoBtn.addEventListener("click", async () => {
     paused = true;
+    lastPhotoHits = photoHits(); // what is in view now counts for the photo book, once the photo is kept
     photoFilter = "none";
     renderPhotoFilters();
     polaroidCanvas = await makePolaroid();
@@ -12310,9 +12364,10 @@
       <p class="nb-sub">${L("Logboek van een onderzoeker onder water", "Logbook of an underwater researcher")}</p>
       <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
+      ${questHTML()}
       <p class="nb-note">${L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
-      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
+      <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>` + waterFilterHTML();
     if (news.length) {
       const show = news.slice(0, 6);
       intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
@@ -12334,7 +12389,7 @@
     // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
     const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     // in the same order as the tabs: animals, moments, rare things, and then the waters
     for (const title of ["Dieren", "Momenten", "Zeldzaam", "Wateren"]) {
       const grp = LOG_GROUPS.find(g => g[0] === title);
@@ -12353,7 +12408,8 @@
     const photos = album.length
       ? `<div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" style="--tilt:${tiltOf(ph.id)}deg" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`
       : `<p class="nb-note">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
-    blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, newPage: true, group: "album", jump: "album" });
+    blocks.push({ html: photoBookHTML(), newPage: true, group: "album", jump: "album" });
+    blocks.push({ html: `<h4 class="nb-fam">${L("Mijn foto's", "My photos")}</h4>` + photos, group: "album" });
     blocks.push({ html: `<h4 class="nb-fam">${L("Bewaren", "Keep")}</h4>
       <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device.")}</p>
       <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>
@@ -12533,7 +12589,7 @@
   // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.
   function bookOrder() {
     const shinyMode = logFilter === "shiny";
-    const show = k => shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true;
+    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     return ["Dieren", "Momenten", "Zeldzaam", "Wateren"].flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
   }
   function detailNeighbours(key) {
@@ -12837,6 +12893,117 @@
     greenland: "It swims very slowly, less than 3 kilometres an hour. Often a small parasite hangs from its eye.",
     leatherback: "Leatherbacks eat mostly jellyfish. That is why plastic bags in the sea are so dangerous for them.",
   };
+  // ---- the quest of the day, the photo book and the water filter ------------------------
+  // Every day has its own small quest, the same for everyone on that date. The photo book has photo tasks that are
+  // checked against what is in view when you take a photo.
+  const famKeys = fam => { const s = LOG_SUBS["Dieren"].find(x => x[0] === fam); return s ? s[2] : []; };
+  const QUESTS = [
+    { kind: "fam", fam: "Roggen", n: 3, nl: "Zie 3 roggen", en: "See 3 rays" },
+    { kind: "fam", fam: "Haaien en grote vissen", n: 2, nl: "Zie 2 haaien of grote vissen", en: "See 2 sharks or big fish" },
+    { kind: "fam", fam: "Walvissen en dolfijnen", n: 2, nl: "Zie 2 walvissen of dolfijnen", en: "See 2 whales or dolphins" },
+    { kind: "fam", fam: "Inktvissen", n: 2, nl: "Zie 2 inktvissen of octopussen", en: "See 2 squid or octopuses" },
+    { kind: "fam", fam: "Kwallen", n: 2, nl: "Zie 2 kwallen", en: "See 2 jellies" },
+    { kind: "fam", fam: "Zoogdieren en vogels", n: 2, nl: "Zie 2 zeezoogdieren of zeevogels", en: "See 2 sea mammals or seabirds" },
+    { kind: "fam", fam: "Reptielen", n: 1, nl: "Zie een zeeschildpad, zeeslang of krokodil", en: "See a sea turtle, sea snake or crocodile" },
+    { kind: "rescue", n: 1, nl: "Bevrijd een dier uit een spooknet", en: "Free an animal from a ghost net" },
+    { kind: "shiny", n: 1, nl: "Vind een shiny", en: "Find a shiny" },
+    { kind: "moment", n: 2, nl: "Beleef 2 momenten", en: "Witness 2 moments" },
+    { kind: "water", n: 3, nl: "Duik in 3 verschillende wateren", en: "Dive in 3 different waters" },
+    { kind: "photo", n: 2, nl: "Bewaar 2 foto's in je album", en: "Keep 2 photos in your album" },
+  ];
+  const QUEST_KEY = "oceaan-dagopdracht";
+  function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+  function todayQuest() {
+    const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
+    return QUESTS[(day * 7 + 3) % QUESTS.length];
+  }
+  function questState() {
+    let s = store.get(QUEST_KEY, null);
+    if (!s || s.day !== todayStr()) s = { day: todayStr(), have: 0, waters: [], done: false };
+    return s;
+  }
+  function questEvent(kind, key) {
+    if (rebuilding) return;
+    const q = todayQuest(), s = questState();
+    if (s.done) return;
+    let hit = false;
+    if (kind === "seen") {
+      if (q.kind === "fam") hit = famKeys(q.fam).includes(key);
+      else if (q.kind === "shiny") hit = key.startsWith("shiny:");
+      else if (q.kind === "moment") hit = MOMENT_KEYS.includes(key) || key === "aurora";
+      else if (q.kind === "water" && key.startsWith("w:") && !s.waters.includes(key)) { s.waters.push(key); hit = true; }
+    } else hit = kind === q.kind;
+    if (!hit) return;
+    s.have++;
+    if (s.have >= q.n) {
+      s.done = true; store.set(QUEST_KEY, s);
+      const before = reached();
+      store.set("oceaan-dagen", store.get("oceaan-dagen", 0) + 1);
+      toast(L(`Opdracht van de dag gelukt: ${q.nl.toLowerCase()}!`, `Quest of the day done: ${q.en.toLowerCase()}!`));
+      sfxShiny();
+      checkMilestones(before);
+    } else {
+      store.set(QUEST_KEY, s);
+      toast(L(`Opdracht van de dag: ${s.have} van ${q.n}`, `Quest of the day: ${s.have} of ${q.n}`));
+    }
+  }
+  function questHTML() {
+    const q = todayQuest(), s = questState();
+    return `<p class="nb-quest"><b>${L("Opdracht van vandaag", "Today's quest")}</b> ${L(q.nl, q.en)} <span>${s.done ? L("✓ gelukt", "✓ done") : `${s.have}/${q.n}`}</span></p>`;
+  }
+
+  // ---- the photo book ---------------------------------------------------------------
+  let lastPhotoHits = [];
+  function photoHits() {
+    const S = scene, hits = [], on = (x, y) => isFinite(x) && isFinite(y) && x > 0 && x < W && y > 0 && y < H;
+    const v = S.visitor;
+    if (diverMode && v && famKeys("Walvissen en dolfijnen").includes(v.type) && on(v.x, v.y + (v.yOff || 0))) hits.push("whale");
+    if ((S.shinies || []).some(e => { try { const p = e.get(); return (!e.alive || e.alive()) && p && on(p[0], p[1]); } catch (err) { return false; } })) hits.push("shiny");
+    if (S.leviathan && S.leviathan.active && S.leviathan.eye && on(S.leviathan.eye[0], S.leviathan.eye[1])) hits.push("leviathan");
+    if (S.aurora && S.aurora.active && S.aurora.fade > 0.4) hits.push("aurora");
+    if (S.net && S.net.active && S.net.state === "free") hits.push("freed");
+    if (diverMode) {
+      const kinds = new Set();
+      for (const f of S.fauna || []) if (f.cy !== undefined && lit(f.x, f.cy, f.s * 0.3)) kinds.add(f.key);
+      for (const sp of S.species) if (sp.fish.some(f => lit(f.x, f.y, 4 * u))) kinds.add(sp.lantern ? "lantern" : "fish:" + sp.main);
+      for (const j of S.jellies) if (lit(j.x, j.y, j.r)) kinds.add("jelly");
+      if (v && lit(v.x, v.y + (v.yOff || 0), v.size * 0.3)) kinds.add(v.type);
+      if (kinds.size >= 3) hits.push("lamp3");
+    }
+    if ((S.fauna || []).some(f => f.key === "polarbear" && f.st === "jump" && on(f.x, f.cy || 0))) hits.push("bear");
+    if (S.sardines && S.sardines.active) hits.push("sardine");
+    return hits;
+  }
+  const photoBookDone = () => store.get("oceaan-fotoboek", []);
+  function photoBookAdd(hits) {
+    const done = photoBookDone(), fresh = hits.filter(h => !done.includes(h));
+    if (!fresh.length) return;
+    const before = reached();
+    store.set("oceaan-fotoboek", [...done, ...fresh]);
+    for (const h of fresh) { const task = PHOTO_TASKS.find(x => x[0] === h); if (task) toast(L(`Foto-opdracht gelukt: ${task[1].toLowerCase()}!`, `Photo task done: ${task[2].toLowerCase()}!`)); }
+    checkMilestones(before);
+  }
+  function photoBookHTML() {
+    const done = photoBookDone();
+    return `<h4 class="nb-fam">${L("Fotoboek", "Photo book")} <span>${PHOTO_TASKS.filter(x => done.includes(x[0])).length}/${PHOTO_TASKS.length}</span></h4>
+      <p class="nb-note">${L("Maak een foto en bewaar hem in je album: wat er dan in beeld is, telt.", "Take a photo and keep it in your album: what is in view at that moment counts.")}</p>
+      <ul class="nb-check">` + PHOTO_TASKS.map(([id, nl, en]) => `<li class="${done.includes(id) ? "on" : ""}"><span class="box" aria-hidden="true">${done.includes(id) ? "✓" : ""}</span><span class="what">${L(nl, en)}</span></li>`).join("") + `</ul>`;
+  }
+
+  // ---- the water filter of the logbook ---------------------------------------------------
+  let logWater = "";
+  function inLogWater(k) {
+    if (!logWater) return true;
+    const w = WATERS.find(x => x.name === logWater);
+    if (!w) return true;
+    if (k.startsWith("w:")) return k === "w:" + logWater;
+    if (k === "fish" || k === "jelly") return true;
+    return (w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k);
+  }
+  function waterFilterHTML() {
+    return `<h4 class="nb-fam">${L("Water", "Water")}</h4><div class="filters" role="group" aria-label="${L("Water", "Water")}">` +
+      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-water="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+  }
   // ---- language ----------------------------------------------------------
   // Sets every fixed text on the page in the current language.
   function applyLang() {
@@ -13012,7 +13179,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=68").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=70").catch(() => {}));
   }
 </script>
 </body>

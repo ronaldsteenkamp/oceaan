@@ -535,6 +535,8 @@
       <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>${L("Rustmodus", "Calm mode")}</button></div>
       <p class="sum">${L("Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.", "Slower, without big events or messages. Nice as a background.")}</p>
       <div class="row"><label for="vol">${L("Volume", "Volume")}</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
+      <div class="row"><label for="volMusic">${L("Muziek", "Music")}</label><input id="volMusic" type="range" min="0" max="100" value="${Math.round(musicVol * 100)}"></div>
+      <div class="row"><label for="volFx">${L("Geluiden", "Sounds")}</label><input id="volFx" type="range" min="0" max="100" value="${Math.round(fxVol * 100)}"></div>
       <h3>${L("Taal", "Language")}</h3>
       <div class="chips" role="group" aria-label="${L("Taal", "Language")}">
         <button type="button" class="chip pick ${LANG === "nl" ? "on" : ""}" data-lang="nl" aria-pressed="${LANG === "nl"}" lang="nl">Nederlands</button>
@@ -553,7 +555,11 @@
     return false;
   }
 
-  panelBody.addEventListener("input", e => { if (e.target.id === "vol") setVolume(Number(e.target.value) / 100); });
+  panelBody.addEventListener("input", e => {
+    if (e.target.id === "vol") setVolume(Number(e.target.value) / 100);
+    if (e.target.id === "volMusic") setMixVolume("music", Number(e.target.value) / 100);
+    if (e.target.id === "volFx") setMixVolume("fx", Number(e.target.value) / 100);
+  });
   panelBody.addEventListener("change", e => {
     if (e.target.id !== "logFile" || !e.target.files || !e.target.files[0]) return;
     const reader = new FileReader();
@@ -606,6 +612,7 @@
       openDetail(k, true); return;
     }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
+    if (b.dataset.water !== undefined) { logWater = b.dataset.water; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
@@ -726,6 +733,8 @@
     const before = reached();
     album.unshift({ id: String(Date.now()), d: d.toISOString().slice(0, 10), seed, water: water.name, img: c.toDataURL("image/jpeg", 0.78) });
     album.length = Math.min(album.length, ALBUM_MAX);
+    photoBookAdd(lastPhotoHits); lastPhotoHits = [];
+    questEvent("photo");
     toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
     checkMilestones(before);
   }
@@ -763,6 +772,7 @@
 
   photoBtn.addEventListener("click", async () => {
     paused = true;
+    lastPhotoHits = photoHits(); // what is in view now counts for the photo book, once the photo is kept
     photoFilter = "none";
     renderPhotoFilters();
     polaroidCanvas = await makePolaroid();

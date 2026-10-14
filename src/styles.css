@@ -333,6 +333,9 @@
   .nb .row button:hover, .nb .nb-back:hover { background: #fff; border-color: rgba(80, 70, 50, 0.6); }
   .nb .row button.primary { background: var(--pencil); color: #fff; border-color: var(--pencil); }
   .nb-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+  .nb-quest { margin: 6px 0 2px; padding: 6px 10px; border: 1px dashed rgba(41, 80, 122, 0.45); border-radius: 6px; font-family: var(--hand); font-size: 18px; color: var(--ink); }
+  .nb-quest b { color: var(--pencil); margin-right: 6px; }
+  .nb-quest span { float: right; color: var(--pencil); }
   .nb-stickers { display: flex; flex-wrap: wrap; gap: 12px; margin: 4px 0 6px; }
   .nb-sticker { margin: 0; width: 84px; text-align: center; font-family: var(--hand); font-size: 14px; line-height: 1.05; color: var(--ink-soft); overflow-wrap: anywhere; }
   .nb-sticker img, .nb-sticker span { display: block; width: 60px; height: 60px; margin: 0 auto 4px; border-radius: 50%; transform: rotate(var(--tilt)); }
