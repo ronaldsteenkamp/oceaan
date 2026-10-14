@@ -6,46 +6,61 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 
 ## Bediening
 
-- De pijltjesknop onderaan (of R) geeft een nieuwe oceaan. In het begin kan dat elke tien minuten; elke mijlpaal van vondsten maakt dat korter, tot tien seconden.
+- De pijltjesknop onderaan (of R) geeft een nieuwe oceaan. De eerste vijf zijn vrij; daarna wacht je tweeënhalve minuut, en elke mijlpaal van vondsten maakt dat korter, tot vijf seconden (één seconde als je alles hebt).
 - Roep de duiker met D; hij verschijnt bij je cursor. Alles wat in het licht van zijn lamp komt, gaat in je logboek. De dieren reageren alleen op de duiker.
 - Houd ingedrukt om de vissen te voeren.
-- Tik op een schatkist, een fles, een reuzenschelp of een verstopt zeepaardje. Tik op de zoekopdracht bovenin voor uitleg.
-- Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan.
+- Zwem met de duiker naar een schatkist om hem te openen. Tik op een fles (schatkaart), een reuzenschelp of een verstopt zeepaardje.
+- Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan. Dezelfde code geeft op elk scherm en in elke browser dezelfde oceaan.
 - Met de duiker zoek je met de sonarknop (of Q) naar iets zeldzaams: een gouden echo wijst de richting.
 - Met een toetsenbord: pijltjes sturen de duiker, E roept de duiker en opent wat hij aanraakt, Q stuurt een sonarpuls uit, L opent het logboek, F maakt een foto, G zet het geluid aan of uit, R geeft een nieuwe oceaan (ingedrukt houden: zelf het water kiezen, met de beloning Wereldreiziger).
+- Je logboek staat in je browser. Achterin het logboek, onder Bewaren, sla je alles op als bestand (vondsten, album, fotoboek, geredde dieren) en laad je het op een ander apparaat weer in.
 
 ## Hoe het in elkaar zit
 
-De bron staat in `src/`:
+De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde aan elkaar in één `(() => { ... })()`. Functies uit een later bestand zijn daardoor overal bruikbaar, maar een `const` pas na zijn eigen regel: zet tabellen dus vóór de code die ze bij het laden gebruikt.
 
 | Bestand | Inhoud |
 | --- | --- |
 | `head.html`, `styles.css`, `body.html` | titel, stijl en opmaak van de bediening |
-| `01-basis.js` | wateren, namen, logboek, mijlpalen, meldingen |
-| `02-scene.js` | het opbouwen van een oceaan uit een seed |
-| `03` tot en met `10` | water, bodem, dieren, bezoekers, geluid, licht en shiny's |
-| `11-expansion.js` | mangrove, grot, nieuwe vondsten, dieren, bezoekers, momenten en zeldzame dingen |
-| `11-x2-lagoon-and-sargasso.js` | lagune, Sargassozee en de derde ronde nieuwe dingen |
-| `11-x3-fauna.js` | de vierde ronde dieren en het systeem dat ze laat zwemmen, kruipen en drijven |
-| `11-x4-wave6.js` | de zesde ronde: dertig dieren, de klimmende ijsbeer, zes momenten en twee legendes |
-| `12-frame.js` | de animatielus, snelheid en automatische kwaliteit |
-| `13-controls.js` | aanraken, duiker, foto en knoppen |
-| `14-logbook-and-menu.js` | logboek, detailkaarten, album en "Maken en delen" |
-| `14-x-notebook.js`, `14-y-fieldnotes.js` | het logboek als notitieboek, en de veldnotities |
-| `14-z-quests.js` | opdracht van de dag, fotoboek en het waterfilter van het logboek |
-| `15-language-and-start.js` | taal, zelftest en opstarten |
+| `00-animals.js` | **het dierenregister**: per dier naam, familie, wetenschappelijke naam, wateren, shiny, weetje en veldnotitie |
+| `01-basis.js` | wateren, vondsten, momenten, logboekvolgorde, mijlpalen, meldingen |
+| `02-scene.js` | een oceaan opbouwen uit een seed (met zijstromen, zodat de seed niet van het scherm afhangt) |
+| `03` tot en met `08` | water en bodem, de eerste dieren en bezoekers, logboekplaatjes, oppervlak en licht, geluid |
+| `09-moments-and-diver.js` | vulkaan, stad, bait-ball, onweer, vliegende vissen, de duiker, schatkaart |
+| `10-shiny.js` | shiny's: kansen, kleurenschema's en het tekenen ervan |
+| `11-mangrove-and-cave.js` | mangrove, grot en de tweede ronde dieren, bezoekers en momenten |
+| `12-lagoon-and-sargasso.js` | lagune, Sargassozee, de derde ronde, noorderlicht en de sonar |
+| `13-fauna-system.js` | het systeem dat dieren laat zwemmen, kruipen en drijven (`FAUNA`, `FAUNA_VIS`) en de vierde ronde |
+| `14-wave6.js` | de zesde ronde: dertig dieren, de klimmende ijsbeer, zes momenten en twee legendes |
+| `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
+| `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
+| `17-logbook-and-menu.js` | weetjes van de rest, detailkaarten, album en "Maken en delen" |
+| `18-notebook.js` | het logboek als notitieboek |
+| `19-quests.js` | opdracht van de dag, fotoboek, waterfilter, logboeken vergelijken |
+| `20-language-and-start.js` | taal, zelftest en opstarten |
 
-## Bijwerken
+## Bouwen en testen
 
 ```
+pip install pillow
 python build.py
 ```
 
-Dit voegt `src/` samen tot `../oceaan.html` (de versie die ook als claude.ai-artifact wordt gepubliceerd), draait de zelftest in een onzichtbare Chrome, maakt schermafbeeldingen in `checks/` en schrijft daarna de app (`index.html`, `sw.js`, manifest en iconen). Vindt de zelftest een fout, dan wordt er niets gebouwd. Het versienummer gaat elke keer omhoog, zodat geïnstalleerde apps de nieuwe versie ophalen en een melding tonen.
+Dit bouwt `dist/` (de pagina `oceaan.html`, die ook als claude.ai-artifact wordt gepubliceerd, en de app: `index.html`, `sw.js`, manifest en iconen), draait de zelftest in een onzichtbare Chrome en maakt schermafbeeldingen in `checks/`. Vindt de zelftest een fout, dan wordt er niets gebouwd. Chrome wordt vanzelf gevonden; anders zet je het pad in `CHROME`. `python check.py` controleert alleen.
 
-Alleen controleren kan ook: `python check.py`.
+De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk logboekplaatje en controleert ook: of elk dier compleet geregistreerd is, of dezelfde seed op computer, telefoon en liggende telefoon dezelfde oceaan geeft, terugkerende shiny dieren, en of er tekenfouten zijn ingeslikt.
 
-Een nieuw dier toegevoegd? `python dier_check.py sleutel` kijkt of het overal geregistreerd staat: namen, logboek, shiny, aquarium, een water, tekening, weetje en veldnotitie. De zelftest vangt dat niet altijd op.
+**Publiceren gaat vanzelf.** Bij elke push naar `main` bouwt en test een GitHub Action (`.github/workflows/pages.yml`) de oceaan en zet `dist/` op GitHub Pages. De versie is een vingerafdruk van de pagina: alleen bij een echte wijziging krijgen geïnstalleerde apps de melding "nieuwe versie".
+
+**Meten:** open de oceaan met `?meten` achter het adres (`https://ronaldsteenkamp.github.io/oceaan/?meten`). Linksboven staan dan de fps, de tekentijd per frame, het deel trage frames en het kwaliteitsniveau. Tik erop om een kort rapport te kopiëren.
+
+## Een nieuw dier toevoegen
+
+1. **`src/00-animals.js`**: voeg een record toe aan het eind van zijn familie, met `nl`, `en`, `family`, `sci`, `life` (`{ water: kans }`) of `visits` (`{ water: kaartjes }` voor een bezoeker), `shiny` (1 op ...), `pal` (shiny-kleuren "#oud>#nieuw ..." voor elke kleur van de tekening) en/of `hue`, `fact` en `note` (`[nl, en]`). De bovenkant van het bestand legt elk veld uit.
+2. **Tekenen**: schrijf een `function drawX(f)` (of `drawX(x, y, dir, L, ph)` voor een bezoeker) in een bestand bij zijn ronde, bijvoorbeeld `14-wave6.js`, en zet het dier in `FAUNA` (met `kind`, `size`, `draw`, `thumb`) of `FAUNA_VIS`. Bodemdieren ook in `FLOOR_THUMBS`. Gebruik hex-kleuren met `sh("#...")`, zodat het water en de shiny ze kunnen omzetten.
+3. **`python build.py`**: de zelftest zegt precies wat er nog mist ("dier x: mist ...").
+
+Een nieuw dier krijgt vanzelf een plek achteraan in de aquariumcode, dus oude aquariumlinks blijven werken.
 
 ## Credits
 
