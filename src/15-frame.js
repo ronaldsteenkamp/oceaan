@@ -15,34 +15,100 @@
       if (name === "back") { drawSand(); for (const g of S.ground) if (STATIC.has(g.kind)) GROUND_DRAW[g.kind](g, 0); }
       else drawSandLip();
       ctx = saved;
+      // only the part with something on it is copied each frame: from the top of its content down (the rest is empty)
+      c.top = layerTop(c);
       S.layers[name] = c;
     }
+    if (c.top >= c.height) return;
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.drawImage(c, 0, 0);
+    ctx.drawImage(c, 0, c.top, c.width, c.height - c.top, 0, c.top, c.width, c.height - c.top);
     ctx.restore();
   }
 
-  // When frames come in slowly, render fewer pixels; the scene itself stays the same.
-  const perf = { acc: 0, n: 0, wait: 4000 };
+  // The first row of a layer that has anything drawn on it (looked up once, when the layer is made).
+  function layerTop(c) {
+    try {
+      const data = c.getContext("2d").getImageData(0, 0, c.width, c.height).data, rowLen = c.width * 4;
+      for (let y = 0; y < c.height; y += 2) {
+        for (let i = y * rowLen + 3; i < (y + 1) * rowLen; i += 16) if (data[i]) return Math.max(0, y - 4);
+      }
+      return c.height;
+    } catch (e) { return 0; }
+  }
+
+  // When frames come in slowly, first render fewer pixels, then draw a little less detail (fewer specks of
+  // drifting snow and glints); when there is room again, it steps back up. The ocean itself stays the same.
+  const perf = { acc: 0, n: 0, wait: 4000, good: 0 };
+  let lightDetail = false;
+  function setDprCap(cap) {
+    dprCap = cap;
+    dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+  }
   function checkQuality(dtMs) {
     if (perf.wait > 0) { perf.wait -= dtMs; return; }
     perf.acc += dtMs; perf.n++;
     if (perf.acc < 3000) return;
     const avg = perf.acc / perf.n;
     perf.acc = 0; perf.n = 0;
-    if (avg > 24 && dprCap > 1) {
-      dprCap = dprCap > 1.5 ? 1.5 : 1;
-      dpr = Math.min(window.devicePixelRatio || 1, dprCap);
-      canvas.width = Math.floor(W * dpr);
-      canvas.height = Math.floor(H * dpr);
-      perf.wait = 2000;
-    }
+    if (avg > 24) {
+      perf.good = 0; perf.wait = 2000;
+      if (!lightDetail) lightDetail = true;
+      else if (dprCap > 1) setDprCap(dprCap > 1.5 ? 1.5 : 1);
+    } else if (avg < 18) {
+      // smooth for half a minute: step back up, sharpness first
+      if (++perf.good < 10) return;
+      perf.good = 0;
+      if (dprCap < 2) setDprCap(dprCap < 1.5 ? 1.5 : 2);
+      else lightDetail = false;
+    } else perf.good = 0;
   }
 
   document.addEventListener("visibilitychange", () => {
     if (audio.ac) { if (document.hidden) audio.ac.suspend(); else if (audio.on) audio.ac.resume(); }
   });
+
+  // two see-through colours laid on top of each other, as one colour: [r, g, b, alpha] -> "rgba(...)"
+  function mixVeils(a, b) {
+    if (!a && !b) return null;
+    if (!a || !b) { const [r, g, bl, al] = a || b; return al > 0.004 ? `rgba(${r},${g},${bl},${al.toFixed(3)})` : null; }
+    const A = 1 - (1 - a[3]) * (1 - b[3]);
+    if (A < 0.004) return null;
+    const ch = i => Math.round((b[3] * b[i] + (1 - b[3]) * a[3] * a[i]) / A);
+    return `rgba(${ch(0)},${ch(1)},${ch(2)},${A.toFixed(3)})`;
+  }
+
+  // ---- the measuring screen: open the page with ?meten (for example .../oceaan/?meten) ----
+  // Shows the frames per second, how long one frame of drawing takes, how many frames were slow and the quality level.
+  // Tap it to copy a short report.
+  const meter = /[?&]meten\b/.test(location.search) ? { frames: 0, work: 0, slow: 0, maxWork: 0, since: performance.now(), all: { frames: 0, work: 0, slow: 0, ms: 0 }, el: null } : null;
+  function meterTick(dtMs, workMs) {
+    const m = meter;
+    m.frames++; m.work += workMs; m.maxWork = Math.max(m.maxWork, workMs); if (dtMs > 20) m.slow++;
+    m.all.frames++; m.all.work += workMs; m.all.ms += dtMs; if (dtMs > 20) m.all.slow++;
+    const now = performance.now();
+    if (now - m.since < 1000) return;
+    if (!m.el) {
+      m.el = document.createElement("pre");
+      m.el.style.cssText = "position:fixed;left:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:60;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;color:#d8f4ff;background:rgba(2,10,20,.78);border-radius:8px;pointer-events:auto;white-space:pre";
+      m.el.addEventListener("click", () => { navigator.clipboard && navigator.clipboard.writeText(meterReport()).then(() => toast("Meting gekopieerd"), () => {}); });
+      document.body.append(m.el);
+    }
+    const fps = m.frames * 1000 / (now - m.since);
+    m.el.textContent = `${fps.toFixed(0)} fps · tekenen ${(m.work / m.frames).toFixed(1)} ms (max ${m.maxWork.toFixed(1)})\n` +
+      `traag (>20 ms): ${(100 * m.slow / m.frames).toFixed(0)}% · ${water.name}\n` +
+      `${canvas.width}×${canvas.height} · dpr ${dpr} · ${lightDetail ? "minder detail" : "vol detail"}`;
+    m.frames = 0; m.work = 0; m.slow = 0; m.maxWork = 0; m.since = now;
+  }
+  function meterReport() {
+    const a = meter.all;
+    return `Oceaan meting ${new Date().toISOString().slice(0, 16)} · ${navigator.userAgent}\n` +
+      `scherm ${W}×${H} css, canvas ${canvas.width}×${canvas.height}, dpr ${dpr} (toestel ${window.devicePixelRatio})\n` +
+      `${a.frames} frames: ${(a.frames * 1000 / a.ms).toFixed(1)} fps gemiddeld, tekenen ${(a.work / a.frames).toFixed(2)} ms per frame, ${(100 * a.slow / a.frames).toFixed(1)}% trager dan 20 ms\n` +
+      `kwaliteit: ${lightDetail ? "minder detail" : "vol detail"}, water ${water.name}, seed ${seed}`;
+  }
 
   let selfTesting = false;
   const brushLeaks = new Set();
@@ -55,7 +121,9 @@
     last = now;
     if (paused || discoverPause || document.hidden) return;
     // whatever goes wrong while drawing, the next frame starts with a clean brush (otherwise one error can wash out the screen)
+    const w0 = meter ? performance.now() : 0;
     try { step(dtMs); } finally {
+      if (meter) meterTick(dtMs, performance.now() - w0);
       // the self-test wants to know when a drawing forgot to put the brush back
       if (selfTesting && (ctx.globalCompositeOperation !== "source-over" || ctx.globalAlpha !== 1 || ctx.shadowBlur !== 0)) brushLeaks.add(`${water.name}: ${ctx.globalCompositeOperation}/${ctx.globalAlpha}/${ctx.shadowBlur}`);
       ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; ctx.shadowBlur = 0;
@@ -168,19 +236,19 @@
     updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
-    // the seasons colour the water: green with plankton in spring, murky in autumn, cold and blue in a northern winter
-    if (S.season === "herfst") { ctx.fillStyle = `rgba(70,90,50,${0.12 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
-    else if (S.season === "lente") { ctx.fillStyle = `rgba(60,150,80,${0.09 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
-    else if (S.season === "winter" && S.cold) { ctx.fillStyle = `rgba(170,200,235,${0.09 * (1 - night * 0.5)})`; ctx.fillRect(0, 0, W, H); }
+    // the seasons colour the water: green with plankton in spring, murky in autumn, cold and blue in a northern winter;
+    // then the night darkens it. Both veils are mixed into one colour and laid over the screen in one go.
+    let tint = null;
+    if (S.season === "herfst") tint = [70, 90, 50, 0.12 * (1 - night * 0.6)];
+    else if (S.season === "lente") tint = [60, 150, 80, 0.09 * (1 - night * 0.6)];
+    else if (S.season === "winter" && S.cold) tint = [170, 200, 235, 0.09 * (1 - night * 0.5)];
+    // murky or crowded water never goes fully black, so there is always something to see
+    const darkRaw = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;
+    const dark = darkRaw > 0.01 ? Math.min(water.denseKelp || S.season === "herfst" ? 0.36 : 0.5, darkRaw) : 0;
+    const veil = mixVeils(tint, dark > 0 ? [2, 6, 22, dark] : null);
+    if (veil) { ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
-    const dark = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;
-    if (dark > 0.01) {
-      // murky or crowded water never goes fully black, so there is always something to see
-      const floorCap = water.denseKelp || S.season === "herfst" ? 0.36 : 0.5;
-      ctx.fillStyle = `rgba(2,6,22,${Math.min(floorCap, dark)})`;
-      ctx.fillRect(0, 0, W, H);
-    }
     drawMoon();
     drawLights(k);
     drawGlowtide(k);

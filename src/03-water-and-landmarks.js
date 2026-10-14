@@ -26,12 +26,15 @@
   function drawSnow(k) {
     ctx.fillStyle = `rgb(${water.snow})`;
     const paths = [];
-    for (const p of scene.snow) {
+    const snow = scene.snow;
+    for (let i = 0; i < snow.length; i++) {
+      const p = snow[i];
       p.y += p.sp * u * k;
       p.x += Math.sin(t * 0.6 + p.ph) * 0.12 * k + current * 1.2 * k;
       if (p.y > H + 4) { p.y = -4; p.x = Math.random() * W; }
       if (p.x > W + 4) p.x = -4;
       if (p.x < -4) p.x = W + 4;
+      if (lightDetail && i & 1) continue; // on a slow device half the specks are enough
       // specks are grouped by brightness, so each group is filled in one go
       const lv = Math.min(SNOW_LEVELS - 1, Math.round(p.a * SNOW_LEVELS));
       const path = paths[lv] || (paths[lv] = new Path2D());
@@ -73,6 +76,7 @@
         ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
       }
       ctx.stroke();
+      if (lightDetail && alpha < 1) continue; // on a slow device the kelp at the back has no leaves
       ctx.beginPath();
       for (let i = 2; i < pts.length; i += 2) {
         const [px, py, a] = pts[i];
