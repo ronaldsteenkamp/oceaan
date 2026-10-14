@@ -478,7 +478,11 @@
   const RAY_TAIL = "M 0 -2.6 C -40 -1.8 -80 -0.6 -100 0 C -80 0.8 -40 2 0 2.6 Z";
   const RAY_PELVIC = "M -46 -5 C -54 -10 -62 -8 -62 -2 L -50 0 Z";
   function drawRay(r, k) {
-    r.x += r.dir * r.speed * u * k;
+    // startled by the diver, it beats its wings, lifts off and glides away fast
+    const gy0 = Math.min(sandY(r.x), H * (1 - scene.sand.frac) + 12 * u) + 6 * u;
+    if (!(r.flee > 0) && near(r.x, gy0 - r.lift, 130 * u) > 0) { r.flee = 1; r.dir = Math.sign(r.x - diver.x) || r.dir; r.baseLift = r.baseLift === undefined ? r.lift : r.baseLift; puff(r.x, gy0, 5); }
+    if (r.flee > 0) { r.flee = Math.max(0, r.flee - 0.006 * k); r.lift = r.baseLift + Math.sin(r.flee * Math.PI) * 40 * u; r.ph += 0.08 * k; }
+    r.x += r.dir * r.speed * u * k * (1 + (r.flee || 0) * 4);
     r.ph += 0.05 * k;
     if (r.dir > 0 && r.x > W + r.s * 2) r.x = -r.s * 2;
     if (r.dir < 0 && r.x < -r.s * 2) r.x = W + r.s * 2;

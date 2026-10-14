@@ -531,7 +531,8 @@
     const turnAt = se.shiny ? -se.s * 0.4 : se.s; // a shiny seal turns before it leaves the screen
     if ((se.dir > 0 && se.x > W + turnAt) || (se.dir < 0 && se.x < -turnAt)) {
       // a seal that has swum off comes back as a different seal
-      se.dir *= -1; se.y0 = H * (0.25 + Math.random() * 0.3);
+      se.dir *= -1;
+      if (!se.shiny) se.y0 = H * (0.25 + Math.random() * 0.3);
       if (!se.shiny) maybeShiny("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]);
     }
     let y = se.y0 + Math.sin(se.ph) * 70 * u;

@@ -319,6 +319,9 @@
 
   // A Japanese spider crab picks its way over the floor on very long legs.
   function drawSpider(c, k) {
+    const alarm = near(c.x, sandY(c.x) - c.s, 130 * u) > 0;
+    c.alarm = (c.alarm || 0) + ((alarm ? 1 : 0) - (c.alarm || 0)) * Math.min(1, 0.08 * k);
+    if (alarm) c.pause = Math.max(c.pause, 0.5);
     if (c.pause > 0) c.pause -= k / 60;
     else {
       c.x += c.dir * c.speed * u * k; c.leg += 0.12 * k;
@@ -331,7 +334,7 @@
     ctx.strokeStyle = body; ctx.lineWidth = Math.max(1, s * 0.06); ctx.lineCap = "round"; ctx.lineJoin = "round";
     for (let i = 0; i < 4; i++) {
       for (const side of [-1, 1]) {
-        const ph = c.leg + i * 0.8 + (side > 0 ? Math.PI : 0), lift = Math.max(0, Math.sin(ph)) * s * 0.15;
+        const ph = c.leg + i * 0.8 + (side > 0 ? Math.PI : 0), lift = Math.max(0, Math.sin(ph)) * s * 0.15 + (i === 0 ? c.alarm * s * 0.9 : 0);
         const kx = side * s * (0.6 + i * 0.25), ky = -s * (1.0 + i * 0.05) - lift, fx = side * s * (1.1 + i * 0.35) + Math.cos(ph) * s * 0.1;
         ctx.beginPath(); ctx.moveTo(side * s * 0.15, -s * 0.5); ctx.lineTo(kx, ky); ctx.lineTo(fx, -lift * 0.3); ctx.stroke();
         ctx.fillStyle = joint; ctx.beginPath(); ctx.arc(kx, ky, s * 0.04, 0, TAU); ctx.fill();

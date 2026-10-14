@@ -315,24 +315,28 @@
   // Hovers slowly from spot to spot, its venomous spines spread like a fan.
   function drawLionfish(f, k) {
     f.ph += 0.05 * k;
+    // when the diver comes close it stops, turns to face it and spreads its venomous fins: a warning
+    const threat = near(f.x, f.cy || f.y, 130 * u) > 0;
+    f.flare = (f.flare || 0) + ((threat ? 1 : 0) - (f.flare || 0)) * Math.min(1, 0.06 * k);
     if (Math.abs(f.tx - f.x) < 10 * u) f.tx = Math.max(40 * u, Math.min(W - 40 * u, f.x + (Math.random() - 0.5) * 400 * u));
     const dx = f.tx - f.x;
-    f.x += Math.sign(dx) * 0.25 * u * k;
-    if (Math.abs(dx) > 5 * u) f.dir = Math.sign(dx);
-    const y = f.y + Math.sin(f.ph * 0.4) * 6 * u, s = f.s;
+    f.x += Math.sign(dx) * 0.25 * u * k * (1 - f.flare);
+    if (threat) f.dir = Math.sign(diver.x - f.x) || f.dir;
+    else if (Math.abs(dx) > 5 * u) f.dir = Math.sign(dx);
+    const y = f.y + Math.sin(f.ph * 0.4) * 6 * u, s = f.s, fan = 0.75 + 0.3 * f.flare, spike = 1 + 0.45 * f.flare;
     f.cy = y;
     ctx.save(); ctx.translate(f.x, y); ctx.scale(faceOf(f), 1);
     ctx.fillStyle = "rgba(220,150,120,0.35)";
     ctx.beginPath(); ctx.moveTo(s * 0.05, s * 0.05);
-    for (let i = 0; i <= 8; i++) { const a = 2.2 + i * 0.16; ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.75, s * 0.05 + Math.sin(a) * s * 0.75); }
+    for (let i = 0; i <= 8; i++) { const a = 2.2 - f.flare * 0.3 + i * (0.16 + f.flare * 0.05); ctx.lineTo(s * 0.05 + Math.cos(a) * s * fan, s * 0.05 + Math.sin(a) * s * fan); }
     ctx.closePath(); ctx.fill();
     ctx.strokeStyle = sh("#e8c8b0"); ctx.lineWidth = Math.max(0.6, s * 0.025);
     for (let i = 0; i < 9; i++) {
-      const a = 2.2 + i * 0.16 + Math.sin(f.ph + i * 0.3) * 0.05;
-      ctx.beginPath(); ctx.moveTo(s * 0.05, s * 0.05); ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.75, s * 0.05 + Math.sin(a) * s * 0.75); ctx.stroke();
+      const a = 2.2 - f.flare * 0.3 + i * (0.16 + f.flare * 0.05) + Math.sin(f.ph + i * 0.3) * 0.05;
+      ctx.beginPath(); ctx.moveTo(s * 0.05, s * 0.05); ctx.lineTo(s * 0.05 + Math.cos(a) * s * fan, s * 0.05 + Math.sin(a) * s * fan); ctx.stroke();
     }
     ctx.strokeStyle = sh("#c84a3a");
-    for (let i = 0; i < 9; i++) { const x0 = -s * 0.25 + i * s * 0.07; ctx.beginPath(); ctx.moveTo(x0, -s * 0.12); ctx.lineTo(x0 - s * 0.08, -s * (0.45 + Math.sin(i * 1.7) * 0.08)); ctx.stroke(); }
+    for (let i = 0; i < 9; i++) { const x0 = -s * 0.25 + i * s * 0.07; ctx.beginPath(); ctx.moveTo(x0, -s * 0.12); ctx.lineTo(x0 - s * 0.08 * (1 - f.flare * 0.6), -s * (0.45 + Math.sin(i * 1.7) * 0.08) * spike); ctx.stroke(); }
     ctx.fillStyle = "rgba(220,150,120,0.5)";
     ctx.beginPath(); ctx.moveTo(-s * 0.38, 0); ctx.lineTo(-s * 0.62, -s * 0.13); ctx.lineTo(-s * 0.62, s * 0.13); ctx.closePath(); ctx.fill();
     ctx.fillStyle = sh("#f2e6d8");
@@ -394,7 +398,15 @@
   const LOB_CLAW = "M 0 -6 C 12 -10 26 -9 34 -5 L 42 -6 C 42 -2 38 2 32 3 C 22 6 10 6 0 6 Z";
   const LOB_FINGER = "M 26 -5 C 33 -10 41 -12 47 -10 C 41 -7 33 -4 28 -2 Z";
   function drawLobster(l, k) {
-    if (l.pause > 0) l.pause -= k / 60;
+    l.flickCool = (l.flickCool || 0) - k / 60;
+    if (l.flickCool <= 0 && near(l.x, sandY(l.x) - l.s * 0.2, 110 * u) > 0) {
+      l.flick = 1; l.flickCool = 4; l.dir = Math.sign(diver.x - l.x) || l.dir; // it faces the danger and shoots away backwards
+      puff(l.x, sandY(l.x) + 3 * u, 6);
+    }
+    if (l.flick > 0) {
+      l.x -= l.dir * 4.5 * u * l.flick * k; l.flick = Math.max(0, l.flick - 0.05 * k);
+      l.x = Math.max(scene.floorL + 30 * u, Math.min(scene.floorR - 30 * u, l.x));
+    } else if (l.pause > 0) l.pause -= k / 60;
     else {
       l.x += l.dir * l.speed * u * k; l.leg += 0.25 * k;
       if (Math.random() < 0.003 * k) l.pause = 1 + Math.random() * 3;

@@ -323,8 +323,9 @@
       const cx = gp.state === "clean" ? gp.x + Math.cos(t * 2.5 + i * 2.1) * L * 0.85 : sx + Math.cos(t * 1.3 + i * 2.1) * 22 * u;
       const cy = gp.state === "clean" ? gp.y + Math.sin(t * 3.2 + i * 2.1) * L * 0.35 : sy + Math.sin(t * 1.9 + i * 2.1) * 10 * u;
       const prev = st["c" + i] || [cx - 1, cy];
-      st["c" + i] = [cx, cy];
-      shinyDraw(st.cleanObjs && st.cleanObjs[i], () => drawCleaner(cx, cy, Math.atan2(cy - prev[1], cx - prev[0] || 0.01), 5 * u, t * 12 + i));
+      const nx = prev[0] + (cx - prev[0]) * Math.min(1, 0.12 * k), ny = prev[1] + (cy - prev[1]) * Math.min(1, 0.12 * k);
+      st["c" + i] = [nx, ny];
+      shinyDraw(st.cleanObjs && st.cleanObjs[i], () => drawCleaner(nx, ny, Math.atan2(ny - prev[1], nx - prev[0] || 0.01), 5 * u, t * 12 + i));
     }
   }
 

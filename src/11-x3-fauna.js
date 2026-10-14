@@ -224,7 +224,7 @@
     ctx.fillStyle = "#101010"; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(20, sd * 7, 2.4, 3.4, 0, 0, TAU); ctx.fill(); }
     ctx.restore();
     // a faint crackle now and then
-    if (Math.sin(f.ph * 0.7) > 0.97) { ctx.save(); ctx.translate(f.x, f.cy); ctx.strokeStyle = "rgba(200,230,255,0.8)"; ctx.lineWidth = 1 * u; ctx.beginPath(); ctx.moveTo(-s * 0.2, -s * 0.14); ctx.lineTo(-s * 0.1, -s * 0.24); ctx.lineTo(0, -s * 0.16); ctx.lineTo(s * 0.1, -s * 0.26); ctx.stroke(); ctx.restore(); }
+    if (Math.sin(f.ph * 0.7) > 0.97 || (near(f.x, f.cy, 100 * u) > 0 && Math.random() < 0.25)) { ctx.save(); ctx.translate(f.x, f.cy); ctx.strokeStyle = "rgba(200,230,255,0.8)"; ctx.lineWidth = 1 * u; ctx.beginPath(); ctx.moveTo(-s * 0.2, -s * 0.14); ctx.lineTo(-s * 0.1, -s * 0.24); ctx.lineTo(0, -s * 0.16); ctx.lineTo(s * 0.1, -s * 0.26); ctx.stroke(); ctx.restore(); }
   }
   // A guitarfish, seen from above at a slant: a shovel-shaped front like a ray, and the back half of a shark.
   const GUIT_BODY = "M 50 0 C 48 -5 40 -12 26 -18 C 14 -22 4 -21 -2 -15 C -6 -10 -10 -7 -16 -6 L -60 -3 L -60 3 L -16 6 C -10 7 -6 10 -2 15 C 4 21 14 22 26 18 C 40 12 48 5 50 0 Z";
@@ -289,9 +289,11 @@
     const s = f.s;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
     const body = sh("#b84a3a"), mottle = sh("#7a2a20"), pale = sh("#e8b8a0");
-    // fan-shaped pectoral fin
+    // fan-shaped pectoral fin, spread wide as a warning when the diver comes close
+    f.flare = (f.flare || 0) + ((near(f.x, f.cy, 110 * u) > 0 ? 1 : 0) - (f.flare || 0)) * Math.min(1, 0.06 * frameK);
+    const fan = 1 + f.flare * 0.6;
     ctx.fillStyle = "rgba(200,110,90,0.75)";
-    ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.12); for (let i = 0; i <= 6; i++) { const a = 2.0 + i * 0.22; ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.35, -s * 0.12 + Math.sin(a) * s * 0.2); } ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.12); for (let i = 0; i <= 6; i++) { const a = 2.0 - f.flare * 0.4 + i * (0.22 + f.flare * 0.08); ctx.lineTo(s * 0.05 + Math.cos(a) * s * 0.35 * fan, -s * 0.12 + Math.sin(a) * s * 0.2 * fan); } ctx.closePath(); ctx.fill();
     ctx.fillStyle = body;
     ctx.beginPath(); ctx.moveTo(s * 0.45, -s * 0.12); ctx.quadraticCurveTo(s * 0.3, -s * 0.38, -s * 0.1, -s * 0.3); ctx.quadraticCurveTo(-s * 0.4, -s * 0.2, -s * 0.5, -s * 0.12);
     ctx.lineTo(-s * 0.62, -s * 0.24); ctx.lineTo(-s * 0.62, 0); ctx.lineTo(-s * 0.5, -s * 0.04); ctx.quadraticCurveTo(0, s * 0.02, s * 0.45, -s * 0.12); ctx.fill();
@@ -318,7 +320,8 @@
     // a grumpy, downturned mouth and eyes on top
     ctx.strokeStyle = sh("#3a3228"); ctx.lineWidth = Math.max(0.8, s * 0.03);
     ctx.beginPath(); ctx.moveTo(s * 0.2, -s * 0.08); ctx.quadraticCurveTo(s * 0.35, -s * 0.15, s * 0.48, -s * 0.06); ctx.stroke();
-    const open = Math.sin(f.ph * 0.3) > 0.6 ? 1 : 0.25;
+    // its eyes stay half shut, but open wide when the diver comes close
+    const open = near(f.x, f.cy, 120 * u) > 0 || Math.sin(f.ph * 0.3) > 0.85 ? 1 : 0.25;
     for (const ex of [0.12, 0.28]) {
       ctx.fillStyle = "#e8d8a0"; ctx.beginPath(); ctx.ellipse(s * ex, -s * 0.33, s * 0.045, s * 0.045 * open, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(s * ex, -s * 0.33, s * 0.02, s * 0.02 * open, 0, 0, TAU); ctx.fill();
@@ -392,7 +395,9 @@
 
   function drawCucumber(f) {
     const s = f.s;
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f), 1);
+    // touched by the diver's light it pulls itself together into a short, fat lump
+    f.shrink = (f.shrink || 0) + ((near(f.x, f.cy, 100 * u) > 0 ? 1 : 0) - (f.shrink || 0)) * Math.min(1, 0.04 * frameK);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * (1 - f.shrink * 0.3), 1 + f.shrink * 0.25);
     ctx.fillStyle = sh("#6a4030");
     ctx.beginPath(); ctx.ellipse(0, -s * 0.15, s * 0.5, s * 0.16, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#8a5a40"); for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.arc(s * (-0.38 + i * 0.095), -s * (0.25 + (i % 2) * 0.03), s * 0.03, 0, TAU); ctx.fill(); }
@@ -892,7 +897,12 @@
       return;
     }
     // swimmers and gliders wander between spots
-    if (Math.abs(f.tx - f.x) < 12 * u) f.tx = Math.max(edge, Math.min(W - edge, f.x + (Math.random() - 0.5) * 380 * u));
+    if (Math.abs(f.tx - f.x) < 12 * u) {
+      const way = Math.random() < 0.75 ? f.dir : -f.dir, dist = (120 + Math.random() * 280) * u;
+      let nx = f.x + way * dist;
+      if (nx < edge || nx > W - edge) nx = f.x - way * dist;
+      f.tx = Math.max(edge, Math.min(W - edge, nx));
+    }
     const dx = f.tx - f.x;
     // swim towards the next spot: pick up speed, and slow down when nearly there
     const want = Math.sign(dx) * F.speed * u * Math.min(1, Math.abs(dx) / (50 * u) + 0.25);

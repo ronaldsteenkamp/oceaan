@@ -285,7 +285,7 @@
       if ((f.wait -= dt) <= 0 || scared) {
         f.hop = 0.001;
         if (scared) f.dir = Math.sign(f.x - diver.x) || 1;
-        else if (Math.random() < 0.3) f.dir *= -1;
+        else if (Math.random() < 0.12) f.dir *= -1;
         if (f.x < scene.floorL + edge) f.dir = 1;
         if (f.x > scene.floorR - edge) f.dir = -1;
       }
@@ -932,8 +932,8 @@
       f.cy = waveY(f.x);
       f.cool -= dt;
       if (f.cool <= 0) {
-        const fl = scene.floes.find(o => Math.abs(o.x - f.x) < o.w * 0.35 && o.x > 60 * u && o.x < W - 60 * u);
-        if (fl) { f.st = "climb"; f.floe = fl; f.off = Math.sign(f.x - fl.x || 1) * fl.w * 0.42; f.dir = -Math.sign(f.off); f.tm = 0; }
+        const fl = scene.floes.find(o => Math.abs(o.x - f.x) > o.w * 0.3 && Math.abs(o.x - f.x) < o.w * 0.48 && o.x > 60 * u && o.x < W - 60 * u);
+        if (fl) { f.st = "climb"; f.floe = fl; f.off = f.x - fl.x; f.dir = -Math.sign(f.off); f.tm = 0; }
         else f.cool = 1;
       }
     } else if (f.st === "climb") {
@@ -995,6 +995,20 @@
   FAUNA.polarbear.move = moveBear;
   FAUNA.polarbear.draw = drawBearAll;
 
+  // ---- reacting to the diver -----------------------------------------------------------
+  // most fish swim out of the way of the diver
+  function shyFish(f) {
+    if (near(f.x, f.cy || 0, 110 * u) > 0) f.tx = Math.max(30 * u, Math.min(W - 30 * u, f.x + (Math.sign(f.x - diver.x) || 1) * 170 * u));
+  }
+  // a garibaldi defends its patch of kelp: it swims right up to the diver and hangs there, facing it
+  function boldFish(f) {
+    if (near(f.x, f.cy || 0, 170 * u) > 0) { const side = Math.sign(f.x - diver.x) || 1; f.tx = diver.x + side * 50 * u; if (Math.abs(f.tx - f.x) < 14 * u) f.dir = -side; }
+  }
+  // a brittle star wriggles away over the sand
+  function crawlAway(f, F, k) {
+    if (near(f.x, f.cy || 0, 100 * u) > 0) { f.dir = Math.sign(f.x - diver.x) || f.dir; f.x = Math.max(scene.floorL + 30 * u, Math.min(scene.floorR - 30 * u, f.x + f.dir * 0.35 * u * k)); }
+  }
+
   // ---- the table of new animals -------------------------------------------------------
   const W6_FAUNA = {
     xmastree: { kind: "floor", size: [18, 24], count: [2, 4], draw: drawXmasTree, thumb: 70 },
@@ -1031,16 +1045,21 @@
     leatherback: { size: () => (140 + Math.random() * 40) * u, speed: 0.55, draw: drawLeatherback, thumb: 96 },
   };
   Object.assign(FAUNA, W6_FAUNA);
+  for (const key of ["triggerfish", "wrasse", "surgeonfish", "mandarinfish", "needlefish", "guitarfish", "moorish", "angelfish", "cod", "hatchet", "icefish", "leopardshark"]) FAUNA[key].react = shyFish;
+  FAUNA.garibaldi.react = boldFish;
+  FAUNA.brittlestar.react = crawlAway;
   Object.assign(FAUNA_VIS, W6_VISITORS);
   hookFauna(W6_FAUNA, W6_VISITORS);
   // a few pictures that need a little help to fit
+  THUMBS.sealion = () => drawSealion({ x: 60, y: 44, dir: 1, size: 100, ph: 1.31, yOff: 0 });
+  FLOOR_THUMBS.add("ray");
   THUMBS.manowar = () => {
     ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(0, 22); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 22 + Math.sin(x * 0.15) * 1.5); ctx.stroke();
     drawManowar({ x: 60, cy: 22, dir: 1, s: 46, ph: 1.2, tl: 120 });
   };
   THUMBS.gannet = () => {
-    drawGannet({ x: 58, cy: 42, dir: 1, s: 84, ph: 1.2, st: "plunge", vx: 2, vy: 1.8 });
+    drawGannet({ x: 60, cy: 44, dir: 1, s: 70, ph: 1.2, st: "plunge", vx: 2, vy: 1.6 });
     ctx.fillStyle = "rgba(235,248,255,0.7)"; for (const [x, y, r] of [[22, 16, 2.4], [28, 10, 1.6], [16, 8, 1.4], [32, 20, 1.2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
