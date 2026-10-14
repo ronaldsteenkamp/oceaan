@@ -62,6 +62,20 @@
   }
 
   const pick = arr => arr[Math.floor(rng() * arr.length)];
+  // A seed must give the same ocean on every screen and in every browser. Everything whose number of dice rolls
+  // depends on the size of the screen (how many fish fit, where things land) rolls from its own side stream,
+  // so the main stream (water, season, which animals) never shifts.
+  function hashStr(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619); return h >>> 0; }
+  function sub(name, fn) {
+    const keep = rng;
+    rng = mulberry32((seed ^ hashStr(name)) >>> 0);
+    try { return fn(); } finally { rng = keep; }
+  }
+  // a fair shuffle with a fixed number of rolls (sort with a random comparator rolls a different number of times per browser)
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    return arr;
+  }
   const range = (a, b) => a + rng() * (b - a);
   const chance = p => rng() < p;
   // The creatures only react to the diver, never to the mouse or a finger.
@@ -135,15 +149,20 @@
     return parts;
   }
 
+  // Everything gets a spot: where it fits without touching anything, or else (on a narrow screen) where it has the most room.
   function placeGround(items) {
     const placed = [];
     for (const it of items) {
-      if (scene.floorR - scene.floorL < it.w * 0.6) continue;
+      const lo = scene.floorL + Math.min(it.w * 0.3, (scene.floorR - scene.floorL) * 0.3), hi = scene.floorR - Math.min(it.w * 0.3, (scene.floorR - scene.floorL) * 0.3);
+      let best = null, bestRoom = -Infinity;
       for (let tries = 0; tries < 25; tries++) {
-        const x = range(scene.floorL + it.w * 0.3, scene.floorR - it.w * 0.3);
-        const ok = placed.every(p => Math.abs(p.x - x) > (p.w + it.w) * 0.5 + 10 * u);
-        if (ok) { it.x = x; placed.push(it); break; }
+        const x = range(lo, hi);
+        const room = placed.reduce((m, p) => Math.min(m, Math.abs(p.x - x) - (p.w + it.w) * 0.5 - 10 * u), Infinity);
+        if (room > bestRoom) { bestRoom = room; best = x; }
+        if (room > 0) break;
       }
+      it.x = best;
+      placed.push(it);
     }
     return placed;
   }
@@ -181,7 +200,7 @@
     if (chance(P.ruins)) big.push({ kind: "ruins", w: 170 * u, s: range(70, 95) * u, broken: range(0.4, 0.7) });
     if (chance(P.coral)) { const n = 2 + Math.floor(rng() * 2); for (let i = 0; i < n; i++) small.push({ kind: "coral", w: 120 * u, parts: buildCoral(110 * u) }); }
     if (chance(P.anemone)) small.push({ kind: "anemone", w: 70 * u, s: range(26, 36) * u, color: pick(["#d98fcf", "#9fd36b", "#f0a35e"]), clown: water.name === "rif" });
-    if (chance(P.chest)) small.push({ kind: "chest", w: 90 * u, s: range(34, 46) * u, sparkles: Array.from({ length: 6 }, () => [range(-1, 1), range(-1.6, -0.6), range(0, TAU)]) });
+    if (chance(P.chest)) small.push({ kind: "chest", w: 90 * u, s: range(34, 46) * u, mimic: chance(0.1), sparkles: Array.from({ length: 6 }, () => [range(-1, 1), range(-1.6, -0.6), range(0, TAU)]) });
     if (chance(P.anchor)) small.push({ kind: "anchor", w: 80 * u, s: range(55, 80) * u, tilt: range(-0.5, 0.5), dir: chance(0.5) ? 1 : -1 });
     if (chance(P.cannon)) small.push({ kind: "cannon", w: 90 * u, s: range(50, 70) * u, tilt: range(-0.12, 0.12), dir: chance(0.5) ? 1 : -1 });
     if (chance(P.rocks)) small.push({ kind: "rocks", w: 110 * u, stones: Array.from({ length: 3 + Math.floor(rng() * 3) }, () => [range(-45, 45) * u, range(16, 38) * u, range(10, 28) * u]) });
@@ -201,12 +220,15 @@
     addWave2Ground(s, P, big, small);
     // on a phone the big landmarks shrink so more of them fit side by side
     if (W < 600) for (const g of big) if (g.kind !== "city") { g.w *= 0.7; if (g.s) g.s *= 0.7; }
-    s.ground = placeGround([...big, ...small.sort(() => rng() - 0.5)]);
+    shuffle(small);
+    s.ground = sub("place", () => placeGround([...big, ...small]));
     s.ground.forEach(g => { if (g.kind === "eels") g.eels.sort((a, b) => a.dx - b.dx); });
     s.wreck = s.ground.find(g => g.kind === "wreck");
     s.vent = s.ground.find(g => g.kind === "vent");
-    if (s.wreck) s.wreck.moray = chance(Lf.moray) ? { e: 0, ph: range(0, TAU) } : null;
-    if (s.vent) s.vent.worms = Array.from({ length: 9 }, () => ({ dx: range(-55, 55) * u, h: range(14, 30) * u, e: 1 }));
+    // the moray is rolled whether or not the wreck found a spot, so the dice stay in step on every screen
+    const morayHere = chance(Lf.moray), morayPh = range(0, TAU);
+    if (s.wreck) s.wreck.moray = morayHere ? { e: 0, ph: morayPh } : null;
+    if (s.vent) s.vent.worms = sub("worms", () => Array.from({ length: 9 }, () => ({ dx: range(-55, 55) * u, h: range(14, 30) * u, e: 1 })));
 
     // Kelp grows in clumps.
     const clumps = Array.from({ length: (water.denseKelp ? 6 : 2) + Math.floor(rng() * 3) }, () => rng() * W);
@@ -217,11 +239,11 @@
       segs: 14, ph: range(0, TAU), w: range(2.5, 5) * u * (layer ? 1.15 : 0.9),
       color: pick(water.kelp),
     }));
-    s.kelpBack = makeKelp(Math.round(8 + 14 * density), 0);
-    s.kelpFront = makeKelp(Math.round(2 + 5 * density), 1);
+    s.kelpBack = sub("kelp", () => makeKelp(Math.round(8 + 14 * density), 0));
+    s.kelpFront = sub("kelp2", () => makeKelp(Math.round(2 + 5 * density), 1));
 
     // Schools of fish, one species per school.
-    const colors = water.fish.slice().sort(() => rng() - 0.5);
+    const colors = shuffle(water.fish.slice());
     const nSpecies = 2 + (chance(0.6) ? 1 : 0);
     s.species = [];
     for (let i = 0; i < nSpecies; i++) {
@@ -233,25 +255,29 @@
         count: Math.round(Math.max(8, Math.min(60, (58 - size * 3.4) * density))),
         fish: [],
       };
-      const cx = rng() * W, cy = H * sp.bandC;
-      for (let k = 0; k < sp.count; k++) {
-        const a = range(0, TAU);
-        sp.fish.push({
-          x: cx + (rng() - 0.5) * 160 * u, y: cy + (rng() - 0.5) * 80 * u,
-          vx: Math.cos(a) * sp.speed * u, vy: Math.sin(a) * sp.speed * u * 0.3,
-          ph: range(0, TAU), scale: range(0.85, 1.15),
-        });
-      }
+      sub("school" + i, () => {
+        const cx = rng() * W, cy = H * sp.bandC;
+        for (let k = 0; k < sp.count; k++) {
+          const a = range(0, TAU);
+          sp.fish.push({
+            x: cx + (rng() - 0.5) * 160 * u, y: cy + (rng() - 0.5) * 80 * u,
+            vx: Math.cos(a) * sp.speed * u, vy: Math.sin(a) * sp.speed * u * 0.3,
+            ph: range(0, TAU), scale: range(0.85, 1.15),
+          });
+        }
+      });
       s.species.push(sp);
     }
     s.species.sort((a, b) => a.size - b.size);
     if (chance(Lf.lantern)) {
       const sp = { main: "#1c2633", dark: "#0b1119", size: 5, speed: 1.4, bandC: range(0.3, 0.6), bandH: 0.15, count: Math.round(8 + 28 * density), fish: [], lantern: true };
+      sub("lanterns", () => {
       const cx = rng() * W, cy = H * sp.bandC;
       for (let k = 0; k < sp.count; k++) {
         const a = range(0, TAU);
         sp.fish.push({ x: cx + (rng() - 0.5) * 160 * u, y: cy + (rng() - 0.5) * 80 * u, vx: Math.cos(a) * sp.speed * u, vy: Math.sin(a) * sp.speed * u * 0.3, ph: range(0, TAU), scale: range(0.85, 1.15) });
       }
+      });
       s.species.unshift(sp);
     }
     // a small food chain: the smallest fish graze plankton, the biggest school hunts them
@@ -262,15 +288,15 @@
       if (big.size >= 8.5) {
         big.predator = true; big.prey = small; small.hunter = big;
         big.fish.length = Math.min(big.fish.length, 12);
-        big.fish.forEach(f => { f.hunger = range(5, 20); });
+        sub("hunger", () => big.fish.forEach(f => { f.hunger = range(5, 20); }));
       }
     }
 
-    s.jellies = Array.from({ length: Math.round((water.glow ? range(4, 8) : range(2, 5)) * Math.max(0.7, density)) }, () => ({
+    s.jellies = sub("jellies", () => Array.from({ length: Math.round((water.glow ? range(4, 8) : range(2, 5)) * Math.max(0.7, density)) }, () => ({
       x: rng() * W, y: rng() * H * 0.8, r: range(12, 30) * u,
       ph: range(0, TAU), sp: range(0.7, 1.2), drift: range(0, TAU),
       col: pick(water.jelly), tl: range(2.2, 3.4),
-    }));
+    })));
 
     // Creatures on and near the bottom.
     const crabColors = ["#d9543b", "#e07a3a", "#b84a5a", "#c9603c"];
@@ -352,13 +378,14 @@
     s.mantis = chance(Lf.mantis) ? { x: rng() * W, s: range(13, 17) * u, cool: 0, strike: 0 } : null;
     s.archer = chance(Lf.archer) && water.surface ? { x: rng() * W, vx: chance(0.5) ? 0.5 : -0.5, s: range(13, 17) * u, cool: 1, face: 1 } : null;
     const host = s.ground.find(g => ["coral", "rocks", "arch", "anemone"].includes(g.kind));
-    s.station = host && chance(Lf.cleaners) ? {
+    const cleanersHere = chance(Lf.cleaners);
+    s.station = host && cleanersHere ? sub("station", () => ({
       x: host.x,
       grouper: { x: rng() * W, y: H * 0.45, wx: rng() * W, wy: H * range(0.35, 0.6), face: 1, state: "wander", timer: range(6, 15), s: range(26, 34) * u, ph: 0 },
-    } : null;
-    s.hidden = s.kelpBack.length >= 3 ? Array.from({ length: 3 }, () => ({
+    })) : null;
+    s.hidden = s.kelpBack.length >= 3 ? sub("hidden", () => Array.from({ length: 3 }, () => ({
       k: Math.floor(rng() * s.kelpBack.length), seg: 5 + Math.floor(rng() * 7), found: false, dir: chance(0.5) ? 1 : -1, flash: 0,
-    })) : [];
+    }))) : [];
     s.moon = { x: W * range(0.2, 0.8), phase: chance(0.3) ? 1 : range(0.15, 0.9) };
     s.storm = { enabled: !!water.surface, active: false, age: 0, timer: range(50, 130), flash: 0, nextFlash: 0 };
     s.bait = { enabled: water.name !== "diepzee", active: false, timer: range(35, 70), fish: [], att: [] };
@@ -367,19 +394,22 @@
     s.taskT0 = t;
     s.spawnTimer = range(25, 50);
     s.treasure = null;
-    if (s.ground.some(g => g.kind === "bottle")) {
-      for (let i = 0; i < 60 && !s.treasure; i++) {
-        const x = range(s.floorL + 40 * u, s.floorR - 40 * u), room = i < 30 ? 45 * u : 20 * u;
-        if (s.ground.every(g => g.kind === "bottle" || Math.abs(g.x - x) > g.w * 0.5 + room)) s.treasure = { x, dug: false };
+    // a bottle always holds a map: the treasure lies in the freest spot of sand (on a narrow screen it may lie close to something)
+    if (s.ground.some(g => g.kind === "bottle")) sub("treasure", () => {
+      let best = null, bestRoom = -Infinity;
+      for (let i = 0; i < 60; i++) {
+        const x = range(s.floorL + 40 * u, s.floorR - 40 * u);
+        const room = s.ground.reduce((m, g) => g.kind === "bottle" ? m : Math.min(m, Math.abs(g.x - x) - g.w * 0.5), Infinity);
+        if (room > bestRoom) { bestRoom = room; best = x; }
+        if (room > 45 * u) break;
       }
-      // a bottle only lies on the floor when it holds a map to a treasure
-      if (!s.treasure) s.ground = s.ground.filter(g => g.kind !== "bottle");
-    }
+      s.treasure = { x: best, dug: false };
+    });
 
-    s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : s.season === "lente" ? 1.7 : 1)) }, () => ({
+    s.snow = sub("snow", () => Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : s.season === "lente" ? 1.7 : 1)) }, () => ({
       x: rng() * W, y: rng() * H, r: range(0.4, 1.6) * u, a: range(0.15, 0.55),
       sp: range(0.05, 0.25), ph: range(0, TAU),
-    }));
+    })));
 
     s.visitor = null;
     s.visitorTimer = range(2, 6);

@@ -1,10 +1,12 @@
   // ---- shiny animals ----------------------------------------------------
   // Creatures that exist when the ocean is built are rolled from the seed, so a shared seed keeps its shinies.
   function registerShinies(s) {
-    const sr = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+    // every kind of animal rolls from its own stream: the third crab is shiny on every screen, even where fewer fish fit
+    const streams = {};
+    const roll = key => (streams[key] || (streams[key] = mulberry32((seed ^ 0x9e3779b9 ^ hashStr(key)) >>> 0)))();
     const list = [];
     // obj is the creature that gets recoloured; get() says where it is, for the glints and the logbook
-    const add = (key, obj, r, get, alive) => { if (sr() < shinyChance(key)) { obj.shiny = key; list.push({ key, obj, r, get, alive }); } };
+    const add = (key, obj, r, get, alive) => { if (roll(key) < shinyChance(key)) { obj.shiny = key; list.push({ key, obj, r, get, alive }); } };
     const tag = (obj, hue) => { obj.shinyBase = hue; return obj; };
     const floorY = x => sandY(x) + 5 * u;
     for (const sp of s.species) for (const f of sp.fish) add(sp.lantern ? "lantern" : "fish", sp.lantern ? f : tag(f, hexHue(sp.main)), sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));

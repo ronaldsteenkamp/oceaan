@@ -32,7 +32,8 @@
     w.visitors = VIS_KEYS.filter(k => aq.set.has(k));
     return w;
   }
-  function makeCity(m = 1) {
+  function makeCity(m = 1) { return sub("city", () => makeCityHouses(m)); }
+  function makeCityHouses(m) {
     const s = range(26, 34) * u * m, w = Math.min(W * 0.65, 340 * u * m), houses = [];
     let x = s * 1.6;
     while (x < w - s * 2.4) {

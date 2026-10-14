@@ -310,8 +310,6 @@
   // you only see its outline among the coins, until it gives itself away and flees.
   const CHEST_LID = "M -57 -50 C -57 -82 57 -82 57 -50 Z";
   const CHEST_BANDS = "M -44 -50 C -44 -70 -36 -76 -32 -77 L -26 -78 C -32 -74 -37 -68 -37 -50 Z M 37 -50 C 37 -68 32 -74 26 -78 L 32 -77 C 36 -76 44 -70 44 -50 Z";
-  // one chest in ten hides a mimic; the same chest every time, so a shared ocean keeps it
-  const chestHash = g => { const v = Math.sin(g.x * 12.9898 + g.s * 78.233) * 43758.5453; return v - Math.floor(v); };
   function openChest(g) {
     if (g.opened) return;
     g.opened = true;
@@ -325,7 +323,8 @@
   }
   function drawChest(g, k = 0) {
     const s = g.s, x = g.x, y = sandY(x) + s * 0.12;
-    if (g.mimic === undefined) g.mimic = chestHash(g) < 0.1;
+    // one chest in ten hides a mimic, rolled with the ocean (see buildScene), so a shared ocean keeps it
+    if (g.mimic === undefined) g.mimic = false;
     if (g.open === undefined) g.open = 0;
     // the diver opens it by swimming right up to it
     if (!g.opened && diverMode && Math.hypot(diver.x - x, diver.y - (y - s * 0.45)) < s * 1.4) openChest(g);

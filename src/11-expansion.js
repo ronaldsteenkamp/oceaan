@@ -37,7 +37,7 @@
       aerial: Array.from({ length: 4 + Math.floor(rng() * 4) }, () => ({ dx: range(-60, 60) * u, len: range(0.15, 0.4), ph: range(0, TAU) })),
     })) : null;
     // a cave has a rock roof with one opening where the light comes in
-    if (water.cave) {
+    if (water.cave) sub("cave", () => {
       const ox = range(0.3, 0.7), ow = range(0.1, 0.16), roof = [];
       for (let x = 0; x <= W + 40 * u; x += 20 * u) roof.push(H * range(0.07, 0.12));
       const stal = [];
@@ -47,7 +47,7 @@
         stal.push({ x, len: range(14, 70) * u, w: range(6, 14) * u });
       }
       s.cave = { ox, ow, roof, stal, dots: Array.from({ length: 40 }, () => ({ x: rng() * W, ph: range(0, TAU) })) };
-    } else s.cave = null;
+    }); else s.cave = null;
 
     s.cassio = chance(Lf.cassiopea || 0) ? Array.from({ length: 2 + Math.floor(rng() * 3) }, () => ({ x: rng() * W, s: range(12, 18) * u, ph: range(0, TAU), col: pick(["#8aa86a", "#6a9aa8", "#a89a6a"]) })) : [];
     s.lionfish = chance(Lf.lionfish || 0) ? { x: rng() * W, y: H * range(0.5, 0.7), dir: chance(0.5) ? 1 : -1, s: range(28, 36) * u, ph: range(0, TAU), tx: rng() * W } : null;
