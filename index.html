@@ -7787,8 +7787,12 @@
   const SL_HIND = "M 0 -2 L -15 -7.5 C -13 -2.5 -13 2.5 -15 7.5 L 0 2 Z";
   function drawSealion(v) {
     const L = v.size, skin = sh("#7a5a3a"), light = sh("#a88a64"), dark = sh("#5a4028");
-    const loop = Math.sin(v.ph * 1.5), y = v.y + v.yOff + loop * 50 * u;
-    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.cos(v.ph * 1.5) * -0.6);
+    // it swoops up and down in long waves; its nose follows the way it is swimming, and it stays under the surface
+    const amp = 32 * u, wave = v.ph * 1.2;
+    let y = v.y + v.yOff + Math.sin(wave) * amp;
+    if (water.surface) y = Math.max(y, waveY(v.x) + L * 0.3);
+    const climb = Math.cos(wave) * amp * 1.2 * (VISITOR_PHASE.sealion || 0.04), ahead = v.speed || 1.5 * u;
+    ctx.save(); ctx.translate(v.x, y); ctx.scale(faceOf(v) * L / 100, L / 100); ctx.rotate(Math.atan2(climb, ahead) * 0.9);
     const beat = Math.sin(v.ph * 4);
     ctx.fillStyle = dark;
     ctx.save(); ctx.translate(14, 3); ctx.rotate(0.5 - beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
@@ -12910,7 +12914,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=64").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=65").catch(() => {}));
   }
 </script>
 </body>
