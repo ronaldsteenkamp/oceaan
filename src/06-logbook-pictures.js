@@ -7,6 +7,8 @@
   const FLOOR_THUMBS = new Set(["mimic", ...PROP_KEYS.filter(k => k !== "canyon"), "moray", "treasure", "eels", "crab", "starfish", "urchin", "octopus", "hermit", "slugs", "mantis", "eruption", "coralspawn", "whalefall",
     "goldpearl", "cassiopea", "lobster", "isopod", "pistol", "spidercrab", "parrotfish", "crabmarch", "quake"]);
   const thumbCache = new Map();
+  // pictures that could not be drawn: they stay empty for the player, but the self-test reports them
+  const thumbErrors = [];
 
   function thumbScene() {
     return {
@@ -212,20 +214,22 @@
     layer.width = TW * TS; layer.height = TH * TS;
     if (fn) {
       // swap the real world for the tiny one, and put everything back afterwards
-      const saved = { ctx, W, H, u, dpr, scene, water, t, rng, bubbles, smoke, dust, ink, coins, abyssGlows, active: pointer.active, diverMode, feeding };
+      // everything a drawing may read or change, so the real ocean is exactly as it was afterwards
+      const saved = { ctx, W, H, u, dpr, scene, water, t, rng, bubbles, smoke, dust, ink, coins, abyssGlows, food, rings, ripples, jets, eggs, coralSpawn, streaks, day, night, glowF, current, frameK, active: pointer.active, diverMode, feeding };
       try {
         ctx = layer.getContext("2d");
         ctx.setTransform(TS, 0, 0, TS, 0, 0);
-        W = TW; H = TH; u = 1; dpr = TS; t = 1.3; rng = mulberry32(4242);
+        W = TW; H = TH; u = 1; dpr = TS; t = 1.3; rng = mulberry32(4242); day = 1; night = 0; glowF = 0; current = 0; frameK = 1;
         pointer.active = false; diverMode = false; feeding = false;
-        bubbles = []; smoke = []; dust = []; ink = []; coins = []; abyssGlows = [];
+        bubbles = []; smoke = []; dust = []; ink = []; coins = []; abyssGlows = []; food = []; rings = []; ripples = []; jets = []; eggs = []; coralSpawn = []; streaks = [];
         water = THUMB_WATER; scene = thumbScene();
         const THUMB_BASE = { fish: hexHue("#f2b134"), crab: hexHue("#d9543b"), starfish: hexHue("#e8743b"), seahorse: hexHue("#f2b134"), slugs: hexHue("#7b4fd6"), jelly: rgbHue(255, 196, 224) };
         if (shiny && seenIt && beginShiny(base)) { try { fn(); } finally { endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } } else fn();
       } catch (e) {
         // a picture that cannot be drawn just stays empty
+        thumbErrors.push(`${key}: ${e.message}`);
       } finally {
-        ({ ctx, W, H, u, dpr, scene, water, t, rng, bubbles, smoke, dust, ink, coins, abyssGlows, diverMode, feeding } = saved);
+        ({ ctx, W, H, u, dpr, scene, water, t, rng, bubbles, smoke, dust, ink, coins, abyssGlows, food, rings, ripples, jets, eggs, coralSpawn, streaks, day, night, glowF, current, frameK, diverMode, feeding } = saved);
         pointer.active = saved.active;
       }
     }

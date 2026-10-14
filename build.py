@@ -1,15 +1,18 @@
-"""Bouwt de oceaan uit de bronbestanden in src/.
+"""Bouwt de oceaan uit de bronbestanden in src/ naar de map dist/.
 
-Gebruik: python build.py [--zonder-controle]
+Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen]
 
-1. Voegt src/ samen tot ../oceaan.html (de pagina die ook als claude.ai-artifact wordt gepubliceerd).
-2. Draait check.py: een zelftest in een onzichtbare Chrome plus schermafbeeldingen. Bij een fout stopt de build.
-3. Schrijft de app-versie: index.html, sw.js, manifest en iconen.
+1. Voegt src/ samen tot dist/oceaan.html: één pagina, ook de versie die als claude.ai-artifact wordt gepubliceerd.
+   De bestanden gaan op volgorde van hun nummer (00-, 01-, ...) in één (() => { ... })().
+2. Draait check.py: de zelftest in een onzichtbare Chrome, en schermafbeeldingen in checks/. Bij een fout stopt de build.
+3. Schrijft de app: dist/index.html, sw.js, manifest en iconen.
 
-Daarna committen en pushen. Bij elke build gaat het versienummer omhoog,
-zodat geïnstalleerde apps de nieuwe versie ophalen.
+De versie is een vingerafdruk van de pagina: alleen als er echt iets verandert, halen geïnstalleerde apps een nieuwe versie.
+Op GitHub bouwt en publiceert een Action (.github/workflows/pages.yml) dit bij elke push naar main.
 """
+import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,27 +20,29 @@ from PIL import Image, ImageDraw
 
 HERE = Path(__file__).parent
 SRC = HERE / "src"
-SOURCE = HERE.parent / "oceaan.html"
-STATE = HERE / "version.json"
+DIST = HERE / "dist"
+SOURCE = DIST / "oceaan.html"
+
+
+def write(path, text):
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def assemble_page():
-    """Voegt src/ samen tot ../oceaan.html: de pagina die ook als artifact wordt gepubliceerd."""
+    """Voegt src/ samen tot dist/oceaan.html: de pagina die ook als artifact wordt gepubliceerd."""
     def read(name):
         return (SRC / name).read_text(encoding="utf-8")
     scripts = sorted(SRC.glob("[0-9][0-9]-*.js"))
     page = (read("head.html") + "<style>\n" + read("styles.css") + "</style>\n" + read("body.html")
             + "<script>\n(() => {\n" + "".join(p.read_text(encoding="utf-8") for p in scripts) + "})();\n</script>\n")
-    SOURCE.write_text(page, encoding="utf-8", newline="\n")
+    DIST.mkdir(exist_ok=True)
+    write(SOURCE, page)
     return page
 
 
-def next_version():
-    n = 1
-    if STATE.exists():
-        n = json.loads(STATE.read_text(encoding="utf-8"))["version"] + 1
-    STATE.write_text(json.dumps({"version": n}), encoding="utf-8")
-    return n
+def version_of(page):
+    """Een korte vingerafdruk van de pagina, zodat dezelfde bron altijd dezelfde versie geeft."""
+    return hashlib.sha256(page.encode("utf-8")).hexdigest()[:10]
 
 
 def build_index(version):
@@ -101,12 +106,12 @@ def build_index(version):
 </body>
 </html>
 """
-    (HERE / "index.html").write_text(html, encoding="utf-8")
+    write(DIST / "index.html", html)
 
 
 def build_sw(version):
     sw = f"""// Service worker: maakt de oceaan installeerbaar en speelbaar zonder internet.
-const VERSION = "v{version}";
+const VERSION = "{version}";
 const SHELL = `oceaan-shell-${{VERSION}}`;
 const FONTS = "oceaan-fonts-1";
 const SHELL_FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
@@ -156,7 +161,7 @@ self.addEventListener("fetch", event => {{
   );
 }});
 """
-    (HERE / "sw.js").write_text(sw, encoding="utf-8")
+    write(DIST / "sw.js", sw)
 
 
 def build_manifest():
@@ -177,7 +182,7 @@ def build_manifest():
             {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
         ],
     }
-    (HERE / "manifest.webmanifest").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    write(DIST / "manifest.webmanifest", json.dumps(manifest, indent=2, ensure_ascii=False))
 
 
 def draw_icon(size, maskable=False):
@@ -210,7 +215,7 @@ def draw_icon(size, maskable=False):
 
 
 def build_icons():
-    out = HERE / "icons"
+    out = DIST / "icons"
     out.mkdir(exist_ok=True)
     draw_icon(192).save(out / "icon-192.png")
     draw_icon(512).save(out / "icon-512.png")
@@ -219,17 +224,18 @@ def build_icons():
 
 
 if __name__ == "__main__":
-    assemble_page()
+    page = assemble_page()
     if "--zonder-controle" not in sys.argv:
         import check
         ok, report = check.self_test(SOURCE.resolve().as_uri())
         print(report)
         if not ok:
             sys.exit("De zelftest vond een fout; er is niets gebouwd.")
-        print(f"{len(check.screenshots(SOURCE.resolve().as_uri()))} schermafbeeldingen in checks/")
-    v = next_version()
+        if "--zonder-schermafbeeldingen" not in sys.argv:
+            print(f"{len(check.screenshots(SOURCE.resolve().as_uri()))} schermafbeeldingen in checks/")
+    v = os.environ.get("OCEAAN_VERSION") or version_of(page)
     build_index(v)
     build_sw(v)
     build_manifest()
     build_icons()
-    print(f"Oceaan v{v} gebouwd")
+    print(f"Oceaan {v} gebouwd in dist/")

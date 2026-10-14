@@ -9,8 +9,22 @@
     const add = (key, obj, r, get, alive) => { if (roll(key) < shinyChance(key)) { obj.shiny = key; list.push({ key, obj, r, get, alive }); } };
     const tag = (obj, hue) => { obj.shinyBase = hue; return obj; };
     const floorY = x => sandY(x) + 5 * u;
-    for (const sp of s.species) for (const f of sp.fish) add(sp.lantern ? "lantern" : "fish", sp.lantern ? f : tag(f, hexHue(sp.main)), sp.size * u, () => [f.x, f.y], () => sp.fish.includes(f));
-    for (const j of s.jellies) { const [r, g, b] = j.col.split(",").map(Number); add("jelly", tag(j, rgbHue(r, g, b)), j.r, () => [j.x, j.y - j.r * 0.3]); }
+    // Schools and jellies have more members on a big screen. They roll a fixed number of times (as many as on a computer),
+    // and a hit picks member i (or i modulo how many there are), so a shared ocean has the same shinies everywhere.
+    const addMany = (key, members, rolls, prep, r, get, alive) => {
+      if (!members.length) return;
+      for (let i = 0; i < rolls; i++) {
+        if (roll(key) >= shinyChance(key)) continue;
+        const m = members[i % members.length];
+        if (m.shiny) continue;
+        m.shiny = key; prep(m); list.push({ key, obj: m, r, get: get(m), alive: alive && alive(m) });
+      }
+    };
+    for (const sp of s.species) {
+      const rolls = sp.lantern ? 36 : Math.min(sp.predator ? 12 : 60, Math.round(Math.max(8, 58 - sp.size * 3.4)));
+      addMany(sp.lantern ? "lantern" : "fish", sp.fish, rolls, f => { if (!sp.lantern) f.shinyBase = hexHue(sp.main); }, sp.size * u, f => () => [f.x, f.y], f => () => sp.fish.includes(f));
+    }
+    addMany("jelly", s.jellies, 8, j => { const [r, g, b] = j.col.split(",").map(Number); j.shinyBase = rgbHue(r, g, b); }, 20 * u, j => () => [j.x, j.y - j.r * 0.3]);
     for (const c of s.crabs) add("crab", tag(c, hexHue(c.color)), c.s * 0.8, () => [c.x, floorY(c.x) - c.s * 0.45]);
     for (const f of s.starfish) add("starfish", tag(f, hexHue(f.color)), f.s * 0.8, () => [f.x, sandY(f.x) + 3 * u - f.s * 0.55]);
     for (const o of s.urchins) add("urchin", o, o.s, () => [o.x, floorY(o.x) - o.s * 0.4]);
@@ -71,7 +85,7 @@
     for (const pair of map.split(/\s+/).filter(Boolean)) { const [a, b] = pair.split(">"); m[a.toLowerCase()] = b.toLowerCase(); }
     return Object.assign({ map: m, cache: new Map() }, rule);
   }
-  // the animals bring their own scheme (00-dieren.js); these are the moments and rare things
+  // the animals bring their own scheme (00-animals.js); these are the moments and rare things
   const SHINY_PAL = {
     // reptiles
     hatchlings: pal("#5a5e48>#e8e0d0 #4a4430>#c8bca8 #6e6648>#f2ead8 #c8c098>#fffaf0"),

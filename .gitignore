@@ -1,6 +1,6 @@
+# build output: made by build.py, published by the GitHub Action
+dist/
 checks/
 __pycache__/
 .claude/
-_animtest.html
-_t*.html
-_live.html
+_*.html

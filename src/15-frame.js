@@ -44,6 +44,9 @@
     if (audio.ac) { if (document.hidden) audio.ac.suspend(); else if (audio.on) audio.ac.resume(); }
   });
 
+  let selfTesting = false;
+  const brushLeaks = new Set();
+
   // ---- frame -------------------------------------------------------------
   function frame(now, once) {
     // the next frame is booked first, so one unexpected error can never freeze the ocean
@@ -52,7 +55,11 @@
     last = now;
     if (paused || discoverPause || document.hidden) return;
     // whatever goes wrong while drawing, the next frame starts with a clean brush (otherwise one error can wash out the screen)
-    try { step(dtMs); } finally { ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; ctx.shadowBlur = 0; }
+    try { step(dtMs); } finally {
+      // the self-test wants to know when a drawing forgot to put the brush back
+      if (selfTesting && (ctx.globalCompositeOperation !== "source-over" || ctx.globalAlpha !== 1 || ctx.shadowBlur !== 0)) brushLeaks.add(`${water.name}: ${ctx.globalCompositeOperation}/${ctx.globalAlpha}/${ctx.shadowBlur}`);
+      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
   }
 
   function step(dtMs) {

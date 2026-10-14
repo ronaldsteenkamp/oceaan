@@ -27,7 +27,7 @@
   const TAU = Math.PI * 2;
 
   // The waters. Each lists its colours and how likely every landmark is to appear; which animals live there
-  // and which visitors pass by comes from the animals themselves (00-dieren.js).
+  // and which visitors pass by comes from the animals themselves (00-animals.js).
   const WATERS = [
     { name: "rif", top: "#3aaab6", mid: "#14678a", bottom: "#0a2a45", tintK: 0.12,
       ray: "230,255,248", rayA: 0.11, snow: "220,245,240",
@@ -122,7 +122,7 @@
   const VIS_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].visits), "sub"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse"];
   // An aquarium code has one bit per key, in this order. Keys only ever go at the end, so codes stay readable:
-  // AQ_BASE is the order up to the sixth wave, and new animals follow in the order of 00-dieren.js.
+  // AQ_BASE is the order up to the sixth wave, and new animals follow in the order of 00-animals.js.
   const AQ_BASE = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish", "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal", "mermaid", "kraken", "ghost", "whalefall", "amphora", "car", "bell", "clam", "seagrass", "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga", "serpent", "megalodon", "goldpearl", "wheel", "idol", "phonebox", "sponges", "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale", "aurora", "mobydick", "ghostdiver", "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear", "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller", "ghostsub", "xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet", "herring", "greenland", "leatherback", "leviathan", "lighthouse"];
   const AQ_ALL = [...AQ_BASE, ...Object.keys(ANIMALS).filter(k => (ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k))];
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
@@ -180,7 +180,7 @@
   };
   Object.assign(NAMES, animalTable("nl"));
   Object.assign(NAMES_EN, animalTable("en"));
-  // The logbook in a sensible order: each group is split into small families. The animals come in the order of 00-dieren.js.
+  // The logbook in a sensible order: each group is split into small families. The animals come in the order of 00-animals.js.
   const LOG_SUBS = {
     "Wateren": [
       ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
@@ -337,7 +337,7 @@
   const rescued = () => store.get("oceaan-gered", 0);
   const waterTier = (id, nl, en, name, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${waterAnimals(name).length} dieren van de ${wordNl}`, `all ${waterAnimals(name).length} animals of the ${wordEn}`],
     prog: () => { const keys = waterAnimals(name); return [keys.filter(k => logbook.has(k)).length, keys.length]; }, reward: ["een sticker in je logboek", "a sticker in your logbook"] });
-  // the photo tasks of the photo book (checked in 14-z-quests.js)
+  // the photo tasks of the photo book (checked in 19-quests.js)
   const PHOTO_TASKS = [
     ["whale", "Een walvis of dolfijn en je duiker samen op één foto", "A whale or dolphin and your diver together in one photo"],
     ["shiny", "Een shiny op de foto", "A shiny in the photo"],

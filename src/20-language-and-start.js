@@ -57,6 +57,9 @@
   function selfTest(count) {
     const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
     rebuilding = true; // a test run never touches the logbook
+    selfTesting = true;
+    checkRegistry(errors);
+    checkSameOcean(errors);
     // sound is on during the test (silent), so a broken sound shows up as an error
     try { if (!audio.ac) initAudio(); audio.on = !!audio.ac; if (audio.master) audio.master.gain.value = 0; } catch (e) { errors.push("geluid: " + e.message); }
     let oceans = 0;
@@ -97,12 +100,16 @@
         if (audio.next) audio.next.note = 0;
         try { audioStep(); } catch (e) { errors.push(`geluid in oceaan ${sd} (${water.name}): ${e.message}`); }
         for (let i = 0; i < 45; i++) { if (i % 9 === 0) busyUntil = 0; if (i === 20) { feeding = false; pointer.active = false; } frame(last + 33, true); }
+        checkRarePaths(errors, sd);
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
     }
+    thumbErrors.length = 0;
     for (const key of LOG_GROUPS.flatMap(g => g[1])) {
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
     }
+    for (const e of new Set(thumbErrors)) errors.push(`plaatje ${e}`);
+    for (const b of brushLeaks) errors.push(`penseel niet teruggezet na een frame (${b})`);
     try {
       panelTab = "log"; panelEl.hidden = false; renderPanel(); openDetail("shiny:crab"); openDetail("crab", true); closeDetail();
       panelTab = "set"; renderPanel();
@@ -113,6 +120,7 @@
       panelEl.hidden = true;
     } catch (e) { errors.push(`menu: ${e.message}`); }
     rebuilding = false;
+    selfTesting = false;
     diverMode = false;
     audio.on = false;
     canvas.style.transform = "";
@@ -120,6 +128,71 @@
     out.id = "selftest"; out.hidden = true;
     out.textContent = `${errors.length ? "FOUT" : "OK"}\n${oceans} oceanen in ${Math.round(performance.now() - t0)} ms\n${errors.join("\n")}`;
     document.body.appendChild(out);
+  }
+
+  // Is every animal fully registered? This replaces the old dier_check.py: a missing piece is an error here.
+  function checkRegistry(errors) {
+    const waterNames = WATERS.map(w => w.name), families = FAMILIES.map(f => f[0]);
+    const pair = v => Array.isArray(v) && v.length === 2 && v.every(x => typeof x === "string" && x.length > 10);
+    const lifeDrawn = new Set([...Object.keys(presentLife(scene)), ...Object.keys(FAUNA), "flyingfish"]); // flying fish have their own system (09)
+    for (const [k, a] of Object.entries(ANIMALS)) {
+      const miss = [];
+      if (!a.nl || !a.en) miss.push("naam (nl/en)");
+      if (!families.includes(a.family)) miss.push(`familie (${a.family})`);
+      if (!a.sci) miss.push("sci");
+      if (!pair(a.fact)) miss.push("fact [nl, en]");
+      if (!pair(a.note)) miss.push("note [nl, en]");
+      if (a.shiny !== undefined && a.pal === undefined && a.hue === undefined) miss.push("shiny-kleuren (pal of hue)");
+      for (const w of Object.keys({ ...a.life, ...a.visits })) if (!waterNames.includes(w)) miss.push(`onbekend water ${w}`);
+      for (const v of Object.values(a.life || {})) if (!(v > 0 && v <= 1)) miss.push(`kans ${v} (moet tussen 0 en 1)`);
+      if (!THUMBS[k]) miss.push("logboekplaatje (THUMBS of FAUNA)");
+      if (a.life && !lifeDrawn.has(k)) miss.push("tekening in de oceaan (FAUNA)");
+      if (a.visits && !VISITOR_DRAW[k] && k !== "humpback") miss.push("tekening als bezoeker (FAUNA_VIS)");
+      if (a.visits && !(MORE_SIZE[k] || ["humpback", "manta", "turtle", "dolphins", "swordfish", "narwhal"].includes(k))) miss.push("grootte als bezoeker");
+      if (miss.length) errors.push(`dier ${k}: mist ${miss.join(", ")}`);
+    }
+    for (const k of LOGGABLE) {
+      const base = k.replace("shiny:", "");
+      if (!NAMES[k] || !NAMES_EN[k]) errors.push(`logboek ${k}: naam ontbreekt`);
+      if (!k.startsWith("shiny:") && (!FACTS[k] || !FACTS_EN[k])) errors.push(`logboek ${k}: weetje ontbreekt`);
+      if (!THUMBS[base]) errors.push(`logboek ${k}: plaatje ontbreekt`);
+    }
+    if (new Set(AQ_ALL).size !== AQ_ALL.length) errors.push("aquarium: dubbele sleutel in AQ_ALL");
+  }
+
+  // The same seed must be the same ocean on a computer, a phone and a phone on its side.
+  function checkSameOcean(errors) {
+    const keep = { W, H, u, rng, scene, water, seed };
+    const look = (w, h, sd) => {
+      W = w; H = h; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd); buildScene();
+      const life = presentLife(scene);
+      return [water.name, scene.season, scene.rare, scene.ground.map(g => g.kind).sort().join(","),
+        Object.keys(life).filter(k => life[k]).sort().join(","), scene.shinies.map(e => e.key).sort().join(",")].join(" | ");
+    };
+    try {
+      for (let sd = 1; sd <= 30; sd++) {
+        const a = look(1440, 900, sd), b = look(390, 844, sd), c = look(844, 390, sd);
+        if (a !== b || b !== c) { errors.push(`seed ${sd} is niet overal dezelfde oceaan:
+  ${a}
+  ${b}
+  ${c}`); break; }
+      }
+    } finally { ({ W, H, u, rng, scene, water, seed } = keep); }
+  }
+
+  // Paths that only happen now and then: a crab, school or jelly that comes back shiny, and every shiny getter.
+  function checkRarePaths(errors, sd) {
+    const realRandom = Math.random;
+    try {
+      Math.random = () => 0; // every roll is a shiny
+      if (scene.crabs[0]) renewCrab(scene.crabs[0]);
+      if (scene.species[0]) renewSchool(scene.species[0]);
+      if (scene.jellies[0]) renewJelly(scene.jellies[0]);
+    } catch (e) { errors.push(`oceaan ${sd}: terugkerend dier: ${e.message}`); }
+    finally { Math.random = realRandom; }
+    for (const e of scene.shinies) {
+      try { if (!e.alive || e.alive()) e.get(); } catch (err) { errors.push(`oceaan ${sd}: shiny ${e.key} geeft een fout: ${err.message}`); }
+    }
   }
 
   // ---- start -------------------------------------------------------------

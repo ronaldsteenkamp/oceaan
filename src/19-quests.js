@@ -109,14 +109,14 @@
     return !!extra && extra(w);
   }
   // where the moments and the animals that belong to something (an anemone, a wreck, a chest) can be found
-  const has = (w, prop) => (w.props[prop] || 0) > 0;
+  const waterHas = (w, prop) => (w.props[prop] || 0) > 0;
   const WATER_OF = {
-    clown: w => has(w, "anemone"), moray: w => has(w, "wreck"), mimic: w => has(w, "chest"), treasure: w => has(w, "bottle"),
+    clown: w => waterHas(w, "anemone"), moray: w => waterHas(w, "wreck"), mimic: w => waterHas(w, "chest"), treasure: w => waterHas(w, "bottle"),
     grouper: w => (w.life.cleaners || 0) > 0, giant: w => !!w.giantSquid, task: w => (w.life.seahorse || 0) > 0,
     storm: w => !!w.surface, waterspout: w => !!w.surface, meteor: w => !!w.surface, eclipse: w => !!w.surface, glowtide: w => !!w.surface && !w.ice,
     quake: () => true, spawning: () => true, jellybloom: () => true, crabmarch: () => true,
     baitball: w => w.name !== "diepzee", ghostnet: w => w.name !== "diepzee" && w.name !== "grot",
-    eruption: w => has(w, "volcano"), coralspawn: w => has(w, "coral"),
+    eruption: w => waterHas(w, "volcano"), coralspawn: w => waterHas(w, "coral"),
     aurora: w => ["ijszee", "noordzee", "kelpwoud"].includes(w.name), whirlpool: w => ["noordzee", "kelpwoud", "ijszee"].includes(w.name),
     sardinerun: w => ["kelpwoud", "sargasso"].includes(w.name), eelmigration: w => ["sargasso", "noordzee", "kelpwoud", "mangrove"].includes(w.name),
     bubblerings: w => w.visitors.includes("dolphins"), hatchlings: w => w.visitors.includes("turtle"), whalesong: w => w.visitors.includes("humpback"),

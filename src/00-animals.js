@@ -1,6 +1,6 @@
   // ---- the animals ------------------------------------------------------------------------------
   // One record per animal, with everything the game knows about it except how it is drawn and how it moves
-  // (that lives with the drawing code: FAUNA / FAUNA_VIS in 11-x3 and later, or the older systems).
+  // (that lives with the drawing code: FAUNA / FAUNA_VIS in 13-fauna-system.js and 14-wave6.js, or the older systems).
   // The logbook shows the animals in this order, family by family. A new animal goes at the end of its family.
   //
   //   nl, en             the name (a group of many gets a plural: "Dolfijnen")
