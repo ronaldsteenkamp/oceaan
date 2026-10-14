@@ -1077,12 +1077,6 @@
   THUMBS.hatchet = () => { for (const [x, y, sz] of [[36, 38, 42], [82, 50, 46], [70, 20, 34]]) drawHatchet({ x, cy: y, dir: 1, s: sz, ph: x }); };
   THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
   for (const key of ["xmastree", "coconut", "crownthorns", "horseshoe", "dugong", "mudskipper", "flatfish", "wolffish", "leopardshark", "icefish"]) FLOOR_THUMBS.add(key);
-  Object.assign(BASE_HUE, {
-    xmastree: 10, coconut: 25, moorish: 50, angelfish: 225, crownthorns: 320, hawksbill: 30, horseshoe: 45, dugong: 25,
-    mudskipper: 40, puffin: 20, gannet: 50, porpoise: 210, flatfish: 25, cod: 55, wolffish: 210, garibaldi: 22, leopardshark: 45,
-    manowar: 250, glaucus: 220, icefish: 190, leopardseal: 210, krill: 8, vampire: 350, dumbo: 15, viperfish: 200, gulper: 330, hatchet: 205,
-    herring: 195, greenland: 35, leatherback: 210,
-  });
 
   // ---- moments ---------------------------------------------------------------------
   function buildWave6(s) {
@@ -1100,7 +1094,6 @@
     if (s.rares.includes("leviathan")) add("leviathan", s.leviathan, 140 * u, () => s.leviathan.eye || [-999, -999], () => s.leviathan.active);
     if (s.lighthouse) add("lighthouse", s.lighthouse, 50 * u, () => [s.lighthouse.x, waveY(s.lighthouse.x) + 40 * u]);
   }
-  Object.assign(BASE_HUE, { leviathan: 200, lighthouse: 140 });
 
   const NET_ANIMALS = ["hawksbill", "cod", "garibaldi", "angelfish", "porpoise", "moorish"];
   function startNet(N) {

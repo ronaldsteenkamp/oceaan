@@ -931,10 +931,3 @@
   for (const key of ["tuna", "pilotwhale", "falsekiller"]) FAUNA_VIS[key].thumbX = 78;
   hookFauna(FAUNA, FAUNA_VIS);
   for (const key of ["scorpionfish", "stonefish", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);
-  Object.assign(BASE_HUE, {
-    triggerfish: 40, wrasse: 150, surgeonfish: 225, mandarinfish: 25, needlefish: 195, seasnake: 50, seakrait: 215, electricray: 25, guitarfish: 35, iguana: 190,
-    scorpionfish: 8, stonefish: 40, goby: 40, sanddollar: 300, brittlestar: 320, seacucumber: 20, featherstar: 25,
-    albatross: 200, pelican: 40, walrus: 25, polarbear: 50, cormorant: 200,
-    thresher: 215, whitetip: 205, greatwhite: 205, marlin: 220, tuna: 220, barracuda: 200, coelacanth: 220, sawfish: 40,
-    bluewhale: 210, finwhale: 210, pilotwhale: 200, falsekiller: 200,
-  });

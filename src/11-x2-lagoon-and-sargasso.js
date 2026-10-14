@@ -48,7 +48,6 @@
     if (s.frogfish) { const f = s.frogfish; add("sargassumfish", f, f.s * 0.6, () => [f.cx || 0, f.cy || 0]); }
     if (s.spider) { const c = s.spider; add("spidercrab", c, c.s, () => [c.x, fy(c.x) - c.s * 0.5]); }
   }
-  Object.assign(BASE_HUE, { parrotfish: 170, boxfish: 50, pistol: 20, sargassumfish: 40, spidercrab: 20, crocodile: 80, whaleshark: 210, sealion: 30, eagleray: 220, spermwhale: 210 });
 
   // ---- the water itself -----------------------------------------------------
   // Sunlight dancing over the sand of a shallow lagoon.

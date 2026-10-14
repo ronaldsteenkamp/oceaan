@@ -76,7 +76,6 @@
     for (const o of s.isopods) add("isopod", o, o.s * 0.6, () => [o.x, fy(o.x) - o.s * 0.15]);
     if (s.dragon) { const d = s.dragon; add("seadragon", d, d.s * 0.6, () => [d.x, d.cy || d.y]); }
   }
-  Object.assign(BASE_HUE, { lionfish: 10, cuttlefish: 30, lobster: 220, nautilus: 25, isopod: 300, seadragon: 40, manatee: 60, orca: 210, hammerhead: 205, sunfish: 210, beluga: 200 });
 
   // ---- the water itself -----------------------------------------------------
   function drawMangrove() {

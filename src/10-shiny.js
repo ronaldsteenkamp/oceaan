@@ -71,108 +71,10 @@
     for (const pair of map.split(/\s+/).filter(Boolean)) { const [a, b] = pair.split(">"); m[a.toLowerCase()] = b.toLowerCase(); }
     return Object.assign({ map: m, cache: new Map() }, rule);
   }
+  // the animals bring their own scheme (00-dieren.js); these are the moments and rare things
   const SHINY_PAL = {
-    // fish
-    fish: pal("#f2b134>#f06a9a #8a5810>#5a2a8a", { hue: 335, hueDark: 270, hueLight: 48, sat: 1.1 }),
-    lantern: pal("#1c2633>#6a1838 #0b1119>#2a0612"),
-    clown: pal("#f07c1e>#2e2026 #1d1d1d>#f2801e #fbfbf6>#fbfbf6"),
-    cleaners: pal("#58b4f2>#f6d838 #10202e>#7a2ac8"),
-    grouper: pal("#7a5a3a>#e8b828 #3e2c1c>#9a6a08 #5a3f26>#c89418"),
-    archer: pal("#d9dfe0>#f2cc48 #2a2e30>#1c3a6e"),
-    parrotfish: pal("#f08ab0>#f6e44a #f2c060>#e85aa0 #f2eee0>#f8f4ff", { hue: 212, sat: 1.1 }),
-    boxfish: pal("#f2d030>#3a86d8 #b89818>#1c4888 #e8a030>#f2d030"),
-    puffer: pal("#e8c66a>#384a6c #6b5a2a>#f4f2ea #f6efd8>#efe2f2 #fbfbf6>#ffffff"),
-    lionfish: pal("#c84a3a>#2a2230 #b8392c>#161218 #f2e6d8>#f2e6d8 #e8c8b0>#c8a6ec"),
-    flyingfish: pal("#4f86c6>#e8583a #24466e>#8a1c2a #dfe8ef>#fff2e2"),
-    angler: pal("#1b1e26>#5c2c14 #070709>#2a0e06 #b8d8e8>#ff9a3a #e9e4d2>#fff6d8"),
-    // a golden moray, after the yellow colour morphs of real morays
-    moray: pal("#6f7d3a>#e0b020 #3d4520>#7a4a10 #2a1a12>#4a1a0a"),
-    sargassumfish: pal("#b8902e>#c84a2a #6a5218>#6a1c12 #c8a840>#c8a840 #a89030>#a89030 #7a6a24>#7a6a24"),
-    triggerfish: pal("#f2ead6>#2c2c3c #bfae7a>#5c4c8c #1e1e22>#f2f0e8 #3a7fe0>#f2b820 #f2b820>#e84a8a #6a6450>#c8c0e0"),
-    wrasse: pal("#3fbf8a>#ec9a2c #2fa0b0>#d84a6a #e8609a>#3a8ad8 #f070b0>#5ad0f0 #f2c840>#7a3ad8"),
-    surgeonfish: pal("#2f5fe0>#f4ca2c #0e1430>#2a62e0 #f2d030>#0e1430"),
-    mandarinfish: pal("#2f6fe0>#e2402a #f08a30>#36d6e0 #3fc0a0>#f2d030 #f2c030>#2fe070"),
-    needlefish: pal("#c8d8e0>#ecd8a0 #3a8a7a>#2a48d8"),
-    scorpionfish: pal("#b84a3a>#ecc84a #7a2a20>#8a6a10 #e8b8a0>#faf2e2"),
-    stonefish: pal("#5a5246>#c84a3a #3a3228>#7a1e18 #7a7060>#ea705a #6a8a5a>#f2c040"),
-    goby: pal("#d8c8a0>#5ac0e8 #9a7a4a>#2a6a9a #8a6a3a>#f2f040"),
-    pistol: pal("#e8603a>#3a86d8 #f2d0a0>#f2f0fa #f0a070>#a0c8f0 #f2c830>#ea5070 #c8961a>#a02848 #4aa8f0>#f2e040"),
-    eels: pal("#e8e0c8>#f2a03a #2a2620>#fbf6ea"),
-    // sharks and big fish: every one its own colours
-    thresher: pal("#5a6a8a>#8a3a6a #dfe4ea>#f4e2ec"),
-    whitetip: pal("#7a8288>#34343c #d8dcdf>#c8ccd6 #f4f4f4>#ffd040"),
-    greatwhite: pal("#5e6870>#1a1e24 #f2f2ee>#e8d6b0"),
-    hammerhead: pal("#7a8a94>#a87a48 #4a5862>#6a4a2a #d8dde0>#f4e8d2"),
-    whaleshark: pal("#3a5068>#e2dccf #dfe8ee>#3a5a78 #c8d4dc>#f6f2ea"),
-    swordfish: pal("#2d4f8a>#1c1a26 #1e335a>#d8a020 #3a5fa8>#e8b830 #8ab8e8>#f4e8a0 #c9d4dc>#d8d0c0"),
-    marlin: pal("#1e3a6a>#4a1a6a #6ab0e8>#f2c040 #c8d8e8>#ecdcf2"),
-    tuna: pal("#1e3050>#2a5a3a #c8d4dc>#ece2c8 #f2d030>#e84a6a"),
-    barracuda: pal("#b8c4cc>#dab878 #4a5862>#6a4a20 #d8e0e4>#f4e8c8"),
-    sunfish: pal("#9aa4ae>#c8a8d8 #6a747e>#8a6aa0 #c8d0d6>#f4eaf8"),
-    coelacanth: pal("#2a3a5a>#7a5a3a #3a4c70>#9a7a4a #1e2c46>#5a3e24 #e8eef2>#f2d880 #c8d8a0>#3ad8ff"),
-    sawfish: pal("#9a8a6a>#6a7a8a #8a7a5a>#4a5a6a #e8e0cc>#e8f0f4 #f2ead8>#f8fafc"),
-    // rays
-    ray: pal("#7c6a55>#cac4b8 #3e342a>#2b5a8a #4a3e30>#7a7466"),
-    manta: pal("#121a22>#2a5aa8 #dce6eb>#f4f0e0"),
-    eagleray: pal("#2a3442>#f2e8d8 #e8eef2>#2a3442"),
-    electricray: pal("#8a5a3a>#3a4a8a #5e3a24>#f2d040"),
-    guitarfish: pal("#c8a878>#8a9aa8 #8a6a48>#4a5a68 #e8d4a8>#f2f6fa"),
-    // seahorses, jellies, cephalopods
-    seahorse: pal("", { hue: 332, hueDark: 300, lit: 0.05, sat: 1.1 }),
-    seadragon: pal("#9aa040>#c8508a #d8a040>#e85a3a"),
-    jelly: pal("", { hue: 42, hueLight: 46, sat: 1.5, lit: -0.24 }),
-    cassiopea: pal("#8a9a70>#3a6ad8 #6a7a52>#2a4aa8 #d8e4b8>#c8d8ff #f0ecc0>#f2f0ff", { hue: 222 }),
-    comb: pal("", { body: "#ffd24a" }),
-    octopus: pal("#f2c34a>#d8203a #f4ecd8>#fff0f2", { hue: 340, sat: 0.4, lit: 0.28, bodyHue: 345, bodySat: 40, bodyLight: 1.45 }),
-    squid: pal("", { body: "#4a7af0" }),
-    cuttlefish: pal("#c8a888>#f2d04a #b08860>#8a3a8a #a07850>#6a2a7a #ece6dc>#f8e8f8"),
-    nautilus: pal("#f2e8d8>#2c2c3c #b0603a>#e8c040 #e8c8a8>#5a5a74 #b07858>#c8a030 #c8b8a0>#44445a"),
-    mimic: pal("#e8d6b4>#2c2a3a #5a3420>#f2c040 #f2c34a>#f2c34a #c8962a>#c8962a"),
-    giant: pal("#8a2e2a>#e8e8f0 #5a1a18>#a8a8c0 #c86a5a>#5a7ad8"),
-    // crustaceans
-    crab: pal("#5a2418>#14304a", { hue: 205, sat: 0.95 }),
-    hermit: pal("#d9543b>#2a8a7a #c9603c>#1f6a5e", { hue: 296, sat: 0.9 }),
-    lobster: pal("#2f4a78>#e8902a #1c2c4a>#5a2a14 #5a78a8>#f2c860 #a05a3a>#3a2a2a"),
-    spidercrab: pal("#d8783a>#e8e0d0 #f0d8b0>#c84a5a"),
-    mantis: pal("#57c27c>#c84ab8 #6fd3e0>#f2e04a #e8553a>#3a6ae8 #e8b03c>#ffffff #f08a3c>#7a3ad8 #2f8f5a>#8a2a7a #3a7fd0>#e8a020 #3fa86b>#a8389a"),
-    isopod: pal("#a898a8>#e8c060 #8a7a8a>#b88a20 #857585>#a87810 #b8a8b8>#f2d888"),
-    // starfish, urchins, slugs and the rest of the floor
-    starfish: pal("", { hue: 268, lit: -0.04 }),
-    urchin: pal("", { hue: 142, sat: 0.8, lit: 0.12 }),
-    slugs: pal("#e8d8b0>#f2d030", { hue: 48, hueLight: 186, hueDark: 20, sat: 1.1 }),
-    sanddollar: pal("#c8b8c8>#3a3a5a #a898a8>#2a2a40 #f0e8f0>#f2d870"),
-    brittlestar: pal("#d88ab8>#5ad0c0 #b86a9a>#2a9a8a"),
-    seacucumber: pal("#8a5a40>#f2d030 #6a4030>#c83a2a #e8c8a0>#e83a8a"),
-    featherstar: pal("#e8603a>#7a3ad8 #f2c030>#e85ab0", { hue: 285 }),
     // reptiles
-    turtle: pal("#6a5434>#2a6a8a #3b301f>#e8c040 #7d8a6a>#e8d8a0 #5d6a4c>#c8a860 #d8c890>#f6f0e0"),
     hatchlings: pal("#5a5e48>#e8e0d0 #4a4430>#c8bca8 #6e6648>#f2ead8 #c8c098>#fffaf0"),
-    crocodile: pal("#5a6a3a>#e8d8c0 #3a4628>#c8b090 #b8b088>#f8f0e0 #f0f0e0>#ffffff"),
-    seasnake: pal("#1a1a1a>#e8e4f0 #f2c830>#c83a3a"),
-    seakrait: pal("#6a9ad8>#f2e8d0 #141820>#c8302a #f2c830>#141820"),
-    iguana: pal("#3a4040>#c8402a #262c2c>#2a6a3a #6a7068>#3aa060"),
-    // whales and dolphins
-    dolphins: pal("#7d8f9c>#e8a0b0 #4f5f6b>#c8708a #d5dde0>#fbe6ea"),
-    orca: pal("#14181c>#f2f0ec #f0f0ea>#1a2230 #9aa2a8>#c8ccd0"),
-    beluga: pal("#eef2f2>#6a7a8a #c8d2d6>#4a5a6a #8a9498>#2a3440"),
-    narwhal: pal("#8e969a>#2a2e3a #4a5256>#e8ecf0 #6e767a>#1a1e28 #c8ccce>#5a6070 #ece4cc>#f2d880 #a89e84>#c8a040"),
-    humpback: pal("#26313b>#e8e8e4 #c9cfd2>#ffffff #dfe3e2>#f8f8f6 #7d878c>#b8bcbc #8a949a>#c8ccca"),
-    spermwhale: pal("#5a6068>#8a4a3a #3a3e44>#5a2a20"),
-    bluewhale: pal("#5a7a98>#2a3a5a #8aa4b8>#e8d8a0"),
-    finwhale: pal("#3e4650>#5a4a3a #e8eaea>#f2e6d0"),
-    pilotwhale: pal("#22262a>#5a6a7a"),
-    falsekiller: pal("#16181a>#3a2a4a"),
-    // mammals and birds
-    seal: pal("#6f7478>#e8e4dc #3e4246>#a8a29a #a9aca8>#ffffff"),
-    sealion: pal("#7a5a3a>#b0b8c0 #5a4028>#7a8490 #a88a64>#d8dce0"),
-    otters: pal("#5a3e2a>#e8dcc8 #c9b49a>#fff6e8 #e6c9a8>#f2e2c8"),
-    manatee: pal("#8a8a80>#a8c0a0 #5a5a52>#6a8a68"),
-    penguins: pal("#15181c>#8a6a4a #f2f2ec>#fbf6ee #f29a2e>#e8604a #f2be3c>#f2e0a0"),
-    walrus: pal("#b4806a>#c8c8d0 #8a5a48>#8a8a98 #d4a48c>#e8e8f0 #f4ecd8>#f2d060"),
-    polarbear: pal("#f4f0e2>#c8a070 #d6cfba>#a07a50"),
-    albatross: pal("#f6f6f2>#f2e6c8 #d8dadc>#e0c890 #3a3a42>#6a3a20 #2a2a30>#4a2a14 #f0b0a0>#e8c040 #d88a78>#c89a20 #f0b8a0>#e8c040"),
-    pelican: pal("#f4f0e4>#f8d8dc #c8c4b8>#e8b0b8 #2a2a2a>#3a2a2a #e89838>#e85a7a #f2c878>#f2a0b0 #f2d8a8>#f8c8d0"),
-    cormorant: pal("#1e2226>#f0f0ea #2e4a3a>#c8d0c8 #e8b040>#e8603a"),
     // legends and wonders
     mermaid: pal("#2fa58f>#c83a6a #7fd8c9>#f2a0c0 #8a5ad0>#2fa58f #b5452f>#f2e0a0 #d9a07a>#d9a07a"),
     serpent: pal("#2f6a4a>#3a2a6a #1a3a28>#1a1238 #a8c070>#f2c860 #c84a3a>#3ad8c0"),
@@ -185,39 +87,10 @@
     ghostsub: pal("#9affd8>#ff9a5a #3a8a74>#a83a1a #5ad0a0>#ffc060 #061e20>#2a0a04 #d8fff0>#fff0c8 #e8fff4>#ffe08a"),
     eelmigration: pal("", { body: "#f2c040" }),
     // the sixth wave
-    xmastree: pal("#a89880>#5a6a8a #8a7a62>#3a4a6a #c8b8a0>#8aa0c8 #6a5a48>#2a3448 #fff8f0>#fff8f0 #c8a868>#e8e8f0", { hue: 48, sat: 1.2 }),
-    coconut: pal("#e8c8a0>#f8d0e8 #7a4a26>#e8e0d0 #4a2a12>#b8a888 #e8d8b8>#fff8ec #b8763a>#d85a9a #6a3a18>#8a2a5a #f2d070>#7ae8f0"),
-    moorish: pal("#f4f0e2>#f4f0e2 #18181c>#2a3a8a #f2d030>#5ad0f0 #f08a30>#f2507a"),
-    angelfish: pal("#2a48b8>#1a1a2a #f2d040>#f2f2f8 #141828>#e8a020 #58b0f0>#f2c040 #dfe8ee>#f8e0a0"),
-    crownthorns: pal("#8a3a6a>#2a6ad8 #e05a4a>#f2d040 #f2c060>#f8f8f8"),
-    hawksbill: pal("#7a5634>#3a6a7a #6a4a2a>#2a4a5a #e8b048>#8ae8d0 #b8783a>#3a8a8a #4a2a14>#1a3a40 #3a2410>#123034 #e8d8a0>#d8f0e8 #3a2a1a>#1a2a30"),
-    horseshoe: pal("#7a6a3a>#3a5ab8 #4a3e22>#1a2a6a #a8946a>#8ab0f0"),
-    dugong: pal("#8a7a6e>#e8d8e0 #b8aca0>#fff4f8 #6a5c52>#b8a0b0"),
-    mudskipper: pal("#8a7a5a>#3a3a44 #5a4a32>#1c1c24 #5ac0e8>#f2d040 #5a7a9a>#c84a3a #e05a3a>#f2d040 #7ad8f8>#f8f0a0"),
-    puffin: pal("#1a1c20>#f2f0ea #f2f0ea>#2a3a5a #f0602a>#5ad0f0 #56647a>#f2c040 #f2c040>#f05a2a #e05040>#3a8ad8"),
-    gannet: pal("#f2f2ec>#2a2a32 #1e1e22>#f2f2ec #f0d890>#f2702a #a8b4c4>#f2c040 #c8e0f0>#f2d040 #2a2a2e>#e8e8e8"),
-    porpoise: pal("#3e464e>#f2f0ec #d8dcde>#f8e0e4"),
-    flatfish: pal("#8a7050>#3a4a7a #a08868>#5a6a9a #e8783a>#f2d040 #c8b890>#d8e0f0"),
-    cod: pal("#8a8458>#c8502a #6e6a44>#8a2a1a #5e5a38>#6a1a10 #e8e2cc>#f8e0c8 #f0ead0>#f8d0a0 #d8c890>#f2d040"),
-    wolffish: pal("#6a7480>#c8a8d8 #3a424c>#6a3a8a #5a646e>#9a7ab0 #9aa2aa>#f0e0f8 #4a525c>#4a2a5a #c8c0a0>#f2d040"),
-    garibaldi: pal("#f2701e>#2a6ad8 #e05a14>#1a3a9a #f8a050>#7ab8f8 #f8b070>#f2d040"),
-    leopardshark: pal("#8a8676>#3a3a40 #e8e4d8>#e8d8b0 #2e2a26>#f2c040"),
-    manowar: pal("#5a6ae0>#f25a8a #8a5ad8>#f2a03a #6a5ad8>#e85a5a #8a9ae8>#f8b8d0 #b8a8f0>#ffd8e8 #e87ab0>#5ad0f0 #d8c8f8>#fff0f8"),
-    glaucus: pal("#1a3ad8>#d82a8a #8ab8f0>#f8c8e0 #2a5ae8>#a81a6a"),
-    icefish: pal("#dfe8ea>#ffe0c8 #a8b8bc>#e8a878 #3a4a50>#8a3a1a"),
-    leopardseal: pal("#5a626a>#e8e4dc #c8ccd0>#ffffff #2e343a>#8a8a92 #4a5258>#c8c4bc"),
-    krill: pal("#e86a5a>#5ad8f0"),
-    vampire: pal("#5a1424>#1a2a5a #2a0810>#0a1030 #e8c8d0>#c8e0f8 #7ae8ff>#ff8a3a #58d8ff>#ffb040"),
-    dumbo: pal("#f0a888>#a8d8f8 #d8806a>#6aa8e0"),
-    viperfish: pal("#1a2428>#3a1a3a #3a4c58>#7a3a7a #e8eef0>#f2d040 #7ad8ff>#7aff9a #bdf2ff>#d8ffe0 #6ad8ff>#7aff9a #9aa8b0>#e8c0f0"),
-    gulper: pal("#5a4a5a>#c8784a #16141a>#3a1a1a #2a1a24>#6a1a1a #ff5a8a>#5af0ff #ff8ab0>#bff8ff #8a96a0>#f2d040"),
-    hatchet: pal("#c8d4dc>#f2d070 #3a4a58>#8a5a10 #9aa8b4>#e8b040 #6ad0ff>#ff7a5a #e8eef2>#fff4d0"),
-    herring: pal("#2e5a6a>#6a2a6a #c8d6de>#f8e0f0"),
-    greenland: pal("#4e4a44>#c8d8e8 #7a766c>#f2f6fa #36322e>#8aa0b8 #e8e0b0>#f25a5a"),
-    leatherback: pal("#1e2630>#3a2a1a #5a6a78>#c8a060 #d8dee2>#f8e8b0 #161c24>#2a1e10 #e8a0a0>#5ad0f0"),
     leviathan: pal("#0a141c>#2a0a1a #ffd27a>#7affd8"),
     lighthouse: pal("#dcffe6>#ffc8f0 #e8f8f0>#ffe0f4 #c85a5a>#5a5ac8"),
   };
+  for (const [key, a] of Object.entries(ANIMALS)) if (a.pal !== undefined) SHINY_PAL[key] = pal(a.pal, a.palRule);
   // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).
   function shinySwap(hex) {
     const p = shinyPal;
@@ -257,11 +130,9 @@
 
   // Things without a scheme of their own (the ghost ship is a ready-made picture) get one colour over everything,
   // far round the colour wheel from their own colour.
-  const BASE_HUE = {
-    octopus: 18, ray: 30, eels: 45, puffer: 45, squid: 340, hermit: 15, otters: 25, clown: 25, mantis: 140, archer: 190,
-    cleaners: 205, grouper: 30, turtle: 40, swordfish: 220, mermaid: 170, urchin: 290, comb: 200, angler: 220,
-    humpback: 210, manta: 210, dolphins: 205, narwhal: 200, seal: 210, penguins: 210, lantern: 215,
-  };
+  const BASE_HUE = Object.assign({
+    eelmigration: 200, ghost: 160, ghostdiver: 160, goldpearl: 45, hatchlings: 60, kraken: 350, leviathan: 200, lighthouse: 140, megalodon: 210, mermaid: 170, mobydick: 50, serpent: 140, whalefall: 40,
+  }, animalTable("hue"));
   // The rare things can be shiny too; they are rolled with the ocean, so a shared seed keeps them.
   function registerRareShinies(s, add) {
     const R = s.rares;
@@ -277,8 +148,6 @@
     if (s.ghostSub) add("ghostsub", s.ghostSub, 50 * u, () => [s.ghostSub.x, s.ghostSub.cy || s.ghostSub.y]);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
-  Object.assign(BASE_HUE, { hatchlings: 60, eelmigration: 200, giant: 0 });
-  Object.assign(BASE_HUE, { kraken: 350, ghost: 160, whalefall: 40, serpent: 140, megalodon: 210, goldpearl: 45, mobydick: 50, ghostdiver: 160 });
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {
