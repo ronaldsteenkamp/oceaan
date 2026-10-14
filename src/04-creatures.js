@@ -731,7 +731,7 @@
     if (v.shiny && !v.pod && ((v.dir > 0 && v.x > W - v.size * 0.35) || (v.dir < 0 && v.x < v.size * 0.35))) v.dir *= -1;
     else if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
       if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
-      else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
+      else { scene.visitor = null; scene.visitorTimer = (8 + Math.random() * 14) * (scene.visitorPace || 1); }
     }
   }
 

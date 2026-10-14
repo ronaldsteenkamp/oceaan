@@ -529,6 +529,11 @@
       <h3>${L("Deze oceaan delen", "Share this ocean")}</h3>
       <p class="sum">${IN_ARTIFACT ? L("Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.", "Send this code along with the link. Whoever enters it below gets exactly this ocean.") : L("Wie deze link opent, krijgt precies deze oceaan.", "Whoever opens this link gets exactly this ocean.")}</p>
       <div class="share"><input id="shareCode" readonly value="${link}" aria-label="${L("Code van deze oceaan", "Code of this ocean")}"><button type="button" id="shareCopy">${L("Kopieer", "Copy")}</button>${canShare ? `<button type="button" id="shareNative" class="primary">${L("Delen", "Share")}</button>` : ""}</div>
+      <h3>${L("Logboek vergelijken", "Compare logbooks")}</h3>
+      <p class="sum">${L("Stuur je logboekcode naar een vriend en vul de zijne hieronder in: dan zie je wat de ander heeft dat jij nog mist.", "Send your logbook code to a friend and enter theirs below: you will see what the other has that you are still missing.")}</p>
+      <div class="share"><input id="myLogCode" readonly value="${logCode()}" aria-label="${L("Jouw logboekcode", "Your logbook code")}"><button type="button" id="copyLogCode">${L("Kopieer", "Copy")}</button></div>
+      <div class="share"><input id="friendLogCode" placeholder="lb-…" aria-label="${L("Logboekcode van je vriend", "Your friend's logbook code")}"><button type="button" id="compareGo">${L("Vergelijk", "Compare")}</button></div>
+      <div id="compareOut"></div>
       <h3>${L("Een code openen", "Open a code")}</h3>
       <div class="share"><input id="openCode" placeholder="#12345" aria-label="${L("Code om te openen", "Code to open")}"><button type="button" id="openGo">${L("Open", "Open")}</button></div>
       <h3>${L("Rust en geluid", "Calm and sound")}</h3>
@@ -576,7 +581,15 @@
   const inLogOrder = (title, keys) => groupKeys(title).filter(k => keys.includes(k)).concat(keys.filter(k => !groupKeys(title).includes(k)));
   const AQ_GROUPS = [["Bodem en vondsten", inLogOrder("Bodem en vondsten", PROP_KEYS)], ["Dieren", inLogOrder("Dieren", LIFE_KEYS)], ["Bezoekers", inLogOrder("Dieren", VIS_KEYS)], ["Zeldzaam", inLogOrder("Zeldzaam", RARE_KEYS)]];
 
+  // animals (and everything else that goes into the logbook) can only be chosen once you have seen them;
+  // things on the seabed are not in the logbook, so they can always be chosen
+  const aqOpen = k => !LOGGABLE.has(k) || logbook.has(k);
   function currentAsDraft() {
+    const d = currentAsDraftAll();
+    for (const k of [...d.set]) if (!aqOpen(k)) d.set.delete(k);
+    return d;
+  }
+  function currentAsDraftAll() {
     const S = scene, set = new Set();
     for (const g of S.ground) if (PROP_KEYS.includes(g.kind)) set.add(g.kind);
     if (S.canyon) set.add("canyon");
@@ -592,8 +605,12 @@
     if (!aqDraft) aqDraft = currentAsDraft();
     let html = `<p class="sum">${L("Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.", "Choose what goes into your ocean. On a narrow screen not all large things fit side by side.")}</p><h3>${L("Water", "Water")}</h3><div class="chips">`;
     html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${nm("w:" + w.name)}</button>`).join("") + `</div>`;
+    html += `<p class="sum">${L("Dieren en andere vondsten kun je pas kiezen als ze in je logboek staan.", "Animals and other finds can only be chosen once they are in your logbook.")}</p>
+      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button></div>`;
     for (const [title, keys] of AQ_GROUPS) {
-      html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`).join("") + `</div>`;
+      html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => aqOpen(k)
+        ? `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`
+        : `<button type="button" class="chip pick locked" disabled title="${L("Nog niet gezien", "Not seen yet")}">???</button>`).join("") + `</div>`;
     }
     html += `<div class="actions"><button type="button" id="aqBuild" class="primary">${L("Bouw dit aquarium", "Build this aquarium")}</button><button type="button" id="aqRandom">${L("Terug naar willekeurig", "Back to random")}</button></div>`;
     if (aquarium) html += `<p class="sum">${L("Je aquarium is gebouwd. De code bovenaan deze pagina deelt precies dit aquarium.", "Your aquarium is built. The code at the top of this page shares exactly this aquarium.")}</p>`;
@@ -612,7 +629,7 @@
       openDetail(k, true); return;
     }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
-    if (b.dataset.water !== undefined) { logWater = b.dataset.water; renderPanel(); return; }
+    if (b.dataset.logwater !== undefined) { logWater = b.dataset.logwater; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
@@ -648,6 +665,12 @@
       navigator.clipboard.writeText(inp.value).then(() => toast(L("Gekopieerd", "Copied")), () => { inp.select(); toast(L("Selecteer en kopieer de code zelf", "Select and copy the code yourself")); });
       return;
     }
+    if (b.id === "copyLogCode") {
+      const inp = document.getElementById("myLogCode");
+      navigator.clipboard.writeText(inp.value).then(() => toast(L("Gekopieerd", "Copied")), () => { inp.select(); toast(L("Selecteer en kopieer de code zelf", "Select and copy the code yourself")); });
+      return;
+    }
+    if (b.id === "compareGo") { document.getElementById("compareOut").innerHTML = compareHTML(document.getElementById("friendLogCode").value); return; }
     if (b.id === "openGo") {
       const inp = document.getElementById("openCode");
       if (openCode(inp.value)) { renderMake(); toast(L("Code geopend", "Code opened")); }
@@ -663,7 +686,9 @@
     }
     if (b.id === "showWelcome") { panelEl.hidden = true; welcomeEl.hidden = false; document.getElementById("welcomeGo").focus(); return; }
     if (b.dataset.water) { aqDraft.water = Number(b.dataset.water); renderMake(); }
-    else if (b.dataset.key) { const k = b.dataset.key; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
+    else if (b.dataset.key) { const k = b.dataset.key; if (!aqOpen(k)) return; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
+    else if (b.id === "aqAll") { for (const [, keys] of AQ_GROUPS) for (const k of keys) if (aqOpen(k)) aqDraft.set.add(k); renderMake(); }
+    else if (b.id === "aqNone") { aqDraft.set.clear(); renderMake(); }
     else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
     else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });

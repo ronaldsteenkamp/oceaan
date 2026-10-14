@@ -807,7 +807,8 @@
   function updateClock() {
     computeLight();
     const part = day > 0.8 ? L("dag", "day") : night > 0.8 ? L("nacht", "night") : L("schemer", "dusk");
-    clockEl.textContent = `${part} · ${scene.season === "herfst" ? L("herfst", "autumn") : L("zomer", "summer")}`;
+    const SEASON = { lente: ["lente", "spring"], zomer: ["zomer", "summer"], herfst: ["herfst", "autumn"], winter: ["winter", "winter"] }[scene.season] || ["zomer", "summer"];
+    clockEl.textContent = `${part} · ${L(SEASON[0], SEASON[1])}`;
   }
 
   function drawTreasureMound() {

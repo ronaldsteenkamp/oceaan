@@ -437,6 +437,8 @@
   .nb-note-field { margin: 2px 0 0; padding: 8px 10px; font-size: 13.5px; line-height: 1.5; color: var(--ink); background: rgba(236, 222, 178, 0.55); border-left: 3px solid rgba(41, 80, 122, 0.45); transform: rotate(-0.4deg); }
   .nb-note-field b { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); margin-right: 4px; }
   .nb-detail { overflow-y: auto; scrollbar-width: thin; }
+
+.chip.locked { opacity: 0.45; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -1553,7 +1555,12 @@
     s.giant = { enabled: !!water.giantSquid, active: false, timer: range(12, 25), list: [], reach: 0, side: 1 };
     s.ghost = s.rares.includes("ghost") ? { x: rng() * W, y: H * range(0.25, 0.42), dir: chance(0.5) ? 1 : -1, img: null } : null;
 
-    s.season = chance(0.5) ? "zomer" : "herfst";
+    // four seasons, one roll of the seed as before (so the rest of a shared ocean stays the same)
+    { const sr = rng(); s.season = sr < 0.25 ? "lente" : sr < 0.5 ? "zomer" : sr < 0.75 ? "herfst" : "winter"; }
+    const cold = ["noordzee", "kelpwoud", "ijszee"].includes(water.name), xr = mulberry32((seed ^ 0x5eaf00d) >>> 0);
+    s.cold = cold;
+    // winter in the North Sea and the kelp forest: drifting ice floes
+    if (s.season === "winter" && water.surface && !water.ice && cold) s.floes = Array.from({ length: 2 + Math.floor(xr() * 2) }, () => ({ x: xr() * W, w: (70 + xr() * 110) * u, d: (10 + xr() * 14) * u, sp: 0.05 + xr() * 0.1, seed: xr() * 10 }));
     s.mantis = chance(Lf.mantis) ? { x: rng() * W, s: range(13, 17) * u, cool: 0, strike: 0 } : null;
     s.archer = chance(Lf.archer) && water.surface ? { x: rng() * W, vx: chance(0.5) ? 0.5 : -0.5, s: range(13, 17) * u, cool: 1, face: 1 } : null;
     const host = s.ground.find(g => ["coral", "rocks", "arch", "anemone"].includes(g.kind));
@@ -1581,13 +1588,14 @@
       if (!s.treasure) s.ground = s.ground.filter(g => g.kind !== "bottle");
     }
 
-    s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : 1)) }, () => ({
+    s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : s.season === "lente" ? 1.7 : 1)) }, () => ({
       x: rng() * W, y: rng() * H, r: range(0.4, 1.6) * u, a: range(0.15, 0.55),
       sp: range(0.05, 0.25), ph: range(0, TAU),
     }));
 
     s.visitor = null;
     s.visitorTimer = range(2, 6);
+    s.visitorPace = s.season === "zomer" ? 0.6 : s.season === "winter" ? 1.4 : 1; // more visitors in summer, fewer in winter
     bubbles = []; ink = []; smoke = []; food = []; coins = []; streaks = [];
     eggs = []; dust = []; rings = []; jets = []; coralSpawn = []; abyssGlows = []; ripples = [];
     current = 0; mapT = 0; busyUntil = 0;
@@ -1682,7 +1690,7 @@
       const cv = scene.cave;
       const x = cv ? (cv.ox + Math.sin(t * 0.05 * r.sp + r.ph) * cv.ow * 0.25) * W : ((r.x + t * 0.004 * r.sp) % 1.2 - 0.1) * W;
       const w = r.w * W * (cv ? 0.5 : 1);
-      const a = water.rayA * (0.55 + 0.45 * Math.sin(t * r.sp + r.ph)) * (0.15 + 0.85 * day) * (scene.season === "herfst" ? 0.6 : 1.15);
+      const a = water.rayA * (0.55 + 0.45 * Math.sin(t * r.sp + r.ph)) * (0.15 + 0.85 * day) * ({ herfst: 0.6, zomer: 1.15, lente: 0.9, winter: 0.75 }[scene.season] || 1);
       const g = ctx.createLinearGradient(0, 0, 0, H * 0.9);
       g.addColorStop(0, `rgba(${water.ray},${a})`);
       g.addColorStop(1, `rgba(${water.ray},0)`);
@@ -3182,7 +3190,7 @@
     if (v.shiny && !v.pod && ((v.dir > 0 && v.x > W - v.size * 0.35) || (v.dir < 0 && v.x < v.size * 0.35))) v.dir *= -1;
     else if ((v.dir > 0 && v.x > W + v.margin) || (v.dir < 0 && v.x < -v.margin)) {
       if (v.pod && v.pod.some(d => d.shiny)) { v.dir *= -1; v.ringsLeft = undefined; }
-      else { scene.visitor = null; scene.visitorTimer = 8 + Math.random() * 14; }
+      else { scene.visitor = null; scene.visitorTimer = (8 + Math.random() * 14) * (scene.visitorPace || 1); }
     }
   }
 
@@ -5813,7 +5821,8 @@
   function updateClock() {
     computeLight();
     const part = day > 0.8 ? L("dag", "day") : night > 0.8 ? L("nacht", "night") : L("schemer", "dusk");
-    clockEl.textContent = `${part} · ${scene.season === "herfst" ? L("herfst", "autumn") : L("zomer", "summer")}`;
+    const SEASON = { lente: ["lente", "spring"], zomer: ["zomer", "summer"], herfst: ["herfst", "autumn"], winter: ["winter", "winter"] }[scene.season] || ["zomer", "summer"];
+    clockEl.textContent = `${part} · ${L(SEASON[0], SEASON[1])}`;
   }
 
   function drawTreasureMound() {
@@ -6459,7 +6468,7 @@
     s.dragon = chance(Lf.seadragon || 0) ? { x: pick(clumps), y: H * range(0.45, 0.65), dir: chance(0.5) ? 1 : -1, s: range(34, 44) * u, ph: range(0, TAU) } : null;
     for (const arr of [s.cassio, s.lobsters, s.isopods]) for (const o of arr) o.x = remap(o.x);
 
-    s.bloom = { timer: range(60, 140), logged: false };
+    s.bloom = { timer: range(60, 140) * (s.season === "lente" ? 0.4 : 1), logged: false }; // jellyfish swarm sooner in spring
     s.glowtide = { enabled: !!water.surface && !water.ice, active: false, age: 0, timer: range(10, 30), sparks: [] };
     s.hatch = { enabled: !!water.surface && water.visitors.includes("turtle"), timer: range(40, 110), list: [], logged: false };
     s.serpent = { enabled: s.rares.includes("serpent"), active: false, timer: range(6, 14) };
@@ -9245,6 +9254,7 @@
       const F = FAUNA[key];
       if (!chance(Lf[key] || 0)) continue;
       if ((F.kind === "surface" || F.kind === "dive") && !water.surface) continue;
+      if (s.season === "winter" && s.cold && ["albatross", "pelican", "cormorant", "puffin", "gannet"].includes(key) && ((seed + key.length) & 1)) continue; // many seabirds leave in winter
       const n = F.count ? F.count[0] + Math.floor(rng() * (F.count[1] - F.count[0] + 1)) : 1;
       for (let i = 0; i < n; i++) {
         const o = { key, x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(F.size[0], F.size[1]) * u, ph: range(0, TAU), tx: rng() * W };
@@ -10994,7 +11004,10 @@
     updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
+    // the seasons colour the water: green with plankton in spring, murky in autumn, cold and blue in a northern winter
     if (S.season === "herfst") { ctx.fillStyle = `rgba(70,90,50,${0.12 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
+    else if (S.season === "lente") { ctx.fillStyle = `rgba(60,150,80,${0.09 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
+    else if (S.season === "winter" && S.cold) { ctx.fillStyle = `rgba(170,200,235,${0.09 * (1 - night * 0.5)})`; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
     const dark = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;
@@ -12039,6 +12052,11 @@
       <h3>${L("Deze oceaan delen", "Share this ocean")}</h3>
       <p class="sum">${IN_ARTIFACT ? L("Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.", "Send this code along with the link. Whoever enters it below gets exactly this ocean.") : L("Wie deze link opent, krijgt precies deze oceaan.", "Whoever opens this link gets exactly this ocean.")}</p>
       <div class="share"><input id="shareCode" readonly value="${link}" aria-label="${L("Code van deze oceaan", "Code of this ocean")}"><button type="button" id="shareCopy">${L("Kopieer", "Copy")}</button>${canShare ? `<button type="button" id="shareNative" class="primary">${L("Delen", "Share")}</button>` : ""}</div>
+      <h3>${L("Logboek vergelijken", "Compare logbooks")}</h3>
+      <p class="sum">${L("Stuur je logboekcode naar een vriend en vul de zijne hieronder in: dan zie je wat de ander heeft dat jij nog mist.", "Send your logbook code to a friend and enter theirs below: you will see what the other has that you are still missing.")}</p>
+      <div class="share"><input id="myLogCode" readonly value="${logCode()}" aria-label="${L("Jouw logboekcode", "Your logbook code")}"><button type="button" id="copyLogCode">${L("Kopieer", "Copy")}</button></div>
+      <div class="share"><input id="friendLogCode" placeholder="lb-…" aria-label="${L("Logboekcode van je vriend", "Your friend's logbook code")}"><button type="button" id="compareGo">${L("Vergelijk", "Compare")}</button></div>
+      <div id="compareOut"></div>
       <h3>${L("Een code openen", "Open a code")}</h3>
       <div class="share"><input id="openCode" placeholder="#12345" aria-label="${L("Code om te openen", "Code to open")}"><button type="button" id="openGo">${L("Open", "Open")}</button></div>
       <h3>${L("Rust en geluid", "Calm and sound")}</h3>
@@ -12086,7 +12104,15 @@
   const inLogOrder = (title, keys) => groupKeys(title).filter(k => keys.includes(k)).concat(keys.filter(k => !groupKeys(title).includes(k)));
   const AQ_GROUPS = [["Bodem en vondsten", inLogOrder("Bodem en vondsten", PROP_KEYS)], ["Dieren", inLogOrder("Dieren", LIFE_KEYS)], ["Bezoekers", inLogOrder("Dieren", VIS_KEYS)], ["Zeldzaam", inLogOrder("Zeldzaam", RARE_KEYS)]];
 
+  // animals (and everything else that goes into the logbook) can only be chosen once you have seen them;
+  // things on the seabed are not in the logbook, so they can always be chosen
+  const aqOpen = k => !LOGGABLE.has(k) || logbook.has(k);
   function currentAsDraft() {
+    const d = currentAsDraftAll();
+    for (const k of [...d.set]) if (!aqOpen(k)) d.set.delete(k);
+    return d;
+  }
+  function currentAsDraftAll() {
     const S = scene, set = new Set();
     for (const g of S.ground) if (PROP_KEYS.includes(g.kind)) set.add(g.kind);
     if (S.canyon) set.add("canyon");
@@ -12102,8 +12128,12 @@
     if (!aqDraft) aqDraft = currentAsDraft();
     let html = `<p class="sum">${L("Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.", "Choose what goes into your ocean. On a narrow screen not all large things fit side by side.")}</p><h3>${L("Water", "Water")}</h3><div class="chips">`;
     html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${nm("w:" + w.name)}</button>`).join("") + `</div>`;
+    html += `<p class="sum">${L("Dieren en andere vondsten kun je pas kiezen als ze in je logboek staan.", "Animals and other finds can only be chosen once they are in your logbook.")}</p>
+      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button></div>`;
     for (const [title, keys] of AQ_GROUPS) {
-      html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`).join("") + `</div>`;
+      html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => aqOpen(k)
+        ? `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`
+        : `<button type="button" class="chip pick locked" disabled title="${L("Nog niet gezien", "Not seen yet")}">???</button>`).join("") + `</div>`;
     }
     html += `<div class="actions"><button type="button" id="aqBuild" class="primary">${L("Bouw dit aquarium", "Build this aquarium")}</button><button type="button" id="aqRandom">${L("Terug naar willekeurig", "Back to random")}</button></div>`;
     if (aquarium) html += `<p class="sum">${L("Je aquarium is gebouwd. De code bovenaan deze pagina deelt precies dit aquarium.", "Your aquarium is built. The code at the top of this page shares exactly this aquarium.")}</p>`;
@@ -12122,7 +12152,7 @@
       openDetail(k, true); return;
     }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
-    if (b.dataset.water !== undefined) { logWater = b.dataset.water; renderPanel(); return; }
+    if (b.dataset.logwater !== undefined) { logWater = b.dataset.logwater; renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
@@ -12158,6 +12188,12 @@
       navigator.clipboard.writeText(inp.value).then(() => toast(L("Gekopieerd", "Copied")), () => { inp.select(); toast(L("Selecteer en kopieer de code zelf", "Select and copy the code yourself")); });
       return;
     }
+    if (b.id === "copyLogCode") {
+      const inp = document.getElementById("myLogCode");
+      navigator.clipboard.writeText(inp.value).then(() => toast(L("Gekopieerd", "Copied")), () => { inp.select(); toast(L("Selecteer en kopieer de code zelf", "Select and copy the code yourself")); });
+      return;
+    }
+    if (b.id === "compareGo") { document.getElementById("compareOut").innerHTML = compareHTML(document.getElementById("friendLogCode").value); return; }
     if (b.id === "openGo") {
       const inp = document.getElementById("openCode");
       if (openCode(inp.value)) { renderMake(); toast(L("Code geopend", "Code opened")); }
@@ -12173,7 +12209,9 @@
     }
     if (b.id === "showWelcome") { panelEl.hidden = true; welcomeEl.hidden = false; document.getElementById("welcomeGo").focus(); return; }
     if (b.dataset.water) { aqDraft.water = Number(b.dataset.water); renderMake(); }
-    else if (b.dataset.key) { const k = b.dataset.key; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
+    else if (b.dataset.key) { const k = b.dataset.key; if (!aqOpen(k)) return; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
+    else if (b.id === "aqAll") { for (const [, keys] of AQ_GROUPS) for (const k of keys) if (aqOpen(k)) aqDraft.set.add(k); renderMake(); }
+    else if (b.id === "aqNone") { aqDraft.set.clear(); renderMake(); }
     else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
     else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });
@@ -12970,7 +13008,8 @@
       if (v && lit(v.x, v.y + (v.yOff || 0), v.size * 0.3)) kinds.add(v.type);
       if (kinds.size >= 3) hits.push("lamp3");
     }
-    if ((S.fauna || []).some(f => f.key === "polarbear" && f.st === "jump" && on(f.x, f.cy || 0))) hits.push("bear");
+    // the bear counts from the moment it comes into view at the top, mid-jump
+    if ((S.fauna || []).some(f => f.key === "polarbear" && f.st === "jump" && f.cy !== undefined && f.x > 0 && f.x < W && f.cy > -f.s * 0.4 && f.cy < H)) hits.push("bear");
     if (S.sardines && S.sardines.active) hits.push("sardine");
     return hits;
   }
@@ -12998,11 +13037,55 @@
     if (!w) return true;
     if (k.startsWith("w:")) return k === "w:" + logWater;
     if (k === "fish" || k === "jelly") return true;
-    return (w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k);
+    if ((w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k)) return true;
+    const extra = WATER_OF[k];
+    return !!extra && extra(w);
   }
+  // where the moments and the animals that belong to something (an anemone, a wreck, a chest) can be found
+  const has = (w, prop) => (w.props[prop] || 0) > 0;
+  const WATER_OF = {
+    clown: w => has(w, "anemone"), moray: w => has(w, "wreck"), mimic: w => has(w, "chest"), treasure: w => has(w, "bottle"),
+    grouper: w => (w.life.cleaners || 0) > 0, giant: w => !!w.giantSquid, task: w => (w.life.seahorse || 0) > 0,
+    storm: w => !!w.surface, waterspout: w => !!w.surface, meteor: w => !!w.surface, eclipse: w => !!w.surface, glowtide: w => !!w.surface && !w.ice,
+    quake: () => true, spawning: () => true, jellybloom: () => true, crabmarch: () => true,
+    baitball: w => w.name !== "diepzee", ghostnet: w => w.name !== "diepzee" && w.name !== "grot",
+    eruption: w => has(w, "volcano"), coralspawn: w => has(w, "coral"),
+    aurora: w => ["ijszee", "noordzee", "kelpwoud"].includes(w.name), whirlpool: w => ["noordzee", "kelpwoud", "ijszee"].includes(w.name),
+    sardinerun: w => ["kelpwoud", "sargasso"].includes(w.name), eelmigration: w => ["sargasso", "noordzee", "kelpwoud", "mangrove"].includes(w.name),
+    bubblerings: w => w.visitors.includes("dolphins"), hatchlings: w => w.visitors.includes("turtle"), whalesong: w => w.visitors.includes("humpback"),
+  };
   function waterFilterHTML() {
     return `<h4 class="nb-fam">${L("Water", "Water")}</h4><div class="filters" role="group" aria-label="${L("Water", "Water")}">` +
-      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-water="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-logwater="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+  }
+
+  // ---- comparing logbooks ----------------------------------------------------------------
+  // A logbook code is one bit for every find, in alphabetical order of their keys, with the number of finds in front,
+  // so two players on different versions of the ocean are told so instead of getting a wrong answer.
+  const LOG_CODE_KEYS = [...LOGGABLE].sort();
+  function logCode() {
+    let m = 0n;
+    LOG_CODE_KEYS.forEach((k, i) => { if (logbook.has(k)) m |= 1n << BigInt(i); });
+    return `lb-${LOG_CODE_KEYS.length}-${m.toString(36)}`;
+  }
+  function readLogCode(str) {
+    const mm = /lb-(\d+)-([0-9a-z]+)/.exec(str.trim().toLowerCase());
+    if (!mm) return null;
+    if (Number(mm[1]) !== LOG_CODE_KEYS.length) return { other: true };
+    let m = 0n;
+    for (const ch of mm[2]) m = m * 36n + BigInt(parseInt(ch, 36));
+    return { set: new Set(LOG_CODE_KEYS.filter((k, i) => (m >> BigInt(i)) & 1n)) };
+  }
+  function compareHTML(str) {
+    const r = readLogCode(str);
+    if (!r) return `<p class="sum">${L("Die code herken ik niet. Een logboekcode begint met lb-", "That code is not recognised. A logbook code starts with lb-")}</p>`;
+    if (r.other) return `<p class="sum">${L("Jullie spelen een andere versie van de oceaan. Vernieuw allebei de pagina en probeer het opnieuw.", "You are playing different versions of the ocean. Both refresh the page and try again.")}</p>`;
+    const mine = LOG_CODE_KEYS.filter(k => logbook.has(k)), theirs = [...r.set];
+    const theyHave = theirs.filter(k => !logbook.has(k)), iHave = mine.filter(k => !r.set.has(k)), both = new Set([...mine, ...theirs]).size;
+    const list = keys => keys.length ? `<div class="chips">` + keys.slice(0, 40).map(k => `<span class="chip">${nm(k)}</span>`).join("") + (keys.length > 40 ? `<span class="chip">${L(`…en nog ${keys.length - 40}`, `…and ${keys.length - 40} more`)}</span>` : "") + `</div>` : `<p class="sum">${L("Niets.", "Nothing.")}</p>`;
+    return `<p class="sum">${L(`Jij hebt <b>${mine.length}</b>, je vriend <b>${theirs.length}</b>, samen <b>${both}</b> van de ${LOG_CODE_KEYS.length}.`, `You have <b>${mine.length}</b>, your friend <b>${theirs.length}</b>, together <b>${both}</b> of ${LOG_CODE_KEYS.length}.`)}</p>
+      <h4>${L(`Je vriend heeft, en jij nog niet (${theyHave.length})`, `Your friend has, and you do not yet (${theyHave.length})`)}</h4>${list(theyHave)}
+      <h4>${L(`Jij hebt, en je vriend nog niet (${iHave.length})`, `You have, and your friend does not yet (${iHave.length})`)}</h4>${list(iHave)}`;
   }
   // ---- language ----------------------------------------------------------
   // Sets every fixed text on the page in the current language.
@@ -13179,7 +13262,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=70").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=73").catch(() => {}));
   }
 </script>
 </body>

@@ -75,7 +75,8 @@
       if (v && lit(v.x, v.y + (v.yOff || 0), v.size * 0.3)) kinds.add(v.type);
       if (kinds.size >= 3) hits.push("lamp3");
     }
-    if ((S.fauna || []).some(f => f.key === "polarbear" && f.st === "jump" && on(f.x, f.cy || 0))) hits.push("bear");
+    // the bear counts from the moment it comes into view at the top, mid-jump
+    if ((S.fauna || []).some(f => f.key === "polarbear" && f.st === "jump" && f.cy !== undefined && f.x > 0 && f.x < W && f.cy > -f.s * 0.4 && f.cy < H)) hits.push("bear");
     if (S.sardines && S.sardines.active) hits.push("sardine");
     return hits;
   }
@@ -103,9 +104,53 @@
     if (!w) return true;
     if (k.startsWith("w:")) return k === "w:" + logWater;
     if (k === "fish" || k === "jelly") return true;
-    return (w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k);
+    if ((w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k)) return true;
+    const extra = WATER_OF[k];
+    return !!extra && extra(w);
   }
+  // where the moments and the animals that belong to something (an anemone, a wreck, a chest) can be found
+  const has = (w, prop) => (w.props[prop] || 0) > 0;
+  const WATER_OF = {
+    clown: w => has(w, "anemone"), moray: w => has(w, "wreck"), mimic: w => has(w, "chest"), treasure: w => has(w, "bottle"),
+    grouper: w => (w.life.cleaners || 0) > 0, giant: w => !!w.giantSquid, task: w => (w.life.seahorse || 0) > 0,
+    storm: w => !!w.surface, waterspout: w => !!w.surface, meteor: w => !!w.surface, eclipse: w => !!w.surface, glowtide: w => !!w.surface && !w.ice,
+    quake: () => true, spawning: () => true, jellybloom: () => true, crabmarch: () => true,
+    baitball: w => w.name !== "diepzee", ghostnet: w => w.name !== "diepzee" && w.name !== "grot",
+    eruption: w => has(w, "volcano"), coralspawn: w => has(w, "coral"),
+    aurora: w => ["ijszee", "noordzee", "kelpwoud"].includes(w.name), whirlpool: w => ["noordzee", "kelpwoud", "ijszee"].includes(w.name),
+    sardinerun: w => ["kelpwoud", "sargasso"].includes(w.name), eelmigration: w => ["sargasso", "noordzee", "kelpwoud", "mangrove"].includes(w.name),
+    bubblerings: w => w.visitors.includes("dolphins"), hatchlings: w => w.visitors.includes("turtle"), whalesong: w => w.visitors.includes("humpback"),
+  };
   function waterFilterHTML() {
     return `<h4 class="nb-fam">${L("Water", "Water")}</h4><div class="filters" role="group" aria-label="${L("Water", "Water")}">` +
-      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-water="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-logwater="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+  }
+
+  // ---- comparing logbooks ----------------------------------------------------------------
+  // A logbook code is one bit for every find, in alphabetical order of their keys, with the number of finds in front,
+  // so two players on different versions of the ocean are told so instead of getting a wrong answer.
+  const LOG_CODE_KEYS = [...LOGGABLE].sort();
+  function logCode() {
+    let m = 0n;
+    LOG_CODE_KEYS.forEach((k, i) => { if (logbook.has(k)) m |= 1n << BigInt(i); });
+    return `lb-${LOG_CODE_KEYS.length}-${m.toString(36)}`;
+  }
+  function readLogCode(str) {
+    const mm = /lb-(\d+)-([0-9a-z]+)/.exec(str.trim().toLowerCase());
+    if (!mm) return null;
+    if (Number(mm[1]) !== LOG_CODE_KEYS.length) return { other: true };
+    let m = 0n;
+    for (const ch of mm[2]) m = m * 36n + BigInt(parseInt(ch, 36));
+    return { set: new Set(LOG_CODE_KEYS.filter((k, i) => (m >> BigInt(i)) & 1n)) };
+  }
+  function compareHTML(str) {
+    const r = readLogCode(str);
+    if (!r) return `<p class="sum">${L("Die code herken ik niet. Een logboekcode begint met lb-", "That code is not recognised. A logbook code starts with lb-")}</p>`;
+    if (r.other) return `<p class="sum">${L("Jullie spelen een andere versie van de oceaan. Vernieuw allebei de pagina en probeer het opnieuw.", "You are playing different versions of the ocean. Both refresh the page and try again.")}</p>`;
+    const mine = LOG_CODE_KEYS.filter(k => logbook.has(k)), theirs = [...r.set];
+    const theyHave = theirs.filter(k => !logbook.has(k)), iHave = mine.filter(k => !r.set.has(k)), both = new Set([...mine, ...theirs]).size;
+    const list = keys => keys.length ? `<div class="chips">` + keys.slice(0, 40).map(k => `<span class="chip">${nm(k)}</span>`).join("") + (keys.length > 40 ? `<span class="chip">${L(`…en nog ${keys.length - 40}`, `…and ${keys.length - 40} more`)}</span>` : "") + `</div>` : `<p class="sum">${L("Niets.", "Nothing.")}</p>`;
+    return `<p class="sum">${L(`Jij hebt <b>${mine.length}</b>, je vriend <b>${theirs.length}</b>, samen <b>${both}</b> van de ${LOG_CODE_KEYS.length}.`, `You have <b>${mine.length}</b>, your friend <b>${theirs.length}</b>, together <b>${both}</b> of ${LOG_CODE_KEYS.length}.`)}</p>
+      <h4>${L(`Je vriend heeft, en jij nog niet (${theyHave.length})`, `Your friend has, and you do not yet (${theyHave.length})`)}</h4>${list(theyHave)}
+      <h4>${L(`Jij hebt, en je vriend nog niet (${iHave.length})`, `You have, and your friend does not yet (${iHave.length})`)}</h4>${list(iHave)}`;
   }

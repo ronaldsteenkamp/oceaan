@@ -343,7 +343,12 @@
     s.giant = { enabled: !!water.giantSquid, active: false, timer: range(12, 25), list: [], reach: 0, side: 1 };
     s.ghost = s.rares.includes("ghost") ? { x: rng() * W, y: H * range(0.25, 0.42), dir: chance(0.5) ? 1 : -1, img: null } : null;
 
-    s.season = chance(0.5) ? "zomer" : "herfst";
+    // four seasons, one roll of the seed as before (so the rest of a shared ocean stays the same)
+    { const sr = rng(); s.season = sr < 0.25 ? "lente" : sr < 0.5 ? "zomer" : sr < 0.75 ? "herfst" : "winter"; }
+    const cold = ["noordzee", "kelpwoud", "ijszee"].includes(water.name), xr = mulberry32((seed ^ 0x5eaf00d) >>> 0);
+    s.cold = cold;
+    // winter in the North Sea and the kelp forest: drifting ice floes
+    if (s.season === "winter" && water.surface && !water.ice && cold) s.floes = Array.from({ length: 2 + Math.floor(xr() * 2) }, () => ({ x: xr() * W, w: (70 + xr() * 110) * u, d: (10 + xr() * 14) * u, sp: 0.05 + xr() * 0.1, seed: xr() * 10 }));
     s.mantis = chance(Lf.mantis) ? { x: rng() * W, s: range(13, 17) * u, cool: 0, strike: 0 } : null;
     s.archer = chance(Lf.archer) && water.surface ? { x: rng() * W, vx: chance(0.5) ? 0.5 : -0.5, s: range(13, 17) * u, cool: 1, face: 1 } : null;
     const host = s.ground.find(g => ["coral", "rocks", "arch", "anemone"].includes(g.kind));
@@ -371,13 +376,14 @@
       if (!s.treasure) s.ground = s.ground.filter(g => g.kind !== "bottle");
     }
 
-    s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : 1)) }, () => ({
+    s.snow = Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : s.season === "lente" ? 1.7 : 1)) }, () => ({
       x: rng() * W, y: rng() * H, r: range(0.4, 1.6) * u, a: range(0.15, 0.55),
       sp: range(0.05, 0.25), ph: range(0, TAU),
     }));
 
     s.visitor = null;
     s.visitorTimer = range(2, 6);
+    s.visitorPace = s.season === "zomer" ? 0.6 : s.season === "winter" ? 1.4 : 1; // more visitors in summer, fewer in winter
     bubbles = []; ink = []; smoke = []; food = []; coins = []; streaks = [];
     eggs = []; dust = []; rings = []; jets = []; coralSpawn = []; abyssGlows = []; ripples = [];
     current = 0; mapT = 0; busyUntil = 0;

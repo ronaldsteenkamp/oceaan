@@ -5,7 +5,7 @@
       const cv = scene.cave;
       const x = cv ? (cv.ox + Math.sin(t * 0.05 * r.sp + r.ph) * cv.ow * 0.25) * W : ((r.x + t * 0.004 * r.sp) % 1.2 - 0.1) * W;
       const w = r.w * W * (cv ? 0.5 : 1);
-      const a = water.rayA * (0.55 + 0.45 * Math.sin(t * r.sp + r.ph)) * (0.15 + 0.85 * day) * (scene.season === "herfst" ? 0.6 : 1.15);
+      const a = water.rayA * (0.55 + 0.45 * Math.sin(t * r.sp + r.ph)) * (0.15 + 0.85 * day) * ({ herfst: 0.6, zomer: 1.15, lente: 0.9, winter: 0.75 }[scene.season] || 1);
       const g = ctx.createLinearGradient(0, 0, 0, H * 0.9);
       g.addColorStop(0, `rgba(${water.ray},${a})`);
       g.addColorStop(1, `rgba(${water.ray},0)`);

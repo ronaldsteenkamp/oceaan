@@ -58,7 +58,7 @@
     s.dragon = chance(Lf.seadragon || 0) ? { x: pick(clumps), y: H * range(0.45, 0.65), dir: chance(0.5) ? 1 : -1, s: range(34, 44) * u, ph: range(0, TAU) } : null;
     for (const arr of [s.cassio, s.lobsters, s.isopods]) for (const o of arr) o.x = remap(o.x);
 
-    s.bloom = { timer: range(60, 140), logged: false };
+    s.bloom = { timer: range(60, 140) * (s.season === "lente" ? 0.4 : 1), logged: false }; // jellyfish swarm sooner in spring
     s.glowtide = { enabled: !!water.surface && !water.ice, active: false, age: 0, timer: range(10, 30), sparks: [] };
     s.hatch = { enabled: !!water.surface && water.visitors.includes("turtle"), timer: range(40, 110), list: [], logged: false };
     s.serpent = { enabled: s.rares.includes("serpent"), active: false, timer: range(6, 14) };

@@ -156,7 +156,10 @@
     updateAndDrawFlyers(k, dtSec);
     drawRain(k);
 
+    // the seasons colour the water: green with plankton in spring, murky in autumn, cold and blue in a northern winter
     if (S.season === "herfst") { ctx.fillStyle = `rgba(70,90,50,${0.12 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
+    else if (S.season === "lente") { ctx.fillStyle = `rgba(60,150,80,${0.09 * (1 - night * 0.6)})`; ctx.fillRect(0, 0, W, H); }
+    else if (S.season === "winter" && S.cold) { ctx.fillStyle = `rgba(170,200,235,${0.09 * (1 - night * 0.5)})`; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
     const dark = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;

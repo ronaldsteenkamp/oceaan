@@ -415,3 +415,5 @@
   .nb-note-field { margin: 2px 0 0; padding: 8px 10px; font-size: 13.5px; line-height: 1.5; color: var(--ink); background: rgba(236, 222, 178, 0.55); border-left: 3px solid rgba(41, 80, 122, 0.45); transform: rotate(-0.4deg); }
   .nb-note-field b { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); margin-right: 4px; }
   .nb-detail { overflow-y: auto; scrollbar-width: thin; }
+
+.chip.locked { opacity: 0.45; cursor: not-allowed; }
