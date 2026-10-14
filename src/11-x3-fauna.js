@@ -345,7 +345,7 @@
     ctx.save(); ctx.clip(P(GOBY_BODY));
     ctx.fillStyle = "rgba(255,255,255,0.22)"; ctx.beginPath(); ctx.ellipse(6, 9, 44, 5, 0.03, 0, TAU); ctx.fill();
     ctx.fillStyle = spot;
-    for (const [x, y, r] of [[36, -4, 1.8], [30, 2, 1.5], [22, -6, 1.7], [14, 2, 1.6], [4, -5, 1.8], [-6, 2, 1.5], [-16, -4, 1.6], [-26, 1, 1.4], [42, 3, 1.3], [26, -9, 1.3]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+    ctx.beginPath(); for (const [x, y, r] of [[36, -4, 1.8], [30, 2, 1.5], [22, -6, 1.7], [14, 2, 1.6], [4, -5, 1.8], [-6, 2, 1.5], [-16, -4, 1.6], [-26, 1, 1.4], [42, 3, 1.3], [26, -9, 1.3]]) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU); } ctx.fill();
     ctx.restore();
     ctx.save(); ctx.translate(22, 4); ctx.rotate(-0.2 + Math.sin(ph * 3) * 0.25); ctx.fillStyle = dark; ctx.globalAlpha *= 0.8; ctx.fill(P(GOBY_PEC)); ctx.restore();
     ctx.strokeStyle = dark; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(48, 3.5); ctx.quadraticCurveTo(44, 5.5, 39, 4.5); ctx.stroke();

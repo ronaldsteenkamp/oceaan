@@ -333,6 +333,12 @@
   .nb .row button:hover, .nb .nb-back:hover { background: #fff; border-color: rgba(80, 70, 50, 0.6); }
   .nb .row button.primary { background: var(--pencil); color: #fff; border-color: var(--pencil); }
   .nb-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+  .nb-stickers { display: flex; flex-wrap: wrap; gap: 12px; margin: 4px 0 6px; }
+  .nb-sticker { margin: 0; width: 84px; text-align: center; font-family: var(--hand); font-size: 14px; line-height: 1.05; color: var(--ink-soft); overflow-wrap: anywhere; }
+  .nb-sticker img, .nb-sticker span { display: block; width: 60px; height: 60px; margin: 0 auto 4px; border-radius: 50%; transform: rotate(var(--tilt)); }
+  .nb-sticker img { object-fit: cover; border: 3px solid #fffdf7; box-shadow: 0 1px 4px rgba(40, 30, 10, 0.35); }
+  .nb-sticker span { border: 2px dashed rgba(80, 70, 50, 0.35); line-height: 56px; font-size: 22px; color: rgba(80, 70, 50, 0.4); }
+  .nb-sticker.on { color: var(--ink); }
   .nb-check li { display: flex; align-items: baseline; gap: 8px; font-family: var(--hand); font-size: 19px; line-height: 1.05; color: var(--ink-soft); }
   .nb-check li.on { color: var(--ink); }
   .nb-check .box { flex: none; width: 15px; height: 15px; display: inline-grid; place-items: center; border: 1.5px solid rgba(80, 70, 50, 0.55); border-radius: 2px; font-size: 16px; line-height: 1; color: #2f7a3a; transform: translateY(2px); }

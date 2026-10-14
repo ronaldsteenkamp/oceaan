@@ -364,17 +364,19 @@
       ctx.bezierCurveTo(74, 0, 60, 2, 30, 2); ctx.lineTo(-60, 2); ctx.closePath(); ctx.fill();
       ctx.fillStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.ellipse(10, -14, 50, 3, 0, 0, TAU); ctx.fill();
       // the cerata: six bunches of tapering fingers, swaying gently
+      const ends = [];
+      ctx.strokeStyle = tip; ctx.lineWidth = 6; ctx.beginPath();
       for (let g = 0; g < 6; g++) {
         const gx = 44 - g * 18, gy = -18 + g * 2.4;
         for (let j = 0; j < 4; j++) {
           const a = -Math.PI / 2 + (j - 1.5) * 0.32 + Math.sin(t * 1.6 + g + j) * 0.08, len = 22 - Math.abs(j - 1.5) * 4 - g * 1.2;
           const ex = gx + Math.cos(a) * len, ey = gy + Math.sin(a) * len;
-          ctx.strokeStyle = tip; ctx.lineWidth = 6;
-          ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(ex, ey); ctx.stroke();
-          ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex + Math.cos(a) * 3, ey + Math.sin(a) * 3); ctx.stroke();
-          ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.arc(ex, ey, 1.2, 0, TAU); ctx.fill();
+          ctx.moveTo(gx, gy); ctx.lineTo(ex, ey); ends.push([ex, ey, a]);
         }
       }
+      ctx.stroke();
+      ctx.lineWidth = 3; ctx.beginPath(); for (const [ex, ey, a] of ends) { ctx.moveTo(ex, ey); ctx.lineTo(ex + Math.cos(a) * 3, ey + Math.sin(a) * 3); } ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); for (const [ex, ey] of ends) { ctx.moveTo(ex + 1.2, ey); ctx.arc(ex, ey, 1.2, 0, TAU); } ctx.fill();
       // two rhinophores with rings
       for (const rx of [58, 66]) {
         ctx.strokeStyle = tip; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(rx, -18); ctx.lineTo(rx + 4, -36); ctx.stroke();
@@ -512,14 +514,14 @@
         });
       } else {
         // rows of beating cilia scatter light into rainbows
-        const a = 0.55 + 0.35 * Math.sin(t * 2 + c.ph);
-        for (let r = 0; r < 8; r++) {
-          const rx = (r / 7 - 0.5) * 1.1;
-          for (let j = 0; j < 10; j++) {
-            const yy = -0.85 + j * 0.19, xr = rx * Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.65;
-            ctx.fillStyle = c.shiny || (shinyPal && shinyPal.body) ? `rgba(255,${200 + ((j * 7 + r * 3) % 40)},90,${a})` : `hsla(${(t * 240 + j * 36 + r * 15) % 360} 90% 65% / ${a})`;
-            ctx.beginPath(); ctx.arc(c.x + xr, c.y + yy * c.r, Math.max(0.7, 1.1 * u), 0, TAU); ctx.fill();
-          }
+        // one colour per row of the comb, so each row is a single fill (eight times fewer colour changes than per dot)
+        const a = 0.55 + 0.35 * Math.sin(t * 2 + c.ph), dot = Math.max(0.7, 1.1 * u), gold = c.shiny || (shinyPal && shinyPal.body);
+        for (let j = 0; j < 10; j++) {
+          const yy = -0.85 + j * 0.19, span = Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.65, cy = c.y + yy * c.r;
+          ctx.fillStyle = gold ? `rgba(255,${200 + ((j * 7) % 40)},90,${a.toFixed(2)})` : `hsla(${Math.round(t * 240 + j * 36) % 360} 90% 65% / ${a.toFixed(2)})`;
+          ctx.beginPath();
+          for (let r = 0; r < 8; r++) { const x = c.x + (r / 7 - 0.5) * 1.1 * span; ctx.moveTo(x + dot, cy); ctx.arc(x, cy, dot, 0, TAU); }
+          ctx.fill();
         }
       }
     }

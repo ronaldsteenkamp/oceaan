@@ -46,6 +46,9 @@
     });
     blocks.push({ head: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</span></h4><p class="nb-note">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`,
       headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, newPage: true, group: "intro" });
+    // the stickers from the milestones, stuck in at a slant; the ones still to earn are dashed outlines
+    blocks.push({ html: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${STICKERS.filter(([id]) => rewards.has(id)).length}/${STICKERS.length}</span></h4><div class="nb-stickers">` +
+      STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${L(m.name[0], m.name[1])}</figcaption></figure>`; }).join("") + `</div>`, group: "intro" });
 
     // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
