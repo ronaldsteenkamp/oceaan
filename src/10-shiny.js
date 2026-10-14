@@ -472,7 +472,8 @@
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
       // First shiny reward: a little bell the moment a shiny comes into view
-      if (!e.rang && !e.told && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
+      const allShiny = !!(aquarium && aquarium.shiny);
+      if (!e.rang && !e.told && !allShiny && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
         e.rang = true;
         try { tone({ type: "sine", freqs: [[1760, 0], [2349, 0.12]], dur: 0.9, gain: 0.05, attack: 0.005, release: 0.8, verb: 0.9 }); } catch (err) {}
         toast(L("Er klinkt een belletje: er glinstert iets in de buurt...", "A little bell rings: something glitters nearby..."));
@@ -481,6 +482,7 @@
       if (rewards.has("s15")) {
         if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
       }
+      if (!e.told && allShiny) e.told = true;
       if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;

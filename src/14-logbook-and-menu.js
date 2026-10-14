@@ -555,7 +555,7 @@
   function openCode(raw) {
     const str = raw.trim().replace(/^.*#/, "").toLowerCase();
     const aq = parseAq(str);
-    if (aq) { aquarium = { water: aq.water, set: aq.set }; aqDraft = null; newVariant(aq.seed, true); return true; }
+    if (aq) { aquarium = { water: aq.water, set: aq.set, shiny: aq.shiny }; aqDraft = null; newVariant(aq.seed, true); return true; }
     if (/^\d{1,10}$/.test(str)) { aquarium = null; aqDraft = null; newVariant(Number(str), true); return true; }
     return false;
   }
@@ -598,7 +598,7 @@
     for (const v of S.visitorPool) if (VIS_KEYS.includes(v)) set.add(v);
     for (const r of S.rares) set.add(r);
     if (S.flyers && S.flyers.enabled) set.add("flyingfish");
-    return { water: S.waterIndex, set };
+    return { water: S.waterIndex, set, shiny: !!(aquarium && aquarium.shiny) };
   }
 
   function aquariumHTML() {
@@ -606,7 +606,9 @@
     let html = `<p class="sum">${L("Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.", "Choose what goes into your ocean. On a narrow screen not all large things fit side by side.")}</p><h3>${L("Water", "Water")}</h3><div class="chips">`;
     html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${nm("w:" + w.name)}</button>`).join("") + `</div>`;
     html += `<p class="sum">${L("Dieren en andere vondsten kun je pas kiezen als ze in je logboek staan.", "Animals and other finds can only be chosen once they are in your logbook.")}</p>
-      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button></div>`;
+      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button><button type="button" id="aqNoShiny">${L("Dieren zonder shiny", "Animals without a shiny")}</button></div>
+      <div class="row"><button type="button" id="aqShiny" class="switch" role="switch" aria-checked="${!!aqDraft.shiny}"><span class="track"></span>${L("Alles shiny", "Everything shiny")}</button></div>
+      <p class="sum">${L("Met Alles shiny is elk dier shiny. Die shiny's tellen niet mee voor je logboek.", "With Everything shiny every animal is shiny. Those shinies do not count for your logbook.")}</p>`;
     for (const [title, keys] of AQ_GROUPS) {
       html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => aqOpen(k)
         ? `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`
@@ -689,22 +691,31 @@
     else if (b.dataset.key) { const k = b.dataset.key; if (!aqOpen(k)) return; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqAll") { for (const [, keys] of AQ_GROUPS) for (const k of keys) if (aqOpen(k)) aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqNone") { aqDraft.set.clear(); renderMake(); }
-    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
+    else if (b.id === "aqShiny") { aqDraft.shiny = !aqDraft.shiny; renderMake(); }
+    else if (b.id === "aqNoShiny") {
+      // only the animals you have seen whose shiny is not in your logbook yet
+      const want = AQ_GROUPS.flatMap(([, keys]) => keys).filter(k => SHINY_KEYS.includes(k) && aqOpen(k) && !logbook.has("shiny:" + k));
+      for (const k of [...aqDraft.set]) if (SHINY_KEYS.includes(k)) aqDraft.set.delete(k);
+      for (const k of want) aqDraft.set.add(k);
+      toast(want.length ? L(`${want.length} dieren gekozen waarvan je de shiny nog mist`, `${want.length} animals chosen whose shiny you are still missing`) : L("Je hebt van alle geziene dieren de shiny al", "You already have the shiny of every animal you have seen"));
+      renderMake();
+    }
+    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set), shiny: !!aqDraft.shiny }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
     else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });
 
   function aqCode() {
     let m = 0n;
     AQ_ALL.forEach((k, i) => { if (aquarium.set.has(k)) m |= 1n << BigInt(i); });
-    return `aq-${aquarium.water}-${seed.toString(36)}-${m.toString(36)}`;
+    return `aq-${aquarium.water}-${seed.toString(36)}-${m.toString(36)}${aquarium.shiny ? "-s" : ""}`;
   }
 
   function parseAq(str) {
-    const mm = /^aq-(\d)-([0-9a-z]+)-([0-9a-z]+)$/.exec(str);
+    const mm = /^aq-(\d)-([0-9a-z]+)-([0-9a-z]+)(-s)?$/.exec(str);
     if (!mm) return null;
     let m = 0n;
     for (const ch of mm[3]) m = m * 36n + BigInt(parseInt(ch, 36));
-    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
+    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36), shiny: !!mm[4] };
   }
 
   let polaroidCanvas = null;

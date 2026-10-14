@@ -366,7 +366,7 @@
   // shinies are twice as easy to find as the base table above (it used to be five times: they had become too common)
   const SHINY_EASE = 2;
   for (const k in SHINY_N) SHINY_N[k] = Math.max(50, Math.round(SHINY_N[k] / SHINY_EASE));
-  const shinyChance = key => 1 / (SHINY_N[key] || 200);
+  const shinyChance = key => aquarium && aquarium.shiny ? 1 : 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",

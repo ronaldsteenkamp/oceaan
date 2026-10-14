@@ -871,7 +871,7 @@
   // shinies are twice as easy to find as the base table above (it used to be five times: they had become too common)
   const SHINY_EASE = 2;
   for (const k in SHINY_N) SHINY_N[k] = Math.max(50, Math.round(SHINY_N[k] / SHINY_EASE));
-  const shinyChance = key => 1 / (SHINY_N[key] || 200);
+  const shinyChance = key => aquarium && aquarium.shiny ? 1 : 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = ["fish", "lantern", "jelly", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler",
     "squid", "hermit", "slugs", "comb", "otters", "seal", "penguins", "clown", "mantis", "archer", "cleaners", "grouper", "flyingfish",
     "humpback", "turtle", "manta", "dolphins", "swordfish", "narwhal", "mermaid",
@@ -1665,7 +1665,7 @@
   function seedFromHash() {
     const h = (location.hash || "").slice(1);
     const aq = parseAq(h);
-    if (aq) { aquarium = { water: aq.water, set: aq.set }; return aq.seed; }
+    if (aq) { aquarium = { water: aq.water, set: aq.set, shiny: aq.shiny }; return aq.seed; }
     const m = /^(\d{1,10})$/.exec(h);
     if (m) { aquarium = null; return Number(m[1]); }
     return null;
@@ -6374,7 +6374,8 @@
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
       // First shiny reward: a little bell the moment a shiny comes into view
-      if (!e.rang && !e.told && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
+      const allShiny = !!(aquarium && aquarium.shiny);
+      if (!e.rang && !e.told && !allShiny && rewards.has("s1") && x > 0 && x < W && y > 0 && y < H) {
         e.rang = true;
         try { tone({ type: "sine", freqs: [[1760, 0], [2349, 0.12]], dur: 0.9, gain: 0.05, attack: 0.005, release: 0.8, verb: 0.9 }); } catch (err) {}
         toast(L("Er klinkt een belletje: er glinstert iets in de buurt...", "A little bell rings: something glitters nearby..."));
@@ -6383,6 +6384,7 @@
       if (rewards.has("s15")) {
         if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
       }
+      if (!e.told && allShiny) e.told = true;
       if (!e.told && lit(x, y, e.r)) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
@@ -12078,7 +12080,7 @@
   function openCode(raw) {
     const str = raw.trim().replace(/^.*#/, "").toLowerCase();
     const aq = parseAq(str);
-    if (aq) { aquarium = { water: aq.water, set: aq.set }; aqDraft = null; newVariant(aq.seed, true); return true; }
+    if (aq) { aquarium = { water: aq.water, set: aq.set, shiny: aq.shiny }; aqDraft = null; newVariant(aq.seed, true); return true; }
     if (/^\d{1,10}$/.test(str)) { aquarium = null; aqDraft = null; newVariant(Number(str), true); return true; }
     return false;
   }
@@ -12121,7 +12123,7 @@
     for (const v of S.visitorPool) if (VIS_KEYS.includes(v)) set.add(v);
     for (const r of S.rares) set.add(r);
     if (S.flyers && S.flyers.enabled) set.add("flyingfish");
-    return { water: S.waterIndex, set };
+    return { water: S.waterIndex, set, shiny: !!(aquarium && aquarium.shiny) };
   }
 
   function aquariumHTML() {
@@ -12129,7 +12131,9 @@
     let html = `<p class="sum">${L("Kies zelf wat er in je oceaan komt. Op een smal scherm passen niet alle grote dingen naast elkaar.", "Choose what goes into your ocean. On a narrow screen not all large things fit side by side.")}</p><h3>${L("Water", "Water")}</h3><div class="chips">`;
     html += WATERS.map((w, i) => `<button type="button" class="chip pick ${aqDraft.water === i ? "on" : ""}" data-water="${i}" aria-pressed="${aqDraft.water === i}">${nm("w:" + w.name)}</button>`).join("") + `</div>`;
     html += `<p class="sum">${L("Dieren en andere vondsten kun je pas kiezen als ze in je logboek staan.", "Animals and other finds can only be chosen once they are in your logbook.")}</p>
-      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button></div>`;
+      <div class="row"><button type="button" id="aqAll">${L("Alles selecteren", "Select all")}</button><button type="button" id="aqNone">${L("Alles deselecteren", "Deselect all")}</button><button type="button" id="aqNoShiny">${L("Dieren zonder shiny", "Animals without a shiny")}</button></div>
+      <div class="row"><button type="button" id="aqShiny" class="switch" role="switch" aria-checked="${!!aqDraft.shiny}"><span class="track"></span>${L("Alles shiny", "Everything shiny")}</button></div>
+      <p class="sum">${L("Met Alles shiny is elk dier shiny. Die shiny's tellen niet mee voor je logboek.", "With Everything shiny every animal is shiny. Those shinies do not count for your logbook.")}</p>`;
     for (const [title, keys] of AQ_GROUPS) {
       html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => aqOpen(k)
         ? `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`
@@ -12212,22 +12216,31 @@
     else if (b.dataset.key) { const k = b.dataset.key; if (!aqOpen(k)) return; if (aqDraft.set.has(k)) aqDraft.set.delete(k); else aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqAll") { for (const [, keys] of AQ_GROUPS) for (const k of keys) if (aqOpen(k)) aqDraft.set.add(k); renderMake(); }
     else if (b.id === "aqNone") { aqDraft.set.clear(); renderMake(); }
-    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set) }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
+    else if (b.id === "aqShiny") { aqDraft.shiny = !aqDraft.shiny; renderMake(); }
+    else if (b.id === "aqNoShiny") {
+      // only the animals you have seen whose shiny is not in your logbook yet
+      const want = AQ_GROUPS.flatMap(([, keys]) => keys).filter(k => SHINY_KEYS.includes(k) && aqOpen(k) && !logbook.has("shiny:" + k));
+      for (const k of [...aqDraft.set]) if (SHINY_KEYS.includes(k)) aqDraft.set.delete(k);
+      for (const k of want) aqDraft.set.add(k);
+      toast(want.length ? L(`${want.length} dieren gekozen waarvan je de shiny nog mist`, `${want.length} animals chosen whose shiny you are still missing`) : L("Je hebt van alle geziene dieren de shiny al", "You already have the shiny of every animal you have seen"));
+      renderMake();
+    }
+    else if (b.id === "aqBuild") { aquarium = { water: aqDraft.water, set: new Set(aqDraft.set), shiny: !!aqDraft.shiny }; newVariant(seed, true); renderMake(); toast(L("Je aquarium is gebouwd", "Your aquarium has been built")); }
     else if (b.id === "aqRandom") { aquarium = null; aqDraft = null; newVariant(seed, true); renderMake(); }
   });
 
   function aqCode() {
     let m = 0n;
     AQ_ALL.forEach((k, i) => { if (aquarium.set.has(k)) m |= 1n << BigInt(i); });
-    return `aq-${aquarium.water}-${seed.toString(36)}-${m.toString(36)}`;
+    return `aq-${aquarium.water}-${seed.toString(36)}-${m.toString(36)}${aquarium.shiny ? "-s" : ""}`;
   }
 
   function parseAq(str) {
-    const mm = /^aq-(\d)-([0-9a-z]+)-([0-9a-z]+)$/.exec(str);
+    const mm = /^aq-(\d)-([0-9a-z]+)-([0-9a-z]+)(-s)?$/.exec(str);
     if (!mm) return null;
     let m = 0n;
     for (const ch of mm[3]) m = m * 36n + BigInt(parseInt(ch, 36));
-    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36) };
+    return { water: Math.min(WATERS.length - 1, Number(mm[1])), set: new Set(AQ_ALL.filter((k, i) => !RETIRED.has(k) && (m >> BigInt(i)) & 1n)), seed: parseInt(mm[2], 36), shiny: !!mm[4] };
   }
 
   let polaroidCanvas = null;
@@ -13262,7 +13275,7 @@
       bar.append(text, btn);
       document.body.appendChild(bar);
     });
-    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=73").catch(() => {}));
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js?v=74").catch(() => {}));
   }
 </script>
 </body>

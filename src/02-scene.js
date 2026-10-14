@@ -453,7 +453,7 @@
   function seedFromHash() {
     const h = (location.hash || "").slice(1);
     const aq = parseAq(h);
-    if (aq) { aquarium = { water: aq.water, set: aq.set }; return aq.seed; }
+    if (aq) { aquarium = { water: aq.water, set: aq.set, shiny: aq.shiny }; return aq.seed; }
     const m = /^(\d{1,10})$/.exec(h);
     if (m) { aquarium = null; return Number(m[1]); }
     return null;
