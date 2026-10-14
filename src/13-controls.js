@@ -31,7 +31,6 @@
     if (hid) {
       hid.found = true; hid.flash = 1;
       sfxChest();
-      updateTask();
       const nf = S.hidden.filter(h => h.found).length;
       toast(nf < S.hidden.length ? L(`Verstopt zeepaardje gevonden! ${nf} van ${S.hidden.length}`, `Hidden seahorse found! ${nf} of ${S.hidden.length}`) : L("Alle verstopte zeepaardjes gevonden!", "All hidden seahorses found!"));
       if (S.hidden.every(h => h.found)) {
@@ -141,8 +140,6 @@
   if (window.claude && typeof window.claude.use === "function") {
     window.claude.use("downloads").then(d => { downloads = d; }).catch(() => {});
   }
-
-  taskEl.addEventListener("click", explainTask);
 
   // If the browser takes the drawing surface away (it can, when memory is short), clear the saved layers so everything is drawn fresh.
   canvas.addEventListener("contextlost", e => { e.preventDefault(); discoverPause = false; });

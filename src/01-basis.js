@@ -11,7 +11,6 @@
   const menuBtn = document.getElementById("menu");
   const bookBtn = document.getElementById("book");
   const bookDot = document.getElementById("bookDot");
-  const taskEl = document.getElementById("task");
   const toastEl = document.getElementById("toast");
   const panelEl = document.getElementById("panel");
   const panelBody = document.getElementById("panelBody");
@@ -380,7 +379,9 @@
   const SHINY_NAMES = { fish: "schoolvis", eels: "zandaal", squid: "inktvisje", slugs: "zeenaaktslak", otters: "zeeotter", penguins: "pinguïn", cleaners: "poetsvisje", dolphins: "dolfijn",
     hatchlings: "babyschildpadje", eelmigration: "glasaaltje", giant: "reuzeninktvis",
     xmastree: "kerstboomwormpje", hatchet: "bijlvisje", herring: "haring" };
-  for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || NAMES[k].toLowerCase());
+  // names that start with a proper noun keep their capital ("Shiny Groenlandse haai")
+  const shinyLower = name => /^(Japanse|Groenlandse|Portugees|Jan-van-gent|Japanese|Greenland|Portuguese|Atlantic|Moorish|Christmas)\b/.test(name) ? name : name.toLowerCase();
+  for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || shinyLower(NAMES[k]));
   // the shinies follow the same order as the animals, visitors, moments and rare things
   {
     const subs = ["Dieren", "Momenten", "Zeldzaam"].map(title => {
@@ -435,7 +436,7 @@
   };
   const SHINY_NAMES_EN = { fish: "school fish", eels: "garden eel", slugs: "sea slug", otters: "sea otter", penguins: "penguin", cleaners: "cleaner wrasse", dolphins: "dolphin",
     hatchlings: "turtle hatchling", eelmigration: "glass eel", giant: "giant squid" };
-  for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || NAMES_EN[k].toLowerCase());
+  for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || shinyLower(NAMES_EN[k]));
   const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
   const groupName = title => L(title, GROUP_EN[title] || title);
   const LOG_KEY = "oceaan-logboek";
@@ -488,7 +489,7 @@
       if (names.length > 4) list = names.slice(0, 3).join(", ") + L(` en nog ${names.length - 3}`, ` and ${names.length - 3} more`);
       else if (names.length > 1) list = names.slice(0, -1).join(", ") + L(" en ", " and ") + names[names.length - 1];
       else list = names[0];
-      toast(L("Nieuw in je logboek: ", "New in your logbook: ") + list);
+      toast(L("Nieuw in je logboek: ", "New in your logbook: ") + list, "new");
     }, 700);
   }
 
@@ -582,7 +583,7 @@
     for (const id of reached()) {
       if (before.includes(id)) continue;
       const m = MILESTONES.find(x => x.id === id);
-      toast(m.reward ? L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`) : L(`Mijlpaal: ${m.name[0]}!`, `Milestone: ${m.name[1]}!`));
+      toast(m.reward ? L(`Mijlpaal: ${m.name[0]}! Je krijgt ${m.reward[0]}.`, `Milestone: ${m.name[1]}! You get ${m.reward[1]}.`) : L(`Mijlpaal: ${m.name[0]}!`, `Milestone: ${m.name[1]}!`), "important");
       buzz([60, 60, 120]);
     }
     applyRewards();
@@ -591,14 +592,25 @@
   // Messages wait their turn instead of piling on top of each other.
   const toastQueue = [];
   let toastBusy = false;
-  function toast(msg) {
-    if (restMode && (msg.startsWith("Nieuw in je logboek") || msg.startsWith("New in your logbook"))) return;
-    if (toastQueue.length < 4 && !toastQueue.includes(msg)) toastQueue.push(msg);
+  // kind "new" is the "new in your logbook" message (skipped in calm mode); "important" messages (milestones) are never dropped
+  function toast(msg, kind) {
+    if (restMode && kind === "new") return;
+    if (toastQueue.includes(msg)) { if (!toastBusy) nextToast(); return; }
+    if (toastQueue.length >= 4) {
+      if (kind !== "important") { if (!toastBusy) nextToast(); return; }
+      // make room by dropping the oldest ordinary message
+      const i = toastQueue.findIndex(m => !importantToasts.has(m));
+      if (i >= 0) toastQueue.splice(i, 1);
+    }
+    toastQueue.push(msg);
+    if (kind === "important") importantToasts.add(msg);
     if (!toastBusy) nextToast();
   }
+  const importantToasts = new Set();
   function nextToast() {
     const msg = toastQueue.shift();
     if (!msg) { toastBusy = false; return; }
+    importantToasts.delete(msg);
     toastBusy = true;
     toastEl.textContent = msg;
     toastEl.classList.add("show");

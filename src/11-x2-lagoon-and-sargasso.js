@@ -593,7 +593,8 @@
     } else {
       Q.age += dtSec;
       const amp = Math.max(0, 1 - Q.age / 4) * 6;
-      canvas.style.transform = amp > 0.1 ? `translate(${(Math.random() - 0.5) * amp}px,${(Math.random() - 0.5) * amp}px)` : "";
+      // no shaking screen for people who asked their system for less motion
+      canvas.style.transform = amp > 0.1 && !reduceMotion ? `translate(${(Math.random() - 0.5) * amp}px,${(Math.random() - 0.5) * amp}px)` : "";
       if (Q.age < 3 && Math.random() < 0.5 * k) { const x = Math.random() * W; puff(x, sandY(x) + 4 * u, 3); }
       if (Q.age > 4) { Q.age = -1; canvas.style.transform = ""; }
     }

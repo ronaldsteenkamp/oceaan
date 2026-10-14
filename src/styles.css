@@ -98,18 +98,7 @@
   #discover .dc-frame { position: fixed; background: #f4efe2; border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; will-change: transform, opacity; }
   #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; will-change: opacity, transform; }
   #discover .dc-name { position: absolute; left: 0; right: 0; bottom: 4%; margin: 0; text-align: center; color: #1a2a33; font-size: 14px; font-weight: 600; }
-  /* search task and messages */
-  #task {
-    position: fixed; top: calc(28px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
-    max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-size: 12px; color: var(--text);
-    background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px;
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    transition: opacity 1.2s ease;
-  }
-  #task { cursor: pointer; font: inherit; font-size: 12px; }
-  #task.fade { opacity: 0.35; }
-  #task:hover, #task:focus-visible { opacity: 1; border-color: var(--line-strong); }
+  /* messages */
   #toast {
     position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
     max-width: min(440px, calc(100% - 32px)); font-size: 13px; line-height: 1.4; color: var(--text); text-align: center;

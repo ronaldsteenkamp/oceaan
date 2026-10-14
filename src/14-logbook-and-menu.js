@@ -659,7 +659,7 @@
       return;
     }
     if (b.id === "shareNative") {
-      navigator.share({ title: "Oceaan", text: "Kijk eens naar deze oceaan", url: shareLink() }).catch(() => {});
+      navigator.share({ title: "Oceaan", text: L("Kijk eens naar deze oceaan", "Have a look at this ocean"), url: shareLink() }).catch(() => {});
       return;
     }
     if (b.id === "shareCopy") {
@@ -682,7 +682,6 @@
     if (b.id === "restToggle") {
       restMode = !restMode;
       store.set("oceaan-rust", restMode);
-      updateTask();
       renderMake();
       return;
     }
@@ -773,10 +772,6 @@
     questEvent("photo");
     toast(saveAlbum() ? L("Bewaard in je album, te vinden in het logboek", "Kept in your album, in the logbook") : L("Bewaren lukt hier niet", "Keeping photos is not possible here"));
     checkMilestones(before);
-  }
-  function albumHTML() {
-    if (!album.length) return `<p class="sum">${L(`Nog geen foto's. Maak een foto met de camera en kies "In mijn album".`, `No photos yet. Take a photo with the camera and choose "Add to my album".`)}</p>`;
-    return `<h3>${L("Mijn foto's", "My photos")}</h3><div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`;
   }
   function openPhoto(id) {
     const ph = album.find(x => x.id === id);

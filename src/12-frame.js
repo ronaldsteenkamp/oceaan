@@ -51,6 +51,11 @@
     const dtMs = Math.min(50, now - last);
     last = now;
     if (paused || discoverPause || document.hidden) return;
+    // whatever goes wrong while drawing, the next frame starts with a clean brush (otherwise one error can wash out the screen)
+    try { step(dtMs); } finally { ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; ctx.shadowBlur = 0; }
+  }
+
+  function step(dtMs) {
     frameNo++;
     checkQuality(dtMs);
     if (frameNo % 30 === 0) updateClock();

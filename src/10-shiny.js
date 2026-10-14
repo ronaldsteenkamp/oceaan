@@ -32,7 +32,7 @@
     if (s.angler) { const a = s.angler; add("angler", a, a.s * 0.7, () => [a.x, a.y + Math.sin(a.ph) * 8 * u]); }
     for (const q of s.squids) add("squid", q, q.s * 0.7, () => [q.x, q.y]);
     for (const h of s.hermits) add("hermit", h, h.s * 0.7, () => [h.x, floorY(h.x) - h.s * 0.6]);
-    for (const o of s.slugs) add("slugs", tag(o, o.type === "nudi" ? hexHue(o.body) : hexHue(o.color)), o.s * 0.7, () => [o.x, floorY(o.x) - o.s * 0.3]);
+    for (const o of s.slugs) add("slugs", tag(o, hexHue(o.body)), o.s * 0.7, () => [o.x, floorY(o.x) - o.s * 0.3]);
     for (const c of s.combs) add("comb", c, c.r * 0.7, () => [c.x, c.y]);
     for (const o of s.otters) add("otters", o, o.s * 0.5, () => [o.x, waveY(o.x)]);
     if (s.seal) { const se = s.seal; add("seal", se, se.s * 0.4, () => [se.x, se.y !== undefined ? se.y : se.y0]); }
@@ -341,7 +341,7 @@
     c.color = ["#d9543b", "#e07a3a", "#b84a5a", "#c9603c"][Math.floor(Math.random() * 4)];
     c.s = (12 + Math.random() * 8) * u;
     c.shinyBase = hexHue(c.color);
-    maybeShiny("crab", c, c.s * 0.8, () => [c.x, floorY(c.x) - c.s * 0.45]);
+    maybeShiny("crab", c, c.s * 0.8, () => [c.x, sandY(c.x) + 5 * u - c.s * 0.45]);
   }
 
   function renewJelly(j) {

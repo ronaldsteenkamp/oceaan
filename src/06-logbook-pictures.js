@@ -111,7 +111,7 @@
     angler: () => drawAngler({ x: 50, y: 50, dir: 1, s: 30, ph: 0 }, 0),
     squid: () => { scene.squids = [{ x: 74, y: 42, vx: 0.5, vy: 0, dir: 1, s: 34, pulse: 1e9, hue: 340, face: 1 }]; updateAndDrawSquids(0); },
     hermit: () => drawHermit({ x: 62, dir: 1, s: 24, hide: 0, leg: 0, shell: "#d8b48a" }, 0),
-    slugs: () => drawSlug({ x: 56, dir: 1, s: 62, type: "nudi", ph: 1, body: "#7b4fd6", tip: "#ff9a3c", color: "#7a3b2e" }, 0),
+    slugs: () => drawSlug({ x: 56, dir: 1, s: 62, ph: 1, body: "#7b4fd6", tip: "#ff9a3c", color: "#7a3b2e" }, 0),
     comb: () => { scene.combs = [{ x: 60, y: 42, r: 24, ph: 0, drift: 0 }]; drawCombs(0, false); drawCombs(0, true); },
     otters: () => { ctx.translate(0, 26); scene.otters = [{ x: 60, vx: 0, s: 50, ph: 0, shell: true }]; drawSurface(0, 0); },
     seal: () => drawSeal({ x: 60, y0: -28, ph: Math.PI / 2, dir: 1, s: 80 }, 0),

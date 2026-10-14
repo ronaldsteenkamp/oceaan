@@ -138,8 +138,11 @@
   soundBtn.addEventListener("click", () => {
     if (!audio.ac && !initAudio()) { soundBtn.disabled = true; soundBtn.dataset.tip = L("Geluid werkt hier niet", "Sound does not work here"); soundBtn.setAttribute("aria-label", soundBtn.dataset.tip); return; }
     audio.on = !audio.on;
-    audio.ac.resume();
     audio.master.gain.setTargetAtTime(audio.on ? volume : 0, audio.ac.currentTime, 0.3);
+    // with the sound off the sound engine is paused (after the fade-out), so it costs no battery
+    clearTimeout(audio.sleep);
+    if (audio.on) audio.ac.resume();
+    else audio.sleep = setTimeout(() => { if (!audio.on) audio.ac.suspend(); }, 1200);
     const label = audio.on ? L("Geluid uitzetten (G)", "Turn sound off (G)") : L("Geluid aanzetten (G)", "Turn sound on (G)");
     soundBtn.classList.toggle("is-on", audio.on);
     soundBtn.dataset.tip = label;

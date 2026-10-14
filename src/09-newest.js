@@ -143,7 +143,7 @@
     ctx.restore();
   }
 
-  Object.assign(GROUND_DRAW, { volcano: drawVolcano, city: drawCity, whalefall: drawWhalefall, brine: () => {} });
+  Object.assign(GROUND_DRAW, { volcano: drawVolcano, city: drawCity, whalefall: drawWhalefall });
 
   // ---- newest creatures --------------------------------------------------
   function puff(x, y, n) {
@@ -333,8 +333,8 @@
   function startBait() {
     const B = scene.bait;
     B.active = true; B.age = 0;
-    watch("baitball", () => B.active ? [B.cx, B.cy] : null, B.R);
     B.R = Math.min(W, H) * 0.14;
+    watch("baitball", () => B.active ? [B.cx, B.cy] : null, B.R);
     B.cx = W * (0.35 + Math.random() * 0.3); B.cy = H * (0.3 + Math.random() * 0.15);
     B.rot = Math.random() < 0.5 ? 1 : -1;
     const n = Math.round(90 + 50 * Math.min(1, (W * H) / (1280 * 800)));
@@ -565,12 +565,6 @@
     if (Math.random() < 0.04 * k) abyssGlows.push({ x: xa + Math.random() * (xb - xa), y: H + 10, vy: -(0.2 + Math.random() * 0.3) * u, life: 0, col: Math.random() < 0.5 ? "120,240,255" : "200,140,255", r: (1.5 + Math.random() * 2) * u });
   }
 
-  // What the seahorse task is about, shown when the task is tapped (and once, the first time).
-  function explainTask() {
-    toast(L("Drie zeepaardjes hebben de kleur van het zeewier aangenomen en houden zich vast aan de wuivende planten. Kijk goed en tik op een zeepaardje als je het ziet. Vind je ze alle drie, dan regent het munten en komt het in je logboek.",
-      "Three seahorses have taken on the colour of the seaweed and cling to the swaying plants. Look closely and tap a seahorse when you spot it. Find all three and it rains coins, and it goes in your logbook."));
-  }
-
   // ---- flying fish --------------------------------------------------------
   // A small group races along just under the surface, then leaps out and glides on its big fins before diving back in.
   function splash(x) {
@@ -775,27 +769,6 @@
         ctx.beginPath(); ctx.arc(h.x, h.y - 5 * u, (1 - h.flash) * 40 * u + 8 * u, 0, TAU); ctx.stroke();
       }
     }
-  }
-
-  // The search task shows for a while, then steps aside; finding one brings it back briefly.
-  let taskTimer;
-  function updateTask() {
-    taskEl.hidden = true; // the search bar is gone; finding a seahorse gives a short message instead
-    return;
-    const h = scene.hidden;
-    taskEl.hidden = !h.length || restMode;
-    if (taskEl.hidden) return;
-    const n = h.filter(x => x.found).length, done = n === h.length;
-    taskEl.textContent = done ? L("Alle zeepaardjes gevonden!", "All seahorses found!") : L(`Zoek ${h.length} verstopte zeepaardjes · ${n}/${h.length} · uitleg`, `Find ${h.length} hidden seahorses · ${n}/${h.length} · how`);
-    taskEl.setAttribute("aria-label", done ? taskEl.textContent : L("Uitleg over de verstopte zeepaardjes", "How the hidden seahorses work"));
-    taskEl.classList.remove("fade");
-    // the first time a search task appears, explain what it is about (once the welcome screen is closed)
-    if (!done && !n && !store.get("oceaan-taakuitleg", false) && welcomeEl.hidden && !/^#(zelftest|schermtest)/.test(location.hash)) {
-      store.set("oceaan-taakuitleg", true);
-      setTimeout(explainTask, 1200);
-    }
-    clearTimeout(taskTimer);
-    taskTimer = setTimeout(() => taskEl.classList.add("fade"), done ? 4000 : n ? 5000 : 9000);
   }
 
   function computeLight() {
