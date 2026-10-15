@@ -493,6 +493,7 @@
     const d = new Date().toISOString().slice(0, 10);
     const voortgang = {};
     for (const k of PROGRESS_KEYS) { const v = store.get(k, null); if (v !== null) voortgang[k] = v; }
+    if (album.length) voortgang["oceaan-album"] = album; // the album is in IndexedDB, not in localStorage
     const blob = new Blob([JSON.stringify({ app: "oceaan", versie: 2, opgeslagen: d, logboek: Object.fromEntries(logbook), voortgang }, null, 1)], { type: "application/json" });
     saveBlob(blob, `oceaan-logboek-${d}.json`);
     store.set("oceaan-export", d);

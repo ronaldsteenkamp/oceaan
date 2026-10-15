@@ -502,11 +502,44 @@
   function closePhoto() { photoView.hidden = true; paused = false; photoBtn.focus(); }
 
   // Photos you keep go into an album in this browser, as small pictures so many of them fit.
+  // The album lives in IndexedDB, which has far more room than localStorage and does not hold up the page while it
+  // writes. Where IndexedDB is missing (some embedded pages, private windows) it falls back to localStorage, as before.
+  // An album from before is moved over once, which also frees localStorage for the logbook.
   const ALBUM_KEY = "oceaan-album", ALBUM_MAX = 24;
-  let album = store.get(ALBUM_KEY, []);
-  if (!Array.isArray(album)) album = [];
-  album = album.filter(x => x && typeof x.img === "string" && x.img.startsWith("data:image/jpeg"));
+  const validPhotos = list => (Array.isArray(list) ? list : []).filter(x => x && typeof x.id === "string" && typeof x.img === "string" && x.img.startsWith("data:image/jpeg"));
+  let album = validPhotos(store.get(ALBUM_KEY, []));
+  let albumDB = null; // the open database, once it is known to work
+  function idb(mode, fn) {
+    return new Promise((resolve, reject) => {
+      const tx = albumDB.transaction("kv", mode), req = fn(tx.objectStore("kv"));
+      tx.oncomplete = () => resolve(req && req.result); tx.onerror = tx.onabort = () => reject(tx.error);
+    });
+  }
+  function openAlbumDB() {
+    try {
+      if (!window.indexedDB) return;
+      const req = indexedDB.open("oceaan", 1);
+      req.onupgradeneeded = () => req.result.createObjectStore("kv");
+      req.onerror = () => {};
+      req.onsuccess = async () => {
+        albumDB = req.result;
+        try {
+          const stored = validPhotos(await idb("readonly", s => s.get(ALBUM_KEY)));
+          const have = new Set(stored.map(x => x.id));
+          const merged = [...stored, ...album.filter(x => !have.has(x.id))].sort((a, b) => Number(b.id) - Number(a.id)).slice(0, ALBUM_MAX);
+          const moved = album.length > 0;
+          album = merged;
+          await idb("readwrite", s => s.put(album, ALBUM_KEY));
+          if (moved) { try { localStorage.removeItem(ALBUM_KEY); } catch (e) {} }
+          applyRewards();
+          if (!panelEl.hidden && panelTab === "log" && !detailOpen) renderPanel();
+        } catch (e) { albumDB = null; }
+      };
+    } catch (e) { albumDB = null; }
+  }
+  openAlbumDB();
   function saveAlbum() {
+    if (albumDB) { idb("readwrite", s => s.put(album, ALBUM_KEY)).catch(() => { albumDB = null; saveAlbum(); }); return true; }
     while (album.length) {
       try { localStorage.setItem(ALBUM_KEY, JSON.stringify(album)); return true; }
       catch (e) { if (album.length <= 1) return false; album.pop(); toast(L("Je album is vol: de oudste foto is eruit gegaan", "Your album is full: the oldest photo was removed")); }
@@ -514,9 +547,9 @@
     try { localStorage.removeItem(ALBUM_KEY); } catch (e) {}
     return true;
   }
-  // Called when the logbook cannot be saved because storage is full: drop the oldest photo.
+  // Called when the logbook cannot be saved because storage is full: drop the oldest photo, if the album is in localStorage.
   function makeRoomInAlbum() {
-    if (typeof album === "undefined" || !album.length) return false;
+    if (typeof album === "undefined" || !album.length || albumDB) return false;
     album.pop();
     try { if (album.length) localStorage.setItem(ALBUM_KEY, JSON.stringify(album)); else localStorage.removeItem(ALBUM_KEY); } catch (e) {}
     toast(L("De opslag was vol: de oudste foto uit je album is eruit gegaan, zodat je logboek bewaard blijft", "Storage was full: the oldest photo in your album was removed so your logbook stays saved"), "important");

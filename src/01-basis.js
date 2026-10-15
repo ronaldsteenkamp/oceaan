@@ -273,7 +273,8 @@
   }
   let logbook = new Map();
   try { logbook = loadLog(JSON.parse(localStorage.getItem(LOG_KEY) || "[]")); } catch (e) {}
-  // The logbook matters more than photos: when the browser storage is full, the oldest album photo makes room (see 17).
+  // The logbook matters more than photos: when the browser storage is full and the album is still in localStorage
+  // (no IndexedDB), the oldest album photo makes room (see 17).
   function saveLog() {
     const data = JSON.stringify(Object.fromEntries(logbook));
     for (let tries = 0; tries < 30; tries++) {
