@@ -161,7 +161,8 @@
     if (!pos) pos = diverMode ? [diver.x, diver.y] : [W / 2, H / 2];
     if (!isSpecialFind(key)) { if (miniQueue.length < 12 && !miniQueue.some(d => d.key === key)) miniQueue.push({ key, pos: [...pos] }); return; }
     if (discoverQueue.some(d => d.key === key) || discoverQueue.length > 14) return;
-    discoverQueue.push({ key, pos });
+    // the photo waits a moment: in this frame the ring in the lamp was still drawn, and it must not be in the picture
+    discoverQueue.push({ key, pos, at: performance.now() + 100 });
   }
   function isSpecialFind(key) {
     const base = key.startsWith("shiny:") ? key.slice(6) : key;
@@ -198,7 +199,7 @@
   // runs at the end of a frame, when the picture of the ocean is complete
   function flushDiscoveries() {
     // wait until a new ocean has fully faded in, so the picture is never dark
-    if (discoverBusy || !discoverQueue.length || !canvas.width || fade > 0.02) return;
+    if (discoverBusy || !discoverQueue.length || !canvas.width || fade > 0.02 || performance.now() < discoverQueue[0].at) return;
     const d = discoverQueue.shift(), [ax, ay] = d.pos;
     const withDiver = diverMode, span = withDiver ? Math.hypot(ax - diver.x, ay - diver.y) : 0;
     const cx = withDiver ? (ax + diver.x) / 2 : ax, cy = withDiver ? (ay + diver.y) / 2 : ay;
