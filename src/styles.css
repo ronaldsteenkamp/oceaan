@@ -75,6 +75,10 @@
   }
   .tool:hover { background: rgba(255, 255, 255, 0.08); border-color: transparent; color: var(--text); }
   .tool[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+  /* the diver button calls a new player until the diver has been used once */
+  .tool.beckon { color: var(--accent); border-color: var(--accent); animation: beckon 1.6s ease-in-out infinite; }
+  @keyframes beckon { 50% { box-shadow: 0 0 0 6px rgba(127, 216, 201, 0.28); } }
+  @media (prefers-reduced-motion: reduce) { .tool.beckon { animation: none; box-shadow: 0 0 0 3px rgba(127, 216, 201, 0.35); } }
   .tool svg { width: 21px; height: 21px; display: block; }
   #sound .on-icon, #sound.is-on .off-icon { display: none; }
   #sound.is-on .on-icon { display: block; }

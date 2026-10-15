@@ -57,7 +57,7 @@
   canvas.addEventListener("pointercancel", () => { pointer.active = false; down = null; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("contextmenu", e => e.preventDefault());
 
-  document.getElementById("welcomeGo").addEventListener("click", () => { welcomeEl.hidden = true; store.set("oceaan-welkom", true); });
+  document.getElementById("welcomeGo").addEventListener("click", () => { welcomeEl.hidden = true; store.set("oceaan-welkom", true); startBeckonTimer(); });
   if (!store.get("oceaan-welkom", false)) welcomeEl.hidden = false;
 
   // Arrow keys steer the diver (and call it in); Enter opens whatever the diver touches.
@@ -266,13 +266,35 @@
 
   // A new ocean is on a time lock; every milestone of finds makes the wait shorter: from two and a half minutes down to five seconds (one second with everything found).
   // A new player first gets a few oceans for free, to look around; the lock only starts after that.
-  const LOCK_KEY = "oceaan-gewisseld", FREE_KEY = "oceaan-wissels", FREE_OCEANS = 5;
+  // Oceans skipped before the diver was ever called do not count: without the diver nothing goes into the logbook,
+  // so the wait would never get shorter.
+  const LOCK_KEY = "oceaan-gewisseld", FREE_KEY = "oceaan-wissels", FREE_OCEANS = 5, DIVED_KEY = "oceaan-gedoken";
   const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
   function lockLeft() {
     if (store.get(FREE_KEY, 0) < FREE_OCEANS) return 0;
     return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now());
   }
-  function countSwitch() { store.set(LOCK_KEY, Date.now()); store.set(FREE_KEY, store.get(FREE_KEY, 0) + 1); }
+  function countSwitch() {
+    store.set(LOCK_KEY, Date.now());
+    if (hasDived()) store.set(FREE_KEY, store.get(FREE_KEY, 0) + 1);
+    else beckonDiver();
+  }
+  // Until the diver has been called once, the diver button calls softly (and a tip says why).
+  // A logbook with something in it means the diver was used before (players from before this flag existed).
+  const hasDived = () => store.get(DIVED_KEY, false) || logbook.size > 0;
+  let beckonTold = false;
+  function beckonDiver() {
+    if (hasDived() || diverMode) return;
+    diverBtn.classList.add("beckon");
+    if (!beckonTold) {
+      beckonTold = true;
+      toast(L("Tip: roep de duiker (D). Alles in het licht van zijn lamp gaat in je logboek.", "Tip: call the diver (D). Everything in the light of its lamp goes into your logbook."));
+    }
+  }
+  // a player who has not found the diver 25 seconds after the welcome gets the same hint
+  let beckonTimer = null;
+  function startBeckonTimer() { clearTimeout(beckonTimer); beckonTimer = setTimeout(() => { if (welcomeEl.hidden && !selfTesting) beckonDiver(); }, 25000); }
+  if (welcomeEl.hidden) startBeckonTimer();
   function clockText(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
   function tryNewOcean(choose) {
     const left = lockLeft();
@@ -371,6 +393,7 @@
   updateLockBadge();
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
+    if (diverMode && !store.get(DIVED_KEY, false)) { store.set(DIVED_KEY, true); diverBtn.classList.remove("beckon"); }
     if (diverMode) {
       // the diver appears where the cursor is, or at the nearest spot in the water
       diver.x = pointer.known ? pointer.x : W * 0.5; diver.y = pointer.known ? pointer.y : H * 0.45;
