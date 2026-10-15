@@ -161,8 +161,8 @@
       for (const v of Object.values(a.life || {})) if (!(v > 0 && v <= 1)) miss.push(`kans ${v} (moet tussen 0 en 1)`);
       if (!THUMBS[k]) miss.push("logboekplaatje (THUMBS of FAUNA)");
       if (a.life && !lifeDrawn.has(k)) miss.push("tekening in de oceaan (FAUNA)");
-      if (a.visits && !VISITOR_DRAW[k] && k !== "humpback") miss.push("tekening als bezoeker (FAUNA_VIS)");
-      if (a.visits && !(MORE_SIZE[k] || ["humpback", "manta", "turtle", "dolphins", "swordfish", "narwhal"].includes(k))) miss.push("grootte als bezoeker");
+      if (a.visits && !VISITOR_DRAW[k]) miss.push("tekening als bezoeker (FAUNA_VIS)");
+      if (a.visits && !VISITOR_SIZE[k]) miss.push("grootte als bezoeker (FAUNA_VIS)");
       if (miss.length) errors.push(`dier ${k}: mist ${miss.join(", ")}`);
     }
     for (const k of LOGGABLE) {

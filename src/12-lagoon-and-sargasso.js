@@ -539,7 +539,7 @@
   Object.assign(VISITOR_DRAW, { crocodile: drawCrocodile, whaleshark: drawWhaleshark, sealion: drawSealion, eagleray: drawEagleray, spermwhale: drawSpermwhale });
   Object.assign(VISITOR_SPEED, { crocodile: 0.5, whaleshark: 0.45, sealion: 1.5, eagleray: 0.8, spermwhale: 0.4 });
   Object.assign(VISITOR_PHASE, { crocodile: 0.02, whaleshark: 0.02, sealion: 0.04, eagleray: 0.03, spermwhale: 0.012 });
-  Object.assign(MORE_SIZE, {
+  Object.assign(VISITOR_SIZE, {
     crocodile: () => (200 + Math.random() * 60) * u, whaleshark: () => Math.min(W * 0.6, (380 + Math.random() * 120) * u), sealion: () => (90 + Math.random() * 30) * u,
     eagleray: () => (110 + Math.random() * 40) * u, spermwhale: () => Math.min(W * 0.55, (420 + Math.random() * 120) * u),
   });

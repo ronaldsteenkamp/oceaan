@@ -1076,7 +1076,6 @@
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
   THUMBS.hatchet = () => { for (const [x, y, sz] of [[36, 38, 42], [82, 50, 46], [70, 20, 34]]) drawHatchet({ x, cy: y, dir: 1, s: sz, ph: x }); };
   THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
-  for (const key of ["xmastree", "coconut", "crownthorns", "horseshoe", "dugong", "mudskipper", "flatfish", "wolffish", "leopardshark", "icefish"]) FLOOR_THUMBS.add(key);
 
   // ---- moments ---------------------------------------------------------------------
   function buildWave6(s) {

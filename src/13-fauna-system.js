@@ -810,12 +810,14 @@
   // Hooks a table of animals and a table of visitors into the game: layers, visitor drawing, and the logbook pictures.
   function hookFauna(fauna, visitors) {
     for (const key in fauna) fauna[key].layer = fauna[key].kind === "floor" || fauna[key].kind === "glide" ? "floor" : fauna[key].kind === "swim" ? "mid" : "top";
+    // animals on or just above the floor get sand in their logbook picture
+    for (const key in fauna) if (fauna[key].layer === "floor") FLOOR_THUMBS.add(key);
     for (const key in visitors) {
       const F = visitors[key];
       VISITOR_DRAW[key] = v => F.draw(v.x, v.y + v.yOff, v.dir, v.size, v.ph);
       VISITOR_SPEED[key] = F.speed;
       VISITOR_PHASE[key] = 0.03;
-      MORE_SIZE[key] = F.size;
+      VISITOR_SIZE[key] = F.size;
     }
     for (const key in fauna) {
       const F = fauna[key];
@@ -930,4 +932,3 @@
   // ---- logbook pictures -------------------------------------------------------
   for (const key of ["tuna", "pilotwhale", "falsekiller"]) FAUNA_VIS[key].thumbX = 78;
   hookFauna(FAUNA, FAUNA_VIS);
-  for (const key of ["scorpionfish", "stonefish", "goby", "sanddollar", "brittlestar", "seacucumber", "featherstar", "electricray", "guitarfish", "iguana"]) FLOOR_THUMBS.add(key);

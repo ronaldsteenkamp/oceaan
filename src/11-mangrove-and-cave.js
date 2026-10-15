@@ -646,10 +646,10 @@
   Object.assign(VISITOR_DRAW, { manatee: drawManatee, orca: drawOrca, hammerhead: drawHammerhead, sunfish: drawSunfish, beluga: drawBeluga });
   Object.assign(VISITOR_SPEED, { manatee: 0.4, orca: 1.4, hammerhead: 1.0, sunfish: 0.35, beluga: 0.7 });
   Object.assign(VISITOR_PHASE, { manatee: 0.02, orca: 0.03, hammerhead: 0.05, sunfish: 0.03, beluga: 0.03 });
-  const MORE_SIZE = {
+  Object.assign(VISITOR_SIZE, {
     manatee: () => (130 + Math.random() * 40) * u, orca: () => (170 + Math.random() * 70) * u, hammerhead: () => (150 + Math.random() * 60) * u,
     sunfish: () => (90 + Math.random() * 40) * u, beluga: () => (120 + Math.random() * 40) * u,
-  };
+  });
 
   // ---- the giant squid ---------------------------------------------------------
   // It swims across the deep sea tail first, with its arms and two long hunting tentacles trailing behind.

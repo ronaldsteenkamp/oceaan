@@ -351,7 +351,7 @@
     if (!rewards.has("gv")) return;
     if (performance.now() < callCool) { toast(L("Even geduld, je riep net al iemand", "Just a moment, you only just called")); return; }
     if (scene.visitor) { toast(L("Er zwemt al een bezoeker langs", "A visitor is already passing by")); return; }
-    const pool = water.visitors.filter(v => VISITOR_DRAW[v] || v === "humpback");
+    const pool = water.visitors.filter(v => VISITOR_DRAW[v]);
     if (!pool.length) { toast(L("Hier komen geen bezoekers", "No visitors come here")); return; }
     scene.forceVisitor = pool[Math.floor(Math.random() * pool.length)]; scene.visitorTimer = 0;
     callCool = performance.now() + 15000;

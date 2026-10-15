@@ -648,6 +648,14 @@
   // ---- big visitors ------------------------------------------------------
   const VISITOR_SPEED = { humpback: 0.6, manta: 0.7, turtle: 0.55, dolphins: 1.7, swordfish: 2.4, sub: 0.6, narwhal: 0.8, mermaid: 0.7 };
   const VISITOR_PHASE = { humpback: 0.01, manta: 0.025, swordfish: 0.06, dolphins: 0.03, sub: 0.02, narwhal: 0.03, mermaid: 0.03, turtle: 0.035 };
+  // How big a visitor is when it swims past; later rounds and FAUNA_VIS add theirs to this one table.
+  const rndV = (a, b) => a + Math.random() * (b - a);
+  const VISITOR_SIZE = {
+    humpback: () => Math.min(W * 0.95, 950 * u),
+    manta: () => rndV(110, 170) * u, turtle: () => rndV(70, 100) * u,
+    dolphins: () => rndV(70, 95) * u, swordfish: () => rndV(130, 180) * u, sub: () => rndV(120, 170) * u,
+    narwhal: () => rndV(110, 150) * u, mermaid: () => rndV(110, 140) * u,
+  };
 
   function spawnVisitor() {
     const pool = scene.visitorPool;
@@ -657,13 +665,7 @@
     // a mermaid comes in from the side the sonar heard her
     const dir = type === "mermaid" ? -rareSide() : Math.random() < 0.5 ? 1 : -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
-    const SIZE = {
-      humpback: () => Math.min(W * 0.95, 950 * u),
-      manta: () => rnd(110, 170) * u, turtle: () => rnd(70, 100) * u,
-      dolphins: () => rnd(70, 95) * u, swordfish: () => rnd(130, 180) * u, sub: () => rnd(120, 170) * u,
-      narwhal: () => rnd(110, 150) * u, mermaid: () => rnd(110, 140) * u,
-    };
-    const size = (SIZE[type] || MORE_SIZE[type])();
+    const size = VISITOR_SIZE[type]();
     const v = {
       type, dir, size, ph: 0, yOff: 0,
       y: H * (type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
