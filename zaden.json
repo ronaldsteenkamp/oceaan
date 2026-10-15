@@ -1,0 +1,302 @@
+{
+ "1": {
+  "water": "mangrove",
+  "season": "zomer",
+  "rare": "",
+  "ground": "amphora@0.37,anchor@0.61,arch@0.51,bell@0.23,cannon@0.03,clam@0.67,helmet@0.86,rocks@0.14,seagrass@0.94,sponges@0.77,wheel@0.3",
+  "life": "archer×1,cassiopea×2,crab×3,goby×1,hermit×1,iguana×1,mantis×1,needlefish×1,octopus×1,pelican×1,pistol×1,puffer×1,seahorse×1,stonefish×1,triggerfish×1,urchin×1",
+  "fauna": "triggerfish@0.63,needlefish@0.81,iguana@0.56,stonefish@0.95,goby@0.64,pelican@0.4",
+  "shinies": "",
+  "timers": "116,78,61,25"
+ },
+ "2": {
+  "water": "grot",
+  "season": "zomer",
+  "rare": "",
+  "ground": "chest@0.41,helmet@0.97,rocks@0.03,ruins@0.87,skull@0.49,sponges@0.62,statue@0.25,wheel@0.74",
+  "life": "brittlestar×4,comb×3,isopod×2,lantern×1,nautilus×1,octopus×1,slugs×3,spidercrab×1,squid×5,urchin×2",
+  "fauna": "brittlestar@0.39,brittlestar@0.2,brittlestar@0.82,brittlestar@0.93",
+  "shinies": "",
+  "timers": "129,159,120,39"
+ },
+ "3": {
+  "water": "grot",
+  "season": "lente",
+  "rare": "",
+  "ground": "amphora@0.83,anchor@0.24,bell@0.45,rocks@0.61,skull@0.02",
+  "life": "brittlestar×3,comb×4,crab×3,hermit×1,isopod×1,lantern×1,lobster×2,nautilus×1,octopus×1,slugs×2,urchin×2",
+  "fauna": "brittlestar@0.53,brittlestar@0.32,brittlestar@0.08",
+  "shinies": "fish",
+  "timers": "78,115,87,36"
+ },
+ "4": {
+  "water": "sargasso",
+  "season": "zomer",
+  "rare": "",
+  "ground": "anchor@0.07,bottle@0.11,mine@0.59,plane@0.37,skull@0.17",
+  "life": "crab×2,sargassumfish×1",
+  "fauna": "",
+  "shinies": "",
+  "timers": "117,134,105,21"
+ },
+ "5": {
+  "water": "grot",
+  "season": "winter",
+  "rare": "",
+  "ground": "amphora@0.14,anchor@0.65,bell@0.05,bottle@0.48,chest@0.6,eels@0.25,helmet@0.55,idol@0.22,rocks@0.42,skull@0.53,sponges@0.3",
+  "life": "comb×3,crab×3,eels×1,isopod×1,lantern×1,nautilus×1,octopus×1,slugs×2,spidercrab×1,urchin×2",
+  "fauna": "",
+  "shinies": "lantern",
+  "timers": "127,89,116,21"
+ },
+ "6": {
+  "water": "ijszee",
+  "season": "zomer",
+  "rare": "ghostsub",
+  "ground": "anchor@0.74,arch@0.91,bottle@0.43,chest@0.53,mine@0.49,rocks@0.58,sponges@0.69,wheel@0.79,wreck@0.15",
+  "life": "comb×3,crab×2,octopus×1,penguins×3,polarbear×1,seal×1,slugs×3,wolffish×1",
+  "fauna": "polarbear@0.24,wolffish@0.99",
+  "shinies": "",
+  "timers": "92,89,85,24"
+ },
+ "7": {
+  "water": "rif",
+  "season": "lente",
+  "rare": "",
+  "ground": "amphora@0.87,anchor@0.59,anemone@0.57,bottle@0.56,chest@0.72,coral@0.53,coral@0.69,coral@0.78,eels@0.95,helmet@0.02,rocks@0.92,seagrass@0.63,sponges@0.82,wheel@0.49,wreck@0.25",
+  "life": "angelfish×1,cleaners×1,crab×2,crownthorns×1,eels×1,hawksbill×1,hermit×2,moorish×1,moray×1,octopus×1,puffer×1,ray×1,seahorse×1,slugs×3,starfish×4,stonefish×1,urchin×3,xmastree×2",
+  "fauna": "stonefish@0.95,xmastree@0.37,xmastree@0.77,moorish@0.28,angelfish@0.44,crownthorns@0.56,hawksbill@0.6",
+  "shinies": "",
+  "timers": "132,89,54,43"
+ },
+ "8": {
+  "water": "diepzee",
+  "season": "lente",
+  "rare": "",
+  "ground": "arch@0.64,bell@0.9,cannon@0.97,chest@0.75,city@0.51,helmet@0.72,mine@0.76,rocks@0.91,skull@0.79,sponges@0.88,vent@0.84,wreck@0.24",
+  "life": "angler×1,brittlestar×3,comb×4,crab×3,lantern×1,nautilus×1,octopus×1,seacucumber×1,squid×6,urchin×3",
+  "fauna": "brittlestar@0.46,brittlestar@0.23,brittlestar@0.36,seacucumber@0.12",
+  "shinies": "",
+  "timers": "87,115,52,48"
+ },
+ "9": {
+  "water": "diepzee",
+  "season": "herfst",
+  "rare": "",
+  "ground": "anchor@0.12,bottle@0.22,rocks@0.39,skull@0.53,statue@0.69,vent@0.91",
+  "life": "angler×1,brittlestar×2,comb×3,crab×1,dumbo×1,hermit×2,isopod×1,lantern×1,ray×1,squid×6,starfish×2,viperfish×1",
+  "fauna": "brittlestar@0.65,brittlestar@0.36,dumbo@0.41,viperfish@0.26",
+  "shinies": "fish",
+  "timers": "126,104,79,32"
+ },
+ "10": {
+  "water": "ijszee",
+  "season": "lente",
+  "rare": "",
+  "ground": "anchor@0.63,bell@0.03,chest@0.93,rocks@0.86,sponges@0.1,volcano@0.75,wreck@0.35",
+  "life": "icefish×1,krill×1,octopus×1,penguins×3,seal×1,spidercrab×1,starfish×3",
+  "fauna": "icefish@0.45,krill@0.9",
+  "shinies": "",
+  "timers": "91,71,62,15"
+ },
+ "11": {
+  "water": "ijszee",
+  "season": "herfst",
+  "rare": "",
+  "ground": "anchor@0.45,arch@0.76,bell@0.9,brine@0.59,helmet@0.36,mine@0.29,rocks@0.14,skull@0.02",
+  "life": "brittlestar×2,comb×3,crab×1,icefish×1,isopod×2,krill×1,lobster×1,octopus×1,penguins×4,seal×1,starfish×3,walrus×1",
+  "fauna": "brittlestar@0.52,brittlestar@0.13,walrus@0.71,icefish@0.29,krill@0.67",
+  "shinies": "fish",
+  "timers": "65,105,123,30"
+ },
+ "12": {
+  "water": "noordzee",
+  "season": "herfst",
+  "rare": "",
+  "ground": "anchor@0.95,anemone@0.93,bottle@0.37,brine@0.52,chest@0.97,eels@0.96,helmet@0.94,mine@0.37,rocks@0.38,seagrass@0.44,skull@0.36,wheel@0.41,wreck@0.73",
+  "life": "archer×1,comb×2,cormorant×1,crab×2,cuttlefish×1,eels×1,flatfish×2,gannet×1,mantis×1,octopus×1,porpoise×1,ray×1,seahorse×2,slugs×2,spidercrab×1,squid×4,starfish×2,urchin×3",
+  "fauna": "cormorant@0.74,gannet@0.56,porpoise@0.02,flatfish@0.44,flatfish@0.72",
+  "shinies": "",
+  "timers": "130,140,99,24"
+ },
+ "13": {
+  "water": "mangrove",
+  "season": "herfst",
+  "rare": "serpent",
+  "ground": "anchor@0.96,bell@0.28,car@0.76,chest@0.59,eels@0.03,seagrass@0.16",
+  "life": "cassiopea×4,crab×3,eels×1,hermit×2,horseshoe×1,mandarinfish×1,mudskipper×3,pelican×1,pistol×1,seahorse×1,slugs×4",
+  "fauna": "mandarinfish@0.37,pelican@0.14,horseshoe@0.76,mudskipper@0.31,mudskipper@0.74,mudskipper@0.45",
+  "shinies": "",
+  "timers": "125,90,78,33"
+ },
+ "14": {
+  "water": "ijszee",
+  "season": "winter",
+  "rare": "mobydick",
+  "ground": "amphora@0.38,arch@0.55,bell@0.76,rocks@0.68,volcano@0.93",
+  "life": "comb×3,crab×3,icefish×1,krill×1,penguins×6,polarbear×1,puffin×1,seal×1,spidercrab×1,starfish×2,walrus×1",
+  "fauna": "walrus@0.09,polarbear@0.4,puffin@0.2,icefish@0.45,krill@0.05",
+  "shinies": "",
+  "timers": "128,139,124,39"
+ },
+ "15": {
+  "water": "noordzee",
+  "season": "zomer",
+  "rare": "",
+  "ground": "amphora@0.03,anchor@0.02,arch@0.19,bottle@0.13,car@0.7,eels@0.28,helmet@0.03,mine@0.14,rocks@0.26,ruins@0.09,wreck@0.48",
+  "life": "brittlestar×3,crab×2,eels×1,goby×1,lobster×1,moray×1,octopus×1,puffer×1,ray×1,seahorse×1,slugs×2,starfish×4,urchin×2,wolffish×1",
+  "fauna": "goby@0.36,brittlestar@0.72,brittlestar@0.36,brittlestar@0.33,wolffish@0.46",
+  "shinies": "moray",
+  "timers": "138,88,95,31"
+ },
+ "16": {
+  "water": "mangrove",
+  "season": "herfst",
+  "rare": "serpent",
+  "ground": "arch@0.88,cannon@0.5,idol@0.05,rocks@0.73,seagrass@0.28",
+  "life": "archer×1,boxfish×1,cassiopea×4,cleaners×1,cormorant×1,crab×1,cuttlefish×1,goby×1,horseshoe×1,lionfish×1,mudskipper×1,needlefish×1,pistol×1,ray×1,seahorse×2",
+  "fauna": "needlefish@0.79,goby@0.31,cormorant@0.68,horseshoe@0.12,mudskipper@0.07",
+  "shinies": "cleaners",
+  "timers": "78,84,64,24"
+ },
+ "17": {
+  "water": "grot",
+  "season": "zomer",
+  "rare": "",
+  "ground": "amphora@0.11,bell@0.27,chest@0.32,eels@0.17,helmet@0.02,idol@0.23,rocks@0.6,ruins@0.44,skull@0.2",
+  "life": "comb×4,crab×2,eels×1,hermit×2,isopod×2,lantern×1,nautilus×1,octopus×1,scorpionfish×1,slugs×3,urchin×1",
+  "fauna": "scorpionfish@0.61",
+  "shinies": "",
+  "timers": "97,150,63,24"
+ },
+ "18": {
+  "water": "kelpwoud",
+  "season": "herfst",
+  "rare": "",
+  "ground": "amphora@0.82,anchor@0.94,bottle@0.68,helmet@0.33,rocks@0.56,seagrass@0.21,skull@0.4,sponges@0.05",
+  "life": "cleaners×1,cuttlefish×1,hermit×2,mantis×1,otters×2,sanddollar×3,seahorse×1,squid×5,starfish×2,urchin×3",
+  "fauna": "sanddollar@0.52,sanddollar@0,sanddollar@0.69",
+  "shinies": "",
+  "timers": "86,82,125,31"
+ },
+ "19": {
+  "water": "rif",
+  "season": "winter",
+  "rare": "",
+  "ground": "anemone@0.42,bottle@0.57,chest@0.79,coral@0.56,coral@0.87,coral@0.91,eels@0.45,helmet@0.97,rocks@0.82,sponges@0.51,statue@0.68,wreck@0.2",
+  "life": "archer×1,cleaners×1,crab×2,eels×1,goby×3,hermit×1,mandarinfish×1,mantis×1,moorish×1,moray×1,octopus×1,ray×1,scorpionfish×1,seahorse×2,slugs×2,starfish×2,surgeonfish×1,triggerfish×1,urchin×1,wrasse×1",
+  "fauna": "triggerfish@0.6,wrasse@0.64,surgeonfish@0.3,mandarinfish@0.57,scorpionfish@0.35,goby@0.54,goby@0.56,goby@0.35,moorish@0.29",
+  "shinies": "fish",
+  "timers": "85,145,69,43"
+ },
+ "20": {
+  "water": "grot",
+  "season": "lente",
+  "rare": "",
+  "ground": "arch@0.71,helmet@0.33,idol@0.85,rocks@0.97,ruins@0.14,vent@0.56,wheel@0.46",
+  "life": "comb×4,crab×2,featherstar×1,hermit×1,isopod×2,lantern×1,nautilus×1,seacucumber×1,slugs×2,spidercrab×1,starfish×4,urchin×1",
+  "fauna": "seacucumber@0.49,featherstar@0.45",
+  "shinies": "fish",
+  "timers": "81,82,115,46"
+ },
+ "21": {
+  "water": "kelpwoud",
+  "season": "herfst",
+  "rare": "",
+  "ground": "arch@0.05,bell@0.92,bottle@0.27,helmet@0.82,rocks@0.72,seagrass@0.41",
+  "life": "archer×1,cormorant×1,crab×1,cuttlefish×1,hermit×2,lobster×2,octopus×1,otters×1,ray×1,seadragon×1,slugs×2,starfish×2,urchin×2",
+  "fauna": "cormorant@0.99",
+  "shinies": "seadragon",
+  "timers": "75,123,88,19"
+ },
+ "22": {
+  "water": "mangrove",
+  "season": "lente",
+  "rare": "",
+  "ground": "arch@0.27,bottle@0.79,car@0.92,chest@0.64,rocks@0.07,seagrass@0.47",
+  "life": "archer×1,boxfish×1,cassiopea×3,crab×3,goby×2,guitarfish×1,hermit×2,lionfish×1,mantis×1,mudskipper×2,needlefish×1,parrotfish×1,pelican×1,puffer×1,seahorse×1,seasnake×1,slugs×4,starfish×4",
+  "fauna": "needlefish@0.04,seasnake@0.51,guitarfish@0.71,goby@0.49,goby@0.07,pelican@0.97,mudskipper@0.38,mudskipper@0.18",
+  "shinies": "jelly",
+  "timers": "149,111,113,37"
+ },
+ "23": {
+  "water": "rif",
+  "season": "herfst",
+  "rare": "",
+  "ground": "anchor@0.97,anemone@0.32,cannon@0.7,chest@0.36,coral@0.09,coral@0.4,coral@0.45,eels@0.75,mine@0.14,phonebox@0.56,skull@0.06,sponges@0.22,statue@0.86,wheel@0.64",
+  "life": "archer×1,cleaners×1,eels×1,featherstar×1,goby×3,lionfish×1,mandarinfish×1,mantis×1,octopus×1,parrotfish×1,pistol×1,puffer×1,ray×1,scorpionfish×1,seacucumber×3,seahorse×1,seakrait×1,slugs×4,squid×5,starfish×3,surgeonfish×1,triggerfish×1,wrasse×1,xmastree×2",
+  "fauna": "triggerfish@0.54,wrasse@0.09,surgeonfish@0.48,mandarinfish@0.82,seakrait@0.68,scorpionfish@0.31,goby@0.22,goby@0.85,goby@0.91,seacucumber@0.54,seacucumber@0.26,seacucumber@0.92,featherstar@0.39,xmastree@0.56,xmastree@0.59",
+  "shinies": "parrotfish",
+  "timers": "149,75,70,22"
+ },
+ "24": {
+  "water": "noordzee",
+  "season": "winter",
+  "rare": "lighthouse",
+  "ground": "arch@0.09,bottle@0.22,chest@0.75,eels@0.72,mine@0.02,rocks@0.19,skull@0.71,sponges@0.8,statue@0.91,wreck@0.47",
+  "life": "brittlestar×4,comb×3,crab×3,cuttlefish×1,eels×1,electricray×1,flatfish×2,gannet×1,mantis×1,moray×1,puffer×1,puffin×1,seahorse×1,slugs×2,spidercrab×1,starfish×3,urchin×1",
+  "fauna": "electricray@0.45,brittlestar@0.61,brittlestar@0.82,brittlestar@0.97,brittlestar@0.9,puffin@0.68,gannet@0.62,flatfish@0.65,flatfish@0.35",
+  "shinies": "",
+  "timers": "123,116,86,29"
+ },
+ "25": {
+  "water": "mangrove",
+  "season": "lente",
+  "rare": "serpent",
+  "ground": "anchor@0.51,bottle@0.78,car@0.13,idol@0.68,seagrass@0.89,wheel@0.28",
+  "life": "archer×1,crab×1,hermit×2,octopus×1,parrotfish×1,pelican×1,puffer×1,ray×1,starfish×2,triggerfish×1",
+  "fauna": "triggerfish@0.78,pelican@0.78",
+  "shinies": "",
+  "timers": "125,82,92,25"
+ },
+ "26": {
+  "water": "ijszee",
+  "season": "winter",
+  "rare": "",
+  "ground": "anchor@0.91,bottle@0.08,mine@0.63,rocks@0.33",
+  "life": "comb×3,crab×3,hermit×1,isopod×1,lantern×1,octopus×1,penguins×4,seal×1,starfish×2",
+  "fauna": "",
+  "shinies": "fish",
+  "timers": "142,121,51,35"
+ },
+ "27": {
+  "water": "kelpwoud",
+  "season": "herfst",
+  "rare": "",
+  "ground": "amphora@0.48,arch@0.76,bell@0.46,city@0.6,helmet@0.97,rocks@0.89,seagrass@0.94,skull@0.83,sponges@0.85,wreck@0.24",
+  "life": "crab×1,garibaldi×1,hermit×2,lobster×1,moray×1,octopus×1,otters×2,ray×1,sanddollar×3,scorpionfish×1,seadragon×1,slugs×4,starfish×3,urchin×3,wrasse×1",
+  "fauna": "wrasse@0.65,scorpionfish@0.62,sanddollar@0.12,sanddollar@0.11,sanddollar@0.98,garibaldi@0.26",
+  "shinies": "ray",
+  "timers": "94,150,120,29"
+ },
+ "28": {
+  "water": "kelpwoud",
+  "season": "herfst",
+  "rare": "",
+  "ground": "bottle@0.92,car@0.55,city@0.76,rocks@0.04,sponges@0.96,wreck@0.27",
+  "life": "albatross×1,archer×1,cleaners×1,crab×1,cuttlefish×1,hermit×1,lobster×2,octopus×1,otters×1,seadragon×1,squid×6,starfish×4,urchin×2,wrasse×1",
+  "fauna": "wrasse@0.38,albatross@0.74",
+  "shinies": "",
+  "timers": "77,153,89,20"
+ },
+ "29": {
+  "water": "diepzee",
+  "season": "lente",
+  "rare": "",
+  "ground": "arch@0.39,bottle@0.85,brine@0.34,cannon@0.33,mine@0.96,rocks@0.85,ruins@0.92,sponges@0.87,vent@0.35,wreck@0.64",
+  "life": "angler×1,comb×2,crab×2,gulper×1,hatchet×3,lantern×1,moray×1,nautilus×1,octopus×1,puffer×1,ray×1,seacucumber×3,spidercrab×1,starfish×2,urchin×3,vampire×1,viperfish×1",
+  "fauna": "seacucumber@0.88,seacucumber@0.92,seacucumber@0.47,vampire@0.11,viperfish@0.14,gulper@0.77,hatchet@0.16,hatchet@0.99,hatchet@0.99",
+  "shinies": "fish,octopus",
+  "timers": "117,158,63,39"
+ },
+ "30": {
+  "water": "lagune",
+  "season": "zomer",
+  "rare": "",
+  "ground": "anchor@0.87,anemone@0.71,clam@0.98,seagrass@0.44,sponges@0.11,wheel@0.27",
+  "life": "boxfish×1,cassiopea×4,cleaners×1,coconut×1,crab×1,guitarfish×1,hermit×2,horseshoe×1,parrotfish×1,pistol×1,puffer×1,ray×1,sanddollar×4,seahorse×2,seasnake×1,starfish×3,triggerfish×1,wrasse×1",
+  "fauna": "triggerfish@0.35,wrasse@0.13,seasnake@0.82,guitarfish@0.42,sanddollar@0.14,sanddollar@0.91,sanddollar@0.29,sanddollar@0.14,coconut@0.71,horseshoe@0.68",
+  "shinies": "",
+  "timers": "77,71,113,20"
+ }
+}

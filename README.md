@@ -50,6 +50,8 @@ Dit bouwt `dist/` (de pagina `oceaan.html`, die ook als claude.ai-artifact wordt
 
 De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk logboekplaatje en controleert ook: of elk dier compleet geregistreerd is, of dezelfde seed op computer, telefoon en liggende telefoon dezelfde oceaan geeft, terugkerende shiny dieren, en of er tekenfouten zijn ingeslikt.
 
+**Gedeelde oceanen:** de zelftest vergelijkt de eerste 30 oceanen met `zaden.json` (water, seizoen, zeldzaamheid, bodem, dieren en hun plek, shiny's, timers). Verandert er iets, bijvoorbeeld door een nieuw dier of een andere kans, dan meldt de build welke oceanen en welk onderdeel: wie een oude link opent, ziet dan iets anders. Is dat de bedoeling, leg de nieuwe stand dan vast met `python build.py --zaden-vastleggen` en commit `zaden.json` mee.
+
 **Publiceren:** `python publish.py` bouwt en test de oceaan en zet `dist/` op de branch `gh-pages`; GitHub Pages toont die branch. De bouwresultaten staan zo nooit in `main`. De versie is een vingerafdruk van de pagina: alleen bij een echte wijziging krijgen geïnstalleerde apps de melding "nieuwe versie". In `ci/pages.yml` staat een GitHub Action die precies hetzelfde (ook naar `gh-pages`) bij elke push naar `main` vanzelf doet, zodat GitHub Pages altijd de branch `gh-pages` blijft tonen; die werkt zodra hij in `.github/workflows/` staat en het GitHub-token de scope `workflow` heeft (`gh auth refresh -h github.com -s workflow`).
 
 **Meten:** open de oceaan met `?meten` achter het adres (`https://ronaldsteenkamp.github.io/oceaan/?meten`). Linksboven staan dan de fps, de tekentijd per frame, het deel trage frames en het kwaliteitsniveau. Tik erop om een kort rapport te kopiëren.

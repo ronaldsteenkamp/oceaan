@@ -58,6 +58,8 @@
     selfTesting = true;
     checkRegistry(errors);
     checkSameOcean(errors);
+    let prints = {};
+    try { prints = seedPrints(); } catch (e) { errors.push("zaden: " + e.message); }
     // sound is on during the test (silent), so a broken sound shows up as an error
     try { if (!audio.ac) initAudio(); audio.on = !!audio.ac; if (audio.master) audio.master.gain.value = 0; } catch (e) { errors.push("geluid: " + e.message); }
     let oceans = 0;
@@ -126,6 +128,10 @@
     out.id = "selftest"; out.hidden = true;
     out.textContent = `${errors.length ? "FOUT" : "OK"}\n${oceans} oceanen in ${Math.round(performance.now() - t0)} ms\n${errors.join("\n")}`;
     document.body.appendChild(out);
+    const pr = document.createElement("pre");
+    pr.id = "seedprints"; pr.hidden = true;
+    pr.textContent = JSON.stringify(prints);
+    document.body.appendChild(pr);
   }
 
   // Is every animal fully registered? This replaces the old dier_check.py: a missing piece is an error here.
@@ -176,6 +182,28 @@
   ${c}`); break; }
       }
     } finally { ({ W, H, u, rng, scene, water, seed } = keep); }
+  }
+
+  // A fingerprint of the first 30 oceans, for check.py: it compares them with zaden.json, so you see when
+  // a change (a new animal, another chance) makes old shared links show a different ocean.
+  function seedPrints() {
+    const keep = { W, H, u, rng, scene, water, seed }, out = {};
+    const r2 = v => Math.round(v * 100) / 100;
+    try {
+      for (let sd = 1; sd <= 30; sd++) {
+        W = 1440; H = 900; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd); buildScene();
+        const life = presentLife(scene), S = scene;
+        out[sd] = {
+          water: water.name, season: S.season, rare: S.rare || "",
+          ground: S.ground.map(g => g.kind + "@" + r2(g.x / W)).sort().join(","),
+          life: Object.keys(life).filter(k => life[k]).sort().map(k => k + "×" + Number(life[k])).join(","),
+          fauna: S.fauna.map(f => f.key + "@" + r2(f.x / W)).join(","),
+          shinies: S.shinies.map(e => e.key).sort().join(","),
+          timers: [S.net, S.whirl, S.sardines, S.meteor].map(o => o && o.timer !== undefined ? Math.round(o.timer) : "-").join(","),
+        };
+      }
+    } finally { ({ W, H, u, rng, scene, water, seed } = keep); }
+    return out;
   }
 
   // Paths that only happen now and then: a crab, school or jelly that comes back shiny, and every shiny getter.

@@ -1,6 +1,6 @@
 """Bouwt de oceaan uit de bronbestanden in src/ naar de map dist/.
 
-Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen]
+Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen] [--zaden-vastleggen]
 
 1. Voegt src/ samen tot dist/oceaan.html: één pagina, ook de versie die als claude.ai-artifact wordt gepubliceerd.
    De bestanden gaan op volgorde van hun nummer (00-, 01-, ...) in één (() => { ... })().
