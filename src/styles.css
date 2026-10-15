@@ -432,11 +432,6 @@
   .nb-detail { display: flex; flex-direction: column; gap: var(--sp-3); height: 100%; }
   .nb-dnav { margin-top: auto; display: flex; justify-content: space-between; gap: var(--sp-2); padding-top: var(--sp-2); }
   .nb-dnav button { flex: 0 1 auto; min-width: 0; max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .nb-slide-l { animation: nbSlideL 0.28s ease-out; }
-  .nb-slide-r { animation: nbSlideR 0.28s ease-out; }
-  @keyframes nbSlideL { from { opacity: 0.3; transform: translateX(24px); } to { opacity: 1; transform: none; } }
-  @keyframes nbSlideR { from { opacity: 0.3; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .nb-slide-l, .nb-slide-r { animation: none; } }
   .nb-detail .dtabs { background: rgba(80, 70, 50, 0.07); border-color: rgba(80, 70, 50, 0.25); }
   .nb-detail .dtabs button { color: var(--ink-soft); }
   .nb-detail .dtabs button:hover { color: var(--ink); background: rgba(41, 80, 122, 0.08); }
@@ -456,9 +451,6 @@
   .nb-fact { margin: 0; max-width: 64ch; font-size: var(--fs-md); line-height: 1.6; color: var(--ink); }
   .nb-dl { display: grid; gap: var(--sp-2); margin: 4px 0 0; }
   .nb-left .nb-detail > .nb-dl { margin-top: var(--sp-6); }
-  .nb-kin-head { margin-top: var(--sp-4); }
-  .nb-detail .nb-kin { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--sp-3) var(--sp-2); }
-  .nb-detail .nb-kin .card span { font-size: 17px; }
   .nb-dl div { padding: var(--sp-2) 0 var(--sp-2) var(--sp-3); border-left: 3px solid rgba(41, 80, 122, 0.4); }
   .nb-dl dt { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); }
   .nb-dl dd { margin: 1px 0 0; font-size: 13.5px; color: var(--ink); overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
@@ -484,7 +476,21 @@
   /* the field note on an animal's page (Biologist reward): a pencil note on a strip of tape */
   .nb-note-field { margin: 2px 0 0; padding: var(--sp-2) var(--sp-3); font-size: 13.5px; line-height: 1.5; color: var(--ink); background: rgba(236, 222, 178, 0.55); border-left: 3px solid rgba(41, 80, 122, 0.45); transform: rotate(-0.4deg); }
   .nb-note-field b { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); margin-right: 4px; }
-  .nb-detail { overflow-y: auto; scrollbar-width: thin; }
+  /* a page of the book never scrolls (fitDetail makes it fit) */
+  .nb-detail { overflow: hidden; }
+  .nb-detail.roll { overflow-y: auto; scrollbar-width: none; touch-action: pan-y; }
+  .nb-detail.roll::-webkit-scrollbar { display: none; }
+  .nb-dhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+  .nb-dhead .nb-run { display: none; }
+  .nb-dpair { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--sp-3); align-items: center; }
+  .nb-dpair .nb-photo { margin: 6px 0 0; width: 100%; }
+  .nb-dpair .nb-dl { margin: 0; }
+  .nb-photo figcaption { overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; line-height: 1.05; }
+  .nb-detail.tight .nb-photo figcaption { font-size: 20px; }
+  .nb-detail.tight { gap: var(--sp-2); }
+  .nb-detail.tight .nb-fact { font-size: 14px; line-height: 1.45; }
+  .nb-detail.tight .nb-note-field, .nb-detail.tight .nb-dl dd { font-size: 13px; }
+  .nb-detail.tight .nb-title.small { font-size: 30px; }
 
 .chip.locked { opacity: 0.45; cursor: not-allowed; }
 

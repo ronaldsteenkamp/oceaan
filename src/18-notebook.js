@@ -270,28 +270,30 @@
 
   // The page of one animal: its photo taped in on the left with where and when below it, the notes and the rest of
   // its family on the right. On a phone it is all one page, one below the other.
-  function renderBookDetail(photoHTML, n) {
+  function renderBookDetail(photo, n) {
     panelEl.classList.add("book");
     const single = bookSingle();
     panelBody.innerHTML = bookSkeleton(single, false);
     const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
-    if (single) left.innerHTML = `<div class="nb-detail">${n.back}${photoHTML}${n.body}${n.side}${n.family}${n.nav}</div>`;
-    else { left.innerHTML = `<div class="nb-detail">${photoHTML}${n.side}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.family}${n.nav}</div>`; }
-    fillIn(panelBody);
+    // on one page: the way back and the colour tabs in one row, the photo beside where and when, then the notes
+    if (single) left.innerHTML = `<div class="nb-detail one"><div class="nb-dhead">${n.back}<div>${photo.top}</div></div><div class="nb-dpair">${photo.figure}${n.side}</div>${n.body}${n.nav}</div>`;
+    else { left.innerHTML = `<div class="nb-detail">${photo.top}${photo.figure}${n.side}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.nav}</div>`; }
+    fitDetail();
+  }
+  // A page of the book never scrolls: when the notes do not fit, the photo gets smaller, and then the writing a little
+  // tighter, until everything is on the page. Only in a very small window can the page still be moved with a finger
+  // (without a scroll bar, and sideways swipes keep leafing).
+  function fitDetail() {
+    for (const d of panelBody.querySelectorAll(".nb-detail")) {
+      const over = () => d.scrollHeight > d.clientHeight + 1;
+      const photo = d.querySelector(".nb-photo"), one = d.classList.contains("one");
+      for (let w = 100; over() && photo && w > (one ? 50 : 40); w -= 6) photo.style.width = `min(${w}%, 500px)`;
+      if (over()) d.classList.add("tight");
+      for (let w = one ? 50 : 40; over() && photo && w > 30; w -= 4) photo.style.width = `${w}%`;
+      if (over()) d.classList.add("roll");
+    }
   }
 
-  // The rest of an animal's family, as small photos you can open: the nearest ones in the book, at most eight.
-  function familyHTML(base) {
-    for (const [, , subs] of LOG_GROUPS) for (const [nl, en, keys] of subs) {
-      const i = keys.indexOf(base);
-      if (i < 0) continue;
-      const others = keys.filter(k => k !== base && inLogWater(k));
-      if (!others.length) return "";
-      const pick = others.sort((a, b) => Math.abs(keys.indexOf(a) - i) - Math.abs(keys.indexOf(b) - i)).slice(0, 8).sort((a, b) => keys.indexOf(a) - keys.indexOf(b));
-      return `<h4 class="nb-fam nb-kin-head">${L(nl, en)} <span>${keys.filter(k => logbook.has(k)).length}/${keys.length}</span></h4><div class="cards nb-kin">${pick.map(k => bookCard(k)).join("")}</div>`;
-    }
-    return "";
-  }
 
   // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.
   function bookOrder() {
@@ -312,14 +314,68 @@
     return `<div class="nb-dnav"><button type="button" class="nb-back" data-dnav="-1" aria-label="${L("Vorige", "Previous")}: ${label(nb[0])}">‹ ${label(nb[0])}</button>` +
       `<button type="button" class="nb-back" data-dnav="1" aria-label="${L("Volgende", "Next")}: ${label(nb[1])}">${label(nb[1])} ›</button></div>`;
   }
+  // From one animal to the next the page turns over, just like leafing through the rest of the book.
   function detailStep(d) {
-    if (!detailOpen || !detailKey) return;
+    if (!detailOpen || !detailKey || bookTurning) return;
     const nb = detailNeighbours(detailKey);
     if (!nb) return;
+    const pagesNow = () => [...panelBody.querySelectorAll(".nb-spread > .nb-page:not(.nb-meter)")].map(p => p.innerHTML);
+    const before = pagesNow();
     sfxPage();
     openDetail(nb[d > 0 ? 1 : 0], true, d);
-    const page = panelBody.querySelector(".nb-spread");
-    if (page) { page.classList.remove("nb-slide-l", "nb-slide-r"); void page.offsetWidth; page.classList.add(d > 0 ? "nb-slide-l" : "nb-slide-r"); }
+    leafOver(d > 0, before, pagesNow());
+  }
+  // The turning page for two sets of page contents: what was there before, and what comes now.
+  function leafOver(fwd, before, after) {
+    const spread = panelBody.querySelector(".nb-spread");
+    if (reduceMotion || !spread || !spread.animate || before.length !== after.length) return;
+    const [left, right] = spread.querySelectorAll(".nb-page:not(.nb-meter)");
+    const face = (cls, html) => `<div class="nb-face nb-page ${cls}">${html}</div>`;
+    const leaf = document.createElement("div");
+    leaf.inert = true; leaf.style.pointerEvents = "none";
+    let frames, done = () => {};
+    if (!right) {
+      leaf.className = "nb-leaf one";
+      if (fwd) {
+        leaf.innerHTML = face("nb-left", before[0]) + face("back nb-left", "");
+        frames = [{ transform: "rotateY(0deg)", opacity: 1 }, { transform: "rotateY(-110deg)", opacity: 1, offset: 0.6 }, { transform: "rotateY(-180deg)", opacity: 0 }];
+      } else {
+        leaf.innerHTML = face("nb-left", after[0]) + face("back nb-left", "");
+        left.innerHTML = before[0];
+        frames = [{ transform: "rotateY(-180deg)", opacity: 0 }, { transform: "rotateY(-110deg)", opacity: 1, offset: 0.4 }, { transform: "rotateY(0deg)", opacity: 1 }];
+        done = () => { left.innerHTML = after[0]; };
+      }
+    } else if (fwd) {
+      leaf.className = "nb-leaf fwd";
+      leaf.innerHTML = face("nb-right", before[1]) + face("back nb-left", after[0]);
+      left.innerHTML = before[0];
+      frames = [{ transform: "rotateY(0deg)" }, { transform: "rotateY(-180deg)" }];
+      done = () => { left.innerHTML = after[0]; };
+    } else {
+      leaf.className = "nb-leaf bwd";
+      leaf.innerHTML = face("nb-left", before[0]) + face("back nb-right", after[1]);
+      right.innerHTML = before[1];
+      frames = [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }];
+      done = () => { right.innerHTML = after[1]; };
+    }
+    const shade = document.createElement("div"); shade.className = "nb-shade";
+    leaf.append(shade);
+    spread.append(leaf);
+    bookTurning = true;
+    const ease = "cubic-bezier(0.45, 0.05, 0.3, 1)";
+    shade.animate([{ opacity: 0 }, { opacity: 0.5, offset: 0.5 }, { opacity: 0 }], { duration: 620, easing: ease });
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (leaf.isConnected) { done(); leaf.remove(); }
+      bookTurning = false;
+      // the buttons on the new page get their focus back once the page lies still
+      const nav = panelBody.querySelector(`[data-dnav="${fwd ? 1 : -1}"]`);
+      if (nav) nav.focus({ preventScroll: true });
+    };
+    leaf.animate(frames, { duration: 620, easing: ease }).finished.catch(() => {}).finally(finish);
+    setTimeout(finish, 1200);
   }
 
   // leafing with a swipe on a touch screen, through the book or from one animal to the next
