@@ -49,16 +49,35 @@
     if (!scene || !scene.watch || scene.watch.some(w => w.key === key)) return;
     scene.watch.push({ key, get, r });
   }
+  // Something new for the logbook needs a moment in the lamp: a ring fills up in about a second (half a second in calm
+  // mode), and it is forgiving: when the lamp slips off, the ring only slowly runs back. What is already in the logbook,
+  // and the water itself, count at once.
+  const holdNeed = key => selfTesting || key.startsWith("w:") || logbook.has(key) || !LOGGABLE.has(key) ? 0 : restMode ? 0.5 : 1;
   function checkWatch() {
     if ((!diverMode && !subLamp()) || !scene.watch.length) return;
+    const dt = Math.min(0.1, frameK / 60);
     scene.watch = scene.watch.filter(w => {
       let pts;
       try { pts = w.get(); } catch (e) { return false; }
-      if (!pts || !pts.length) return true;
-      if (!Array.isArray(pts[0])) pts = [pts];
-      for (const p of pts) if (p && lit(p[0], p[1], w.r)) { seen(w.key, p); return false; }
-      return true;
+      const p = !pts || !pts.length ? null : (Array.isArray(pts[0]) ? pts : [pts]).find(q => q && lit(q[0], q[1], w.r));
+      if (!p) { if (w.hold) w.hold = Math.max(0, w.hold - dt * 0.4); return true; }
+      w.need = holdNeed(w.key); w.hold = (w.hold || 0) + dt; w.at = p;
+      if (w.hold < w.need) return true;
+      seen(w.key, p);
+      return false;
     });
+  }
+  // the rings of the finds that are filling up in the lamp
+  function drawHoldRings() {
+    for (const w of scene.watch || []) {
+      if (!w.hold || !w.need || !w.at) continue;
+      const f = Math.min(1, w.hold / w.need), [x, y] = w.at, r = 15 * u;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(4,20,34,0.45)"; ctx.lineWidth = 5 * u;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = "rgba(255,248,222,0.95)"; ctx.lineWidth = 3 * u;
+      ctx.beginPath(); ctx.arc(x, y, r, -Math.PI / 2, -Math.PI / 2 + f * TAU); ctx.stroke();
+    }
   }
 
   const pick = arr => arr[Math.floor(rng() * arr.length)];

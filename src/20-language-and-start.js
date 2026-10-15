@@ -22,7 +22,7 @@
     document.getElementById("welcomeTitle").textContent = L("Welkom in de oceaan", "Welcome to the ocean");
     document.getElementById("welcomeLead").textContent = L("Elke oceaan is anders. Kijk rond, ontdek wat er leeft en vul je logboek.", "Every ocean is different. Look around, discover what lives there and fill your logbook.");
     const howto = [
-      L("Roep de <b>duiker</b> (D) en zwem rond. Alles wat in het licht van zijn lamp komt, gaat in je <b>logboek</b> (L).", "Call the <b>diver</b> (D) and swim around. Everything that comes into the light of its lamp goes into your <b>logbook</b> (L)."),
+      L("Roep de <b>duiker</b> (D) en zwem rond. Houd zijn lamp even op iets nieuws: als het ringetje vol is, staat het in je <b>logboek</b> (L).", "Call the <b>diver</b> (D) and swim around. Hold its lamp on something new for a moment: when the ring is full, it is in your <b>logbook</b> (L)."),
       L("Zwem naar <b>schatkisten</b>, tik op <b>flessen</b> en zoek verstopte <b>zeepaardjes</b>. Met de sonar (Q) speur je naar iets zeldzaams; ingedrukt houden voert de vissen.", "Swim to <b>treasure chests</b>, tap <b>bottles</b> and look for hidden <b>seahorses</b>. The sonar (Q) searches for something rare; press and hold to feed the fish."),
       L("De <b>pijltjesknop</b> (R) geeft een nieuwe oceaan. De eerste paar zijn vrij; daarna wacht je even, en hoe voller je logboek, hoe korter.", "The <b>arrow button</b> (R) gives a new ocean. The first few are free; after that there is a short wait, and the fuller your logbook, the shorter it gets."),
     ];
@@ -117,6 +117,14 @@
       panelTab = "set"; renderPanel();
       for (const f of ["missing", "found", "shiny", "album", "all"]) { panelTab = "log"; logFilter = f; renderPanel(); }
       logFilter = "all";
+      // calmer discovering: the dive report, a small polaroid, a ring in the lamp, and how long a new find needs
+      diveFinds = ["crab", "shiny:crab", "w:rif"]; showDiveReport(); closeDiveReport();
+      miniQueue.push({ key: "crab", pos: [W / 2, H / 2] }); miniNext = 0; fade = 0; flushMinis();
+      scene.watch.push({ key: "test", get: () => null, hold: 0.5, need: 1, at: [W / 2, H / 2] }); drawHoldRings(); scene.watch.pop();
+      selfTesting = false;
+      const needs = [holdNeed("w:rif"), holdNeed(LOGGABLE.has("crab") && !logbook.has("crab") ? "crab" : "x")];
+      selfTesting = true;
+      if (needs[0] !== 0 || (LOGGABLE.has("crab") && !logbook.has("crab") && !(needs[1] > 0))) errors.push(`bijlichten: wachttijd klopt niet (${needs})`);
       // the hunt list: the page, the button and every kind of key (not saved: hunt is put back afterwards)
       const keepHunt = hunt;
       hunt = ["octopus", "shiny:crab", "aurora"];
@@ -252,12 +260,21 @@
   resize();
   // read the address before newVariant writes the seed into it
   const startHash = location.hash;
-  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail))?$/.exec(startHash);
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek))?$/.exec(startHash);
   if (screenTest) {
     welcomeEl.hidden = screenTest[2] !== "welkom";
     newVariant(Number(screenTest[1]), false);
     if (screenTest[2] === "logboek") bookBtn.click();
     if (screenTest[2] === "detail") { bookBtn.click(); openDetail("octopus"); }
+    // finding things: the diver, a ring filling up in the lamp, a small polaroid on its way and the dive report
+    if (screenTest[2] === "ontdek") {
+      setTimeout(() => {
+        diverBtn.click();
+        scene.watch.push({ key: "test", get: () => null, hold: 0.6, need: 1, at: [diver.x + 90 * u, diver.y - 30 * u] });
+        miniQueue.push({ key: "starfish", pos: [W * 0.3, H * 0.6] }); miniNext = 0;
+        diveFinds = ["crab", "starfish", "octopus", "shiny:crab", "jelly", "fish"]; showDiveReport();
+      }, 1900); // late, so the screenshot catches the ring and the polaroid halfway
+    }
     if (screenTest[2] === "menu") menuBtn.click();
   } else {
     const initial = seedFromHash();

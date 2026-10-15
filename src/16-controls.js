@@ -145,9 +145,11 @@
   canvas.addEventListener("contextlost", e => { e.preventDefault(); discoverPause = false; });
   canvas.addEventListener("contextrestored", () => { if (scene) scene.layers = {}; shinyBufs.clear(); thumbCache.clear(); });
 
-  // ---- a snapshot when a new animal is found -------------------------------
-  // The moment a new animal comes into the light, a picture is taken of the diver and the animal together.
-  // It moves to the middle of the screen, turns into the logbook picture and flies into the book.
+  // ---- a snapshot when something new is found -------------------------------
+  // Something special (your very first find, a shiny, something rare, every 50th find) gets the big moment: a picture of
+  // the diver and the find together moves to the middle while the ocean holds still, turns into the logbook picture and
+  // flies into the book. Ordinary finds get a small polaroid that pops up where they were found and flies into the book
+  // while the ocean keeps moving.
   const discoverEl = document.getElementById("discover"), dcFrame = discoverEl.querySelector(".dc-frame");
   const dcShot = discoverEl.querySelector(".dc-shot"), dcThumb = discoverEl.querySelector(".dc-thumb"), dcName = discoverEl.querySelector(".dc-name");
   const discoverQueue = [];
@@ -157,8 +159,41 @@
     // every find gets its photo: animals, legends, ghosts, wonders and moments; only the waters themselves do not
     if (base.startsWith("w:") || reduceMotion || restMode) return;
     if (!pos) pos = diverMode ? [diver.x, diver.y] : [W / 2, H / 2];
+    if (!isSpecialFind(key)) { if (miniQueue.length < 12 && !miniQueue.some(d => d.key === key)) miniQueue.push({ key, pos: [...pos] }); return; }
     if (discoverQueue.some(d => d.key === key) || discoverQueue.length > 14) return;
     discoverQueue.push({ key, pos });
+  }
+  function isSpecialFind(key) {
+    const base = key.startsWith("shiny:") ? key.slice(6) : key;
+    if (key.startsWith("shiny:") || RARE_KEYS.includes(base)) return true;
+    const finds = [...logbook.keys()].filter(k => !k.startsWith("w:") && !k.startsWith("shiny:")).length;
+    return finds === 1 || (finds > 0 && finds % 50 === 0);
+  }
+  const miniQueue = [];
+  let miniNext = 0;
+  function flushMinis() {
+    if (!miniQueue.length || performance.now() < miniNext || fade > 0.02) return;
+    miniNext = performance.now() + 380;
+    const d = miniQueue.shift(), w = 104, h = 100;
+    const x = Math.max(8, Math.min(W - w - 8, d.pos[0] - w / 2)), y = Math.max(8, Math.min(H - h - 70, d.pos[1] - h - 14));
+    const el = document.createElement("div");
+    el.className = "dc-mini"; el.setAttribute("aria-hidden", "true");
+    const img = document.createElement("img"); img.alt = ""; img.src = thumbURL(d.key, true, 2);
+    const name = document.createElement("span"); name.textContent = nm(d.key);
+    el.append(img, name);
+    Object.assign(el.style, { left: x + "px", top: y + "px", width: w + "px" });
+    document.body.appendChild(el);
+    const r = bookBtn.getBoundingClientRect(), bx = r.left + r.width / 2 - (x + w / 2), by = r.top + r.height / 2 - (y + h / 2);
+    sfxPlip();
+    el.animate([
+      { transform: "scale(0.3) rotate(-10deg)", opacity: 0 },
+      { transform: "scale(1) rotate(-3deg)", opacity: 1, offset: 0.16 },
+      { transform: "scale(1) rotate(-3deg)", opacity: 1, offset: 0.58 },
+      { transform: `translate(${bx * 0.5}px, ${by * 0.35 - 30}px) scale(0.6) rotate(3deg)`, opacity: 1, offset: 0.8 },
+      { transform: `translate(${bx}px, ${by}px) scale(0.25) rotate(9deg)`, opacity: 0.2 },
+    ], { duration: 2000, easing: "ease-in-out", fill: "forwards" }).finished
+      .then(() => { bookBtn.animate([{ transform: "scale(1)" }, { transform: "scale(1.18)" }, { transform: "scale(1)" }], { duration: 300, easing: "ease-out" }); })
+      .catch(() => {}).finally(() => el.remove());
   }
   // runs at the end of a frame, when the picture of the ocean is complete
   function flushDiscoveries() {
@@ -288,7 +323,7 @@
     diverBtn.classList.add("beckon");
     if (!beckonTold) {
       beckonTold = true;
-      toast(L("Tip: roep de duiker (D). Alles in het licht van zijn lamp gaat in je logboek.", "Tip: call the diver (D). Everything in the light of its lamp goes into your logbook."));
+      toast(L("Tip: roep de duiker (D) en houd zijn lamp even op een dier: dan komt het in je logboek.", "Tip: call the diver (D) and hold its lamp on an animal for a moment: then it goes into your logbook."));
     }
   }
   // a player who has not found the diver 25 seconds after the welcome gets the same hint
@@ -312,6 +347,7 @@
     countSwitch();
     personalOcean = true;
     newVariant(randomSeed(), true);
+    showDiveReport();
     updateLockBadge();
   }
   // Globetrotter: choose which water the next ocean has. The water follows from the first number of a seed,
@@ -333,6 +369,7 @@
         if (bt.dataset.pick === "x") return;
         countSwitch();
         personalOcean = true;
+        showDiveReport();
         newVariant(bt.dataset.pick === "r" ? randomSeed() : seedForWater(Number(bt.dataset.pick)), true);
         updateLockBadge();
       });
@@ -396,6 +433,7 @@
   diverBtn.addEventListener("click", () => {
     diverMode = !diverMode;
     if (diverMode && !store.get(DIVED_KEY, false)) { store.set(DIVED_KEY, true); diverBtn.classList.remove("beckon"); }
+    if (diverMode) closeDiveReport(); else showDiveReport();
     if (diverMode) {
       // the diver appears where the cursor is, or at the nearest spot in the water
       diver.x = pointer.known ? pointer.x : W * 0.5; diver.y = pointer.known ? pointer.y : H * 0.45;

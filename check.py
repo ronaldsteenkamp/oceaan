@@ -92,7 +92,7 @@ def screenshots(url):
     SHOTS.mkdir(exist_ok=True)
     made = []
     for w, h, name in [(1440, 900, "computer"), (1024, 768, "tablet"), (390, 844, "telefoon")]:
-        for view in ["", "-logboek", "-detail", "-menu", "-welkom"]:
+        for view in ["", "-logboek", "-detail", "-ontdek", "-menu", "-welkom"]:
             out = SHOTS / f"{name}{view or '-oceaan'}.png"
             out.unlink(missing_ok=True)
             target = f"{url}#schermtest-7{view}"

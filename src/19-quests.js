@@ -222,3 +222,31 @@
     const ev = activeEvent();
     return ev ? `<p class="nb-quest"><b>${L(ev.nl, ev.en)}</b> ${L(ev.say[0], ev.say[1])}</p>` : "";
   }
+
+  // ---- the dive report ----------------------------------------------------------------------
+  // Everything new from one dive, on one card: shown when you call the diver back or go to a new ocean.
+  let diveFinds = [], reportEl = null;
+  function noteDiveFind(key) { if (!selfTesting && !rebuilding && !diveFinds.includes(key)) diveFinds.push(key); }
+  function showDiveReport() {
+    const finds = diveFinds;
+    diveFinds = [];
+    if (!finds.length) return;
+    if (!reportEl) {
+      reportEl = document.createElement("div");
+      reportEl.id = "diveReport"; reportEl.setAttribute("role", "dialog");
+      document.body.appendChild(reportEl);
+      reportEl.addEventListener("click", e => { if (e.target.closest("button")) closeDiveReport(); });
+      addEventListener("keydown", e => { if (e.key === "Escape" && reportEl && !reportEl.hidden) closeDiveReport(); });
+    }
+    reportEl.setAttribute("aria-label", L("Duikverslag", "Dive report"));
+    const show = finds.slice(0, 8), more = finds.length - show.length;
+    reportEl.innerHTML = `<p class="dr-title">${L("Duikverslag", "Dive report")}</p>
+      <p class="dr-sum">${finds.length === 1 ? L("Deze duik: 1 nieuwe vondst", "This dive: 1 new find") : L(`Deze duik: ${finds.length} nieuwe vondsten`, `This dive: ${finds.length} new finds`)}</p>
+      <div class="dr-grid">${show.map(k => `<figure${k.startsWith("shiny:") ? ' class="shiny"' : ""}><img alt="" src="${thumbURL(k, true, 2)}"><figcaption></figcaption></figure>`).join("")}</div>
+      ${more > 0 ? `<p class="dr-more">${L(`en nog ${more}, in je logboek`, `and ${more} more, in your logbook`)}</p>` : ""}
+      <button type="button" class="primary">${L("Verder duiken", "Keep diving")}</button>`;
+    reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nm(show[i]); });
+    reportEl.hidden = false;
+    reportEl.querySelector("button").focus({ preventScroll: true });
+  }
+  function closeDiveReport() { if (reportEl) reportEl.hidden = true; }

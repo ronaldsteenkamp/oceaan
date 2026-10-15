@@ -217,6 +217,7 @@
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
     updateAndDrawDiver(k);
     checkWatch();
+    drawHoldRings();
     updateAndDrawSonar(k, dtSec);
     if (S.kraken.active) shinyDraw(S.kraken, () => drawTentacleSet(S.kraken, KRAKEN));
     drawInk(k);
@@ -264,6 +265,7 @@
       fade = Math.max(0, fade - 0.025 * k);
     }
     flushDiscoveries();
+    flushMinis();
     audioTick();
   }
 

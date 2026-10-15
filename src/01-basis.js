@@ -336,6 +336,7 @@
     if (key.startsWith("shiny:")) store.set(GLINT_KEY, 0);
     announceNew(key);
     huntFound(key);
+    noteDiveFind(key);
     queueDiscovery(key, pos);
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);

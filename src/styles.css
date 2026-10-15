@@ -101,6 +101,20 @@
   #discover { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
   #discover .dc-frame { position: fixed; background: #f4efe2; border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; will-change: transform, opacity; }
   #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; will-change: opacity, transform; }
+  #diveReport { position: fixed; z-index: 35; left: 50%; top: calc(16px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); width: min(440px, calc(100% - 32px));
+    padding: 14px 16px 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); color: var(--text); animation: sheet 0.35s ease-out; }
+  #diveReport .dr-title { margin: 0; font-family: var(--hand, "Caveat", cursive); font-size: 24px; color: var(--accent); }
+  #diveReport .dr-sum { margin: 0 0 10px; font-size: 14px; }
+  #diveReport .dr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  #diveReport figure { margin: 0; text-align: center; font-size: 12px; line-height: 1.15; color: var(--text-dim); overflow-wrap: anywhere; }
+  #diveReport figure img { display: block; width: 100%; height: auto; aspect-ratio: 120 / 84; border-radius: 6px; margin-bottom: 3px; }
+  #diveReport figure.shiny img { box-shadow: 0 0 0 2px var(--gold); }
+  #diveReport .dr-more { margin: 8px 0 0; font-size: 12px; color: var(--text-dim); }
+  #diveReport button { margin-top: 12px; width: 100%; }
+  @media (prefers-reduced-motion: reduce) { #diveReport { animation: none; } }
+  .dc-mini { position: fixed; z-index: 39; pointer-events: none; padding: 5px 5px 0; background: #f4efe2; border-radius: 3px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45); transform-origin: center; will-change: transform, opacity; }
+  .dc-mini img { display: block; width: 100%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; }
+  .dc-mini span { display: block; padding: 3px 2px 5px; text-align: center; color: #1a2a33; font-size: 12px; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; }
   #discover .dc-name { position: absolute; left: 0; right: 0; bottom: 4%; margin: 0; text-align: center; color: #1a2a33; font-size: 14px; font-weight: 600; }
   /* messages */
   #toast {
