@@ -69,6 +69,8 @@ def build_index(version):
         (DIST / "fonts" / name).write_bytes((SRC / "fonts" / name).read_bytes())
     cut = page.index("</style>") + len("</style>")
     head_part, body_part = page[:cut], page[cut:]
+    # the app's own head already says utf-8; the single page carries its own line for when it is opened as a file
+    head_part = head_part.replace('<meta charset="utf-8">\n', "", 1)
     html = f"""<!doctype html>
 <html lang="nl">
 <head>

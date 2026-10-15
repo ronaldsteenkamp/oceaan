@@ -919,7 +919,7 @@
     // a small golden arrow by the diver points to where the echo came from
     if (so.arrow > 0 && diverMode) {
       so.arrow -= dtSec;
-      const a = Math.min(1, so.arrow), d = 46 * u, x = diver.x + Math.cos(so.dir) * d, y = diver.y + Math.sin(so.dir) * d;
+      const a = Math.min(1, so.arrow), d = (DIVER_L - 2) * u, x = diver.x + Math.cos(so.dir) * d, y = diver.y + Math.sin(so.dir) * d;
       ctx.globalCompositeOperation = "source-over";
       ctx.save(); ctx.translate(x, y); ctx.rotate(so.dir);
       ctx.beginPath(); ctx.moveTo(12 * u, 0); ctx.lineTo(-6 * u, -8 * u); ctx.lineTo(-1 * u, 0); ctx.lineTo(-6 * u, 8 * u); ctx.closePath();

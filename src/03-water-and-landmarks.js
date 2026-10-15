@@ -29,8 +29,10 @@
     const snow = scene.snow;
     for (let i = 0; i < snow.length; i++) {
       const p = snow[i];
-      p.y += p.sp * u * k;
-      p.x += Math.sin(t * 0.6 + p.ph) * 0.12 * k + current * 1.2 * k;
+      if (!reduceMotion) { // with reduced motion the specks hang still
+        p.y += p.sp * u * k;
+        p.x += Math.sin(t * 0.6 + p.ph) * 0.12 * k + current * 1.2 * k;
+      }
       if (p.y > H + 4) { p.y = -4; p.x = Math.random() * W; }
       if (p.x > W + 4) p.x = -4;
       if (p.x < -4) p.x = W + 4;

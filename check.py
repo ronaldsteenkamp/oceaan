@@ -5,7 +5,7 @@ Standaard wordt dist/oceaan.html gecontroleerd (eerst bouwen met python build.py
   1. opent de pagina met #zelftest in een onzichtbare Chrome en leest de uitslag;
   2. vergelijkt 35 vaste oceanen (seeds 1 tot 30 en vijf Waddenzee-seeds) met zaden.json en meldt welke gedeelde links er nu anders uitzien
      (een waarschuwing, geen fout; met --zaden-vastleggen wordt de nieuwe stand de standaard);
-  3. maakt schermafbeeldingen op computer-, tablet- en telefoonformaat in checks/.
+  3. maakt schermafbeeldingen op computer-, tablet- en telefoonformaat in checks/, en een van het stijlblad (#stijlblad).
 Geeft exitcode 1 als de zelftest een fout vindt.
 
 Chrome wordt gezocht via de omgevingsvariabele CHROME, daarna op de gebruikelijke plekken (Windows, macOS, Linux).
@@ -112,6 +112,19 @@ def screenshots(url):
                     break
             else:
                 print(f"let op: geen schermafbeelding van {out.name}")
+    # the style sheet: every logbook picture side by side, on one tall page
+    out = SHOTS / "stijlblad.png"
+    out.unlink(missing_ok=True)
+    for _ in range(3):
+        try:
+            chrome(["--window-size=1440,7200", "--virtual-time-budget=4000", f"--screenshot={out}", f"{url}#stijlblad"], timeout=180)
+        except subprocess.TimeoutExpired:
+            pass
+        if out.exists():
+            made.append(out.name)
+            break
+    else:
+        print("let op: geen schermafbeelding van het stijlblad")
     return made
 
 

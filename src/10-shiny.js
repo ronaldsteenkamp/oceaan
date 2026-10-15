@@ -341,6 +341,7 @@
   let shinyTrail = [];
   function drawShinyTrail(k) {
     if (!shinyTrail.length) return;
+    if (reduceMotion) { shinyTrail = []; return; }
     if (shinyTrail.length > 160) shinyTrail.splice(0, shinyTrail.length - 160);
     shinyTrail = shinyTrail.filter(p => {
       p.a -= 0.012 * k; p.y -= 0.08 * u * k;
@@ -377,6 +378,8 @@
         sfxShiny();
         buzz([30, 40, 30]);
       }
+      // a soft golden glow around every shiny (the same sign as the rim of light in its logbook picture), breathing slowly
+      glow(x, y, Math.min(e.r * 1.9, 140 * u), "255,226,150", 0.17 + (reduceMotion ? 0 : 0.06 * Math.sin(t * 1.3 + e.r)));
       // small glints that flash on the body itself
       for (let i = 0; i < 3; i++) {
         const slot = Math.floor(t * 1.6 + i * 0.37), ph = (t * 1.6 + i * 0.37) % 1;

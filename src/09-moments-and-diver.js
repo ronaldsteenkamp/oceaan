@@ -152,6 +152,7 @@
   }
 
   function drawDust(k) {
+    if (reduceMotion) { dust = []; return; }
     ctx.fillStyle = water.sand[0];
     dust = dust.filter(p => {
       p.x += (p.vx + current * 0.5) * k; p.y += p.vy * k; p.vx *= 0.97; p.vy *= 0.97; p.r += 0.08 * u * k; p.a -= 0.006 * k;
@@ -700,8 +701,8 @@
     }
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
 
-    const gold = rewards.has("sall"), L = 46 * u, suit = gold ? "#c8961a" : "#1d2228";
-    if (rewards.has("s30")) {
+    const gold = rewards.has("sall"), L = DIVER_L * u, suit = gold ? "#c8961a" : "#1d2228";
+    if (rewards.has("s30") && !reduceMotion) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
       if (!d.trail) d.trail = [];
@@ -724,6 +725,8 @@
     ctx.restore();
   }
 
+  // The diver's length in u: the one figure you play, so a little bigger than the fish around it
+  const DIVER_L = 58;
   // The diver seen from the side, facing right, in local coordinates where L is its length.
   // c holds the colours, so the ghost diver can be drawn with exactly the same shape.
   function drawDiverBody(L, kick, c) {

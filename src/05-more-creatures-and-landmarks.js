@@ -1,5 +1,7 @@
   // ---- bubbles -----------------------------------------------------------
   function updateAndDrawBubbles(k) {
+    // with reduced motion nothing drifts across the screen
+    if (reduceMotion) { bubbles.length = 0; return; }
     if (Math.random() < 0.03 * k && bubbles.length < 50) {
       const sources = scene.ground.filter(g => g.kind === "chest" || g.kind === "wreck" || g.kind === "vent");
       let x;

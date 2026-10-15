@@ -192,7 +192,7 @@
 
   function drawStreaks(k) {
     const a = Math.min(1, Math.abs(current) / 1.5);
-    if (a < 0.08) return;
+    if (a < 0.08 || reduceMotion) return;
     if (!streaks.length) streaks = Array.from({ length: 28 }, () => ({ x: Math.random() * W, y: Math.random() * H * 0.85, l: (30 + Math.random() * 60) * u, sp: 4 + Math.random() * 4 }));
     const dir = Math.sign(current);
     ctx.strokeStyle = `rgba(255,255,255,${0.1 * a})`; ctx.lineWidth = u;
@@ -299,7 +299,7 @@
     if (diverMode) {
       // the diver's lamp turns with the diver; its beam is exactly the part of the ocean that goes into the logbook
       const d = diver, th = d.heading, c = lightCone();
-      const lx = d.x + Math.cos(th) * 18 * u, ly = d.y + Math.sin(th) * 18 * u, len = c.len, spr = c.half;
+      const lx = d.x + Math.cos(th) * 0.39 * DIVER_L * u, ly = d.y + Math.sin(th) * 0.39 * DIVER_L * u, len = c.len, spr = c.half;
       const strength = [0, 0.06, 0.08, 0.12][c.level] + [0, 0.2, 0.26, 0.32][c.level] * Math.max(night, water.glow ? 0.8 : 0);
       const g2 = ctx.createLinearGradient(lx, ly, lx + Math.cos(th) * len, ly + Math.sin(th) * len);
       g2.addColorStop(0, `rgba(255,248,215,${strength})`);
@@ -307,6 +307,8 @@
       ctx.fillStyle = g2;
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + Math.cos(th - spr) * len, ly + Math.sin(th - spr) * len); ctx.lineTo(lx + Math.cos(th + spr) * len, ly + Math.sin(th + spr) * len); ctx.closePath(); ctx.fill();
       glow(lx, ly, 10 * u, "255,248,220", 0.7);
+      // a soft circle of light around the diver, so you always find yourself back, brighter in the dark
+      glow(d.x, d.y, DIVER_L * 0.95 * u, "200,236,255", 0.16 + 0.22 * Math.max(night, water.glow ? 0.7 : 0));
     }
     const sl = subLamp();
     if (sl) {

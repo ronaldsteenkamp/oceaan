@@ -53,12 +53,15 @@
       return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}</span><span class="how">${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}</span>${m.reward ? `<i class="gift" title="${tip}" aria-label="${tip}">★</i>` : ""}</li>`;
     });
     blocks.push({ head: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</span></h4><p class="nb-note">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`,
-      headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, newPage: true, group: "intro" });
+      headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, group: "intro" });
     // the stickers from the milestones, stuck in at a slant; the ones still to earn are dashed outlines
-    blocks.push({ html: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${STICKERS.filter(([id]) => rewards.has(id)).length}/${STICKERS.length}</span></h4><div class="nb-stickers">` +
-      STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${breakable(L(m.name[0], m.name[1]))}</figcaption></figure>`; }).join("") + `</div>`, group: "intro" });
+    // (sticker by sticker, so they can start on the page where the milestones end)
+    blocks.push({ head: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${STICKERS.filter(([id]) => rewards.has(id)).length}/${STICKERS.length}</span></h4>`,
+      headMore: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${L("vervolg", "continued")}</span></h4>`, open: `<div class="nb-stickers">`, close: `</div>`, group: "intro",
+      cards: STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${breakable(L(m.name[0], m.name[1]))}</figcaption></figure>`; }) });
 
-    // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
+    // the families; the animals start on a new page, the groups after them carry on where the previous one ended.
+    // The Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
     const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
     const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
@@ -72,7 +75,7 @@
         const vis = keys.filter(show);
         if (!vis.length) continue;
         blocks.push({ head: `<h4 class="nb-fam">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4>`, headMore: `<h4 class="nb-fam">${L(nl, en)} <span>${L("vervolg", "continued")}</span></h4>`,
-          cards: vis.map(k => bookCard(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)), newPage: first, group: title, jump: first ? title : null });
+          cards: vis.map(k => bookCard(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)), newPage: first && title === "Dieren", groupStart: first, group: title, jump: first ? title : null });
         first = false;
       }
     }
@@ -95,8 +98,8 @@
     return blocks;
   }
 
-  // Fill the pages: a block goes on the current page if it fits, otherwise on a new one;
-  // a family too long for one page carries on overleaf.
+  // Fill the pages: a block goes on the current page if it fits. A family that does not fit whole fills the rest of
+  // the page first and carries on overleaf, so there are no half-empty pages in the middle of the book.
   function paginate(blocks, meter) {
     const pages = [], groups = [], jumps = {};
     let cur = "", curGroup = "intro";
@@ -105,28 +108,33 @@
     const flush = () => { if (cur) { pages.push(cur); groups.push(curGroup); } cur = ""; };
     for (const b of blocks) {
       if (b.newPage) flush();
-      if (b.jump && !(b.jump in jumps)) jumps[b.jump] = pages.length;
-      curGroup = b.group;
+      // a tab leafs to the page where its part really starts, so this is noted after a possible turn of the page
+      const mark = () => { if (b.jump && !(b.jump in jumps)) jumps[b.jump] = pages.length; };
       if (b.html !== undefined) {
         // fixed blocks (the overview, milestones, photos, the back of the book) go on the next page when they no longer fit
         if (cur && !fits(cur + b.html)) flush();
+        mark(); curGroup = b.group;
         cur = (cur || run(b.group)) + b.html;
         continue;
       }
       const open = b.open || `<div class="cards">`, close = b.close || `</div>`;
+      // a new part that starts halfway down a page gets its name as a divider
+      const lead = cur && b.groupStart ? `<div class="nb-run nb-run-mid">${groupName(b.group)}</div>` : "";
       const whole = b.head + open + b.cards.join("") + close;
-      if (fits((cur || run(b.group)) + whole)) { cur = (cur || run(b.group)) + whole; continue; }
-      if (cur) flush();
-      // card by card onto as many pages as it needs
+      if (fits((cur || run(b.group)) + lead + whole)) { mark(); curGroup = b.group; cur = (cur || run(b.group)) + lead + whole; continue; }
+      // the rest of this page is used when the head and a first row of photos fit there
+      let base = (cur || run(b.group)) + lead;
+      if (cur && !fits(base + b.head + open + b.cards.slice(0, 3).join("") + close)) { flush(); base = run(b.group); }
+      mark(); curGroup = b.group;
       let head = b.head, list = [];
       for (const c of b.cards) {
-        if (list.length && !fits(run(b.group) + head + open + list.join("") + c + close)) {
-          cur = run(b.group) + head + open + list.join("") + close; flush();
-          head = b.headMore; list = [];
+        if (list.length && !fits(base + head + open + list.join("") + c + close)) {
+          cur = base + head + open + list.join("") + close; flush();
+          base = run(b.group); head = b.headMore; list = [];
         }
         list.push(c);
       }
-      cur = run(b.group) + head + open + list.join("") + close;
+      cur = base + head + open + list.join("") + close;
     }
     flush();
     meter.innerHTML = "";
@@ -249,14 +257,29 @@
     try { tone({ type: "triangle", freqs: [[900, 0], [500, 0.25]], dur: 0.25, gain: 0.012, attack: 0.01, release: 0.2, verb: 0.2 }); } catch (e) {}
   }
 
-  // The page of one animal: its photo taped in on the left, the notes on the right (one below the other on a phone).
-  function renderBookDetail(photoHTML, notesHTML) {
+  // The page of one animal: its photo taped in on the left with where and when below it, the notes and the rest of
+  // its family on the right. On a phone it is all one page, one below the other.
+  function renderBookDetail(photoHTML, n) {
     panelEl.classList.add("book");
     const single = bookSingle();
     panelBody.innerHTML = bookSkeleton(single, false);
     const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
-    if (single) left.innerHTML = `<div class="nb-detail">${notesHTML.back}${photoHTML}${notesHTML.body}</div>`;
-    else { left.innerHTML = `<div class="nb-detail">${photoHTML}</div>`; right.innerHTML = `<div class="nb-detail">${notesHTML.back}${notesHTML.body}</div>`; }
+    if (single) left.innerHTML = `<div class="nb-detail">${n.back}${photoHTML}${n.body}${n.side}${n.family}${n.nav}</div>`;
+    else { left.innerHTML = `<div class="nb-detail">${photoHTML}${n.side}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.family}${n.nav}</div>`; }
+    fillIn(panelBody);
+  }
+
+  // The rest of an animal's family, as small photos you can open: the nearest ones in the book, at most eight.
+  function familyHTML(base) {
+    for (const [, , subs] of LOG_GROUPS) for (const [nl, en, keys] of subs) {
+      const i = keys.indexOf(base);
+      if (i < 0) continue;
+      const others = keys.filter(k => k !== base && inLogWater(k));
+      if (!others.length) return "";
+      const pick = others.sort((a, b) => Math.abs(keys.indexOf(a) - i) - Math.abs(keys.indexOf(b) - i)).slice(0, 8).sort((a, b) => keys.indexOf(a) - keys.indexOf(b));
+      return `<h4 class="nb-fam nb-kin-head">${L(nl, en)} <span>${keys.filter(k => logbook.has(k)).length}/${keys.length}</span></h4><div class="cards nb-kin">${pick.map(k => bookCard(k)).join("")}</div>`;
+    }
+    return "";
   }
 
   // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.

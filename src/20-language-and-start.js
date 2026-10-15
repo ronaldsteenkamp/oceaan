@@ -113,6 +113,7 @@
     for (const key of LOG_GROUPS.flatMap(g => g[1])) {
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
     }
+    checkPictures(errors);
     for (const e of new Set(thumbErrors)) errors.push(`plaatje ${e}`);
     for (const b of brushLeaks) errors.push(`penseel niet teruggezet na een frame (${b})`);
     try {
@@ -257,6 +258,35 @@
     return out;
   }
 
+  // ---- the style sheet: every logbook picture side by side (#stijlblad) ----
+  // To check a new drawing against the animals around it: ordinary, shiny and not yet found, family by family.
+  // check.py keeps a screenshot of it in checks/stijlblad.png.
+  function showStyleSheet() {
+    const el = document.createElement("div");
+    el.id = "stijlblad";
+    let html = `<h1>${L("Stijlblad", "Style sheet")}</h1><p>${L("Alle logboekplaatjes per familie: gewoon, shiny (als die er is) en nog niet gevonden.", "Every logbook picture per family: ordinary, shiny (if there is one) and not found yet.")}</p>`;
+    for (const [title, , subs] of LOG_GROUPS) {
+      if (title === "Shiny") continue; // the shinies already stand next to their animal
+      html += `<h2>${groupName(title)}</h2>`;
+      for (const [nl, en, keys] of subs) {
+        html += `<h3>${L(nl, en)}</h3><div class="sb-grid">` + keys.map(k => {
+          const pics = [thumbURL(k, true), SHINY_KEYS.includes(k) ? thumbURL("shiny:" + k, true) : "", FULL_THUMBS.has(k) ? "" : thumbURL(k, false)];
+          return `<figure><div>${pics.filter(Boolean).map(src => `<img alt="" src="${src}">`).join("")}</div><figcaption>${nm(k)}</figcaption></figure>`;
+        }).join("") + `</div>`;
+      }
+    }
+    el.innerHTML = html;
+    document.body.appendChild(el);
+  }
+
+  // Every animal's picture has something on it, also after it has been put in its frame.
+  function checkPictures(errors) {
+    for (const k of Object.keys(ANIMALS)) {
+      try { if (!layerBox(thumbLayer(k, k, false, 1, thumbFit(k)), 1)) errors.push(`plaatje ${k}: leeg na het kadreren`); }
+      catch (e) { errors.push(`plaatje ${k}: ${e.message}`); }
+    }
+  }
+
   // Paths that only happen now and then: a crab, school or jelly that comes back shiny, and every shiny getter.
   function checkRarePaths(errors, sd) {
     const realRandom = Math.random;
@@ -282,7 +312,11 @@
   // read the address before newVariant writes the seed into it
   const startHash = location.hash;
   const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek))?$/.exec(startHash);
-  if (screenTest) {
+  if (startHash === "#stijlblad") {
+    welcomeEl.hidden = true;
+    newVariant(7, false);
+    showStyleSheet();
+  } else if (screenTest) {
     welcomeEl.hidden = screenTest[2] !== "welkom";
     newVariant(Number(screenTest[1]), false);
     if (screenTest[2] === "logboek") bookBtn.click();

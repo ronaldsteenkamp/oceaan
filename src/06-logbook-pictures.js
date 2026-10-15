@@ -213,8 +213,71 @@
     return thumbCache.get(ck);
   }
 
-  function renderThumb(key, seenIt, TS = 2) {
-    const base = key.startsWith("shiny:") ? key.slice(6) : key, shiny = base !== key, fn = THUMBS[base];
+  // Every animal gets the same framing in its picture: it fills about 60% of the width, a swimmer floats in the middle,
+  // a bottom dweller keeps its place on the sand. Measured once per animal, from a first quick drawing.
+  // Birds on the water keep their own framing (the waterline runs across the picture) and get a strip of sky instead.
+  const thumbFits = new Map();
+  const skyThumb = base => FAUNA[base] && (FAUNA[base].kind === "surface" || FAUNA[base].kind === "dive");
+  function thumbFit(base) {
+    if (thumbFits.has(base)) return thumbFits.get(base);
+    let fit = [1, 0, 0];
+    if (ANIMALS[base] && !skyThumb(base)) {
+      const box = layerBox(thumbLayer(base, base, false, 1, fit), 1);
+      // a picture that is mostly background (a coral garden, an animal at the surface) stays as it is drawn
+      if (box && box.w < TW * 0.97 && box.cover < 0.5) {
+        const floor = FLOOR_THUMBS.has(base) || (FAUNA[base] && FAUNA[base].kind === "floor");
+        const s = Math.max(0.6, Math.min(2.2, Math.min(TW * 0.62 / box.w, TH * (floor ? 0.6 : 0.66) / box.h)));
+        const cx = (box.x0 + box.x1) / 2;
+        fit = [s, TW / 2 - cx * s, floor ? box.y1 * (1 - s) : TH * 0.47 - (box.y0 + box.y1) / 2 * s];
+      }
+    }
+    thumbFits.set(base, fit);
+    return fit;
+  }
+  // Where a layer has something drawn on it, in the units of the tiny world, and how much of the picture it covers.
+  function layerBox(c, TS) {
+    const w = c.width, h = c.height, d = c.getContext("2d").getImageData(0, 0, w, h).data, step = TS > 1 ? 2 : 1;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1, n = 0, all = 0;
+    for (let y = 0; y < h; y += step) for (let x = 0; x < w; x += step) {
+      all++;
+      if (d[(y * w + x) * 4 + 3] < 24) continue;
+      n++;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+    if (x1 < 0) return null;
+    return { x0: x0 / TS, y0: y0 / TS, x1: (x1 + step) / TS, y1: (y1 + step) / TS, w: (x1 + step - x0) / TS, h: (y1 + step - y0) / TS, cover: n / all };
+  }
+
+  // A thing that has not been found yet and whose picture fills the frame (a storm, the northern lights, a legend)
+  // becomes a pencil sketch on paper: you can make out what it is, but not quite. Animals get a dark outline instead.
+  function pencilSketch(c) {
+    const g = c.getContext("2d"), w = c.width, h = c.height, img = g.getImageData(0, 0, w, h), d = img.data;
+    const lum = new Float32Array(w * h);
+    let lo = 255, hi = 0;
+    for (let i = 0; i < w * h; i++) { const v = d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11; lum[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+    // stretched to the full range first, so a dark night scene still gives clear lines
+    const stretch = 255 / Math.max(40, hi - lo);
+    let mean = 0;
+    for (let i = 0; i < w * h; i++) { lum[i] = (lum[i] - lo) * stretch; mean += lum[i] / (w * h); }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      let edge = 0;
+      if (x > 0 && y > 0 && x < w - 1 && y < h - 1) {
+        const gx = lum[i - w + 1] + 2 * lum[i + 1] + lum[i + w + 1] - lum[i - w - 1] - 2 * lum[i - 1] - lum[i + w - 1];
+        const gy = lum[i + w - 1] + 2 * lum[i + w] + lum[i + w + 1] - lum[i - w - 1] - 2 * lum[i - w] - lum[i - w + 1];
+        edge = Math.min(1, Math.max(0, (Math.hypot(gx, gy) - 50) / 160));
+      }
+      // graphite on paper: the lines, and shading on whatever is brighter than the rest (what glows or stands out)
+      const tone = Math.max(0, Math.min(1, (lum[i] - mean) / Math.max(30, 255 - mean)));
+      const k = Math.min(1, Math.max(edge * 0.85, 0.65 * Math.sqrt(tone)));
+      d[i * 4] = 239 - 177 * k; d[i * 4 + 1] = 231 - 173 * k; d[i * 4 + 2] = 210 - 162 * k; d[i * 4 + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+  }
+
+  // Draws one picture into a layer of the tiny world; fit = [scale, dx, dy] places it in the frame.
+  function thumbLayer(key, base, shiny, TS, fit) {
+    const fn = THUMBS[base];
     const layer = document.createElement("canvas");
     layer.width = TW * TS; layer.height = TH * TS;
     if (fn) {
@@ -223,13 +286,13 @@
       const saved = { ctx, W, H, u, dpr, scene, water, t, rng, bubbles, smoke, dust, ink, coins, abyssGlows, food, rings, ripples, jets, eggs, coralSpawn, streaks, day, night, glowF, current, frameK, active: pointer.active, diverMode, feeding };
       try {
         ctx = layer.getContext("2d");
-        ctx.setTransform(TS, 0, 0, TS, 0, 0);
+        ctx.setTransform(TS * fit[0], 0, 0, TS * fit[0], fit[1] * TS, fit[2] * TS);
         W = TW; H = TH; u = 1; dpr = TS; t = 1.3; rng = mulberry32(4242); day = 1; night = 0; glowF = 0; current = 0; frameK = 1;
         pointer.active = false; diverMode = false; feeding = false;
         bubbles = []; smoke = []; dust = []; ink = []; coins = []; abyssGlows = []; food = []; rings = []; ripples = []; jets = []; eggs = []; coralSpawn = []; streaks = [];
         water = THUMB_WATER; scene = thumbScene();
         const THUMB_BASE = { fish: hexHue("#f2b134"), crab: hexHue("#d9543b"), starfish: hexHue("#e8743b"), seahorse: hexHue("#f2b134"), slugs: hexHue("#7b4fd6"), jelly: rgbHue(255, 196, 224) };
-        if (shiny && seenIt && beginShiny(base)) { try { fn(); } finally { endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } } else fn();
+        if (shiny && beginShiny(base)) { try { fn(); } finally { endShiny(base, THUMB_BASE[base] !== undefined ? { shinyBase: THUMB_BASE[base] } : null); } } else fn();
       } catch (e) {
         // a picture that cannot be drawn just stays empty
         thumbErrors.push(`${key}: ${e.message}`);
@@ -238,7 +301,15 @@
         pointer.active = saved.active;
       }
     }
-    if (!seenIt && !FULL_THUMBS.has(base)) {
+    return layer;
+  }
+
+  function renderThumb(key, seenIt, TS = 2) {
+    const base = key.startsWith("shiny:") ? key.slice(6) : key, shiny = base !== key && seenIt;
+    const layer = thumbLayer(key, base, shiny, TS, THUMBS[base] ? thumbFit(base) : [1, 0, 0]);
+    const unseen = !seenIt && !FULL_THUMBS.has(base);
+    const box = unseen ? layerBox(layer, TS) : null, sketch = !!box && box.cover > 0.45;
+    if (unseen && !sketch) {
       // not found yet: only a dark outline shows
       const lc = layer.getContext("2d");
       lc.setTransform(1, 0, 0, 1, 0, 0);
@@ -253,6 +324,12 @@
     const g = o.createLinearGradient(0, 0, 0, TH);
     g.addColorStop(0, "#1f6a82"); g.addColorStop(1, "#0b2c46");
     o.fillStyle = g; o.fillRect(0, 0, TW, TH);
+    if (skyThumb(base)) {
+      // a bird floats on the water under a strip of sky (the drawing puts its waterline at 40)
+      const sky = o.createLinearGradient(0, 0, 0, 40);
+      sky.addColorStop(0, "#d6eef5"); sky.addColorStop(1, "#9fd2e4");
+      o.fillStyle = sky; o.fillRect(0, 0, TW, 40);
+    }
     const floor = FLOOR_THUMBS.has(base);
     const sandLine = (x, off) => TH * 0.84 + Math.sin(x * 0.006) * 8 + Math.sin(x * 0.017) * 3 + off;
     const sandFill = off => {
@@ -262,9 +339,19 @@
       o.lineTo(TW, TH); o.fill();
     };
     if (floor) sandFill(0);
+    if (shiny) {
+      // every shiny shares one sign besides its colours: a soft golden rim of light around its body
+      // (only the shadow of the layer is drawn, the layer itself lies a picture's width outside)
+      o.save();
+      o.setTransform(1, 0, 0, 1, 0, 0);
+      o.shadowColor = "rgba(255,224,130,0.95)"; o.shadowBlur = 4 * TS; o.shadowOffsetX = layer.width;
+      o.drawImage(layer, -layer.width, 0); o.drawImage(layer, -layer.width, 0);
+      o.restore();
+    }
     o.drawImage(layer, 0, 0, TW, TH);
     if (floor) sandFill(7);
-    if (shiny && seenIt) {
+    if (sketch) pencilSketch(out);
+    if (shiny) {
       o.setTransform(TS, 0, 0, TS, 0, 0);
       const keep = ctx;
       ctx = o;

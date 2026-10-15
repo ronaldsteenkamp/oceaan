@@ -170,13 +170,15 @@
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
       body: `<h2 class="nb-title small">${nm(base)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
-        ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>` : ""}
-        <dl class="nb-dl">
+        ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>` : ""}`,
+      side: `<dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
           ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}${huntButtonHTML(key)}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-        </dl>${detailNavHTML(key)}`,
+        </dl>`,
+      family: familyHTML(base),
+      nav: detailNavHTML(key),
     });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
@@ -281,7 +283,9 @@
 
   function settingsHTML() {
     const link = shareLink(), canShare = !IN_ARTIFACT && !!navigator.share;
+    // sections with a handwritten head; within a section the parts have a small head of their own
     return `
+      <h3 class="section first">${L("Delen", "Share")}</h3>
       <h3>${L("Deze oceaan delen", "Share this ocean")}</h3>
       <p class="sum">${IN_ARTIFACT ? L("Stuur deze code mee met de link. Wie hem hieronder invult, krijgt precies deze oceaan.", "Send this code along with the link. Whoever enters it below gets exactly this ocean.") : L("Wie deze link opent, krijgt precies deze oceaan.", "Whoever opens this link gets exactly this ocean.")}</p>
       <div class="share"><input id="shareCode" readonly value="${link}" aria-label="${L("Code van deze oceaan", "Code of this ocean")}"><button type="button" id="shareCopy">${L("Kopieer", "Copy")}</button>${canShare ? `<button type="button" id="shareNative" class="primary">${L("Delen", "Share")}</button>` : ""}</div>
@@ -292,18 +296,18 @@
       <div id="compareOut"></div>
       <h3>${L("Een code openen", "Open a code")}</h3>
       <div class="share"><input id="openCode" placeholder="#12345" aria-label="${L("Code om te openen", "Code to open")}"><button type="button" id="openGo">${L("Open", "Open")}</button></div>
-      <h3>${L("Rust en geluid", "Calm and sound")}</h3>
+      <h3 class="section">${L("Rust en geluid", "Calm and sound")}</h3>
       <div class="row"><button type="button" id="restToggle" class="switch" role="switch" aria-checked="${restMode}"><span class="track"></span>${L("Rustmodus", "Calm mode")}</button></div>
       <p class="sum">${L("Langzamer, zonder grote gebeurtenissen en meldingen. Fijn als achtergrond.", "Slower, without big events or messages. Nice as a background.")}</p>
       <div class="row"><label for="vol">${L("Volume", "Volume")}</label><input id="vol" type="range" min="0" max="100" value="${Math.round(volume * 100)}"></div>
       <div class="row"><label for="volMusic">${L("Muziek", "Music")}</label><input id="volMusic" type="range" min="0" max="100" value="${Math.round(musicVol * 100)}"></div>
       <div class="row"><label for="volFx">${L("Geluiden", "Sounds")}</label><input id="volFx" type="range" min="0" max="100" value="${Math.round(fxVol * 100)}"></div>
-      <h3>${L("Taal", "Language")}</h3>
+      <h3 class="section">${L("Taal", "Language")}</h3>
       <div class="chips" role="group" aria-label="${L("Taal", "Language")}">
         <button type="button" class="chip pick ${LANG === "nl" ? "on" : ""}" data-lang="nl" aria-pressed="${LANG === "nl"}" lang="nl">Nederlands</button>
         <button type="button" class="chip pick ${LANG === "en" ? "on" : ""}" data-lang="en" aria-pressed="${LANG === "en"}" lang="en">English</button>
       </div>
-      <h3>${L("Uitleg", "Help")}</h3>
+      <h3 class="section">${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
       <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan (ingedrukt houden: water kiezen, met Wereldreiziger), L opent het logboek, F maakt een foto, G zet het geluid aan of uit en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean (hold it: choose the water, with Globetrotter), L opens the logbook, F takes a photo, G switches sound on or off and Esc closes this menu.")}</p>`;
   }
