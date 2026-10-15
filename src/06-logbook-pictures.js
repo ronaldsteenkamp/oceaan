@@ -137,7 +137,7 @@
       ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(-4, 0, 10, 6, 0, 0, TAU); ctx.fill();
       ctx.fillStyle = "#2a1a12"; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(-5, 3); ctx.lineTo(-5, -1); ctx.fill();
       ctx.fillStyle = "#f2e9c8"; ctx.beginPath(); ctx.arc(-6, -2.5, 1.6, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(-6.3, -2.5, 0.8, 0, TAU); ctx.fill();
+      eye(-6.3, -2.5, 0.8, "#111");
       ctx.restore();
     },
     mantis: () => drawMantis({ x: 56, s: 40, cool: 1e9, strike: 0, face: 1 }, 0),

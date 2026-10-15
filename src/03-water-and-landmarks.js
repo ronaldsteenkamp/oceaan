@@ -303,8 +303,7 @@
         ctx.beginPath(); ctx.moveTo(0.05 * L, 0); ctx.lineTo(0.025 * L, gape); ctx.lineTo(0.025 * L, -gape * 0.3); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#f2e9c8";
         ctx.beginPath(); ctx.arc(0.03 * L, -0.007 * L, 0.004 * L, 0, TAU); ctx.fill();
-        ctx.fillStyle = "#111";
-        ctx.beginPath(); ctx.arc(0.031 * L, -0.007 * L, 0.002 * L, 0, TAU); ctx.fill();
+        eye(0.031 * L, -0.007 * L, 0.002 * L, "#111");
         ctx.restore();
       });
     }
@@ -765,8 +764,7 @@
       ctx.fillStyle = sh("#e8e0c8", 0.05);
       const face = Math.sin(t * 0.3 + e.ph) > 0 ? 1 : -1;
       ctx.beginPath(); ctx.ellipse(tx + face * 2.5 * u, ty, 3.5 * u, 2 * u, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(tx + face * 3.5 * u, ty - 0.6 * u, 0.8 * u, 0, TAU); ctx.fill();
+      eye(tx + face * 3.5 * u, ty - 0.6 * u, 0.8 * u, "#111");
       if (recolor) endShiny(e.shiny, e);
     }
   }

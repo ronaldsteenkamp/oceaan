@@ -59,6 +59,8 @@ De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk l
 
 **Publiceren:** `python publish.py` bouwt en test de oceaan en zet `dist/` op de branch `gh-pages`; GitHub Pages toont die branch. De bouwresultaten staan zo nooit in `main`. De versie is een vingerafdruk van de pagina: alleen bij een echte wijziging krijgen geïnstalleerde apps de melding "nieuwe versie". In `ci/pages.yml` staat een GitHub Action die precies hetzelfde (ook naar `gh-pages`) bij elke push naar `main` vanzelf doet, zodat GitHub Pages altijd de branch `gh-pages` blijft tonen; die werkt zodra hij in `.github/workflows/` staat en het GitHub-token de scope `workflow` heeft (`gh auth refresh -h github.com -s workflow`).
 
+**Schermtests:** `#schermtest-<seed>` met `-logboek`, `-detail`, `-ontdek`, `-menu`, `-welkom` of `-nacht` opent die oceaan in een vaste stand; `#stijlblad` toont alle logboekplaatjes per familie (gewoon, shiny en nog niet gevonden).
+
 **Meten:** open de oceaan met `?meten` achter het adres (`https://ronaldsteenkamp.github.io/oceaan/?meten`). Linksboven staan dan de fps, de tekentijd per frame, het deel trage frames en het kwaliteitsniveau. Tik erop om een kort rapport te kopiëren.
 
 ## Een nieuw dier toevoegen
@@ -66,6 +68,7 @@ De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk l
 1. **`src/00-animals.js`**: voeg een record toe aan het eind van zijn familie, met `nl`, `en`, `family`, `sci`, `life` (`{ water: kans }`) of `visits` (`{ water: kaartjes }` voor een bezoeker), `shiny` (1 op ...), `pal` (shiny-kleuren "#oud>#nieuw ..." voor elke kleur van de tekening) en/of `hue`, `fact` en `note` (`[nl, en]`). Begint de naam met een eigennaam ("Groenlandse haai"), zet dan `capital`; een zeevogel die 's winters wegtrekt krijgt `winterLeaves`. De bovenkant van het bestand legt elk veld uit.
 2. **Tekenen**: schrijf een `function drawX(f)` (of `drawX(x, y, dir, L, ph)` voor een bezoeker) in een bestand bij zijn ronde, bijvoorbeeld `14-wave6.js`, en zet het dier in `FAUNA` (met `kind`, `size`, `draw`, `thumb`) of `FAUNA_VIS`. Een bodemdier (`kind: "floor"` of `"glide"`) krijgt vanzelf zand in zijn logboekplaatje, en een bezoeker in `FAUNA_VIS` vanzelf zijn tekening en grootte. Gebruik hex-kleuren met `sh("#...")`, zodat het water en de shiny ze kunnen omzetten.
 3. **`python build.py`**: de zelftest zegt precies wat er nog mist ("dier x: mist ...").
+4. **Stijl**: volg de stijlgids bovenaan `src/00-animals.js` (vlakken zonder omtrek, `eye()` voor de ogen, licht van boven, een shiny die echt van kleur verandert) en bekijk het dier op het stijlblad (`#stijlblad` achter het adres, of `checks/stijlblad.png` na een build) naast de andere dieren van zijn familie.
 
 Zet een nieuw dier dat ergens leeft of langskomt ook achteraan in `AQ_BASE` (`01-basis.js`): zo houdt het een vaste plek in de aquariumcode en blijven oude aquariumlinks werken. Geef een nieuw dier in `FAUNA` ook `stream: true`, dan gooit het met een eigen dobbelsteen en blijven bestaande oceanen precies hetzelfde (de zelftest controleert beide).
 

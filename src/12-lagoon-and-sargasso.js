@@ -236,6 +236,11 @@
     ctx.lineTo(s * 0.55, s * 0.3); ctx.quadraticCurveTo(s * 0.55, s * 0.4, s * 0.5 - r, s * 0.4); ctx.lineTo(-s * 0.6 + r, s * 0.4);
     ctx.quadraticCurveTo(-s * 0.65, s * 0.4, -s * 0.65, s * 0.3); ctx.lineTo(-s * 0.65, -s * 0.3); ctx.quadraticCurveTo(-s * 0.65, -s * 0.4, -s * 0.6 + r, -s * 0.4);
     ctx.fill();
+    // the light falls from above: a deeper yellow back, a paler belly
+    ctx.save(); ctx.clip();
+    ctx.fillStyle = dark; ctx.globalAlpha = 0.55; ctx.fillRect(-s * 0.7, -s * 0.45, s * 1.3, s * 0.18);
+    ctx.fillStyle = sh("#f8e890"); ctx.globalAlpha = 0.8; ctx.fillRect(-s * 0.7, s * 0.24, s * 1.3, s * 0.2);
+    ctx.restore();
     ctx.fillStyle = "#1a1a1a";
     for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(-s * 0.45 + (i % 4) * s * 0.26, -s * 0.22 + Math.floor(i / 4) * s * 0.22, s * 0.04, 0, TAU); ctx.fill(); }
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s * 0.3, -s * 0.15, s * 0.1, 0, TAU); ctx.fill();

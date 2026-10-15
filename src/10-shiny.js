@@ -102,7 +102,7 @@
     eelmigration: pal("", { body: "#f2c040" }),
     // the sixth wave
     leviathan: pal("#0a141c>#2a0a1a #ffd27a>#7affd8"),
-    lighthouse: pal("#dcffe6>#ffc8f0 #e8f8f0>#ffe0f4 #c85a5a>#5a5ac8"),
+    lighthouse: pal("#dcffe6>#ffb860 #e8f8f0>#f2c040 #c85a5a>#3a5ad8"), // a golden lighthouse with an amber beam
   };
   for (const [key, a] of Object.entries(ANIMALS)) if (a.pal !== undefined) SHINY_PAL[key] = pal(a.pal, a.palRule);
   // Swap one colour for its shiny colour (only "#rrggbb" colours; everything else stays as it is).

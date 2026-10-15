@@ -17,6 +17,24 @@
   //                      capital after "Shiny " ("Shiny Groenlandse haai", but "Shiny clownvis")
   //   winterLeaves       true for seabirds that leave a cold sea in winter (in about half of those oceans)
   //   fact, note         [nl, en] the fact on its logbook page, and the field note of the Biologist reward
+  //
+  // ---- how an animal is drawn: the style guide ----------------------------------------------------------------
+  //  1. Shape: flat shapes without an outline, three to five of them: the body colour, a darker back, a lighter belly,
+  //     and the markings. Stripes and spots are shapes too, not strokes.
+  //  2. Lines only for parts too thin to be a shape (feelers, tentacles, fin rays, whiskers), 1 to 1.5 thick at the
+  //     drawing's own scale, in a dark tint of the body colour, never black.
+  //  3. Eyes: eye(x, y, r) from 01-basis.js, a dark dot of about 7% of the body length with a small catch of light.
+  //     Big white eyes with a pupil only for animals known for big eyes (puffer, vampire squid, the deep-sea fish).
+  //  4. Light comes from above: the back is darker, the belly lighter. No shadow under a swimmer; an animal on the
+  //     floor gets a soft oval shadow (sandShadow).
+  //  5. Seen from the side, head in the direction it swims (rays, starfish and flatfish: a little from above).
+  //  6. Colour: always sh("#..."), so the water and the shiny can change it. The body needs at least 2:1 contrast with
+  //     the mid colour of its own water, or it disappears; bright colours only for one accent (a fin, a spot).
+  //  7. Size in the ocean follows life (krill < fish < shark < whale). The logbook picture frames every animal the same
+  //     way by itself (thumbFit in 06-logbook-pictures.js); a bird on the water gets a strip of sky.
+  //  8. Shiny: a pal entry for every colour of the drawing, with a clearly different hue, not just lighter or darker;
+  //     it must still look different at 92 px. The golden rim of light comes by itself.
+  //  9. Check a new animal on the style sheet (open the page with #stijlblad) next to the others of its family.
   const FAMILIES = [
     ["Vissen", "Fish"],
     ["Haaien en grote vissen", "Sharks and big fish"],
@@ -1143,7 +1161,7 @@
       nl: "Gewone vinvis", en: "Fin whale", family: "Walvissen en dolfijnen", sci: "Balaenoptera physalus",
       visits: { rif: 1, diepzee: 1, noordzee: 2, kelpwoud: 1, ijszee: 2, sargasso: 2 },
       shiny: 225, hue: 210,
-      pal: "#3e4650>#5a4a3a #e8eaea>#f2e6d0",
+      pal: "#3e4650>#2f6a5a #e8eaea>#e0f2e0",
       fact: ["De gewone vinvis is na de blauwe vinvis de grootste walvis, en een van de snelste.",
         "The fin whale is the largest whale after the blue whale, and one of the fastest."],
       note: ["Een gewone vinvis is aan de rechterkant van zijn kop wit en aan de linkerkant donker.",

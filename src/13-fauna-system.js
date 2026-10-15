@@ -115,12 +115,12 @@
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f5fe0"), black = sh("#0e1430");
     ctx.save(); ctx.translate(-38, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.3); fillWith(P(TANG_TAIL), sh("#f2d030")); ctx.restore();
-    for (const fin of [TANG_DORSAL, TANG_ANAL]) { fillWith(P(fin), blue); ctx.strokeStyle = black; ctx.lineWidth = 1.6; ctx.stroke(P(fin)); }
+    // (the fins as shapes, without an outline)
+    for (const fin of [TANG_DORSAL, TANG_ANAL]) fillWith(P(fin), blue);
     fillWith(P(TANG_BODY), blue);
     paintInside(P(TANG_BODY), black, P(TANG_MARK));
     ctx.fillStyle = sh("#f2d030"); ctx.beginPath(); ctx.moveTo(18, 4); ctx.lineTo(6, 0 + Math.sin(f.ph * 5) * 2); ctx.lineTo(6, 10 + Math.sin(f.ph * 5) * 2); ctx.closePath(); ctx.fill();
     eye(36, -6, 3.6, "#101010");
-    ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(37, -7, 1, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // A mandarinfish: a chunky little blue fish with orange squiggles, a big head and fanning fins.

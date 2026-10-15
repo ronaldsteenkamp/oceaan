@@ -204,8 +204,7 @@
         const cy = y - s * 0.95 - g.e * s * 0.25;
         ctx.strokeStyle = sh("#d9543b"); ctx.lineWidth = Math.max(1, s * 0.06);
         ctx.beginPath(); ctx.moveTo(x - s * 0.1, y - s * 0.85); ctx.lineTo(x - s * 0.12, cy); ctx.moveTo(x + s * 0.1, y - s * 0.85); ctx.lineTo(x + s * 0.12, cy); ctx.stroke();
-        ctx.fillStyle = "#111";
-        ctx.beginPath(); ctx.arc(x - s * 0.12, cy, s * 0.06, 0, TAU); ctx.arc(x + s * 0.12, cy, s * 0.06, 0, TAU); ctx.fill();
+        eye(x - s * 0.12, cy, s * 0.06, "#111"); eye(x + s * 0.12, cy, s * 0.06, "#111");
         ctx.fillStyle = sh("#d9543b");
         ctx.beginPath(); ctx.ellipse(x + s * 0.25, y - s * 0.92 - g.e * s * 0.1, s * 0.12 * g.e, s * 0.08 * g.e, 0.5, 0, TAU); ctx.fill();
       }
@@ -403,8 +402,7 @@
       ctx.beginPath(); ctx.ellipse(s * (0.3 + 0.45 * out), -s * 0.55, s * 0.2 * out, s * 0.13 * out, -0.3, 0, TAU); ctx.fill();
       const e1x = s * (0.35 + 0.15 * out), e1y = -s * (0.6 + 0.35 * out), e2x = s * (0.3 + 0.08 * out), e2y = -s * (0.6 + 0.4 * out);
       ctx.beginPath(); ctx.moveTo(s * 0.35, -s * 0.6); ctx.lineTo(e1x, e1y); ctx.moveTo(s * 0.3, -s * 0.6); ctx.lineTo(e2x, e2y); ctx.stroke();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(e1x, e1y, s * 0.05, 0, TAU); ctx.arc(e2x, e2y, s * 0.05, 0, TAU); ctx.fill();
+      eye(e1x, e1y, s * 0.05, "#111"); eye(e2x, e2y, s * 0.05, "#111");
     }
     ctx.fillStyle = sh(h.shell);
     ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.55, s * 0.55, 0, TAU); ctx.fill();
@@ -480,8 +478,7 @@
       for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(s * i * 0.12, ((i * 7) % 3 - 1) * s * 0.05, s * 0.03, 0, TAU); ctx.fill(); }
       ctx.fillStyle = "rgba(255,255,255,0.85)";
       ctx.beginPath(); ctx.arc(-s * 0.25, -s * 0.03, s * 0.075, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.beginPath(); ctx.arc(-s * 0.26, -s * 0.03, s * 0.05, 0, TAU); ctx.fill();
+      eye(-s * 0.26, -s * 0.03, s * 0.05, "#111");
       ctx.restore();
       if (recolor) endShiny(q.shiny, q);
     }
@@ -594,7 +591,7 @@
       ctx.save(); ctx.translate(34, 4); ctx.rotate(-0.4 - Math.sin(t * 9 + p.ph) * 0.45); ctx.fill(P(PENG_FLIPPER)); ctx.restore();
       ctx.fillStyle = sc("#f29a2e"); ctx.fill(P(PENG_BEAK));
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(80, -12, 5.5, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(81.5, -12, 3, 0, TAU); ctx.fill();
+      eye(81.5, -12, 3, "#111");
       ctx.restore();
       if (recolor) endShiny(p.shiny, p);
       if (depthF > 0.05 && Math.random() < 0.05 * k) bubbles.push({ x: p.x - p.dir * s, y, r: (1 + Math.random() * 1.5) * u, ph: Math.random() * TAU });
@@ -626,8 +623,7 @@
     ctx.restore();
     ctx.fillStyle = dark;
     ctx.beginPath(); ctx.ellipse(L * 0.12, L * 0.06, L * 0.08, L * 0.02, 0.5, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(L * 0.3, -L * 0.02, L * 0.012, 0, TAU); ctx.fill();
+    eye(L * 0.3, -L * 0.02, L * 0.012, "#111");
     ctx.strokeStyle = dark; ctx.lineWidth = Math.max(1, L * 0.006);
     ctx.beginPath(); ctx.moveTo(L * 0.36, L * 0.015); ctx.quadraticCurveTo(L * 0.42, L * 0.03, L * 0.49, L * 0.02); ctx.stroke();
     ctx.restore();
@@ -761,7 +757,7 @@
     ctx.restore();
     ctx.fillStyle = sh("#6e767a");
     ctx.save(); ctx.translate(24, 6); ctx.rotate(0.3 + Math.sin(v.ph * 1.5) * 0.2); ctx.fill(P(NAR_FLIPPER)); ctx.restore();
-    ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(33, -2, 1.2, 0, TAU); ctx.fill();
+    eye(33, -2, 1.2, "#111");
     ctx.strokeStyle = sh("#ece4cc"); ctx.lineWidth = 2; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(40, -3); ctx.lineTo(100, -10); ctx.stroke();
     ctx.strokeStyle = sh("#a89e84"); ctx.lineWidth = 0.6;

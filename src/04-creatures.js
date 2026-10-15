@@ -342,10 +342,13 @@
     ctx.beginPath(); ctx.ellipse(x, y - s * 0.42, s * 0.5, s * 0.3, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(255,255,255,0.15)";
     ctx.beginPath(); ctx.ellipse(x - s * 0.1, y - s * 0.52, s * 0.25, s * 0.1, 0, 0, TAU); ctx.fill();
+    // the underside of the shell lies in its own shade
+    ctx.save(); ctx.beginPath(); ctx.ellipse(x, y - s * 0.42, s * 0.5, s * 0.3, 0, 0, TAU); ctx.clip();
+    ctx.fillStyle = "rgba(70,24,12,0.25)"; ctx.fillRect(x - s * 0.5, y - s * 0.3, s, s * 0.2);
+    ctx.restore();
     ctx.strokeStyle = col; ctx.lineWidth = Math.max(1, s * 0.06);
     ctx.beginPath(); ctx.moveTo(x - s * 0.12, y - s * 0.65); ctx.lineTo(x - s * 0.15, y - s * 0.85); ctx.moveTo(x + s * 0.12, y - s * 0.65); ctx.lineTo(x + s * 0.15, y - s * 0.85); ctx.stroke();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(x - s * 0.15, y - s * 0.88, s * 0.06, 0, TAU); ctx.arc(x + s * 0.15, y - s * 0.88, s * 0.06, 0, TAU); ctx.fill();
+    eye(x - s * 0.15, y - s * 0.88, s * 0.06, "#111"); eye(x + s * 0.15, y - s * 0.88, s * 0.06, "#111");
   }
 
   function drawStarfish(f) {
@@ -454,11 +457,11 @@
     ctx.fill();
     ctx.fillStyle = "rgba(255,255,255,0.12)";
     ctx.beginPath(); ctx.ellipse(x - o.dir * s * 0.2, y - s * 1.15, s * 0.15, s * 0.22, -o.dir * 0.35, 0, TAU); ctx.fill();
+    // the eyes sit on two pale bumps; in each the standard eye
     for (const side of [-1, 1]) {
       ctx.fillStyle = "#f4ecd8";
       ctx.beginPath(); ctx.ellipse(x + side * s * 0.2, y - s * 0.6, s * 0.1, s * 0.08, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#111";
-      ctx.fillRect(x + side * s * 0.2 - s * 0.07, y - s * 0.62, s * 0.14, s * 0.035);
+      eye(x + side * s * 0.2, y - s * 0.6, s * 0.055, "#111");
     }
     if (o.holding && o.tipX !== undefined) {
       ctx.fillStyle = sh("#f2c34a", -0.1);
@@ -551,8 +554,7 @@
     ctx.beginPath();
     for (let i = 1; i < 6; i++) { const p = pts[i]; ctx.moveTo((p[0] + 0.1) * s, p[1] * s); ctx.lineTo((p[0] + 0.18) * s, p[1] * s); }
     ctx.stroke();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(0.06 * s, -0.95 * s, 0.035 * s, 0, TAU); ctx.fill();
+    eye(0.06 * s, -0.95 * s, 0.035 * s, "#111");
     ctx.restore();
   }
 
@@ -591,8 +593,7 @@
     ctx.globalAlpha = 1;
     ctx.fillStyle = "#fbfbf6";
     ctx.beginPath(); ctx.arc(r * 0.5, -r * 0.2, r * 0.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(r * 0.55, -r * 0.2, r * 0.1, 0, TAU); ctx.fill();
+    eye(r * 0.55, -r * 0.2, r * 0.1, "#111");
     ctx.strokeStyle = dark; ctx.lineWidth = Math.max(1, r * 0.06);
     ctx.beginPath(); ctx.arc(r * 0.88, r * 0.08, r * 0.08, 0, TAU); ctx.stroke();
     ctx.restore();

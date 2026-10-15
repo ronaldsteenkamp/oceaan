@@ -697,7 +697,6 @@
     ctx.globalAlpha = 1;
     ctx.strokeStyle = band; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(30, 1); ctx.stroke();
     eye(32, -3.4, 2.8, "#1a2024");
-    ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.arc(32.8, -4.2, 0.8, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // A leopard seal: long and slender with a huge reptile-like head, a wide grin of a gape, and dark spots.
@@ -805,7 +804,6 @@
     ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.ellipse(6, -34, 9, 6, -0.4, 0, TAU); ctx.fill();
     ctx.save(); ctx.translate(18, -30); ctx.rotate(flap * 0.4); fillWith(P(DUMBO_EAR), skin); ctx.restore();
     eye(10, -16, 4, "#1a0e0a");
-    ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(11.4, -17.4, 1.1, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // A viperfish: a slim black hunter with needle fangs too big for its mouth, a lure on a long fin ray,

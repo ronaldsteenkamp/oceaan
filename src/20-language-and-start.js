@@ -188,6 +188,9 @@
     for (const k of Object.keys(ANIMALS)) if ((ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k)) errors.push(`aquarium: zet ${k} achteraan in AQ_BASE (01-basis.js)`);
     // animals after the sixth round roll from their own stream, so they never change the oceans that were already there
     for (const k of AQ_BASE.slice(AQ_BASE.indexOf("lighthouse") + 1)) if (FAUNA[k] && !FAUNA[k].stream) errors.push(`dier ${k}: zet stream: true in FAUNA`);
+    // every water stays readable in depth: its bottom at least four times darker (relative luminance) than its top
+    const lum = hex => hexRgb(hex).map(c => c / 255).map(c => c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4).reduce((a, c, i) => a + c * [0.2126, 0.7152, 0.0722][i], 0);
+    for (const w of WATERS) if (lum(w.top) < 4 * lum(w.bottom)) errors.push(`water ${w.name}: de bodemkleur is niet vier keer donkerder dan de bovenkant`);
     if (!WATERS.some(w => w.name === "wadden") || waterOfSeed(WADDEN_SEED, 0) !== WATERS.findIndex(w => w.name === "wadden")) errors.push("wateren: de Waddenzee is niet te kiezen");
     for (let i = 0; i < FIRST_WATERS; i++) if (waterOfSeed(5, (i + 0.5) / FIRST_WATERS) !== i) errors.push("wateren: oude seeds kiezen een ander water");
     for (const ev of EVENTS) {
