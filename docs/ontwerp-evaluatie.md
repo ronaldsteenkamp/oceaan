@@ -193,22 +193,22 @@ Kort genoeg om bovenaan `00-animals.js` of in de skill `oceaan-nieuw-dier` te ze
 
 Omvang: **S** = minder dan een uur, **M** = een middag, **L** = meerdere sessies.
 
-### Fase 1: Snelle winst
+### Fase 1: Snelle winst (uitgevoerd)
 
-| # | Wat | Omvang | Bestanden |
-| --- | --- | --- | --- |
-| 1.1 | Woorden niet meer midden in een woord breken: `overflow-wrap: break-word` met `hyphens: auto` | S | `styles.css` |
-| 1.2 | Tooltip van de laatste knoppen rechts uitlijnen, zodat hij binnen beeld blijft | S | `styles.css` |
-| 1.3 | Statusregel op een glass-pilletje, zodat hij op elk water leesbaar is | S | `styles.css` |
-| 1.4 | Welkomsticonen gelijk aan de toolbar-iconen (duiker, sonar, pijltjes) | S | `body.html` |
-| 1.5 | Contrast op papier naar AA: niet-gevonden kaart, glinstermeter, shiny-tab, gift-ster | S | `styles.css` |
-| 1.6 | Focusrand op papier in potloodblauw | S | `styles.css` |
-| 1.7 | Shinysticker op de polaroidrand in plaats van op de foto | S | `styles.css` |
-| 1.8 | Harde naad van de afgrond horizontaal laten uitvloeien | S | `09-moments-and-diver.js` |
-| 1.9 | Canvas-label algemeen maken (de scène staat al in `#sceneDesc`) | S | `body.html`, `20-language-and-start.js` (EN-tekst) |
-| 1.10 | Losse kleuren in de CSS naar tokens (§3.1), `BOOK_TABS` naar `var(--tab-…)` | M | `styles.css`, `18-notebook.js` |
+| # | Wat | Omvang | Bestanden | Stand |
+| --- | --- | --- | --- | --- |
+| 1.1 | Woorden niet meer midden in een woord breken: `overflow-wrap: break-word` met `hyphens: auto`, plus zachte afbreekstreepjes op de grenzen van samenstellingen (`breakable()`/`nmBreak()`), omdat niet elke browser een Nederlands afbreekwoordenboek heeft | S | `styles.css`, `01-basis.js`, `16-controls.js`, `18-notebook.js`, `19-quests.js` | ✓ "Kokosnoot-octopus", "Bidsprinkhaan-kreeft" |
+| 1.2 | Tooltip van de laatste twee knoppen rechts uitlijnen | S | `styles.css` | ✓ |
+| 1.3 | Statusregel op een glass-pilletje | S | `styles.css` | ✓ |
+| 1.4 | Welkomsticonen gelijk aan de toolbar (duiker, schatkist, pijltjes) | S | `body.html` | ✓ |
+| 1.5 | Contrast op papier naar AA: niet-gevonden kaart (`--ink-faint`, 4,6:1), glinstermeter, gift-ster en shiny-tab (`--shiny-ink`, 4,6:1) | S | `styles.css` | ✓ |
+| 1.6 | Focusrand op papier in potloodblauw | S | `styles.css` | ✓ |
+| 1.7 | Shinysticker op de hoek van de polaroid | S | `styles.css` | ✓ |
+| 1.8 | Afgrond loopt zijwaarts uit, zonder naad (één keer per scène getekend en daarna hergebruikt) | S | `09-moments-and-diver.js` | ✓ |
+| 1.9 | Canvas-label algemeen en tweetalig | S | `body.html`, `20-language-and-start.js` | ✓ |
+| 1.10 | Kleuren in de CSS als tokens in `:root` (papier, inkt, potlood, kaft, shiny, nieuw, tabs); `BOOK_TABS` verwijst naar `--tab-…` | M | `styles.css`, `18-notebook.js` | ✓ (alleen de brons- en zilverkleur van de logboekknop zijn nog los) |
 
-Geen van deze punten verandert een seed, dus `zaden.json` blijft gelijk.
+Zelftest OK en `zaden.json` is ongewijzigd: geen enkele oceaan ziet er anders uit. Na fase 1: [ijszee zonder naad](ontwerp-evaluatie/na-fase1-ijszee.jpg) en [lagune met de statusregel op een pilletje](ontwerp-evaluatie/na-fase1-lagune.jpg). De overige screenshots tonen de stand vóór fase 1.
 
 ### Fase 2: Middellang
 

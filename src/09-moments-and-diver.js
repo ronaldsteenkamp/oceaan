@@ -553,15 +553,31 @@
     ctx.restore();
   }
 
+  let abyssShade = null; // the dark of the abyss, drawn once per scene and screen size
   function drawAbyss(k) {
     const c = scene.canyon;
     if (!c) return;
     const xa = c.side > 0 ? c.x0 : 0, xb = c.side > 0 ? W : c.x0;
-    const g = ctx.createLinearGradient(0, H * 0.45, 0, H);
-    g.addColorStop(0, "rgba(0,4,12,0)");
-    g.addColorStop(1, "rgba(0,4,12,0.8)");
-    ctx.fillStyle = g;
-    ctx.fillRect(xa, H * 0.45, xb - xa, H * 0.55);
+    // darker towards the bottom, and fading out sideways at the cliff edge, so there is no straight seam in the water
+    if (!abyssShade || abyssShade.key !== `${c.x0},${c.side},${W},${H}`) {
+      const feather = Math.min(90 * u, (xb - xa) * 0.5);
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.ceil(xb - xa + feather)); cv.height = Math.max(1, Math.ceil(H * 0.55));
+      const g2 = cv.getContext("2d");
+      const v = g2.createLinearGradient(0, 0, 0, cv.height);
+      v.addColorStop(0, "rgba(0,4,12,0)");
+      v.addColorStop(1, "rgba(0,4,12,0.8)");
+      g2.fillStyle = v; g2.fillRect(0, 0, cv.width, cv.height);
+      // the edge lies at x = feather (cliff on the left of the abyss) or at width - feather (cliff on the right)
+      const edge = c.side > 0 ? feather : cv.width - feather;
+      const h = g2.createLinearGradient(edge - feather, 0, edge + feather, 0);
+      h.addColorStop(0, c.side > 0 ? "rgba(0,0,0,0)" : "#000");
+      h.addColorStop(1, c.side > 0 ? "#000" : "rgba(0,0,0,0)");
+      g2.globalCompositeOperation = "destination-in";
+      g2.fillStyle = h; g2.fillRect(0, 0, cv.width, cv.height);
+      abyssShade = { key: `${c.x0},${c.side},${W},${H}`, cv, x: c.side > 0 ? xa - feather : xa };
+    }
+    ctx.drawImage(abyssShade.cv, abyssShade.x, H * 0.45);
     if (Math.random() < 0.04 * k) abyssGlows.push({ x: xa + Math.random() * (xb - xa), y: H + 10, vy: -(0.2 + Math.random() * 0.3) * u, life: 0, col: Math.random() < 0.5 ? "120,240,255" : "200,140,255", r: (1.5 + Math.random() * 2) * u });
   }
 

@@ -179,7 +179,7 @@
     const el = document.createElement("div");
     el.className = "dc-mini"; el.setAttribute("aria-hidden", "true");
     const img = document.createElement("img"); img.alt = ""; img.src = thumbURL(d.key, true, 2);
-    const name = document.createElement("span"); name.textContent = nm(d.key);
+    const name = document.createElement("span"); name.textContent = nmBreak(d.key);
     el.append(img, name);
     Object.assign(el.style, { left: x + "px", top: y + "px", width: w + "px" });
     document.body.appendChild(el);

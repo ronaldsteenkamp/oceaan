@@ -250,7 +250,7 @@
       <div class="dr-grid">${show.map(k => `<figure${k.startsWith("shiny:") ? ' class="shiny"' : ""}><img alt="" src="${thumbURL(k, true, 2)}"><figcaption></figcaption></figure>`).join("")}</div>
       ${more > 0 ? `<p class="dr-more">${L(`en nog ${more}, in je logboek`, `and ${more} more, in your logbook`)}</p>` : ""}
       <button type="button" class="primary">${L("Verder duiken", "Keep diving")}</button>`;
-    reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nm(show[i]); });
+    reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nmBreak(show[i]); });
     reportEl.hidden = false;
     reportEl.querySelector("button").focus({ preventScroll: true });
     closeReportLater();

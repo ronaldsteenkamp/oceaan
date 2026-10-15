@@ -537,6 +537,22 @@
   if (LANG !== "nl" && LANG !== "en") LANG = "nl";
   const L = (nl, en) => (LANG === "en" ? en : nl);
   const nm = key => (LANG === "en" ? NAMES_EN[key] : NAMES[key]) || NAMES[key] || key;
+  // Long compound names on a small card ("Kokosnootoctopus") get soft hyphens where their parts meet, so they break
+  // as "Kokosnoot-octopus" and not halfway a part; browsers without a Dutch hyphenation dictionary need this.
+  // Only for HTML text: canvas text keeps nm().
+  const BREAK_PARTS = ["octopus", "inktvis", "kreeft", "garnaal", "grondel", "krab", "kwal", "draak", "schildpad", "slang", "slak",
+    "worm", "egel", "ster", "komkommer", "schelp", "vis", "haai", "rog", "eend", "duiker", "walvis", "dolfijn", "zeeleeuw",
+    "uitbarsting", "verduistering", "trek", "zwerm", "schip", "wrak", "beeld", "kenner", "verkenner", "zoeker", "jager",
+    "verzamelaar", "reiziger", "kruiper", "wever", "kijker", "encyclopedie", "vulkaan", "hoos", "beving", "vonken", "licht",
+    "boom", "ringen", "zuilen", "fish", "shark", "whale", "octopus", "eruption", "shrimp", "lobster"];
+  const breakable = text => text.replace(/\S{11,}/g, w => {
+    const lw = w.toLowerCase(), at = new Set();
+    for (const p of BREAK_PARTS) for (let i = lw.indexOf(p, 4); i >= 0; i = lw.indexOf(p, i + 1)) if (w.length - i >= 3) at.add(i);
+    let out = "", last = 0;
+    for (const i of [...at].sort((a, b) => a - b)) if (i - last >= 3) { out += w.slice(last, i) + "­"; last = i; }
+    return out + w.slice(last);
+  });
+  const nmBreak = key => breakable(nm(key));
   const dateText = iso => new Date(iso + "T12:00:00").toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
   let volume = store.get("oceaan-volume", 0.8);
   let dprCap = 2;

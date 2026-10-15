@@ -3,8 +3,9 @@
   // and you leaf through them with the arrows, the arrow keys or a swipe. Tabs jump to a part of the book.
   let bookPages = [], bookGroups = [], bookJumps = {}, bookAt = 0, bookTurning = false, bookFilter = "all";
   const bookSingle = () => panelEl.clientWidth < 760;
-  const BOOK_TABS = [["intro", "Overzicht", "Overview", "#e9dcb5"], ["Dieren", null, null, "#a9cfa6"], ["Momenten", null, null, "#e8bd86"],
-    ["Zeldzaam", null, null, "#cdb0dc"], ["Wateren", null, null, "#9cc6dc"], ["album", "Foto's", "Photos", "#e9aaa6"], ["keep", "Bewaren", "Keep", "#d4ccb6"]];
+  // the last field is the tab's colour: --tab-<name> in styles.css
+  const BOOK_TABS = [["intro", "Overzicht", "Overview", "intro"], ["Dieren", null, null, "animals"], ["Momenten", null, null, "moments"],
+    ["Zeldzaam", null, null, "rare"], ["Wateren", null, null, "waters"], ["album", "Foto's", "Photos", "photos"], ["keep", "Bewaren", "Keep", "keep"]];
   const tabLabel = t => t[1] ? L(t[1], t[2]) : groupName(t[0]);
 
   // every photo sits a little crooked, always the same way for the same animal
@@ -14,7 +15,7 @@
   function bookCard(k, isNew, forceShiny) {
     const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
     const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-    return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nm(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
+    return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nmBreak(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
   }
 
   // The content of the book as a list of blocks; the pages are filled from it by measuring what fits.
@@ -55,7 +56,7 @@
       headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, newPage: true, group: "intro" });
     // the stickers from the milestones, stuck in at a slant; the ones still to earn are dashed outlines
     blocks.push({ html: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${STICKERS.filter(([id]) => rewards.has(id)).length}/${STICKERS.length}</span></h4><div class="nb-stickers">` +
-      STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${L(m.name[0], m.name[1])}</figcaption></figure>`; }).join("") + `</div>`, group: "intro" });
+      STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${breakable(L(m.name[0], m.name[1]))}</figcaption></figure>`; }).join("") + `</div>`, group: "intro" });
 
     // the families, each group starting on a new page; the Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
@@ -134,7 +135,7 @@
 
   function bookSkeleton(single, withNav) {
     return `<div class="nb">
-      ${withNav ? `<nav class="nb-tabs" aria-label="${L("Delen van het logboek", "Parts of the logbook")}">` + BOOK_TABS.map(t => `<button type="button" class="nb-tab" data-jump="${t[0]}" style="--tab:${t[3]}">${tabLabel(t)}</button>`).join("") + `</nav>` : ""}
+      ${withNav ? `<nav class="nb-tabs" aria-label="${L("Delen van het logboek", "Parts of the logbook")}">` + BOOK_TABS.map(t => `<button type="button" class="nb-tab" data-jump="${t[0]}" style="--tab:var(--tab-${t[3]})">${tabLabel(t)}</button>`).join("") + `</nav>` : ""}
       <div class="nb-spread${single ? " single" : ""}">
         <section class="nb-page nb-left"></section>${single ? "" : `<section class="nb-page nb-right"></section>`}
         <div class="nb-spine" aria-hidden="true"></div>
