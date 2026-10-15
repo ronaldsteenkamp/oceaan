@@ -240,11 +240,12 @@
   resize();
   // read the address before newVariant writes the seed into it
   const startHash = location.hash;
-  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom))?$/.exec(startHash);
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail))?$/.exec(startHash);
   if (screenTest) {
     welcomeEl.hidden = screenTest[2] !== "welkom";
     newVariant(Number(screenTest[1]), false);
     if (screenTest[2] === "logboek") bookBtn.click();
+    if (screenTest[2] === "detail") { bookBtn.click(); openDetail("octopus"); }
     if (screenTest[2] === "menu") menuBtn.click();
   } else {
     const initial = seedFromHash();
