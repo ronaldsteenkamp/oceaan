@@ -57,7 +57,7 @@
   canvas.addEventListener("pointercancel", () => { pointer.active = false; down = null; feeding = false; clearTimeout(feedTimer); });
   canvas.addEventListener("contextmenu", e => e.preventDefault());
 
-  document.getElementById("welcomeGo").addEventListener("click", () => { welcomeEl.hidden = true; store.set("oceaan-welkom", true); startBeckonTimer(); });
+  document.getElementById("welcomeGo").addEventListener("click", () => { welcomeEl.hidden = true; store.set("oceaan-welkom", true); startBeckonTimer(); introTip(); });
   if (!store.get("oceaan-welkom", false)) welcomeEl.hidden = false;
 
   // Arrow keys steer the diver (and call it in); Enter opens whatever the diver touches.
@@ -306,7 +306,7 @@
   const LOCK_KEY = "oceaan-gewisseld", FREE_KEY = "oceaan-wissels", FREE_OCEANS = 5, DIVED_KEY = "oceaan-gedoken";
   const nextTimeEl = document.getElementById("nextTime"), nextBtn = document.getElementById("next");
   function lockLeft() {
-    if (store.get(FREE_KEY, 0) < FREE_OCEANS) return 0;
+    if (introLeft() || store.get(FREE_KEY, 0) < FREE_OCEANS) return 0;
     return Math.max(0, store.get(LOCK_KEY, 0) + lockSeconds() * 1000 - Date.now());
   }
   function countSwitch() {
@@ -338,6 +338,14 @@
         `A new ocean is possible in ${clockText(left)}. The more you find, the shorter the wait: now every ${durationText(lockSeconds())}.`));
       buzz(15);
       return;
+    }
+    // the first three dives come first; after the last one the ocean is a surprise again
+    if (introLeft()) { countSwitch(); showDiveReport(); startIntro(true); updateLockBadge(); return; }
+    if (aquarium && aquarium.intro) {
+      // the first dives took the place of the free oceans: from here on the wait for a new ocean starts
+      aquarium = null;
+      store.set(FREE_KEY, FREE_OCEANS);
+      setTimeout(() => toast(L("De eerste duiken zijn klaar. Vanaf nu is elke oceaan een verrassing!", "The first dives are done. From now on every ocean is a surprise!"), "important"), 900);
     }
     if (choose) {
       if (rewards.has("gw")) { openWaterPick(); return; }

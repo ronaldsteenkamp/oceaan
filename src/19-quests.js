@@ -250,3 +250,25 @@
     reportEl.querySelector("button").focus({ preventScroll: true });
   }
   function closeDiveReport() { if (reportEl) reportEl.hidden = true; }
+
+  // ---- the first three dives ---------------------------------------------------------------
+  // A new player starts with three small, hand-picked oceans that build up: a calm lagoon with a few things to find,
+  // a reef with a bottle and its treasure map, and the North Sea with something rare for the sonar. They are aquariums
+  // that count for the logbook, in daylight and without big moments. Players who already have finds skip them.
+  // called once at the start: a brand-new player (nothing in the logbook) gets the first dives
+  function initIntro() { if (store.get(INTRO_KEY, null) === null) store.set(INTRO_KEY, logbook.size ? INTRO.length : 0); }
+  function startIntro(soft) {
+    const i = introDone(), d = INTRO[i];
+    store.set(INTRO_KEY, i + 1);
+    aquarium = { water: WATERS.findIndex(w => w.name === d.water), set: new Set(d.set), shiny: false, intro: i + 1 };
+    newVariant(d.seed, soft);
+    scene.dayOffset = 0.95 - ((t / 160) % 1); // start in broad daylight
+    updateClock();
+    introTip();
+  }
+  function introTip() {
+    if (!aquarium || !aquarium.intro || !welcomeEl.hidden || selfTesting) return;
+    INTRO[aquarium.intro - 1].tips.forEach((tip, j) => setTimeout(() => toast(L(tip[0], tip[1]), "important"), 1200 + j * 400));
+  }
+  // what the status line says after the water: an aquarium, or which first dive this is
+  const oceanTag = () => !aquarium ? "" : aquarium.intro ? " · " + L(`eerste duik ${aquarium.intro} van ${INTRO.length}`, `first dive ${aquarium.intro} of ${INTRO.length}`) : " · aquarium";

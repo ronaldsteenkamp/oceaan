@@ -487,8 +487,8 @@
     buildScene();
     if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
     personalOcean = false;
-    seedEl.textContent = seed + (aquarium ? " · aquarium" : "");
-    biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
+    seedEl.textContent = seed + oceanTag();
+    biomeEl.textContent = nm("w:" + water.name) + oceanTag();
     rareEl.hidden = !scene.rare;
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}

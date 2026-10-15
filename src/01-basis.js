@@ -511,6 +511,19 @@
     get(key, fallback) { try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; } },
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} },
   };
+  // The first three dives of a new player (see 19-quests.js); here, because the new-ocean lock needs them early.
+  const INTRO_KEY = "oceaan-intro";
+  const INTRO = [
+    { water: "lagune", seed: 101, set: ["starfish", "turtle", "chest"],
+      tips: [["Eerste duik (1 van 3): roep de duiker met D of de duikerknop.", "First dive (1 of 3): call the diver with D or the diver button."],
+        ["Houd zijn lamp even stil op een dier. Als het ringetje vol is, staat het in je logboek. Zwem daarna naar de schatkist.", "Hold its lamp still on an animal for a moment. When the ring is full, it is in your logbook. Then swim to the treasure chest."]] },
+    { water: "rif", seed: 102, set: ["coral", "anemone", "crab", "parrotfish", "puffer", "bottle"],
+      tips: [["Tweede duik (2 van 3): tik op de fles. Er zit een schatkaart in, en op het kruisje graaf je een schat op.", "Second dive (2 of 3): tap the bottle. There is a treasure map inside, and you dig up treasure at the cross."]] },
+    { water: "noordzee", seed: 103, set: ["wreck", "anchor", "crab", "starfish", "lobster", "flatfish", "cod", "puffin", "ghost"],
+      tips: [["Derde duik (3 van 3): hier is iets zeldzaams. Druk met de duiker op de sonar (Q) en volg de gouden echo.", "Third dive (3 of 3): something rare is here. Use the sonar (Q) with the diver and follow the golden echo."]] },
+  ];
+  const introDone = () => store.get(INTRO_KEY, INTRO.length);
+  const introLeft = () => introDone() < INTRO.length;
   let restMode = store.get("oceaan-rust", false);
   // What was found since the logbook was last opened; it shows at the top of the logbook.
   let fresh = new Set(store.get("oceaan-nieuw", []));
@@ -531,7 +544,7 @@
   // The director keeps the big moments apart: one at a time, with quiet in between.
   let busyUntil = 0;
   function claim(seconds) {
-    if (restMode || t < busyUntil) return false;
+    if (restMode || (aquarium && aquarium.intro) || t < busyUntil) return false;
     busyUntil = t + seconds + 12;
     return true;
   }

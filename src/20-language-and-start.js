@@ -37,7 +37,7 @@
     photoView.setAttribute("aria-label", L("Foto", "Photo"));
     if (scene) {
       rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
-      biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
+      biomeEl.textContent = nm("w:" + water.name) + oceanTag();
       updateClock(); describeScene();
     }
   }
@@ -56,8 +56,10 @@
     const errors = [], t0 = performance.now(), types = [...VIS_KEYS, "mermaid"];
     rebuilding = true; // a test run never touches the logbook
     selfTesting = true;
+    aquarium = null; // a fresh browser starts in the first dives; the test oceans are ordinary ones
     checkRegistry(errors);
     checkSameOcean(errors);
+    checkIntro(errors);
     let prints = {};
     try { prints = seedPrints(); } catch (e) { errors.push("zaden: " + e.message); }
     // sound is on during the test (silent), so a broken sound shows up as an error
@@ -194,6 +196,24 @@
     for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }
   }
 
+  // The first dives: each has the water and the things it promises, and the third one has its rare thing for the sonar.
+  function checkIntro(errors) {
+    try {
+      INTRO.forEach((d, i) => {
+        const wi = WATERS.findIndex(w => w.name === d.water);
+        if (wi < 0) { errors.push(`eerste duik ${i + 1}: onbekend water ${d.water}`); return; }
+        for (const k of d.set) if (!AQ_ALL.includes(k) && !RARE_KEYS.includes(k)) errors.push(`eerste duik ${i + 1}: onbekend ding ${k}`);
+        aquarium = { water: wi, set: new Set(d.set), shiny: false, intro: i + 1 };
+        newVariant(d.seed, false);
+        const life = presentLife(scene), here = new Set([...Object.keys(life).filter(k => life[k]), ...scene.ground.map(g => g.kind), ...scene.rares, ...water.visitors]);
+        const missing = d.set.filter(k => !here.has(k));
+        if (missing.length) errors.push(`eerste duik ${i + 1}: mist ${missing.join(", ")}`);
+        if (claim(5)) errors.push(`eerste duik ${i + 1}: grote momenten zijn niet uit`);
+      });
+    } catch (e) { errors.push("eerste duiken: " + e.message); }
+    aquarium = null;
+  }
+
   // The same seed must be the same ocean on a computer, a phone and a phone on its side.
   function checkSameOcean(errors) {
     const keep = { W, H, u, rng, scene, water, seed };
@@ -278,8 +298,9 @@
     if (screenTest[2] === "menu") menuBtn.click();
   } else {
     const initial = seedFromHash();
-    personalOcean = initial === null;
-    newVariant(initial !== null ? initial : randomSeed(), false);
+    initIntro();
+    if (initial === null && introLeft()) startIntro(false);
+    else { personalOcean = initial === null; newVariant(initial !== null ? initial : randomSeed(), false); }
   }
   // the self-test runs straight away, so a headless browser can read the result as soon as the page has loaded
   const selfTestRun = /^#zelftest(?:-(\d+))?$/.exec(startHash);
