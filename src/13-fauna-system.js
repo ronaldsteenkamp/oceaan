@@ -35,7 +35,7 @@
     ctx.quadraticCurveTo(L * 0.05, L * 0.08, L * 0.46, L * 0.02); ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = Math.max(0.7, L * 0.005);
     for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(L * (0.3 - i * 0.025), -L * 0.035); ctx.lineTo(L * (0.29 - i * 0.025), L * 0.02); ctx.stroke(); }
-    ctx.fillStyle = "#0b0f12"; ctx.beginPath(); ctx.arc(L * 0.4, -L * 0.025, L * 0.013, 0, TAU); ctx.fill();
+    eye(L * 0.4, -L * 0.025, L * 0.013, "#0b0f12");
   }
 
   // A wavy body for snakes, from the head at +0.5 to the tail at -0.5.
@@ -78,7 +78,7 @@
     ctx.fillStyle = "rgba(240,220,160,0.7)"; ctx.beginPath(); ctx.ellipse(8, 8, 6, 3, 0.5 + Math.sin(f.ph * 4) * 0.3, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#f2b820"); ctx.beginPath(); ctx.ellipse(48, 4, 3.4, 2.6, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "#f2e8c8"; ctx.beginPath(); ctx.arc(22, -13, 4.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(22.6, -13, 3, 0, TAU); ctx.fill();
+    eye(22.6, -13, 3, "#101010");
     ctx.restore();
   }
   // A moon wrasse: a slender green torpedo with pink markings and a yellow crescent tail.
@@ -101,7 +101,7 @@
     for (const a of [-0.5, 0.1, 0.6]) { ctx.beginPath(); ctx.moveTo(38, 0); ctx.lineTo(38 + Math.cos(a + Math.PI) * 14, Math.sin(a + Math.PI) * 14); ctx.stroke(); }
     ctx.restore();
     ctx.fillStyle = "rgba(240,180,210,0.75)"; ctx.beginPath(); ctx.ellipse(22, 5, 6, 2.6, 0.5 + Math.sin(f.ph * 5) * 0.3, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(38, -3, 2.6, 0, TAU); ctx.fill();
+    eye(38, -3, 2.6, "#101010");
     ctx.restore();
   }
   // A blue tang: a tall royal-blue oval with a black "palette" mark and a yellow tail.
@@ -119,7 +119,7 @@
     fillWith(P(TANG_BODY), blue);
     paintInside(P(TANG_BODY), black, P(TANG_MARK));
     ctx.fillStyle = sh("#f2d030"); ctx.beginPath(); ctx.moveTo(18, 4); ctx.lineTo(6, 0 + Math.sin(f.ph * 5) * 2); ctx.lineTo(6, 10 + Math.sin(f.ph * 5) * 2); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(36, -6, 3.6, 0, TAU); ctx.fill();
+    eye(36, -6, 3.6, "#101010");
     ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(37, -7, 1, 0, TAU); ctx.fill();
     ctx.restore();
   }
@@ -134,9 +134,10 @@
     const s = f.s, fan = Math.sin(f.ph * 4);
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
     const blue = sh("#2f6fe0"), orange = sh("#f08a30");
-    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(MAND_TAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_TAIL)); ctx.restore();
-    ctx.save(); ctx.translate(4, -21); ctx.scale(1, 0.8 + 0.2 * Math.sin(f.ph * 1.5)); ctx.translate(-4, 21); fillWith(P(MAND_SAIL), orange); ctx.strokeStyle = blue; ctx.lineWidth = 2; ctx.stroke(P(MAND_SAIL)); ctx.restore();
-    for (const fin of [MAND_DORSAL, MAND_ANAL]) { fillWith(P(fin), blue); ctx.strokeStyle = orange; ctx.lineWidth = 1.4; ctx.stroke(P(fin)); }
+    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(MAND_TAIL), orange); ctx.restore();
+    ctx.save(); ctx.translate(4, -21); ctx.scale(1, 0.8 + 0.2 * Math.sin(f.ph * 1.5)); ctx.translate(-4, 21); fillWith(P(MAND_SAIL), orange); ctx.restore();
+    // (no outlines round the fins: shapes, not contours, as everywhere else)
+    for (const fin of [MAND_DORSAL, MAND_ANAL]) fillWith(P(fin), blue);
     fillWith(P(MAND_BODY), blue);
     ctx.save(); ctx.clip(P(MAND_BODY));
     ctx.strokeStyle = orange; ctx.lineWidth = 3; ctx.lineCap = "round";
@@ -146,7 +147,7 @@
     ctx.restore();
     ctx.save(); ctx.translate(10, 4); ctx.rotate(0.3 + fan * 0.35); ctx.fillStyle = "rgba(240,150,60,0.8)"; ctx.fill(P(MAND_FAN)); ctx.restore();
     ctx.fillStyle = sh("#f2c030"); ctx.beginPath(); ctx.arc(28, -8, 6.5, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(29, -8, 3.6, 0, TAU); ctx.fill();
+    eye(29, -8, 3.6, "#101010");
     ctx.restore();
   }
   function drawNeedle(f) {
@@ -157,7 +158,7 @@
     ctx.beginPath(); ctx.ellipse(0, 0, s * 0.52, s * 0.055, 0, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.moveTo(s * 0.48, -s * 0.015); ctx.lineTo(s * 0.88, 0); ctx.lineTo(s * 0.48, s * 0.02); ctx.fill();
     ctx.fillStyle = sh("#3a8a7a"); ctx.fillRect(-s * 0.45, -s * 0.05, s * 0.9, s * 0.025);
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.44, -s * 0.01, s * 0.02, 0, TAU); ctx.fill();
+    eye(s * 0.44, -s * 0.01, s * 0.02, "#101010");
     ctx.restore();
   }
 
@@ -189,7 +190,7 @@
     for (let i = 1; i < pts.length - 1; i += 2) { const [x, y] = pts[i], [x2, y2] = pts[i + 1]; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (x2 - x) * 0.45, y + (y2 - y) * 0.45); ctx.stroke(); }
     ctx.fillStyle = sh("#6a9ad8"); ctx.beginPath(); ctx.ellipse(s * 0.52, pts[0][1], s * 0.05, s * 0.035, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#f2c830"); ctx.beginPath(); ctx.ellipse(s * 0.56, pts[0][1] + s * 0.005, s * 0.025, s * 0.02, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.53, pts[0][1] - s * 0.012, s * 0.009, 0, TAU); ctx.fill();
+    eye(s * 0.53, pts[0][1] - s * 0.012, s * 0.009, "#101010");
     ctx.restore();
   }
 
@@ -303,7 +304,7 @@
     ctx.fillStyle = mottle; for (let i = 0; i < 10; i++) { ctx.beginPath(); ctx.arc(s * (0.3 - i * 0.08), -s * (0.12 + (i % 3) * 0.06), s * 0.035, 0, TAU); ctx.fill(); }
     ctx.fillStyle = pale; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(s * (0.25 - i * 0.12), -s * 0.06, s * 0.02, 0, TAU); ctx.fill(); }
     ctx.fillStyle = "#f2d070"; ctx.beginPath(); ctx.arc(s * 0.3, -s * 0.24, s * 0.04, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.31, -s * 0.24, s * 0.02, 0, TAU); ctx.fill();
+    eye(s * 0.31, -s * 0.24, s * 0.02, "#101010");
     ctx.restore();
   }
 
@@ -352,7 +353,7 @@
     // the eyes bulge up out of the top of the head
     ctx.fillStyle = main; ctx.beginPath(); ctx.arc(33, -12, 5, 0, TAU); ctx.fill();
     ctx.fillStyle = "#f6f0d8"; ctx.beginPath(); ctx.arc(33.5, -12.5, 3.8, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34.3, -12.5, 2.3, 0, TAU); ctx.fill();
+    eye(34.3, -12.5, 2.3, "#101010");
   }
   function drawGoby(f) {
     const s = f.s;
@@ -444,7 +445,7 @@
     fillWith(P(ALB_BILL), sh("#f0b0a0"));
     ctx.fillStyle = sh("#d88a78"); ctx.beginPath(); ctx.arc(77, -34.5, 2.2, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(90,90,100,0.45)"; ctx.beginPath(); ctx.ellipse(48, -41, 5, 2.4, -0.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(49, -40.5, 1.8, 0, TAU); ctx.fill();
+    eye(49, -40.5, 1.8, "#101010");
     // a pink foot paddles under the water
     ctx.save(); ctx.translate(-6, 4); ctx.rotate(Math.sin(f.ph * 2) * 0.5); fillUnder(P("M -3 0 L 3 0 L 6 12 L -6 12 Z"), sh("#f0b8a0")); ctx.restore();
     underVeil(P(ALB_BODY));
@@ -471,7 +472,7 @@
     fillWith(P(PEL_POUCH), sh("#f2c878")); fillWith(P(PEL_BILL), sh("#e89838"));
     ctx.restore();
     ctx.fillStyle = sh("#f2d8a8"); ctx.beginPath(); ctx.arc(37, -53, 3, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(37.5, -53, 1.5, 0, TAU); ctx.fill();
+    eye(37.5, -53, 1.5, "#101010");
     ctx.restore();
     underVeil(P(PEL_BODY));
     ripple(-44, 34, f.ph);
@@ -500,7 +501,7 @@
     ctx.strokeStyle = sh("#efe2c8"); ctx.lineWidth = 0.9;
     for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(68, -3 + i * 2); ctx.lineTo(75, -6 + i * 3.2); ctx.stroke(); }
     // small eye high on the head
-    ctx.fillStyle = "#1a1210"; ctx.beginPath(); ctx.arc(49, -14, 1.8, 0, TAU); ctx.fill();
+    eye(49, -14, 1.8, "#1a1210");
     underVeil(P(WALRUS_BODY));
     ripple(30, 70, f.ph);
     ctx.restore();
@@ -605,7 +606,7 @@
     for (let i = 0; i < 9; i++) { const sx = 20 - i * 5.5; ctx.beginPath(); ctx.moveTo(sx, -9); ctx.lineTo(sx - 1, 5); ctx.stroke(); }
     ctx.restore();
     ctx.save(); ctx.translate(18, 4); ctx.rotate(Math.sin(ph * 1.5) * 0.12); ctx.fillStyle = back; ctx.fill(P(MARLIN_PEC)); ctx.restore();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(28, -2, 1.3, 0, TAU); ctx.fill();
+    eye(28, -2, 1.3, "#101010");
     ctx.restore();
   }
   // A small school of tuna, swimming as one.
@@ -629,7 +630,7 @@
       ctx.beginPath(); ctx.moveTo(-l * 0.02, l * 0.1); ctx.quadraticCurveTo(-l * 0.1, l * 0.24, -l * 0.18, l * 0.26); ctx.quadraticCurveTo(-l * 0.12, l * 0.14, -l * 0.12, l * 0.07); ctx.fill();
       for (let j = 0; j < 5; j++) { const fx = -l * (0.2 + j * 0.045); ctx.beginPath(); ctx.moveTo(fx, -l * 0.07 + j * l * 0.01); ctx.lineTo(fx - l * 0.02, -l * 0.1 + j * l * 0.012); ctx.lineTo(fx - l * 0.03, -l * 0.06 + j * l * 0.01); ctx.fill(); ctx.beginPath(); ctx.moveTo(fx, l * 0.06 - j * l * 0.01); ctx.lineTo(fx - l * 0.02, l * 0.09 - j * l * 0.012); ctx.lineTo(fx - l * 0.03, l * 0.05 - j * l * 0.01); ctx.fill(); }
       ctx.fillStyle = back; ctx.beginPath(); ctx.ellipse(l * 0.16, l * 0.03, l * 0.07, l * 0.02, 0.4 + Math.sin(ph * 3 + i) * 0.2, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.34, -l * 0.02, l * 0.02, 0, TAU); ctx.fill();
+      eye(l * 0.34, -l * 0.02, l * 0.02, "#101010");
       ctx.restore();
     }
   }
@@ -646,7 +647,7 @@
     ctx.beginPath(); ctx.moveTo(L * 0.05, -L * 0.05); ctx.lineTo(0, -L * 0.1); ctx.lineTo(-L * 0.04, -L * 0.05); ctx.fill();
     ctx.beginPath(); ctx.moveTo(-L * 0.22, -L * 0.045); ctx.lineTo(-L * 0.26, -L * 0.09); ctx.lineTo(-L * 0.3, -L * 0.04); ctx.fill();
     for (let i = 0; i < 9; i++) { const bx = L * (0.25 - i * 0.065); ctx.beginPath(); ctx.moveTo(bx, -L * 0.05); ctx.lineTo(bx - L * 0.02, -L * 0.01); ctx.lineTo(bx - L * 0.01, -L * 0.05); ctx.fill(); }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.38, -L * 0.01, L * 0.012, 0, TAU); ctx.fill();
+    eye(L * 0.38, -L * 0.01, L * 0.012, "#101010");
     ctx.restore();
   }
   // The coelacanth: a living fossil, steel-blue with white blotches, with fleshy lobed fins that move like legs.
@@ -672,7 +673,7 @@
     lobes.forEach((l, i) => lobe(l, i, fin));
     // big pale eye and a heavy jaw line
     ctx.fillStyle = sh("#c8d8a0"); ctx.beginPath(); ctx.arc(34, -4, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34.6, -4, 2.2, 0, TAU); ctx.fill();
+    eye(34.6, -4, 2.2, "#101010");
     ctx.strokeStyle = "rgba(0,0,0,0.45)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(46, 4); ctx.quadraticCurveTo(38, 8, 28, 6); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(26, -10); ctx.quadraticCurveTo(22, 0, 26, 10); ctx.stroke();
     ctx.restore();
@@ -701,7 +702,7 @@
     ctx.strokeStyle = "rgba(0,0,0,0.18)"; ctx.lineWidth = Math.max(0.6, L * 0.002);
     for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(L * 0.45, L * (0.025 + i * 0.005)); ctx.lineTo(L * 0.2, L * (0.04 + i * 0.006)); ctx.stroke(); }
     ctx.fillStyle = top; ctx.save(); ctx.translate(L * 0.3, L * 0.04); ctx.rotate(0.6 + Math.sin(ph * 1.5) * 0.1); ctx.beginPath(); ctx.ellipse(0, L * 0.03, L * 0.012, L * 0.045, 0, 0, TAU); ctx.fill(); ctx.restore();
-    ctx.fillStyle = "#0e1418"; ctx.beginPath(); ctx.arc(L * 0.4, L * 0.01, L * 0.006, 0, TAU); ctx.fill();
+    eye(L * 0.4, L * 0.01, L * 0.006, "#0e1418");
     ctx.restore();
   }
   const drawBlueWhale = (x, y, dir, L, ph) => {
@@ -726,7 +727,7 @@
     ctx.beginPath(); ctx.moveTo(L * 0.05, -L * 0.09); ctx.quadraticCurveTo(L * 0.0, -L * 0.22, -L * 0.1, -L * 0.25); ctx.quadraticCurveTo(-L * 0.06, -L * 0.15, -L * 0.1, -L * 0.07); ctx.fill();
     ctx.save(); ctx.translate(L * 0.22, L * 0.06); ctx.rotate(0.7 + Math.sin(ph * 1.5) * 0.2); ctx.beginPath(); ctx.ellipse(0, L * 0.05, L * 0.025, L * 0.07, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.beginPath(); ctx.ellipse(L * 0.1, L * 0.06, L * 0.2, L * 0.02, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(L * 0.36, -L * 0.03, L * 0.012, 0, TAU); ctx.fill();
+    eye(L * 0.36, -L * 0.03, L * 0.012, "#050505");
     ctx.restore();
   }
   const PILOT_BODY = "M 46 2 C 48 -8 42 -14 32 -14 C 22 -14 14 -12 4 -11 C -14 -9 -32 -5 -46 0 C -34 4 -16 8 6 10 C 24 11 38 10 44 7 C 46 6 46 4 46 2 Z";
@@ -743,7 +744,7 @@
     ctx.fillStyle = "rgba(200,205,210,0.22)"; ctx.beginPath(); ctx.ellipse(-12, -8, 10, 3, -0.1, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.ellipse(28, 8, 8, 2, 0, 0, TAU); ctx.fill();
     ctx.save(); ctx.translate(26, 6); ctx.rotate(0.3 + Math.sin(ph * 1.5) * 0.15); fillWith(P(PILOT_FLIP), black); ctx.restore();
-    ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(36, -3, 1.2, 0, TAU); ctx.fill();
+    eye(36, -3, 1.2, "#050505");
     ctx.restore();
   }
   const FALSE_BODY = "M 50 0 C 50 -5 44 -9 34 -10 C 16 -11 -10 -9 -30 -5 C -40 -3 -46 -1 -48 0 C -40 3 -26 5 -6 7 C 16 8 36 7 46 4 C 49 3 50 2 50 0 Z";
@@ -757,7 +758,7 @@
     fillWith(P(FALSE_BODY), black);
     ctx.fillStyle = "rgba(200,205,210,0.18)"; ctx.beginPath(); ctx.ellipse(30, 6, 9, 1.8, 0, 0, TAU); ctx.fill();
     ctx.save(); ctx.translate(28, 5); ctx.rotate(0.3 + Math.sin(ph * 1.5) * 0.15); fillWith(P(FALSE_FLIP), black); ctx.restore();
-    ctx.fillStyle = "#050505"; ctx.beginPath(); ctx.arc(40, -2, 1.1, 0, TAU); ctx.fill();
+    eye(40, -2, 1.1, "#050505");
     ctx.restore();
   }
   function drawPilotGroup(x, y, dir, L, ph) {

@@ -221,7 +221,7 @@
   function checkSameOcean(errors) {
     const keep = { W, H, u, rng, scene, water, seed };
     const look = (w, h, sd) => {
-      W = w; H = h; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd); buildScene();
+      W = w; H = h; u = uFor(W, H); seed = sd; rng = mulberry32(sd); buildScene();
       const life = presentLife(scene);
       return [water.name, scene.season, scene.rare, scene.ground.map(g => g.kind).sort().join(","),
         Object.keys(life).filter(k => life[k]).sort().join(","), scene.shinies.map(e => e.key).sort().join(",")].join(" | ");
@@ -244,7 +244,7 @@
     const r2 = v => Math.round(v * 100) / 100;
     try {
       for (const sd of [...Array.from({ length: 30 }, (_, i) => i + 1), ...[1, 2, 3, 4, 5].map(i => WADDEN_SEED + i)]) {
-        W = 1440; H = 900; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd); buildScene();
+        W = 1440; H = 900; u = uFor(W, H); seed = sd; rng = mulberry32(sd); buildScene();
         const life = presentLife(scene), S = scene;
         out[sd] = {
           water: water.name, season: S.season, rare: S.rare || "",
@@ -286,7 +286,7 @@
     try {
       selfTesting = false;
       for (let sd = 1; sd <= 12; sd++) {
-        W = 1440; H = 900; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd);
+        W = 1440; H = 900; u = uFor(W, H); seed = sd; rng = mulberry32(sd);
         buildLimited(true);
         const here = newHere(), first = here.join(",");
         if (here.length > NEW_LIMIT) errors.push(`nieuwe dieren: oceaan ${sd} heeft er ${here.length} (${first})`);

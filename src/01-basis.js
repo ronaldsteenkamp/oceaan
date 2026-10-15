@@ -593,6 +593,11 @@
 
   // fill a part, then lay a second colour over the region inside a clip shape (white fin tips, a pale belly)
   function fillWith(path, col) { ctx.fillStyle = col; ctx.fill(path); }
+  // The standard eye of the style guide: a dark dot with a small catch of light towards the top, where the light comes from.
+  function eye(x, y, r, col = "#101418") {
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath(); ctx.arc(x - r * 0.3, y - r * 0.36, r * 0.34, 0, TAU); ctx.fill();
+  }
   function paintInside(path, col, region) { ctx.save(); ctx.clip(path); ctx.fillStyle = col; ctx.fill(region); ctx.restore(); }
   // a soft shadow on the sand under something that hovers
   function sandShadow(f, w) { if (!f.lift) return; ctx.fillStyle = "rgba(0,0,0,0.13)"; ctx.beginPath(); ctx.ellipse(f.x, f.cy + f.lift, w, w * 0.18, 0, 0, TAU); ctx.fill(); }

@@ -671,7 +671,7 @@
     ctx.restore();
     ctx.fillStyle = fin;
     ctx.save(); ctx.translate(18, 5); ctx.rotate(Math.sin(v.ph * 1.5) * 0.12); ctx.fill(P(SWORD_PEC)); ctx.restore();
-    ctx.fillStyle = "#0c1220"; ctx.beginPath(); ctx.arc(23, -2.4, 1.5, 0, TAU); ctx.fill();
+    eye(23, -2.4, 1.5, "#0c1220");
     ctx.restore();
   }
 
@@ -731,7 +731,7 @@
     ctx.fillStyle = "rgba(255,255,255,0.16)";
     for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(47 - (i % 4) * 3.2, -4 + Math.floor(i / 4) * 2.2, 0.7, 0, TAU); ctx.fill(); }
     ctx.restore();
-    ctx.fillStyle = "#0b0e12"; ctx.beginPath(); ctx.arc(33, 2.5, 0.8, 0, TAU); ctx.fill();
+    eye(33, 2.5, 0.8, "#0b0e12");
     // the near flipper: very long and pale, its front edge bumpy
     ctx.save(); ctx.translate(20, 6); ctx.rotate(0.05 + sweep * 0.18);
     ctx.fillStyle = fin; ctx.fill(P(HUMP_FLIPPER));

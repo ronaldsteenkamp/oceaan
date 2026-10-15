@@ -281,6 +281,8 @@
     const density = Math.max(0.45, Math.min(1.2, (W * H) / (1280 * 800)));
     const P = water.props, Lf = water.life;
     const s = { sand: { frac: range(0.08, 0.13), o1: range(0, TAU), o2: range(0, TAU) } };
+    // upright, the floor rises, so the seabed is not a thin strip at the bottom
+    if (tallScreen()) s.sand.frac = Math.min(0.24, s.sand.frac * 1.7);
     scene = s;
     s.waterIndex = aquarium ? aquarium.water : wi;
     s.floorL = 0; s.floorR = W; s.canyon = null;
@@ -366,7 +368,7 @@
       const sp = {
         main: colors[i % colors.length][0], dark: colors[i % colors.length][1],
         size, speed: range(1.0, 1.7) - size * 0.025,
-        bandC: range(0.2, 0.55), bandH: range(0.1, 0.2),
+        bandC: spread(range(0.2, 0.55)), bandH: range(0.1, 0.2) * (tallScreen() ? 1.3 : 1),
         count: Math.round(Math.max(8, Math.min(60, (58 - size * 3.4) * density))),
         fish: [],
       };
@@ -385,7 +387,7 @@
     }
     s.species.sort((a, b) => a.size - b.size);
     if (chance(Lf.lantern)) {
-      const sp = { main: "#1c2633", dark: "#0b1119", size: 5, speed: 1.4, bandC: range(0.3, 0.6), bandH: 0.15, count: Math.round(8 + 28 * density), fish: [], lantern: true };
+      const sp = { main: "#1c2633", dark: "#0b1119", size: 5, speed: 1.4, bandC: spread(range(0.3, 0.6)), bandH: 0.15, count: Math.round(8 + 28 * density), fish: [], lantern: true };
       sub("lanterns", () => {
       const cx = rng() * W, cy = H * sp.bandC;
       for (let k = 0; k < sp.count; k++) {
@@ -614,6 +616,14 @@
     return null;
   }
 
+  // The size unit: the short side of the window over 700. A phone held upright counts its width over 560, so the
+  // animals are a little bigger there and fill the narrow screen better.
+  const uFor = (w, h) => Math.max(0.6, Math.min(w, h) / (h > w * 1.25 ? 560 : 700));
+  // On a tall screen there is much more open water above the floor than on a computer: what swims at a height set as
+  // a part of the screen is spread over more of it, so the middle is not empty. Only the layout changes, never a die.
+  const tallScreen = () => H > W * 1.25;
+  const spread = f => tallScreen() ? Math.min(0.72, 0.1 + (f - 0.15) * 1.5) : f;
+
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     W = innerWidth; H = innerHeight;
@@ -621,7 +631,7 @@
     canvas.height = Math.floor(H * dpr);
     // everything is sized by the window, with no upper limit: zooming the browser out (a bigger window in CSS pixels)
     // makes everything bigger in step, so you always see the same ocean, as at 100%. Small phones keep a lower limit.
-    u = Math.max(0.6, Math.min(W, H) / 700);
+    u = uFor(W, H);
     // the same ocean rebuilt at a new size is not a new encounter
     if (seed !== undefined) { rng = mulberry32(seed); rebuilding = true; buildScene(); rebuilding = false; }
   }

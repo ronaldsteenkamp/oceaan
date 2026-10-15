@@ -208,7 +208,7 @@
     ctx.fillStyle = sh("#f2eee0"); ctx.fill(P(PARROT_BEAK));
     ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(48, 1.5); ctx.lineTo(57, 1.5); ctx.stroke();
     ctx.fillStyle = "#fff8e0"; ctx.beginPath(); ctx.arc(36, -7, 4.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(36.6, -7, 2.8, 0, TAU); ctx.fill();
+    eye(36.6, -7, 2.8, "#101010");
     ctx.restore();
   }
 
@@ -239,7 +239,7 @@
     ctx.fillStyle = "#1a1a1a";
     for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(-s * 0.45 + (i % 4) * s * 0.26, -s * 0.22 + Math.floor(i / 4) * s * 0.22, s * 0.04, 0, TAU); ctx.fill(); }
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s * 0.3, -s * 0.15, s * 0.1, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.33, -s * 0.15, s * 0.05, 0, TAU); ctx.fill();
+    eye(s * 0.33, -s * 0.15, s * 0.05, "#101010");
     ctx.fillStyle = sh("#e8a030"); ctx.beginPath(); ctx.ellipse(s * 0.58, s * 0.08, s * 0.06, s * 0.05, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(240,220,120,0.6)";
     ctx.beginPath(); ctx.ellipse(s * 0.05, s * 0.18, s * 0.06, s * 0.14 * (0.6 + 0.4 * Math.sin(b.ph * 2)), 0.4, 0, TAU); ctx.fill();
@@ -286,7 +286,7 @@
     ctx.restore();
     ctx.strokeStyle = sh("#f0a070"); ctx.lineWidth = 0.5 * u;
     ctx.beginPath(); ctx.moveTo(3 * u, -1.5 * u); ctx.quadraticCurveTo(8 * u, -7 * u, 13 * u, -5 * u); ctx.moveTo(3 * u, -1.5 * u); ctx.quadraticCurveTo(7 * u, -8 * u, 11 * u, -8.5 * u); ctx.stroke();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(2.6 * u, -1.6 * u, 0.6 * u, 0, TAU); ctx.fill();
+    eye(2.6 * u, -1.6 * u, 0.6 * u, "#101010");
     ctx.restore();
     if (p.snap > 0.5) { ctx.fillStyle = `rgba(255,255,255,${p.snap})`; ctx.beginPath(); ctx.arc(sx + 15 * u, -4.5 * u, 4 * u * p.snap, 0, TAU); ctx.fill(); }
     ctx.restore();
@@ -321,7 +321,7 @@
     ctx.fillStyle = sh("#e8d070"); ctx.beginPath(); ctx.arc(s * 0.53, -s * 0.46 + Math.sin(f.ph * 2) * s * 0.03, s * 0.05, 0, TAU); ctx.fill();
     ctx.fillStyle = "#1a1408"; ctx.beginPath(); ctx.ellipse(s * 0.38, s * 0.05, s * 0.06, s * (0.03 + f.gulp * 0.12), 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "#f0e8a0"; ctx.beginPath(); ctx.arc(s * 0.22, -s * 0.12, s * 0.06, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(s * 0.23, -s * 0.12, s * 0.03, 0, TAU); ctx.fill();
+    eye(s * 0.23, -s * 0.12, s * 0.03, "#101010");
     ctx.restore();
   }
 
@@ -351,7 +351,7 @@
     ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(0, -s * 0.55, s * 0.28, s * 0.24, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = joint;
     for (const [px, py] of [[-0.1, -0.6], [0.12, -0.5], [0, -0.7], [-0.15, -0.45]]) { ctx.beginPath(); ctx.arc(px * s, py * s, s * 0.035, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(c.dir * s * 0.12, -s * 0.76, s * 0.03, 0, TAU); ctx.fill();
+    eye(c.dir * s * 0.12, -s * 0.76, s * 0.03, "#101010");
     ctx.restore();
   }
 
@@ -433,7 +433,7 @@
       const x = L * (0.4 - (i % 10) * 0.08), y = -L * 0.09 + Math.floor(i / 10) * L * 0.035 + ((i * 7) % 3) * L * 0.004;
       if (Math.abs(y) < L * 0.1 * (1 - Math.abs(x) / (L * 0.55))) { ctx.beginPath(); ctx.arc(x, y, L * 0.007, 0, TAU); ctx.fill(); }
     }
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.42, -L * 0.03, L * 0.008, 0, TAU); ctx.fill();
+    eye(L * 0.42, -L * 0.03, L * 0.008, "#101010");
     ctx.restore();
   }
 
@@ -460,7 +460,7 @@
     ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(28, -8.6, 1.6, 1, -0.5, 0, TAU); ctx.fill();
     ctx.fillStyle = skin;
     ctx.save(); ctx.translate(18, 4); ctx.rotate(0.3 + beat * 0.45); ctx.fill(P(SL_FLIPPER)); ctx.restore();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(34, -4.5, 1.6, 0, TAU); ctx.fill();
+    eye(34, -4.5, 1.6, "#101010");
     ctx.beginPath(); ctx.arc(45.5, -1.6, 0.9, 0, TAU); ctx.fill();
     ctx.strokeStyle = sh("#d8c8a8"); ctx.lineWidth = 0.4;
     for (const dy of [-1, 0.5, 2]) { ctx.beginPath(); ctx.moveTo(43, dy); ctx.lineTo(50, dy * 2.4); ctx.stroke(); }
@@ -496,7 +496,7 @@
       ctx.beginPath(); ctx.arc(x, top + (bot - top) * fy, L * 0.01, 0, TAU); ctx.fill();
     }
     ctx.restore();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(L * 0.24, -L * 0.03, L * 0.01, 0, TAU); ctx.fill();
+    eye(L * 0.24, -L * 0.03, L * 0.01, "#101010");
     ctx.restore();
   }
 

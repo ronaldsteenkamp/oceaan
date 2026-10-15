@@ -668,7 +668,7 @@
     const size = VISITOR_SIZE[type]();
     const v = {
       type, dir, size, ph: 0, yOff: 0,
-      y: H * (type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
+      y: H * spread(type === "humpback" ? rnd(0.3, 0.45) : rnd(0.22, 0.5)),
       speed: VISITOR_SPEED[type] * u,
     };
     if (type === "dolphins") {
@@ -760,7 +760,7 @@
     ctx.fillStyle = skin; ctx.fill(P(TURTLE_HEAD));
     ctx.fillStyle = skinDark;
     for (const [hx, hy, r] of [[58, -6, 2.2], [64, -8, 1.8], [52, -4, 1.8], [68, -3, 1.6], [46, 0, 1.6]]) { ctx.beginPath(); ctx.arc(hx, hy, r, 0, TAU); ctx.fill(); }
-    ctx.fillStyle = "#1c1a14"; ctx.beginPath(); ctx.arc(67, -5.5, 2, 0, TAU); ctx.fill();
+    eye(67, -5.5, 2, "#1c1a14");
     ctx.strokeStyle = line; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(77, -0.5); ctx.quadraticCurveTo(72, 1.5, 68, 1); ctx.stroke();
     ctx.fillStyle = sh("#d8c890"); ctx.fill(P(TURTLE_PLASTRON));
     ctx.fillStyle = shell; ctx.fill(P(TURTLE_SHELL));

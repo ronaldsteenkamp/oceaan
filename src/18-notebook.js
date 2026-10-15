@@ -154,11 +154,21 @@
     </div>`;
   }
 
+  // The pages are measured, so they wait until the book is laid out (right after opening, the panel can still be
+  // without a size) and are measured again once the handwriting font has loaded.
+  let bookWaits = 0, bookFontWait = false;
+  const bookStillOpen = () => !panelEl.hidden && panelTab === "log" && !detailOpen;
   function renderBook() {
     panelEl.classList.add("book");
     const single = bookSingle();
     panelBody.innerHTML = bookSkeleton(single, true);
     const meter = panelBody.querySelector(".nb-meter");
+    if (meter.clientHeight < 120 && bookWaits < 20) { bookWaits++; requestAnimationFrame(() => { if (bookStillOpen()) renderBook(); }); return; }
+    bookWaits = 0;
+    if (!bookFontWait && document.fonts && document.fonts.status !== "loaded") {
+      bookFontWait = true;
+      document.fonts.ready.then(() => { if (bookStillOpen()) renderBook(); });
+    }
     const { pages, groups, jumps } = paginate(bookBlocks(), meter);
     bookPages = pages; bookGroups = groups; bookJumps = jumps;
     // choosing a filter leafs straight to the first page with animals

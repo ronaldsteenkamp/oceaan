@@ -300,7 +300,8 @@
   #panelTitle:focus { outline: none; }
 
   @media (max-width: 600px) {
-    .status { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    /* on a phone the name of the water sits at the top, where the water is empty, not over the seabed */
+    .status { top: calc(14px + env(safe-area-inset-top, 0px)); bottom: auto; }
     .toolbar { left: 50%; right: auto; transform: translateX(-50%); }
     #toast { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
     #panel {

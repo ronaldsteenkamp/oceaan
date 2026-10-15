@@ -112,7 +112,7 @@
       `kwaliteit: ${lightDetail ? "minder detail" : "vol detail"}, water ${water.name}, seed ${seed}`;
   }
 
-  let selfTesting = false;
+  let selfTesting = false, rawFrameMs = 16;
   const brushLeaks = new Set();
 
   // ---- frame -------------------------------------------------------------
@@ -120,6 +120,7 @@
     // the next frame is booked first, so one unexpected error can never freeze the ocean
     if (!once) requestAnimationFrame(frame);
     const dtMs = Math.min(50, now - last);
+    rawFrameMs = Math.min(250, Math.max(0, now - last));
     last = now;
     if (paused || discoverPause || document.hidden) return;
     // whatever goes wrong while drawing, the next frame starts with a clean brush (otherwise one error can wash out the screen)
@@ -272,7 +273,8 @@
       ctx.fillStyle = water.bottom;
       ctx.fillRect(0, 0, W, H);
       ctx.globalAlpha = 1;
-      fade = Math.max(0, fade - 0.025 * k);
+      // half a second of real time, also on a slow phone where the first frames take long
+      fade = Math.max(0, fade - rawFrameMs / 500);
     }
     flushDiscoveries();
     flushMinis();

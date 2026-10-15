@@ -130,7 +130,7 @@
     ctx.fillStyle = sh("#f08a30"); ctx.beginPath(); ctx.ellipse(37, -3, 4.4, 2.6, -0.3, 0, TAU); ctx.fill();
     ctx.fillStyle = black; ctx.beginPath(); ctx.arc(49.5, 1, 1.5, 0, TAU); ctx.fill();
     ctx.fillStyle = "#f4f0e2"; ctx.beginPath(); ctx.arc(22, -7, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(22.6, -7, 2.3, 0, TAU); ctx.fill();
+    eye(22.6, -7, 2.3, "#101010");
     ctx.restore();
   }
 
@@ -158,7 +158,7 @@
     ctx.restore();
     ctx.save(); ctx.translate(12, 4); ctx.rotate(0.5 + Math.sin(f.ph * 4) * 0.3); ctx.fillStyle = dark; ctx.beginPath(); ctx.ellipse(-5, 0, 7, 3, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.fillStyle = light; ctx.beginPath(); ctx.arc(28, -7, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(28, -7, 2.5, 0, TAU); ctx.fill();
+    eye(28, -7, 2.5, "#101010");
     ctx.restore();
   }
 
@@ -204,7 +204,7 @@
     ctx.stroke(P("M 32 -8 L 38 -6 L 38 -11 M 38 -6 L 44 -4 L 50 -7 L 46 -12 L 38 -11 M 44 -4 L 43 2 M 50 -7 L 54 -4 M 36 -1 L 38 -6 M 36 -1 L 43 2 L 50 1"));
     ctx.restore();
     fillWith(P(HAWK_BEAK), sh("#3a2a1a"));
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(47, -8.5, 1.6, 0, TAU); ctx.fill();
+    eye(47, -8.5, 1.6, "#101010");
     fillWith(P(HAWK_PLASTRON), sh("#e8d8a0"));
     fillWith(P(HAWK_SHELL), shell);
     ctx.save(); ctx.clip(P(HAWK_SHELL));
@@ -262,7 +262,7 @@
     fillWith(P(DUG_SNOUT), pale);
     ctx.fillStyle = dark; for (const [x, y] of [[46, 4], [48, 7], [44, 8], [50, 4]]) { ctx.beginPath(); ctx.arc(x, y, 0.8, 0, TAU); ctx.fill(); }
     ctx.save(); ctx.translate(24, 8); ctx.rotate(0.3 + sw * 0.3); fillWith(P(DUG_FLIP), dark); ctx.restore();
-    ctx.fillStyle = "#141210"; ctx.beginPath(); ctx.arc(36, -5, 1.3, 0, TAU); ctx.fill();
+    eye(36, -5, 1.3, "#141210");
     ctx.restore();
   }
 
@@ -331,7 +331,7 @@
       paintInside(P(PUF_BODY), white, P("M 20 -22 C 30 -20 40 -10 40 0 L 40 10 L 4 10 C 12 0 16 -10 20 -22 Z"));
       fillWith(P(PUF_FACE), white);
       puffinBill(45, -31, 0, fish, f.ph);
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(39.5, -32, 1.8, 0, TAU); ctx.fill();
+      eye(39.5, -32, 1.8, "#101010");
       ctx.strokeStyle = sh("#e05040"); ctx.lineWidth = 0.9; ctx.beginPath(); ctx.arc(39.5, -32, 2.6, 0, TAU); ctx.stroke();
       underVeil(P(PUF_BODY));
       ripple(-34, 30, f.ph);
@@ -344,7 +344,7 @@
       ctx.fillStyle = black; ctx.beginPath(); ctx.arc(36, -3, 11, 0, TAU); ctx.fill();
       ctx.fillStyle = white; ctx.beginPath(); ctx.ellipse(38, -3, 7, 6, 0, 0, TAU); ctx.fill();
       puffinBill(46, -3, 0, fish, f.ph);
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(39, -4, 1.6, 0, TAU); ctx.fill();
+      eye(39, -4, 1.6, "#101010");
       ctx.save(); ctx.translate(8, -5); ctx.rotate(-0.3 + Math.sin(f.ph * 9) * 0.7); ctx.fillStyle = black; ctx.beginPath(); ctx.ellipse(-12, 0, 16, 4.5, 0, 0, TAU); ctx.fill(); ctx.restore();
       if (Math.random() < 0.06) bubbles.push({ x: f.x, y: f.cy - s * 0.1, r: (1 + Math.random()) * u, ph: Math.random() * TAU });
     }
@@ -365,7 +365,7 @@
     ctx.fillStyle = sh("#a8b4c4"); ctx.beginPath(); ctx.moveTo(6, -2); ctx.lineTo(24, 1); ctx.lineTo(6, 3); ctx.fill();
     ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(2, -1); ctx.lineTo(8, 0.5); ctx.stroke();
     ctx.fillStyle = sh("#c8e0f0"); ctx.beginPath(); ctx.arc(2, -1.5, 1.8, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(2.2, -1.5, 1, 0, TAU); ctx.fill();
+    eye(2.2, -1.5, 1, "#101010");
     ctx.restore();
   }
   function drawGannet(f) {
@@ -455,7 +455,7 @@
     paintInside(P(POR_BODY), belly, P("M 60 2 C 30 0 0 2 -40 3 L -40 20 L 60 20 Z"));
     ctx.save(); ctx.translate(28, 6); ctx.rotate(0.3 + Math.sin(f.ph * 2) * 0.15); fillWith(P(POR_FLIP), back); ctx.restore();
     ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(50, 3); ctx.quadraticCurveTo(46, 5, 42, 4); ctx.stroke();
-    ctx.fillStyle = "#0c0e10"; ctx.beginPath(); ctx.arc(40, -1, 1.5, 0, TAU); ctx.fill();
+    eye(40, -1, 1.5, "#0c0e10");
     ctx.restore();
   }
   function shyPorpoise(f, F, k) {
@@ -537,7 +537,7 @@
     ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(32, -9); ctx.quadraticCurveTo(28, 0, 32, 9); ctx.stroke();
     ctx.strokeStyle = fin; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(44, 7); ctx.quadraticCurveTo(45, 11, 43 + Math.sin(f.ph * 2), 14); ctx.stroke();
     ctx.fillStyle = sh("#d8c890"); ctx.beginPath(); ctx.arc(40, -4, 3.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(40.6, -4, 1.9, 0, TAU); ctx.fill();
+    eye(40.6, -4, 1.9, "#101010");
     ctx.restore();
   }
 
@@ -562,7 +562,7 @@
     for (const [x, y, d] of [[49, -7, 1], [46, -6.5, 1], [48, -4 + gape, -1], [45, -3.8 + gape, -1]]) { ctx.beginPath(); ctx.moveTo(x - 1.2, y); ctx.lineTo(x + 0.6, y + d * 3.4); ctx.lineTo(x + 1.6, y); ctx.fill(); }
     ctx.save(); ctx.translate(26, -4); ctx.rotate(0.6 + Math.sin(f.ph) * 0.1); ctx.fillStyle = fin; ctx.beginPath(); ctx.ellipse(-6, 0, 9, 4, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.fillStyle = sh("#c8c0a0"); ctx.beginPath(); ctx.arc(39, -14, 3.4, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(39.6, -14, 2, 0, TAU); ctx.fill();
+    eye(39.6, -14, 2, "#101010");
     ctx.restore();
   }
 
@@ -581,7 +581,7 @@
       ctx.beginPath(); ctx.moveTo(l * 0.02, -l * 0.1); ctx.lineTo(-l * 0.06, -l * 0.2); ctx.lineTo(-l * 0.1, -l * 0.09); ctx.fill();
       const flash = Math.sin(ph * 2 + p * 3);
       if (flash > 0.75) { ctx.fillStyle = `rgba(255,255,255,${((flash - 0.75) * 2.6).toFixed(2)})`; ctx.beginPath(); ctx.ellipse(0, l * 0.02, l * 0.3, l * 0.05, 0, 0, TAU); ctx.fill(); }
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(l * 0.34, -l * 0.01, l * 0.028, 0, TAU); ctx.fill();
+      eye(l * 0.34, -l * 0.01, l * 0.028, "#101010");
       ctx.restore();
     }
   }
@@ -696,7 +696,7 @@
     ctx.save(); ctx.translate(22, 2); ctx.rotate(0.3 + Math.sin(f.ph * 2.5) * 0.25); ctx.globalAlpha = 0.55; fillWith(P(ICE_PEC), body); ctx.restore();
     ctx.globalAlpha = 1;
     ctx.strokeStyle = band; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(30, 1); ctx.stroke();
-    ctx.fillStyle = "#1a2024"; ctx.beginPath(); ctx.arc(32, -3.4, 2.8, 0, TAU); ctx.fill();
+    eye(32, -3.4, 2.8, "#1a2024");
     ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.arc(32.8, -4.2, 0.8, 0, TAU); ctx.fill();
     ctx.restore();
   }
@@ -717,7 +717,7 @@
     for (const [x, y, r] of [[20, -4, 1.6], [8, -6, 2], [-4, -3, 1.6], [-16, -4, 1.8], [-28, -2, 1.4], [14, 4, 1.4], [0, 5, 1.6], [-12, 4, 1.4], [28, 3, 1.2], [-36, 1, 1.2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
     ctx.restore();
     ctx.strokeStyle = spot; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(50, 0); ctx.quadraticCurveTo(44, 4, 34, 0); ctx.stroke();
-    ctx.fillStyle = "#101214"; ctx.beginPath(); ctx.arc(39, -6.5, 1.8, 0, TAU); ctx.fill();
+    eye(39, -6.5, 1.8, "#101214");
     ctx.beginPath(); ctx.arc(49, -3, 0.8, 0, TAU); ctx.fill();
     ctx.save(); ctx.translate(20, 6); ctx.rotate(0.2 - sw * 0.25); fillWith(P(LEO_FLIP), back); ctx.restore();
     ctx.restore();
@@ -787,7 +787,7 @@
     if (cloak < 0.7) {
       ctx.fillStyle = sca("#58d8ff", 0.25); ctx.beginPath(); ctx.arc(2, -5, 9, 0, TAU); ctx.fill();
       ctx.fillStyle = sc("#58d8ff"); ctx.beginPath(); ctx.arc(2, -5, 5, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#06121a"; ctx.beginPath(); ctx.arc(2.6, -5, 2.6, 0, TAU); ctx.fill();
+      eye(2.6, -5, 2.6, "#06121a");
     }
     ctx.restore();
   }
@@ -804,7 +804,7 @@
     fillWith(P(DUMBO_HEAD), skin);
     ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.ellipse(6, -34, 9, 6, -0.4, 0, TAU); ctx.fill();
     ctx.save(); ctx.translate(18, -30); ctx.rotate(flap * 0.4); fillWith(P(DUMBO_EAR), skin); ctx.restore();
-    ctx.fillStyle = "#1a0e0a"; ctx.beginPath(); ctx.arc(10, -16, 4, 0, TAU); ctx.fill();
+    eye(10, -16, 4, "#1a0e0a");
     ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(11.4, -17.4, 1.1, 0, TAU); ctx.fill();
     ctx.restore();
   }
@@ -829,7 +829,7 @@
     ctx.fillStyle = sca("#6ad8ff", 0.9);
     for (let i = 0; i < 10; i++) { ctx.beginPath(); ctx.arc(26 - i * 7, 6 - i * 0.45, 1.1, 0, TAU); ctx.fill(); }
     ctx.fillStyle = sh("#9aa8b0"); ctx.beginPath(); ctx.arc(30, -5, 3.6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#050607"; ctx.beginPath(); ctx.arc(30.6, -5, 2.4, 0, TAU); ctx.fill();
+    eye(30.6, -5, 2.4, "#050607");
     ctx.restore();
   }
   // A pelican eel (gulper): a huge loose mouth that opens like a bag, a tiny eye, and a whip of a tail
@@ -900,7 +900,7 @@
     ctx.save(); ctx.translate(-44, 4); ctx.rotate(0.2 - stroke * 0.2); fillWith(P(LEATH_HIND), sh("#161c24")); ctx.restore();
     fillWith(P(LEATH_HEAD), skin);
     ctx.fillStyle = sh("#e8a0a0"); ctx.beginPath(); ctx.ellipse(36, -9.5, 2.4, 1.2, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#06080a"; ctx.beginPath(); ctx.arc(40, -6, 1.5, 0, TAU); ctx.fill();
+    eye(40, -6, 1.5, "#06080a");
     fillWith(P(LEATH_BODY), skin);
     ctx.save(); ctx.clip(P(LEATH_BODY));
     ctx.strokeStyle = ridge; ctx.lineWidth = 1.3;
@@ -923,7 +923,7 @@
     fillUnder(P(BEAR_BODY), fur);
     ctx.save(); ctx.translate(26, 18); ctx.rotate(-0.8 + sw * 0.4); fillUnder(P(BEAR_LEG), fur); ctx.restore();
     ctx.save(); ctx.translate(-38, 20); ctx.rotate(1.3 + sw * 0.3); fillUnder(P(BEAR_LEG), fur); ctx.restore();
-    ctx.fillStyle = "#141414"; ctx.beginPath(); ctx.arc(52, -14.5, 1.9, 0, TAU); ctx.fill();
+    eye(52, -14.5, 1.9, "#141414");
     ctx.beginPath(); ctx.ellipse(71.5, -8, 3, 2.4, 0.3, 0, TAU); ctx.fill();
     ctx.restore();
   }
@@ -995,7 +995,7 @@
     ctx.save(); ctx.translate(-38, 20); ctx.rotate(1.1 - kick * 0.5); ctx.fillStyle = fur; ctx.fill(P(BEAR_LEG)); ctx.restore();
     ctx.save(); ctx.translate(26, 14); ctx.rotate(-1.9 + p * 0.3); ctx.fillStyle = fur; ctx.fill(P(BEAR_LEG)); ctx.restore();
     ctx.fillStyle = shade; ctx.beginPath(); ctx.arc(39.5, -22.5, 2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#141414"; ctx.beginPath(); ctx.arc(52, -14.5, 1.9, 0, TAU); ctx.fill();
+    eye(52, -14.5, 1.9, "#141414");
     ctx.beginPath(); ctx.ellipse(71.5, -8, 3, 2.4, 0.3, 0, TAU); ctx.fill();
     ctx.restore();
     // water streams off its fur
