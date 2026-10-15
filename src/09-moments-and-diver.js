@@ -482,7 +482,8 @@
         const g = corals[Math.floor(Math.random() * corals.length)], p = g.parts[Math.floor(Math.random() * g.parts.length)];
         coralSpawn.push({ x: g.x + p.dx + (Math.random() - 0.5) * 20 * u, y: sandY(g.x + p.dx) - 15 * u, vy: -(0.3 + Math.random() * 0.4) * u, r: (1.2 + Math.random() * 1.5) * u, ph: Math.random() * TAU });
       }
-      if (!scene.coralLogged && coralSpawn.some(p => lit(p.x, p.y, 10 * u))) { scene.coralLogged = true; seen("coralspawn"); }
+      const cp = !scene.coralLogged && coralSpawn.find(p => lit(p.x, p.y, 10 * u));
+      if (cp && hold("coralspawn", [cp.x, cp.y])) { scene.coralLogged = true; seen("coralspawn", [cp.x, cp.y]); }
     }
     ctx.fillStyle = "rgba(255,170,200,0.85)";
     coralSpawn = coralSpawn.filter(p => {

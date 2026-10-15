@@ -136,7 +136,7 @@
   #discover .dc-frame { position: fixed; background: var(--polaroid); border-radius: 4px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); overflow: hidden; transform-origin: center; will-change: transform, opacity; }
   #discover img { position: absolute; left: 4%; top: 4%; width: 92%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; will-change: opacity, transform; }
   #diveReport { position: fixed; z-index: 35; left: 50%; top: calc(20px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); width: min(440px, calc(100% - 32px));
-    padding: 16px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); color: var(--text); animation: reportIn 0.35s ease-out; }
+    padding: 16px; border-radius: var(--r-lg); cursor: pointer; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); color: var(--text); animation: reportIn 0.35s ease-out; }
   /* its own entrance, so it stays centred while it comes in */
   @keyframes reportIn { from { transform: translate(-50%, -16px); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
   #diveReport .dr-title { margin: 0; font-family: var(--hand); font-size: 28px; font-weight: 600; line-height: 1.1; color: var(--paper); }
@@ -149,7 +149,6 @@
   #diveReport figure img { display: block; width: 100%; height: auto; aspect-ratio: 120 / 84; border-radius: 1px; margin-bottom: 3px; }
   #diveReport figure.shiny { box-shadow: 0 0 0 2px var(--gold), 0 3px 8px rgba(0, 0, 0, 0.35); }
   #diveReport .dr-more { margin: var(--sp-3) 0 0; font-size: var(--fs-sm); color: var(--text-dim); }
-  #diveReport button { margin-top: 12px; width: 100%; }
   @media (prefers-reduced-motion: reduce) { #diveReport { animation: none; } }
   .dc-mini { position: fixed; z-index: 39; pointer-events: none; padding: 5px 5px 0; background: var(--polaroid); border-radius: 3px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45); transform-origin: center; will-change: transform, opacity; }
   .dc-mini img { display: block; width: 100%; height: auto; aspect-ratio: 120 / 84; border-radius: 2px; }

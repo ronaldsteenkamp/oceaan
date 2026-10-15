@@ -236,9 +236,10 @@
     if (!finds.length) return;
     if (!reportEl) {
       reportEl = document.createElement("div");
-      reportEl.id = "diveReport"; reportEl.setAttribute("role", "dialog");
+      // it closes by itself; a tap on the card closes it sooner
+      reportEl.id = "diveReport"; reportEl.setAttribute("role", "status");
       document.body.appendChild(reportEl);
-      reportEl.addEventListener("click", e => { if (e.target.closest("button")) closeDiveReport(); });
+      reportEl.addEventListener("click", closeDiveReport);
       addEventListener("keydown", e => { if (e.key === "Escape" && reportEl && !reportEl.hidden) closeDiveReport(); });
       reportEl.addEventListener("pointerenter", () => clearTimeout(reportTimer));
       reportEl.addEventListener("pointerleave", () => { if (!reportEl.hidden) closeReportLater(); });
@@ -246,13 +247,11 @@
     reportEl.setAttribute("aria-label", L("Duikverslag", "Dive report"));
     const show = finds.slice(0, 8), more = finds.length - show.length;
     reportEl.innerHTML = `<p class="dr-title">${L("Duikverslag", "Dive report")}</p>
-      <p class="dr-sum">${finds.length === 1 ? L("Deze duik: 1 nieuwe vondst", "This dive: 1 new find") : L(`Deze duik: ${finds.length} nieuwe vondsten`, `This dive: ${finds.length} new finds`)}</p>
+      <p class="dr-sum">${finds.length === 1 ? L("Deze duik: 1 nieuwe vondst", "This dive: 1 new find") : L(`Deze duik: ${finds.length} nieuwe vondsten`, `This dive: ${finds.length} new finds`)}${aquarium && aquarium.intro ? "" : ` · ${L("deze oceaan", "this ocean")} ${Math.min(FIND_CAP, capCount())}/${FIND_CAP}`}</p>
       <div class="dr-grid">${show.map(k => `<figure${k.startsWith("shiny:") ? ' class="shiny"' : ""}><img alt="" src="${thumbURL(k, true, 2)}"><figcaption></figcaption></figure>`).join("")}</div>
-      ${more > 0 ? `<p class="dr-more">${L(`en nog ${more}, in je logboek`, `and ${more} more, in your logbook`)}</p>` : ""}
-      <button type="button" class="primary">${L("Verder duiken", "Keep diving")}</button>`;
+      ${more > 0 ? `<p class="dr-more">${L(`en nog ${more}, in je logboek`, `and ${more} more, in your logbook`)}</p>` : ""}`;
     reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nmBreak(show[i]); });
     reportEl.hidden = false;
-    reportEl.querySelector("button").focus({ preventScroll: true });
     closeReportLater();
   }
   function closeDiveReport() {

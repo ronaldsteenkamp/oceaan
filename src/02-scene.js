@@ -52,7 +52,8 @@
   // Something new for the logbook needs a moment in the lamp: a ring fills up in about a second (half a second in calm
   // mode), and it is forgiving: when the lamp slips off, the ring only slowly runs back. What is already in the logbook,
   // and the water itself, count at once.
-  const holdNeed = key => selfTesting || key.startsWith("w:") || logbook.has(key) || !LOGGABLE.has(key) ? 0 : restMode ? 0.5 : 1;
+  // no ring for what is known already, or for something new once this ocean has given its four finds
+  const holdNeed = key => selfTesting || key.startsWith("w:") || logbook.has(key) || !LOGGABLE.has(key) || capFull(key) ? 0 : restMode ? 0.5 : 1;
   function checkWatch() {
     if ((!diverMode && !subLamp()) || !scene.watch.length) return;
     const dt = Math.min(0.1, frameK / 60);
@@ -67,9 +68,29 @@
       return false;
     });
   }
+  // The same ring for things that turn up on their own (visitors, moments, legends, shinies): call hold() every frame
+  // that the thing is in the lamp; it says true once the ring is full. Many members of one moment (a school of glass
+  // eels) share one ring, which fills once per frame.
+  function hold(key, at) {
+    const need = holdNeed(key);
+    if (!need) return true;
+    if (!scene.holds) scene.holds = {};
+    const h = scene.holds[key] || (scene.holds[key] = { hold: 0 });
+    if (h.frame !== frameNo) { h.frame = frameNo; h.hold += Math.min(0.1, frameK / 60); }
+    h.at = at; h.need = need;
+    if (h.hold < need) return false;
+    delete scene.holds[key];
+    return true;
+  }
+  const spot = (key, x, y, r) => lit(x, y, r) && hold(key, [x, y]);
   // the rings of the finds that are filling up in the lamp
   function drawHoldRings() {
-    for (const w of scene.watch || []) {
+    const held = Object.entries(scene.holds || {}).map(([key, h]) => {
+      // out of the lamp this frame: the ring slowly runs back
+      if (h.frame !== frameNo) { h.hold -= Math.min(0.1, frameK / 60) * 0.4; if (h.hold <= 0) delete scene.holds[key]; }
+      return h;
+    }).filter(h => h.hold > 0);
+    for (const w of [...(scene.watch || []), ...held]) {
       if (!w.hold || !w.need || !w.at) continue;
       const f = Math.min(1, w.hold / w.need), [x, y] = w.at, r = 15 * u;
       ctx.lineCap = "round";
@@ -186,6 +207,25 @@
     return placed;
   }
 
+  // A random ocean keeps its floor calm: at most two big landmarks, and everything on the sand together stays within
+  // a fixed width, counted in u (so the same on every screen; a wreck counts at its full size). What you play with
+  // (a chest, a bottle, a clam, a volcano, a whale fall) and one of every kind that goes into the logbook always stay.
+  // Big things come first, so they keep their spot; an aquarium keeps everything that was chosen.
+  const FLOOR_KEEP = new Set(["whalefall", "chest", "bottle", "clam", "volcano"]);
+  const FLOOR_FULL_W = { wreck: 520, plane: 380, whalefall: 420, city: 340 };
+  const FLOOR_BUDGET = 820, FLOOR_BIG = 2;
+  function calmFloor(big, small) {
+    const width = g => (FLOOR_FULL_W[g.kind] || g.w / u) + 30;
+    const must = new Set(), kinds = new Set();
+    for (const g of [...big, ...small]) if ((FLOOR_KEEP.has(g.kind) || LOGGABLE.has(g.kind)) && !kinds.has(g.kind)) { must.add(g); kinds.add(g.kind); }
+    let budget = FLOOR_BUDGET, bigLeft = FLOOR_BIG;
+    for (const g of must) { budget -= width(g); if (big.includes(g)) bigLeft--; }
+    const keep = new Set(must);
+    for (const g of big) if (!keep.has(g) && bigLeft > 0 && width(g) <= budget) { keep.add(g); budget -= width(g); bigLeft--; }
+    for (const g of small) if (!keep.has(g) && width(g) <= budget) { keep.add(g); budget -= width(g); }
+    return [big.filter(g => keep.has(g)), small.filter(g => keep.has(g))];
+  }
+
   function buildScene() {
     shadeCache.clear();
     const wi = waterOfSeed(seed, rng());
@@ -220,7 +260,7 @@
     }));
 
     // Landmarks on the sea floor, biggest first so they get a spot.
-    const big = [], small = [];
+    let big = [], small = [];
     if (chance(P.wreck)) big.push({ kind: "wreck", w: Math.min(W * 0.75, 520 * u), tilt: range(-0.16, 0.12), dir: chance(0.5) ? 1 : -1, mastBroken: chance(0.5) });
     if (chance(P.vent)) big.push({ kind: "vent", w: 110 * u, s: range(70, 110) * u });
     if (chance(P.ruins)) big.push({ kind: "ruins", w: 170 * u, s: range(70, 95) * u, broken: range(0.4, 0.7) });
@@ -244,6 +284,7 @@
     if (chance(P.brine)) small.push({ kind: "brine", w: 170 * u, s: range(50, 70) * u });
     addMoreGround(s, P, big, small);
     addWave2Ground(s, P, big, small);
+    if (!aquarium) [big, small] = calmFloor(big, small);
     // on a phone the big landmarks shrink so more of them fit side by side
     if (W < 600) for (const g of big) if (g.kind !== "city") { g.w *= 0.7; if (g.s) g.s *= 0.7; }
     shuffle(small);

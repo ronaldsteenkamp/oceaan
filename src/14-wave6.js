@@ -1354,7 +1354,7 @@
     const blink = Math.sin(Lv.ph * 1.3) > 0.97 ? 0.2 : 1;
     ctx.fillStyle = sca("#ffd27a", 0.22 * blink); ctx.beginPath(); ctx.arc(hx, hy, L * 0.016, 0, TAU); ctx.fill();
     ctx.fillStyle = sca("#ffd27a", 0.95 * blink); ctx.beginPath(); ctx.ellipse(hx, hy, L * 0.006, L * 0.004, 0, 0, TAU); ctx.fill();
-    if (!Lv.logged && lit(hx, hy, 80 * u)) { Lv.logged = true; seen("leviathan", [hx, hy]); }
+    if (!Lv.logged && spot("leviathan", hx, hy, 80 * u)) { Lv.logged = true; seen("leviathan", [hx, hy]); }
     if (Lv.dir > 0 ? Lv.x > W + L * 0.6 : Lv.x < -L * 0.6) { if (Lv.shiny) Lv.dir *= -1; else Lv.active = false; }
   }
 
@@ -1414,7 +1414,7 @@
       ctx.restore();
       if (!Lh.logged && diverMode) {
         const da = Math.atan2(diver.y - ly, diver.x - lx);
-        if (Math.abs(da - ang) < half * 0.8 || lit(lx, top + 40 * u, 30 * u)) { Lh.logged = true; seen("lighthouse", [diver.x, diver.y]); }
+        if ((Math.abs(da - ang) < half * 0.8 || lit(lx, top + 40 * u, 30 * u)) && hold("lighthouse", [lx, top + 40 * u])) { Lh.logged = true; seen("lighthouse", [diver.x, diver.y]); }
       }
     }
   }

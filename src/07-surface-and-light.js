@@ -257,7 +257,8 @@
     }
     if (S.angler && S.angler.lx !== undefined) glow(S.angler.lx, S.angler.ly, S.angler.s * 1.6, "150,255,235", 0.25 + 0.4 * glowF);
     for (const g of S.ground) {
-      if (g.kind === "chest") glow(g.x, sandY(g.x) - g.s * 0.5, g.s * 3, "255,200,100", 0.3 * night);
+      // only a chest that stands open with its gold in it gives light
+      if (g.kind === "chest" && g.opened && !g.mimic && g.open > 0.1) glow(g.x, sandY(g.x) - g.s * 0.5, g.s * 3, "255,200,100", 0.3 * night * g.open);
       if (g.kind === "vent") glow(g.x, sandY(g.x) - g.s * 1.3, g.s * 1.2, "255,120,50", 0.25 + 0.2 * night);
       if (g.kind === "arch" && g.eyes && g.eyeX !== undefined) {
         const open = Math.sin(t * 0.6 + g.x) > -0.85 ? 1 : 0.1;
@@ -307,8 +308,6 @@
       ctx.fillStyle = g2;
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + Math.cos(th - spr) * len, ly + Math.sin(th - spr) * len); ctx.lineTo(lx + Math.cos(th + spr) * len, ly + Math.sin(th + spr) * len); ctx.closePath(); ctx.fill();
       glow(lx, ly, 10 * u, "255,248,220", 0.7);
-      // a soft circle of light around the diver, so you always find yourself back, brighter in the dark
-      glow(d.x, d.y, DIVER_L * 0.95 * u, "200,236,255", 0.16 + 0.22 * Math.max(night, water.glow ? 0.7 : 0));
     }
     const sl = subLamp();
     if (sl) {

@@ -114,6 +114,15 @@
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
     }
     checkPictures(errors);
+    // four new finds per ocean: a full ocean stops ordinary finds, never a shiny, a rare thing or a water
+    try {
+      const keep = store.get(CAP_KEY, {}), full = Object.assign({}, keep, { [oceanCode()]: FIND_CAP });
+      store.set(CAP_KEY, full);
+      const plain = BASE_LOG_KEYS.find(k => !logbook.has(k) && !capFree(k));
+      if (plain && !capFull(plain)) errors.push(`vondstenlimiet: ${plain} wordt niet tegengehouden in een volle oceaan`);
+      if (capFull("shiny:crab") || capFull(RARE_KEYS[0]) || capFull("w:rif")) errors.push("vondstenlimiet: shiny, zeldzaam of water wordt tegengehouden");
+      store.set(CAP_KEY, keep);
+    } catch (e) { errors.push("vondstenlimiet: " + e.message); }
     for (const e of new Set(thumbErrors)) errors.push(`plaatje ${e}`);
     for (const b of brushLeaks) errors.push(`penseel niet teruggezet na een frame (${b})`);
     try {

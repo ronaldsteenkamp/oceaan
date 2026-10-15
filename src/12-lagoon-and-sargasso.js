@@ -655,7 +655,7 @@
       for (let i = E.list.length - 1; i >= 0; i--) {
         const e = E.list[i];
         e.ph += 0.35 * k; e.x += e.dir * e.sp * u * k;
-        if (!E.logged && lit(e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration"); }
+        if (!E.logged && spot("eelmigration", e.x, e.y, 6 * u)) { E.logged = true; seen("eelmigration", [e.x, e.y]); }
         shinyDraw(e, () => {
           ctx.strokeStyle = e.shiny ? "rgba(242,192,64,0.95)" : "rgba(220,240,255,0.35)"; ctx.lineWidth = 2.2 * u;
           ctx.beginPath();
@@ -670,7 +670,7 @@
     for (let i = C.list.length - 1; i >= 0; i--) {
       const c = C.list[i];
       if (c.dir > 0 ? c.x > W + 28 : c.x < -28) { if (c.shiny) { c.dir *= -1; c.leaving = c.dir; } else { C.list.splice(i, 1); continue; } }
-      if (!C.logged && lit(c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch"); sight("crab", [c.x, sandY(c.x)]); }
+      if (!C.logged && spot("crabmarch", c.x, sandY(c.x), c.s)) { C.logged = true; seen("crabmarch", [c.x, sandY(c.x)]); sight("crab", [c.x, sandY(c.x)]); }
       shinyDraw(c, () => drawCrab(c, k));
     }
     S.bubbleRings = S.bubbleRings.filter(r => {
@@ -696,7 +696,7 @@
     ctx.save(); ctx.globalAlpha = 0.85;
     drawSpermWhaleShape(M.x, M.y + Math.sin(M.ph * 0.7) * 8 * u, M.dir, M.size, M.ph, sh("#eceae4"), sh("#a8a6a0"));
     ctx.restore();
-    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick"); }
+    if (!M.logged && spot("mobydick", M.x, M.y, M.size * 0.3)) { M.logged = true; seen("mobydick", [M.x, M.y]); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 
@@ -719,7 +719,7 @@
     ctx.globalCompositeOperation = "lighter";
     drawGhostDiverShape(g.x, y, g.dir, 30 * u, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
-    if (!g.logged && lit(g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver"); }
+    if (!g.logged && spot("ghostdiver", g.x, y, 24 * u)) { g.logged = true; seen("ghostdiver", [g.x, y]); }
   }
 
   // The ghost of the same little submarine that sails the oceans: pale green and see-through, with faintly
@@ -773,7 +773,7 @@
     ctx.globalCompositeOperation = "lighter";
     drawGhostSubShape(g.x, y, g.dir, L, g.ph, a);
     ctx.globalCompositeOperation = "source-over";
-    if (!g.logged && lit(g.x, y, 50 * u)) { g.logged = true; seen("ghostsub"); }
+    if (!g.logged && spot("ghostsub", g.x, y, 50 * u)) { g.logged = true; seen("ghostsub", [g.x, y]); }
   }
 
   // The northern lights shimmer through the surface in green and violet curtains.

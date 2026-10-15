@@ -738,7 +738,8 @@
       }
     }
     if (S.jellies.some(j => j.bloom)) {
-      if (!B.logged && S.jellies.some(j => j.bloom && lit(j.x, j.y, j.r))) { B.logged = true; seen("jellybloom"); sight("jelly"); }
+      const bj = !B.logged && S.jellies.find(j => j.bloom && lit(j.x, j.y, j.r));
+      if (bj && hold("jellybloom", [bj.x, bj.y])) { B.logged = true; seen("jellybloom", [bj.x, bj.y]); sight("jelly", [bj.x, bj.y]); }
       S.jellies = S.jellies.filter(j => !j.bloom || j.shiny || (j.bloom > 0 ? j.x < W + j.r * 3 : j.x > -j.r * 3));
     }
 
@@ -864,7 +865,7 @@
       const h = Hh.list[i];
       h.ph += 0.2 * k; h.x += h.dir * h.sp * u * k;
       const y = Math.max(h.y + Math.sin(h.ph * 0.3) * 6 * u, water.surface ? waveY(h.x) + 8 * u : 0);
-      if (!Hh.logged && lit(h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings"); sight("turtle", [h.x, h.cy || h.y]); }
+      if (!Hh.logged && spot("hatchlings", h.x, h.cy || h.y, h.s)) { Hh.logged = true; seen("hatchlings", [h.x, h.cy || h.y]); sight("turtle", [h.x, h.cy || h.y]); }
       h.cy = y;
       shinyDraw(h, () => drawHatchling(h.x, y, h.dir, h.s, h.ph));
       if (h.dir > 0 ? h.x > W + 30 * u : h.x < -30 * u) { if (h.shiny) h.dir *= -1; else Hh.list.splice(i, 1); }
@@ -901,7 +902,8 @@
     ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(18.5 * sc, -5 * sc, 1 * sc, 3 * sc, 0, 0, TAU); ctx.fill();
     ctx.strokeStyle = sh("#1a3a28"); ctx.lineWidth = 1.5 * sc; ctx.beginPath(); ctx.moveTo(34 * sc, 4 * sc); ctx.lineTo(16 * sc, 6 * sc); ctx.stroke();
     ctx.restore();
-    if (!Sp.logged && pts.some((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc))) { Sp.logged = true; seen("serpent"); }
+    const sp = !Sp.logged && pts.find((p, i) => i % 4 === 0 && lit(p[0], p[1], 20 * sc));
+    if (sp && hold("serpent", sp)) { Sp.logged = true; seen("serpent", sp); }
     if (Sp.dir > 0 ? pts[n][0] > W + 60 * sc : pts[n][0] < -60 * sc) {
       if (Sp.shiny) { Sp.dir *= -1; Sp.x = Sp.dir > 0 ? -40 * u : W + 40 * u; }
       else Sp.active = false;
@@ -921,7 +923,7 @@
     ctx.rotate(Math.sin(M.ph) * 0.03);
     ctx.drawImage(M.img, -M.img.width / 2, -M.img.height / 2);
     ctx.restore();
-    if (!M.logged && lit(M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon"); }
+    if (!M.logged && spot("megalodon", M.x, M.y, M.size * 0.3)) { M.logged = true; seen("megalodon", [M.x, M.y]); }
     if (M.dir > 0 ? M.x > W + M.size * 0.7 : M.x < -M.size * 0.7) { if (M.shiny) M.dir *= -1; else M.active = false; }
   }
 

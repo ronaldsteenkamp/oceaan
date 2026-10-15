@@ -369,7 +369,7 @@
         if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
       }
       if (!e.told && allShiny) e.told = true;
-      if (!e.told && lit(x, y, e.r)) {
+      if (!e.told && lit(x, y, e.r) && hold("shiny:" + e.key, [x, y])) {
         // the first time it swims into view: a chime, and a note in the logbook
         e.told = true;
         const key = "shiny:" + e.key, isNew = !logbook.has(key);

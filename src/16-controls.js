@@ -165,7 +165,7 @@
   }
   function isSpecialFind(key) {
     const base = key.startsWith("shiny:") ? key.slice(6) : key;
-    if (key.startsWith("shiny:") || RARE_KEYS.includes(base)) return true;
+    if (key.startsWith("shiny:") || RARE_KEYS.includes(base) || VIS_KEYS.includes(base)) return true;
     const finds = [...logbook.keys()].filter(k => !k.startsWith("w:") && !k.startsWith("shiny:")).length;
     return finds === 1 || (finds > 0 && finds % 50 === 0);
   }

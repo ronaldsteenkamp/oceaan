@@ -34,7 +34,7 @@
   const ANIMALS = {
     fish: {
       nl: "Scholen vissen", en: "Fish schools", family: "Vissen", sci: "Actinopterygii",
-      shiny: 500, shinyNl: "schoolvis", shinyEn: "school fish",
+      shiny: 2000, shinyNl: "schoolvis", shinyEn: "school fish",
       pal: "#f2b134>#f06a9a #8a5810>#5a2a8a", palRule: { hue: 335, hueDark: 270, hueLight: 48, sat: 1.1 },
       hint: ["overal te zien", "seen everywhere"],
       fact: ["Vissen in een school houden afstand met hun zijlijn, een zintuig dat kleine trillingen in het water voelt.",
