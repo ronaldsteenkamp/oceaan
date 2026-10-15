@@ -65,6 +65,7 @@
     let oceans = 0;
     for (let sd = 1; sd <= count; sd++) {
       try {
+        forceEvent = [null, ...EVENTS][sd % (EVENTS.length + 1)];
         newVariant(sd, false);
         const S = scene;
         S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
@@ -104,6 +105,7 @@
         oceans++;
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
     }
+    forceEvent = null;
     thumbErrors.length = 0;
     for (const key of LOG_GROUPS.flatMap(g => g[1])) {
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
@@ -170,6 +172,10 @@
       if (!THUMBS[base]) errors.push(`logboek ${k}: plaatje ontbreekt`);
     }
     if (new Set(AQ_ALL).size !== AQ_ALL.length) errors.push("aquarium: dubbele sleutel in AQ_ALL");
+    for (const ev of EVENTS) {
+      if (!/^\d\d-\d\d$/.test(ev.from) || !/^\d\d-\d\d$/.test(ev.to) || !ev.nl || !ev.en || !Array.isArray(ev.say) || ev.say.length !== 2) errors.push(`event ${ev.id}: datum, naam of tekst klopt niet`);
+      for (const k of (ev.rare ? ev.rare.keys : [])) if (!RARE_KEYS.includes(k)) errors.push(`event ${ev.id}: onbekend zeldzaam ding ${k}`);
+    }
     if (new Set(MILESTONES.map(m => m.id)).size !== MILESTONES.length) errors.push("mijlpalen: dubbele id");
     for (const [id, key] of STICKERS) if (!MILESTONES.some(m => m.id === id) || !THUMBS[key]) errors.push(`sticker ${id}: mijlpaal of plaatje (${key}) ontbreekt`);
     for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }

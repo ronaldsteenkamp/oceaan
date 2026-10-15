@@ -216,3 +216,9 @@
     return `<p class="nb-note nb-glint"><b>${L("Glinstermeter", "Glitter meter")}</b> <span aria-hidden="true">${"✦".repeat(dots)}${"·".repeat(10 - dots)}</span> ` +
       L(`Shiny's zijn nu ${xs}× zo vaak. Een nieuwe shiny maakt de meter weer leeg.`, `Shinies are now ${xs}× as common. A new shiny empties the meter again.`) + `</p>`;
   }
+
+  // a calendar event on the first page of the logbook (see EVENTS in 01-basis.js)
+  function eventHTML() {
+    const ev = activeEvent();
+    return ev ? `<p class="nb-quest"><b>${L(ev.nl, ev.en)}</b> ${L(ev.say[0], ev.say[1])}</p>` : "";
+  }

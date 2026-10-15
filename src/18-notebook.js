@@ -30,6 +30,7 @@
       <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
       ${questHTML()}
+      ${eventHTML()}
       ${huntHTML()}
       ${glintHTML()}
       <p class="nb-note">${store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>

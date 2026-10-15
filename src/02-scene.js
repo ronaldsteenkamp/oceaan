@@ -187,6 +187,13 @@
       const rr = rng(), list = RARES_BY_WATER[water.name] || [];
       s.rares = rr < RARE_RATE && list.length ? [list[Math.min(list.length - 1, Math.floor(rr / RARE_RATE * list.length))]] : [];
     }
+    // a calendar event can bring something rare to an ocean that has nothing rare (own stream, so the rest stays put)
+    const ev = aquarium ? null : activeEvent();
+    s.event = ev ? ev.id : null;
+    if (ev && ev.rare && !s.rares.length) sub("event", () => {
+      const fits = ev.rare.keys.filter(k => (RARES_BY_WATER[water.name] || []).includes(k));
+      if (fits.length && rng() < ev.rare.chance) s.rares = [fits[Math.floor(rng() * fits.length)]];
+    });
     s.rare = s.rares[0] || null;
 
     s.rays = Array.from({ length: 3 + Math.floor(rng() * 4) }, () => ({
@@ -441,6 +448,7 @@
     for (const key in lifeNow) if (lifeNow[key]) watch(key, where[key] || (() => diverMode ? [diver.x, diver.y] : null), 14 * u);
     if (s.station) watch("grouper", () => [s.station.grouper.x, s.station.grouper.y], 20 * u);
     if (s.ghost) watch("ghost", () => [s.ghost.x, s.ghost.y], 90 * u);
+    if (ev && ev.aurora && water.surface && s.aurora) s.aurora.enabled = true;
     registerShinies(s);
 
     bgGrad = ctx.createLinearGradient(0, 0, 0, H);
@@ -455,7 +463,8 @@
   function newVariant(s, soft) {
     seed = s >>> 0;
     rng = mulberry32(seed);
-    oceanBoost = personalOcean && !aquarium && !selfTesting ? glintBoost() : 1;
+    const ev = aquarium ? null : activeEvent();
+    oceanBoost = (personalOcean && !aquarium && !selfTesting ? glintBoost() : 1) * (ev && ev.shiny || 1);
     buildScene();
     if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
     personalOcean = false;
@@ -465,6 +474,11 @@
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
     setTimeout(huntNotice, 1200);
+    // the first ocean of an event day says what is going on
+    if (ev && !selfTesting) {
+      const told = `${ev.id}-${new Date().toDateString()}`;
+      if (store.get("oceaan-event", "") !== told) { store.set("oceaan-event", told); setTimeout(() => toast(L(ev.say[0], ev.say[1]), "important"), 900); }
+    }
     updateClock();
     describeScene();
     fade = soft ? 0.9 : 1;

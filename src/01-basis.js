@@ -223,6 +223,27 @@
     goldpearl: 50, mobydick: 50, ghostdiver: 50, ghostsub: 50, leviathan: 50, lighthouse: 50, mermaid: 225,
   };
   const SHINY_N = Object.assign({}, SHINY_OTHER, animalTable("shiny"));
+  // Calendar events: a few days a year the ocean is a little different, for everyone on that date. They only change
+  // chances (from their own random stream), never what can be found, so the logbook can always be completed.
+  //   from, to   "MM-DD", inclusive; a range over New Year wraps round
+  //   rare       for oceans without anything rare: the chance of one of these rare things, if they belong to that water
+  //   aurora     northern lights over every water with a surface
+  //   shiny      shinies this many times as often
+  const EVENTS = [
+    { id: "spookweek", from: "10-24", to: "11-02", nl: "Spookweek", en: "Ghost week", rare: { chance: 0.3, keys: ["ghost", "ghostdiver", "ghostsub", "lighthouse"] },
+      say: ["Het is spookweek: de spoken in de oceaan zijn onrustig. Spookschepen, spookduikers en de spookvuurtoren laten zich vaker zien.", "It is ghost week: the ghosts of the ocean are restless. Ghost ships, ghost divers and the ghost lighthouse show up more often."] },
+    { id: "winterlicht", from: "12-15", to: "01-06", nl: "Winterlicht", en: "Winter lights", aurora: true,
+      say: ["Het is winterlicht: op donkere nachten kan het noorderlicht nu boven elk water verschijnen.", "Winter lights: on dark nights the northern lights can now appear over every water."] },
+    { id: "oceaandag", from: "06-08", to: "06-08", nl: "Dag van de Oceaan", en: "World Ocean Day", shiny: 2,
+      say: ["Vandaag is het de Dag van de Oceaan: shiny's zijn de hele dag twee keer zo vaak.", "Today is World Ocean Day: shinies are twice as common all day."] },
+  ];
+  let forceEvent = null; // the self-test tries every event
+  function activeEvent() {
+    if (selfTesting) return forceEvent;
+    const d = new Date(), md = `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    return EVENTS.find(e => e.from <= e.to ? md >= e.from && md <= e.to : md >= e.from || md <= e.to) || null;
+  }
+
   // The glitter meter: every ocean of your own (not a shared link, not an aquarium) without a new shiny makes shinies
   // a little more likely, up to three times as often after 40 oceans; a new shiny empties it again. It is personal:
   // a shared ocean shows its usual shinies, and the boost is fixed per ocean, so turning the phone changes nothing.
