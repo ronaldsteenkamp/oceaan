@@ -409,12 +409,7 @@
       document.getElementById("resetRow").hidden = false;
       return;
     }
-    if (b.id === "logResetYes") {
-      resetLogbook();
-      renderPanel();
-      toast(L("Je logboek is gewist", "Your logbook has been cleared"));
-      return;
-    }
+    if (b.id === "logResetYes") { b.disabled = true; startOver(); return; }
     if (b.id === "shareNative") {
       navigator.share({ title: "Oceaan", text: L("Kijk eens naar deze oceaan", "Have a look at this ocean"), url: shareLink() }).catch(() => {});
       return;

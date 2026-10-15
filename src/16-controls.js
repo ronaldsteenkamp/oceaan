@@ -477,13 +477,18 @@
 
   let logFilter = "all";
 
-  function resetLogbook() {
-    logbook = new Map();
-    try { localStorage.removeItem(LOG_KEY); } catch (e) {}
-    fresh.clear(); saveFresh();
-    // shinies that are on screen right now may announce themselves again
-    for (const e of scene.shinies) e.told = false;
-    applyRewards();
+  // Start over as a brand-new player: everything the ocean keeps in this browser goes (logbook, album, photo book,
+  // stickers, hunt list, settings), and the page starts again from the welcome, as on a first visit.
+  function startOver() {
+    try { for (const k of Object.keys(localStorage)) if (k.startsWith("oceaan-")) localStorage.removeItem(k); } catch (e) {}
+    const restart = () => { try { location.replace(location.pathname + location.search); } catch (e) { location.reload(); } };
+    try {
+      if (albumDB) { albumDB.close(); albumDB = null; }
+      if (!window.indexedDB) { restart(); return; }
+      const req = indexedDB.deleteDatabase("oceaan");
+      req.onsuccess = req.onerror = req.onblocked = restart;
+      setTimeout(restart, 1500); // in case the browser never answers
+    } catch (e) { restart(); }
   }
 
   // The backup holds everything you have collected: the logbook and also the album, rescued animals,

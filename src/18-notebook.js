@@ -85,10 +85,10 @@
       <p class="nb-note">${L("Je logboek staat alleen in deze browser. Sla het op als bestand om het te bewaren, of om het op een ander apparaat in te laden. Het bestand bevat alles: je vondsten, je album, je fotoboek en je geredde dieren.", "Your logbook lives only in this browser. Save it as a file to keep it, or to load it on another device. The file holds everything: your finds, your album, your photo book and your rescued animals.")} ${store.get("oceaan-export", null) ? L(`Laatst opgeslagen: ${dateText(store.get("oceaan-export"))}.`, `Last saved: ${dateText(store.get("oceaan-export"))}.`) : L("Nog nooit opgeslagen.", "Never saved yet.")}</p>
       <div class="row"><button type="button" id="logExport">${L("Opslaan als bestand", "Save as file")}</button><button type="button" id="logImport">${L("Bestand inladen", "Load file")}</button><input type="file" id="logFile" accept="application/json,.json" hidden></div>
       <h4 class="nb-fam">${L("Opnieuw beginnen", "Start over")}</h4>
-      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Logboek wissen", "Clear logbook")}</button></div>
+      <div class="row" id="resetRow"><button type="button" id="logReset">${L("Helemaal opnieuw beginnen", "Start all over again")}</button></div>
       <div class="row" id="resetConfirm" hidden>
-        <span class="nb-note">${L("Alles wat je gezien hebt wordt gewist, ook je shiny's. Dit kun je niet terugdraaien.", "Everything you have seen will be cleared, shinies too. This cannot be undone.")}</span>
-        <button type="button" id="logResetYes" class="primary">${L("Ja, wis mijn logboek", "Yes, clear my logbook")}</button>
+        <span class="nb-note">${L("Alles wordt gewist: je logboek en shiny's, je album, je fotoboek, je stickers, je speurlijst en je instellingen. Je begint als nieuwe speler, met de welkomstuitleg. Dit kun je niet terugdraaien; sla je logboek eventueel eerst op als bestand.", "Everything is cleared: your logbook and shinies, your album, your photo book, your stickers, your hunt list and your settings. You start as a new player, with the welcome. This cannot be undone; save your logbook as a file first if you want to keep it.")}</span>
+        <button type="button" id="logResetYes" class="primary">${L("Ja, begin opnieuw", "Yes, start over")}</button>
         <button type="button" id="logResetNo">${L("Annuleren", "Cancel")}</button>
       </div>`, newPage: true, group: "keep", jump: "keep" });
     return blocks;
