@@ -21,7 +21,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 
 | Bestand | Inhoud |
 | --- | --- |
-| `head.html`, `styles.css`, `body.html` | titel, stijl en opmaak van de bediening |
+| `head.html`, `styles.css`, `body.html`, `fonts/` | titel, stijl, opmaak van de bediening en de lettertypes |
 | `00-animals.js` | **het dierenregister**: per dier naam, familie, wetenschappelijke naam, wateren, shiny, weetje en veldnotitie |
 | `01-basis.js` | wateren, vondsten, momenten, logboekvolgorde, mijlpalen, meldingen |
 | `02-scene.js` | een oceaan opbouwen uit een seed (met zijstromen, zodat de seed niet van het scherm afhangt) |
@@ -65,3 +65,5 @@ Een nieuw dier krijgt vanzelf een plek achteraan in de aquariumcode, dus oude aq
 ## Credits
 
 Gemaakt door Ronald.
+
+Lettertypes: Caveat, DM Mono en Figtree (SIL Open Font License), meegeleverd in `src/fonts/`; de site haalt niets bij Google op.

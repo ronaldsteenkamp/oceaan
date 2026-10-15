@@ -10,6 +10,7 @@ Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen]
 De versie is een vingerafdruk van de pagina: alleen als er echt iets verandert, halen geïnstalleerde apps een nieuwe versie.
 Op GitHub bouwt en publiceert een Action (.github/workflows/pages.yml) dit bij elke push naar main.
 """
+import base64
 import hashlib
 import json
 import os
@@ -28,12 +29,26 @@ def write(path, text):
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+# The fonts live in src/fonts (Caveat, DM Mono and Figtree, SIL Open Font License). The single page (oceaan.html,
+# also the artifact) carries them inside itself; the app (index.html) loads them as files, which the service worker keeps.
+FONTS = [("Caveat", 600, "caveat-600.woff2"), ("DM Mono", 400, "dmmono-400.woff2"), ("DM Mono", 500, "dmmono-500.woff2"), ("Figtree", "400 600", "figtree.woff2")]
+
+
+def font_css(embed):
+    rules = []
+    for family, weight, name in FONTS:
+        data = (SRC / "fonts" / name).read_bytes()
+        src = f"data:font/woff2;base64,{base64.b64encode(data).decode()}" if embed else f"fonts/{name}"
+        rules.append(f"@font-face {{ font-family: '{family}'; font-style: normal; font-weight: {weight}; font-display: swap; src: url({src}) format('woff2'); }}")
+    return "\n".join(rules) + "\n"
+
+
 def assemble_page():
     """Voegt src/ samen tot dist/oceaan.html: de pagina die ook als artifact wordt gepubliceerd."""
     def read(name):
         return (SRC / name).read_text(encoding="utf-8")
     scripts = sorted(SRC.glob("[0-9][0-9]-*.js"))
-    page = (read("head.html") + "<style>\n" + read("styles.css") + "</style>\n" + read("body.html")
+    page = (read("head.html") + "<style>\n" + font_css(embed=True) + read("styles.css") + "</style>\n" + read("body.html")
             + "<script>\n(() => {\n" + "".join(p.read_text(encoding="utf-8") for p in scripts) + "})();\n</script>\n")
     DIST.mkdir(exist_ok=True)
     write(SOURCE, page)
@@ -48,6 +63,10 @@ def version_of(page):
 def build_index(version):
     page = SOURCE.read_text(encoding="utf-8")
     # alles tot en met de eerste </style> hoort in de head, de rest in de body
+    page = page.replace(font_css(embed=True), font_css(embed=False))
+    (DIST / "fonts").mkdir(exist_ok=True)
+    for _, _, name in FONTS:
+        (DIST / "fonts" / name).write_bytes((SRC / "fonts" / name).read_bytes())
     cut = page.index("</style>") + len("</style>")
     head_part, body_part = page[:cut], page[cut:]
     html = f"""<!doctype html>
@@ -113,8 +132,7 @@ def build_sw(version):
     sw = f"""// Service worker: maakt de oceaan installeerbaar en speelbaar zonder internet.
 const VERSION = "{version}";
 const SHELL = `oceaan-shell-${{VERSION}}`;
-const FONTS = "oceaan-fonts-1";
-const SHELL_FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
+const SHELL_FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", {", ".join(f'"fonts/{name}"' for _, _, name in FONTS)}];
 
 self.addEventListener("install", event => {{
   event.waitUntil(caches.open(SHELL).then(c => c.addAll(SHELL_FILES)).then(() => self.skipWaiting()));
@@ -123,7 +141,8 @@ self.addEventListener("install", event => {{
 self.addEventListener("activate", event => {{
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k.startsWith("oceaan-shell-") && k !== SHELL).map(k => caches.delete(k))))
+      // old app versions, and the old cache of Google fonts (the fonts now come with the app)
+      .then(keys => Promise.all(keys.filter(k => (k.startsWith("oceaan-shell-") && k !== SHELL) || k.startsWith("oceaan-fonts-")).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 }});
@@ -133,19 +152,6 @@ self.addEventListener("fetch", event => {{
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // lettertypes van Google: eerst uit de cache, zodat ze offline ook werken
-  if (url.origin === "https://fonts.googleapis.com" || url.origin === "https://fonts.gstatic.com") {{
-    event.respondWith(
-      caches.open(FONTS).then(async cache => {{
-        const hit = await cache.match(req);
-        if (hit) return hit;
-        const res = await fetch(req);
-        if (res.ok || res.type === "opaque") await cache.put(req, res.clone());
-        return res;
-      }})
-    );
-    return;
-  }}
   if (url.origin !== location.origin) return;
 
   // de app zelf: netwerk eerst, zodat updates binnenkomen; de cache als je offline bent
