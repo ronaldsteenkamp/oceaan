@@ -17,6 +17,7 @@
       b.dataset.tip = tip; b.dataset.short = short; b.setAttribute("aria-label", tip);
     }
     toolbarEl.setAttribute("aria-label", L("Bediening", "Controls"));
+    if (typeof setHud === "function") setHud(document.body.classList.contains("hud-off"));
     canvas.setAttribute("aria-label", L("Een levende onderwaterwereld", "A living underwater world")); // what is in it: #sceneDesc
     document.getElementById("seedLabel").textContent = L("Oceaan", "Ocean");
     document.getElementById("closePanel").setAttribute("aria-label", L("Sluiten", "Close"));

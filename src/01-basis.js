@@ -16,6 +16,7 @@
   const panelBody = document.getElementById("panelBody");
   const panelTitle = document.getElementById("panelTitle");
   const toolbarEl = document.querySelector(".toolbar");
+  const hudBtn = document.getElementById("hud");
   const sceneDescEl = document.getElementById("sceneDesc");
   // inside a claude.ai artifact the page cannot use its own address for sharing
   const IN_ARTIFACT = !!(window.claude && typeof window.claude.use === "function");

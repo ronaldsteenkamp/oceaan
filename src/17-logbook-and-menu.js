@@ -308,7 +308,7 @@
       </div>
       <h3 class="section">${L("Uitleg", "Help")}</h3>
       <div class="row"><button type="button" id="showWelcome">${L("Uitleg opnieuw tonen", "Show the introduction again")}</button></div>
-      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan (ingedrukt houden: water kiezen, met Wereldreiziger), L opent het logboek, F maakt een foto, G zet het geluid aan of uit en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean (hold it: choose the water, with Globetrotter), L opens the logbook, F takes a photo, G switches sound on or off and Esc closes this menu.")}</p>`;
+      <p class="sum">${L("Met het toetsenbord: pijltjes sturen de duiker, E opent wat de duiker aanraakt, Q stuurt een sonarpuls uit, D roept de duiker of stuurt hem weg, R geeft een nieuwe oceaan (ingedrukt houden: water kiezen, met Wereldreiziger), L opent het logboek, F maakt een foto, G zet het geluid aan of uit, H verbergt de knoppen en Esc sluit dit menu.", "With a keyboard: arrow keys steer the diver, E opens what the diver touches, Q sends a sonar ping, D calls or dismisses the diver, R gives a new ocean (hold it: choose the water, with Globetrotter), L opens the logbook, F takes a photo, G switches sound on or off, H hides the buttons and Esc closes this menu.")}</p>`;
   }
 
   function openCode(raw) {
@@ -394,7 +394,7 @@
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }
-    if (b.id === "photoDelete") { document.getElementById("photoDeleteConfirm").hidden = false; b.hidden = true; return; }
+    if (b.id === "photoDelete") { document.getElementById("photoDeleteConfirm").hidden = false; b.hidden = true; fitDetail(); return; }
     if (b.id === "photoDeleteYes") { album = album.filter(x => x.id !== b.dataset.id); saveAlbum(); closeDetail(); toast(L("Foto verwijderd", "Photo removed")); return; }
     if (b.id === "detailBack") { closeDetail(); return; }
     if (b.dataset.hunt) { toggleHunt(b.dataset.hunt); openDetail(detailKey, true); const hb = panelBody.querySelector("[data-hunt]"); if (hb) hb.focus(); return; }
@@ -574,26 +574,29 @@
     if (!ph) return;
     logScroll = panelBody.scrollTop;
     detailOpen = true; detailKey = null;
-    panelEl.classList.remove("book");
     const when = dateText(ph.d);
-    panelBody.innerHTML = `
-      <div class="detail album-view">
-        <button type="button" id="detailBack" class="ghost">${L("Terug naar het logboek", "Back to the logbook")}</button>
-        <img alt="${L("Foto van ", "Photo from ")}${when}" src="${ph.img}">
-        <dl>
+    // a page of the book, like an animal's page: the photo taped in, and beside it when and where it was taken
+    renderBookDetail({
+      top: `<div class="nb-run">${L("Mijn foto's", "My photos")}</div>`,
+      figure: `<figure class="nb-photo album" style="--tilt:${tiltOf(ph.id) - 1}deg"><img alt="${L("Foto van ", "Photo from ")}${when}" src="${ph.img}"></figure>`,
+    }, {
+      back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
+      body: `<h2 class="nb-title small">${nm("w:" + ph.water)}</h2>`,
+      side: `<dl class="nb-dl">
           <div><dt>${L("Gemaakt", "Taken")}</dt><dd>${when}</dd></div>
           <div><dt>${L("Oceaan", "Ocean")}</dt><dd>${nm("w:" + ph.water)} · ${ph.seed}</dd></div>
-        </dl>
-        <div class="row">
-          <button type="button" id="photoSave" class="primary" data-id="${ph.id}">${L("Opslaan", "Save")}</button>
-          <button type="button" id="photoDelete">${L("Verwijderen", "Delete")}</button>
-        </div>
-        <div class="row" id="photoDeleteConfirm" hidden>
-          <span class="sum">${L("Deze foto uit je album verwijderen?", "Remove this photo from your album?")}</span>
-          <button type="button" id="photoDeleteYes" data-id="${ph.id}">${L("Ja, verwijder", "Yes, delete")}</button>
-        </div>
-      </div>`;
-    panelBody.scrollTop = 0;
+        </dl>`,
+      nav: `<div class="nb-dnav nb-photo-actions">
+          <div class="row">
+            <button type="button" id="photoSave" class="primary" data-id="${ph.id}">${L("Opslaan", "Save")}</button>
+            <button type="button" id="photoDelete">${L("Verwijderen", "Delete")}</button>
+          </div>
+          <div class="row" id="photoDeleteConfirm" hidden>
+            <span class="nb-note">${L("Deze foto uit je album verwijderen?", "Remove this photo from your album?")}</span>
+            <button type="button" id="photoDeleteYes" data-id="${ph.id}">${L("Ja, verwijder", "Yes, delete")}</button>
+          </div>
+        </div>`,
+    });
     document.getElementById("detailBack").focus();
   }
 

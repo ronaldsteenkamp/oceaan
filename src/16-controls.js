@@ -103,6 +103,7 @@
     if (focusTag !== "INPUT" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const k = e.key.toLowerCase();
       if (k === "l") { e.preventDefault(); bookBtn.click(); return; }
+      if (k === "h") { e.preventDefault(); hudBtn.click(); return; }
       if (k === "b" && rewards.has("gv")) { e.preventDefault(); callVisitor(); return; }
       if (k === "m" && rewards.has("gm")) { e.preventDefault(); callMoment(); return; }
       if (k === "f" && photoView.hidden) { e.preventDefault(); photoBtn.click(); return; }
@@ -184,7 +185,7 @@
     el.append(img, name);
     Object.assign(el.style, { left: x + "px", top: y + "px", width: w + "px" });
     document.body.appendChild(el);
-    const r = bookBtn.getBoundingClientRect(), bx = r.left + r.width / 2 - (x + w / 2), by = r.top + r.height / 2 - (y + h / 2);
+    const r = bookTarget().getBoundingClientRect(), bx = r.left + r.width / 2 - (x + w / 2), by = r.top + r.height / 2 - (y + h / 2);
     sfxPlip();
     el.animate([
       { transform: "scale(0.3) rotate(-10deg)", opacity: 0 },
@@ -269,7 +270,7 @@
     await wait(650);
     // off into the book; the ocean starts moving again
     discoverPause = false;
-    const r = bookBtn.getBoundingClientRect();
+    const r = bookTarget().getBoundingClientRect();
     const bx = r.left + r.width / 2 - (fx + tw / 2), by = r.top + r.height / 2 - (fy + th / 2);
     discoverEl.animate([{ background: "rgba(2,8,18,0.28)" }, { background: "rgba(2,8,18,0)" }], { duration: 500, fill: "forwards" });
     dcName.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" });
@@ -282,6 +283,7 @@
     buzz(15);
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
+  const bookTarget = () => document.body.classList.contains("hud-off") ? hudBtn : bookBtn;
 
   // ---- new ocean, diver, menu and photo buttons --------------------------
   // R and the new-ocean button: a tap gives a random ocean, holding them down lets you choose the water
@@ -591,3 +593,17 @@
     return incoming.size;
   }
 
+
+  // ---- hiding the buttons -----------------------------------------------------------------
+  // The arrow at the right end of the toolbar folds the buttons and the name of the water away, so only the ocean is
+  // left (and the arrow, to bring them back). Remembered in this browser; H does the same.
+  function setHud(hidden) {
+    document.body.classList.toggle("hud-off", hidden);
+    hudBtn.setAttribute("aria-pressed", String(hidden));
+    const tip = hidden ? L("Knoppen tonen (H)", "Show the buttons (H)") : L("Knoppen verbergen (H)", "Hide the buttons (H)");
+    hudBtn.dataset.tip = tip; hudBtn.setAttribute("aria-label", tip);
+    hudBtn.dataset.short = hidden ? L("Toon", "Show") : L("Verberg", "Hide");
+    store.set("oceaan-knoppen-weg", hidden);
+  }
+  hudBtn.addEventListener("click", () => setHud(!document.body.classList.contains("hud-off")));
+  setHud(store.get("oceaan-knoppen-weg", false));
