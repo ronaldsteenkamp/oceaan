@@ -1,5 +1,6 @@
 # To use: move this file to .github/workflows/ (needs a GitHub token with the "workflow" scope).
-# Builds the ocean from src/, runs the self-test in headless Chrome, and publishes dist/ to GitHub Pages.
+# Builds the ocean from src/, runs the self-test in headless Chrome, and on main puts dist/ on the branch gh-pages,
+# exactly like publish.py does. GitHub Pages keeps showing that branch, so the script and the Action never get in each other's way.
 # On a pull request (or a push to another branch) it only builds and tests.
 name: Bouwen, testen en publiceren
 
@@ -9,9 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -35,18 +34,12 @@ jobs:
           name: schermafbeeldingen
           path: checks/*.png
           if-no-files-found: ignore
-      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Op gh-pages zetten
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          cd dist
+          touch .nojekyll
+          git init -q -b gh-pages
+          git add -A
+          git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" commit -q -m "Oceaan gebouwd uit ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages

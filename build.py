@@ -8,7 +8,7 @@ Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen]
 3. Schrijft de app: dist/index.html, sw.js, manifest en iconen.
 
 De versie is een vingerafdruk van de pagina: alleen als er echt iets verandert, halen geïnstalleerde apps een nieuwe versie.
-Op GitHub bouwt en publiceert een Action (.github/workflows/pages.yml) dit bij elke push naar main.
+Online zetten gaat met publish.py, of met de Action in ci/pages.yml (zodra die in .github/workflows/ staat): beide zetten dist/ op de branch gh-pages.
 """
 import base64
 import hashlib

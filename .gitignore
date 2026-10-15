@@ -1,4 +1,4 @@
-# build output: made by build.py, published by the GitHub Action
+# build output: made by build.py, put on the branch gh-pages by publish.py (or the Action in ci/)
 dist/
 checks/
 __pycache__/

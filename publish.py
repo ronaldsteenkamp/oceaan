@@ -6,8 +6,9 @@ Gebruik: python publish.py
 2. Zet de inhoud van dist/ als één commit op de branch gh-pages van GitHub. GitHub Pages toont die branch.
    De bouwresultaten staan zo nooit in main.
 
-Git wordt gezocht in PATH of op de standaardplek in Windows. Voor de GitHub Action in ci/pages.yml
-(die dit bij elke push vanzelf doet) heeft het GitHub-token de scope "workflow" nodig; tot die tijd gaat het met dit script.
+Git wordt gezocht in PATH of op de standaardplek in Windows. De GitHub Action in ci/pages.yml doet precies hetzelfde
+(ook naar gh-pages) bij elke push naar main, zodra hij in .github/workflows/ staat; daarvoor heeft het GitHub-token
+de scope "workflow" nodig. Tot die tijd gaat het met dit script.
 """
 import shutil
 import subprocess
