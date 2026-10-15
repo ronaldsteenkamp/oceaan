@@ -206,3 +206,13 @@
     if (here.length) toast(L(`Speurlijst: ${names(here)} ${here.length > 1 ? "zijn" : "is"} hier! Roep de duiker.`, `Hunt list: ${names(here)} ${here.length > 1 ? "are" : "is"} here! Call the diver.`), "important");
     if (can.length) toast(L(`Speurlijst: hier kan ${names(can)} langskomen.`, `Hunt list: ${names(can)} may turn up here.`));
   }
+
+  // the glitter meter on the first page of the logbook (see shinyChance in 01-basis.js)
+  function glintHTML() {
+    const n = Math.min(store.get(GLINT_KEY, 0), GLINT_MAX);
+    if (!n) return "";
+    const x = glintBoost().toFixed(2).replace(/0$/, ""), xs = LANG === "en" ? x : x.replace(".", ",");
+    const dots = Math.round(n / GLINT_MAX * 10);
+    return `<p class="nb-note nb-glint"><b>${L("Glinstermeter", "Glitter meter")}</b> <span aria-hidden="true">${"✦".repeat(dots)}${"·".repeat(10 - dots)}</span> ` +
+      L(`Shiny's zijn nu ${xs}× zo vaak. Een nieuwe shiny maakt de meter weer leeg.`, `Shinies are now ${xs}× as common. A new shiny empties the meter again.`) + `</p>`;
+  }

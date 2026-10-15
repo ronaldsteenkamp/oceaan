@@ -307,6 +307,7 @@
   .nb-bar { height: 8px; border-radius: 4px; border: 1.5px solid rgba(41, 80, 122, 0.55); margin: 0 0 10px; overflow: hidden; }
   .nb-bar i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, rgba(41, 80, 122, 0.75) 0 3px, rgba(41, 80, 122, 0.35) 3px 6px); }
   .nb-note { margin: 4px 0 8px; font-size: 13px; line-height: 1.45; color: var(--ink-soft); }
+  .nb-glint span { color: #a8780a; letter-spacing: 1px; }
   .nb-fam { margin: 12px 0 10px; padding-bottom: 2px; font-family: var(--hand); font-size: 25px; font-weight: 600; line-height: 1.05; color: var(--pencil); border-bottom: 1.5px solid rgba(41, 80, 122, 0.3); }
   .nb-fam span { font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--ink-soft); margin-left: 4px; }
   .nb .cards { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 14px 10px; padding-top: 6px; }

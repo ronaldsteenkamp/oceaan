@@ -223,8 +223,14 @@
     goldpearl: 50, mobydick: 50, ghostdiver: 50, ghostsub: 50, leviathan: 50, lighthouse: 50, mermaid: 225,
   };
   const SHINY_N = Object.assign({}, SHINY_OTHER, animalTable("shiny"));
+  // The glitter meter: every ocean of your own (not a shared link, not an aquarium) without a new shiny makes shinies
+  // a little more likely, up to three times as often after 40 oceans; a new shiny empties it again. It is personal:
+  // a shared ocean shows its usual shinies, and the boost is fixed per ocean, so turning the phone changes nothing.
+  const GLINT_KEY = "oceaan-glinster", GLINT_MAX = 40;
+  let oceanBoost = 1, personalOcean = false;
+  const glintBoost = () => 1 + Math.min(store.get(GLINT_KEY, 0), GLINT_MAX) * 0.05;
   // in an aquarium with "Everything shiny" every animal is shiny (those do not count for the logbook)
-  const shinyChance = key => aquarium && aquarium.shiny ? 1 : 1 / (SHINY_N[key] || 200);
+  const shinyChance = key => aquarium && aquarium.shiny ? 1 : Math.min(1, (selfTesting ? 1 : oceanBoost) / (SHINY_N[key] || 200));
   const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...Object.keys(SHINY_OTHER)];
   const SHINY_NAMES = Object.assign({"hatchlings": "babyschildpadje", "eelmigration": "glasaaltje"}, animalTable("shinyNl"));
   const SHINY_NAMES_EN = Object.assign({"hatchlings": "turtle hatchling", "eelmigration": "glass eel"}, animalTable("shinyEn"));
@@ -287,6 +293,7 @@
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });
     saveLog();
     fresh.add(key); saveFresh();
+    if (key.startsWith("shiny:")) store.set(GLINT_KEY, 0);
     announceNew(key);
     huntFound(key);
     queueDiscovery(key, pos);

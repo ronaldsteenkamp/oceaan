@@ -455,7 +455,10 @@
   function newVariant(s, soft) {
     seed = s >>> 0;
     rng = mulberry32(seed);
+    oceanBoost = personalOcean && !aquarium && !selfTesting ? glintBoost() : 1;
     buildScene();
+    if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
+    personalOcean = false;
     seedEl.textContent = seed + (aquarium ? " · aquarium" : "");
     biomeEl.textContent = nm("w:" + water.name) + (aquarium ? " · aquarium" : "");
     rareEl.hidden = !scene.rare;

@@ -310,6 +310,7 @@
       return;
     }
     countSwitch();
+    personalOcean = true;
     newVariant(randomSeed(), true);
     updateLockBadge();
   }
@@ -331,6 +332,7 @@
         closeWaterPick();
         if (bt.dataset.pick === "x") return;
         countSwitch();
+        personalOcean = true;
         newVariant(bt.dataset.pick === "r" ? randomSeed() : seedForWater(Number(bt.dataset.pick)), true);
         updateLockBadge();
       });

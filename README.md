@@ -13,6 +13,8 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 - Het boekje onderaan is je logboek. Onder "Maken en delen" bouw je je eigen aquarium en deel je je oceaan. Dezelfde code geeft op elk scherm en in elke browser dezelfde oceaan.
 - Met de duiker zoek je met de sonarknop (of Q) naar iets zeldzaams: een gouden echo wijst de richting.
 - Met een toetsenbord: pijltjes sturen de duiker, E roept de duiker en opent wat hij aanraakt, Q stuurt een sonarpuls uit, L opent het logboek, F maakt een foto, G zet het geluid aan of uit, R geeft een nieuwe oceaan (ingedrukt houden: zelf het water kiezen, met de beloning Wereldreiziger).
+- Zet tot drie dingen die je nog zoekt op je **speurlijst** (op hun pagina in het logboek). Een nieuwe oceaan meldt of ze er zijn of kunnen langskomen.
+- De **glinstermeter** vult zich met elke eigen oceaan zonder nieuwe shiny: shiny's worden dan steeds iets vaker, tot drie keer zo vaak. Een nieuwe shiny maakt hem leeg. Gedeelde links en aquaria tellen niet mee.
 - Je logboek staat in je browser. Achterin het logboek, onder Bewaren, sla je alles op als bestand (vondsten, album, fotoboek, geredde dieren) en laad je het op een ander apparaat weer in.
 
 ## Hoe het in elkaar zit

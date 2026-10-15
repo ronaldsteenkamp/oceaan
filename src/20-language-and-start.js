@@ -249,6 +249,7 @@
     if (screenTest[2] === "menu") menuBtn.click();
   } else {
     const initial = seedFromHash();
+    personalOcean = initial === null;
     newVariant(initial !== null ? initial : randomSeed(), false);
   }
   // the self-test runs straight away, so a headless browser can read the result as soon as the page has loaded
