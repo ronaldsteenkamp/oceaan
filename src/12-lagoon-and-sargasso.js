@@ -867,6 +867,15 @@
     so.echoAt = 1.3;
   }
 
+  // where the echo comes from, in words, so it does not depend on seeing the golden rings
+  function echoSide(dx, dy) {
+    const far = Math.max(Math.abs(dx), Math.abs(dy)) * 0.4;
+    const left = dx < 0, up = dy < 0, h = Math.abs(dx) > far, v = Math.abs(dy) > far;
+    if (Math.hypot(dx, dy) < 60 * u || (!h && !v)) return L("(Vlak bij je duiker.)", "(Right by your diver.)");
+    const nl = (h ? (left ? "links" : "rechts") : "") + (v ? (up ? "boven" : h ? "onder" : "beneden") : "");
+    const en = h && v ? `the ${up ? "upper" : "lower"} ${left ? "left" : "right"}` : h ? `the ${left ? "left" : "right"}` : up ? "above" : "below";
+    return L(`(Het komt van ${nl}.)`, `(It comes from ${en}.)`);
+  }
   function updateAndDrawSonar(k, dtSec) {
     const S = scene, so = S.sonar;
     if (so.cool > 0) so.cool -= dtSec;
@@ -881,7 +890,7 @@
           tone({ type: "triangle", freqs: [[900, 0], [1200, 0.25], [1000, 0.6]], dur: 0.9, gain: 0.05, attack: 0.02, release: 0.5, verb: 0.9 });
           buzz([30, 60, 30]);
           const h = SONAR_HINTS[S.rares[0]];
-          toast(h ? L(h[0], h[1]) : L("Er komt een gouden echo terug!", "A golden echo comes back!"));
+          toast((h ? L(h[0], h[1]) : L("Er komt een gouden echo terug!", "A golden echo comes back!")) + " " + echoSide(sx - diver.x, sy - diver.y));
         } else {
           toast(L("Alleen stilte. Hier zwemt niets zeldzaams.", "Only silence. Nothing rare swims here."));
         }
