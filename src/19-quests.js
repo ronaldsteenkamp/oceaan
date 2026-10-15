@@ -225,7 +225,10 @@
 
   // ---- the dive report ----------------------------------------------------------------------
   // Everything new from one dive, on one card: shown when you call the diver back or go to a new ocean.
-  let diveFinds = [], reportEl = null;
+  // It closes by itself after five seconds, but waits while the pointer rests on it.
+  const REPORT_MS = 5000;
+  let diveFinds = [], reportEl = null, reportTimer = null;
+  function closeReportLater() { clearTimeout(reportTimer); reportTimer = setTimeout(closeDiveReport, REPORT_MS); }
   function noteDiveFind(key) { if (!selfTesting && !rebuilding && !diveFinds.includes(key)) diveFinds.push(key); }
   function showDiveReport() {
     const finds = diveFinds;
@@ -237,6 +240,8 @@
       document.body.appendChild(reportEl);
       reportEl.addEventListener("click", e => { if (e.target.closest("button")) closeDiveReport(); });
       addEventListener("keydown", e => { if (e.key === "Escape" && reportEl && !reportEl.hidden) closeDiveReport(); });
+      reportEl.addEventListener("pointerenter", () => clearTimeout(reportTimer));
+      reportEl.addEventListener("pointerleave", () => { if (!reportEl.hidden) closeReportLater(); });
     }
     reportEl.setAttribute("aria-label", L("Duikverslag", "Dive report"));
     const show = finds.slice(0, 8), more = finds.length - show.length;
@@ -248,8 +253,15 @@
     reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nm(show[i]); });
     reportEl.hidden = false;
     reportEl.querySelector("button").focus({ preventScroll: true });
+    closeReportLater();
   }
-  function closeDiveReport() { if (reportEl) reportEl.hidden = true; }
+  function closeDiveReport() {
+    clearTimeout(reportTimer);
+    if (!reportEl || reportEl.hidden) return;
+    // focus goes back to the game, not lost on a hidden card
+    if (reportEl.contains(document.activeElement)) document.activeElement.blur();
+    reportEl.hidden = true;
+  }
 
   // ---- the first three dives ---------------------------------------------------------------
   // A new player starts with three small, hand-picked oceans that build up: a calm lagoon with a few things to find,
