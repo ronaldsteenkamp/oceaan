@@ -224,7 +224,8 @@
     leviathan: 50, lighthouse: 50,
   };
   Object.assign(SHINY_N, animalTable("shiny"));
-  const shinyChance = key => 1 / (SHINY_N[key] || 200);
+  // in an aquarium with "Everything shiny" every animal is shiny (those do not count for the logbook)
+  const shinyChance = key => aquarium && aquarium.shiny ? 1 : 1 / (SHINY_N[key] || 200);
   const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...["hatchlings", "eelmigration", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse", "mermaid"]];
   const SHINY_NAMES = Object.assign({"hatchlings": "babyschildpadje", "eelmigration": "glasaaltje"}, animalTable("shinyNl"));
   const SHINY_NAMES_EN = Object.assign({"hatchlings": "turtle hatchling", "eelmigration": "glass eel"}, animalTable("shinyEn"));
