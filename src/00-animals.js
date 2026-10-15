@@ -13,6 +13,9 @@
   //   pal, palRule       the shiny colour scheme: "#old>#new ..." for every colour of the drawing (see pal() in 10-shiny.js)
   //   hue                fallback shiny hue (0-360) for colours not in pal
   //   hint               [nl, en] where to find it, when the waters alone do not tell
+  //   capital            ["nl", "en"]: the languages in which the name starts with a proper noun, so it keeps its
+  //                      capital after "Shiny " ("Shiny Groenlandse haai", but "Shiny clownvis")
+  //   winterLeaves       true for seabirds that leave a cold sea in winter (in about half of those oceans)
   //   fact, note         [nl, en] the fact on its logbook page, and the field note of the Biologist reward
   const FAMILIES = [
     ["Vissen", "Fish"],
@@ -264,6 +267,7 @@
     moorish: {
       nl: "Wimpelvis", en: "Moorish idol", family: "Vissen", sci: "Zanclus cornutus",
       life: { rif: 0.5 },
+      capital: ["en"],
       shiny: 75, shinyEn: "moorish idol", hue: 50,
       pal: "#f4f0e2>#f4f0e2 #18181c>#2a3a8a #f2d030>#5ad0f0 #f08a30>#f2507a",
       fact: ["De wimpelvis heeft een lange witte sliert aan zijn rugvin. Hij is de enige soort in zijn hele familie.",
@@ -334,6 +338,7 @@
     wolffish: {
       nl: "Zeewolf", en: "Atlantic wolffish", family: "Vissen", sci: "Anarhichas lupus",
       life: { noordzee: 0.3, ijszee: 0.3 },
+      capital: ["en"],
       shiny: 75, shinyEn: "atlantic wolffish", hue: 210,
       pal: "#6a7480>#c8a8d8 #3a424c>#6a3a8a #5a646e>#9a7ab0 #9aa2aa>#f0e0f8 #4a525c>#4a2a5a #c8c0a0>#f2d040",
       fact: ["De zeewolf heeft enorme tanden waarmee hij krabben, schelpen en zee-egels kraakt. Elk jaar krijgt hij nieuwe tanden.",
@@ -504,6 +509,7 @@
     greenland: {
       nl: "Groenlandse haai", en: "Greenland shark", family: "Haaien en grote vissen", sci: "Somniosus microcephalus",
       visits: { ijszee: 2 },
+      capital: ["nl", "en"],
       shiny: 225, shinyNl: "groenlandse haai", shinyEn: "greenland shark", hue: 35,
       pal: "#4e4a44>#c8d8e8 #7a766c>#f2f6fa #36322e>#8aa0b8 #e8e0b0>#f25a5a",
       fact: ["De Groenlandse haai kan wel 400 jaar oud worden. Sommige die nu rondzwemmen, waren al geboren toen Rembrandt nog leefde.",
@@ -624,6 +630,7 @@
     manowar: {
       nl: "Portugees oorlogsschip", en: "Portuguese man o' war", family: "Kwallen", sci: "Physalia physalis",
       life: { sargasso: 0.5 },
+      capital: ["nl", "en"],
       shiny: 75, shinyNl: "portugees oorlogsschip", shinyEn: "portuguese man o' war", hue: 250,
       pal: "#5a6ae0>#f25a8a #8a5ad8>#f2a03a #6a5ad8>#e85a5a #8a9ae8>#f8b8d0 #b8a8f0>#ffd8e8 #e87ab0>#5ad0f0 #d8c8f8>#fff0f8",
       fact: ["Het Portugees oorlogsschip lijkt op een kwal, maar is een kolonie van heel veel kleine diertjes die samenwerken.",
@@ -764,6 +771,7 @@
     spidercrab: {
       nl: "Japanse reuzenkrab", en: "Japanese spider crab", family: "Schaaldieren en degenkrab", sci: "Macrocheira kaempferi",
       life: { diepzee: 0.7, noordzee: 0.3, ijszee: 0.4, grot: 0.5, sargasso: 0.3 },
+      capital: ["nl", "en"],
       shiny: 150, shinyNl: "japanse reuzenkrab", shinyEn: "japanese spider crab", hue: 20,
       pal: "#d8783a>#e8e0d0 #f0d8b0>#c84a5a",
       fact: ["De Japanse reuzenkrab heeft de langste poten van alle geleedpotigen: van punt tot punt tot bijna vier meter.",
@@ -904,6 +912,7 @@
     xmastree: {
       nl: "Kerstboomwormpjes", en: "Christmas tree worms", family: "Zeesterren, egels, slakken en wormen", sci: "Spirobranchus giganteus",
       life: { rif: 0.6, lagune: 0.3 },
+      capital: ["en"],
       shiny: 225, shinyNl: "kerstboomwormpje", shinyEn: "christmas tree worms", hue: 10,
       pal: "#a89880>#5a6a8a #8a7a62>#3a4a6a #c8b8a0>#8aa0c8 #6a5a48>#2a3448 #fff8f0>#fff8f0 #c8a868>#e8e8f0", palRule: { hue: 48, sat: 1.2 },
       fact: ["Kerstboomwormpjes zijn kokerwormen. Bij het minste gevaar trekken ze hun kroontjes in een flits terug in hun koker.",
@@ -1213,6 +1222,7 @@
     puffin: {
       nl: "Papegaaiduiker", en: "Puffin", family: "Zoogdieren en vogels", sci: "Fratercula arctica",
       life: { noordzee: 0.4, ijszee: 0.3 },
+      winterLeaves: true,
       shiny: 75, hue: 20,
       pal: "#1a1c20>#f2f0ea #f2f0ea>#2a3a5a #f0602a>#5ad0f0 #56647a>#f2c040 #f2c040>#f05a2a #e05040>#3a8ad8",
       fact: ["Een papegaaiduiker kan wel tien visjes tegelijk in zijn snavel houden, dwars naast elkaar, en soms nog veel meer.",
@@ -1223,6 +1233,7 @@
     gannet: {
       nl: "Jan-van-gent", en: "Northern gannet", family: "Zoogdieren en vogels", sci: "Morus bassanus",
       life: { noordzee: 0.5 },
+      winterLeaves: true,
       shiny: 75, shinyNl: "jan-van-gent", hue: 50,
       pal: "#f2f2ec>#2a2a32 #1e1e22>#f2f2ec #f0d890>#f2702a #a8b4c4>#f2c040 #c8e0f0>#f2d040 #2a2a2e>#e8e8e8",
       fact: ["Een jan-van-gent duikt met bijna 100 kilometer per uur het water in. Luchtzakjes onder zijn huid vangen de klap op.",
@@ -1233,6 +1244,7 @@
     albatross: {
       nl: "Albatros", en: "Albatross", family: "Zoogdieren en vogels", sci: "Diomedea exulans",
       life: { kelpwoud: 0.2, ijszee: 0.3, sargasso: 0.5 },
+      winterLeaves: true,
       shiny: 75, hue: 200,
       pal: "#f6f6f2>#f2e6c8 #d8dadc>#e0c890 #3a3a42>#6a3a20 #2a2a30>#4a2a14 #f0b0a0>#e8c040 #d88a78>#c89a20 #f0b8a0>#e8c040",
       fact: ["Een albatros kan urenlang zweven zonder met zijn vleugels te slaan en slaapt soms drijvend op zee.",
@@ -1243,6 +1255,7 @@
     cormorant: {
       nl: "Aalscholver", en: "Cormorant", family: "Zoogdieren en vogels", sci: "Phalacrocorax carbo",
       life: { noordzee: 0.5, kelpwoud: 0.4, mangrove: 0.3 },
+      winterLeaves: true,
       shiny: 75, hue: 200,
       pal: "#1e2226>#f0f0ea #2e4a3a>#c8d0c8 #e8b040>#e8603a",
       fact: ["Een aalscholver duikt achter vissen aan en laat daarna zijn natte veren drogen in de wind.",
@@ -1253,6 +1266,7 @@
     pelican: {
       nl: "Pelikaan", en: "Pelican", family: "Zoogdieren en vogels", sci: "Pelecanus onocrotalus",
       life: { mangrove: 0.5, lagune: 0.4 },
+      winterLeaves: true,
       shiny: 75, hue: 40,
       pal: "#f4f0e4>#f8d8dc #c8c4b8>#e8b0b8 #2a2a2a>#3a2a2a #e89838>#e85a7a #f2c878>#f2a0b0 #f2d8a8>#f8c8d0",
       fact: ["De keelzak van een pelikaan kan meer water bevatten dan zijn maag. Hij schept er vissen mee op.",

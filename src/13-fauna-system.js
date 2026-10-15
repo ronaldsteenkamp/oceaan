@@ -843,7 +843,7 @@
       const F = FAUNA[key];
       if (!chance(Lf[key] || 0)) continue;
       if ((F.kind === "surface" || F.kind === "dive") && !water.surface) continue;
-      if (s.season === "winter" && s.cold && ["albatross", "pelican", "cormorant", "puffin", "gannet"].includes(key) && ((seed + key.length) & 1)) continue; // many seabirds leave in winter
+      if (s.season === "winter" && s.cold && ANIMALS[key] && ANIMALS[key].winterLeaves && ((seed + key.length) & 1)) continue; // many seabirds leave in winter
       const n = F.count ? F.count[0] + Math.floor(rng() * (F.count[1] - F.count[0] + 1)) : 1;
       for (let i = 0; i < n; i++) {
         const o = { key, x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(F.size[0], F.size[1]) * u, ph: range(0, TAU), tx: rng() * W };

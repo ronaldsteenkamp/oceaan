@@ -218,21 +218,20 @@
   // Shinies are rare colour variants with their own page in the logbook. The odds are set per kind of animal:
   // where there are hundreds (school fish) each one has a small chance, where there is one (a whale) the chance is bigger,
   // so that every kind of shiny turns up about as often. The animals bring their own odds; these are the moments and rare things.
-  const SHINY_N = {
-    eelmigration: 600, hatchlings: 150, mermaid: 225, kraken: 50, ghost: 50, whalefall: 50,
-    serpent: 50, megalodon: 50, goldpearl: 50, mobydick: 50, ghostdiver: 50, ghostsub: 50,
-    leviathan: 50, lighthouse: 50,
+  const SHINY_OTHER = {
+    hatchlings: 150, eelmigration: 600, kraken: 50, ghost: 50, whalefall: 50, serpent: 50, megalodon: 50,
+    goldpearl: 50, mobydick: 50, ghostdiver: 50, ghostsub: 50, leviathan: 50, lighthouse: 50, mermaid: 225,
   };
-  Object.assign(SHINY_N, animalTable("shiny"));
+  const SHINY_N = Object.assign({}, SHINY_OTHER, animalTable("shiny"));
   // in an aquarium with "Everything shiny" every animal is shiny (those do not count for the logbook)
   const shinyChance = key => aquarium && aquarium.shiny ? 1 : 1 / (SHINY_N[key] || 200);
-  const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...["hatchlings", "eelmigration", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse", "mermaid"]];
+  const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...Object.keys(SHINY_OTHER)];
   const SHINY_NAMES = Object.assign({"hatchlings": "babyschildpadje", "eelmigration": "glasaaltje"}, animalTable("shinyNl"));
   const SHINY_NAMES_EN = Object.assign({"hatchlings": "turtle hatchling", "eelmigration": "glass eel"}, animalTable("shinyEn"));
   // names that start with a proper noun keep their capital ("Shiny Groenlandse haai")
-  const shinyLower = name => /^(Japanse|Groenlandse|Portugees|Jan-van-gent|Japanese|Greenland|Portuguese|Atlantic|Moorish|Christmas)\b/.test(name) ? name : name.toLowerCase();
-  for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || shinyLower(NAMES[k]));
-  for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || shinyLower(NAMES_EN[k]));
+  const shinyLower = (key, name, lang) => ((ANIMALS[key] || {}).capital || []).includes(lang) ? name : name.toLowerCase();
+  for (const k of SHINY_KEYS) NAMES["shiny:" + k] = "Shiny " + (SHINY_NAMES[k] || shinyLower(k, NAMES[k], "nl"));
+  for (const k of SHINY_KEYS) NAMES_EN["shiny:" + k] = "Shiny " + (SHINY_NAMES_EN[k] || shinyLower(k, NAMES_EN[k], "en"));
   // the shinies follow the same order as the animals, visitors, moments and rare things
   {
     const subs = ["Dieren", "Momenten", "Zeldzaam"].map(title => {

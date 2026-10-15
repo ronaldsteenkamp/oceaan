@@ -147,6 +147,8 @@
       if (!pair(a.fact)) miss.push("fact [nl, en]");
       if (!pair(a.note)) miss.push("note [nl, en]");
       if (a.shiny !== undefined && a.pal === undefined && a.hue === undefined) miss.push("shiny-kleuren (pal of hue)");
+      if (a.capital && !(Array.isArray(a.capital) && a.capital.every(l => l === "nl" || l === "en"))) miss.push('capital (["nl"], ["en"] of beide)');
+      if (a.winterLeaves && !(FAUNA[k] && ["surface", "dive"].includes(FAUNA[k].kind))) miss.push("winterLeaves (alleen voor vogels aan het oppervlak, in FAUNA)");
       for (const w of Object.keys({ ...a.life, ...a.visits })) if (!waterNames.includes(w)) miss.push(`onbekend water ${w}`);
       for (const v of Object.values(a.life || {})) if (!(v > 0 && v <= 1)) miss.push(`kans ${v} (moet tussen 0 en 1)`);
       if (!THUMBS[k]) miss.push("logboekplaatje (THUMBS of FAUNA)");

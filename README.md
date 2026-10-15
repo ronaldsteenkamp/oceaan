@@ -58,7 +58,7 @@ De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk l
 
 ## Een nieuw dier toevoegen
 
-1. **`src/00-animals.js`**: voeg een record toe aan het eind van zijn familie, met `nl`, `en`, `family`, `sci`, `life` (`{ water: kans }`) of `visits` (`{ water: kaartjes }` voor een bezoeker), `shiny` (1 op ...), `pal` (shiny-kleuren "#oud>#nieuw ..." voor elke kleur van de tekening) en/of `hue`, `fact` en `note` (`[nl, en]`). De bovenkant van het bestand legt elk veld uit.
+1. **`src/00-animals.js`**: voeg een record toe aan het eind van zijn familie, met `nl`, `en`, `family`, `sci`, `life` (`{ water: kans }`) of `visits` (`{ water: kaartjes }` voor een bezoeker), `shiny` (1 op ...), `pal` (shiny-kleuren "#oud>#nieuw ..." voor elke kleur van de tekening) en/of `hue`, `fact` en `note` (`[nl, en]`). Begint de naam met een eigennaam ("Groenlandse haai"), zet dan `capital`; een zeevogel die 's winters wegtrekt krijgt `winterLeaves`. De bovenkant van het bestand legt elk veld uit.
 2. **Tekenen**: schrijf een `function drawX(f)` (of `drawX(x, y, dir, L, ph)` voor een bezoeker) in een bestand bij zijn ronde, bijvoorbeeld `14-wave6.js`, en zet het dier in `FAUNA` (met `kind`, `size`, `draw`, `thumb`) of `FAUNA_VIS`. Bodemdieren ook in `FLOOR_THUMBS`. Gebruik hex-kleuren met `sh("#...")`, zodat het water en de shiny ze kunnen omzetten.
 3. **`python build.py`**: de zelftest zegt precies wat er nog mist ("dier x: mist ...").
 
