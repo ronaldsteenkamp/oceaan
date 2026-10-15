@@ -725,6 +725,8 @@
         const side = Math.random() < 0.5 ? -1 : 1, n = 12 + Math.floor(Math.random() * 10), col = water.jelly[Math.floor(Math.random() * water.jelly.length)];
         const [cr, cg, cb] = col.split(",").map(Number);
         B.logged = false;
+        B.list = [];
+        const shinyBloom = momentShiny("jellybloom", B, 40 * u, () => { const j = B.list.find(x => scene.jellies.includes(x)); return j ? [j.x, j.y] : [-999, -999]; }, () => B.list.some(x => scene.jellies.includes(x)));
         for (let i = 0; i < n; i++) {
           const r = (8 + Math.random() * 12) * u;
           const j = {
@@ -732,8 +734,9 @@
             ph: Math.random() * TAU, sp: 0.8 + Math.random() * 0.4, drift: Math.random() * TAU, col, tl: 2.2 + Math.random(),
             hd: -side * (0.7 + Math.random() * 0.4), bloom: -side, shinyBase: rgbHue(cr, cg, cb),
           };
-          S.jellies.push(j);
-          maybeShiny("jelly", j, j.r, () => [j.x, j.y - j.r * 0.3], () => scene.jellies.includes(j));
+          S.jellies.push(j); B.list.push(j);
+          if (shinyBloom) j.shiny = "jellybloom";
+          else maybeShiny("jelly", j, j.r, () => [j.x, j.y - j.r * 0.3], () => scene.jellies.includes(j));
         }
       }
     }
@@ -810,7 +813,7 @@
     const v = S.visitor;
     if (v && v.type === "humpback" && v.song === undefined && v.x > W * 0.25 && v.x < W * 0.75) {
       v.song = Math.random() < 0.7 ? 7 : 0;
-      if (v.song) { watch("whalesong", () => v.song > 0 && scene.visitor === v ? [v.x, v.y + v.yOff] : null, v.size * 0.4); whaleSong(); }
+      if (v.song) { watch("whalesong", () => v.song > 0 && scene.visitor === v ? [v.x, v.y + v.yOff] : null, v.size * 0.4); whaleSong(); S.songMoment = {}; momentShiny("whalesong", S.songMoment, v.size * 0.4, () => [v.x + v.dir * v.size * 0.4, v.y + v.yOff], () => v.song > 0 && scene.visitor === v); }
     }
     if (v && v.song > 0) {
       v.song -= dtSec;
@@ -830,7 +833,7 @@
     S.songRings = S.songRings.filter(r => {
       r.r += 1.2 * u * k; r.a -= 0.005 * k;
       if (r.a <= 0) return false;
-      ctx.strokeStyle = `rgba(220,240,255,${r.a})`; ctx.lineWidth = 2 * u;
+      ctx.strokeStyle = `rgba(${S.songMoment && S.songMoment.shiny ? MOMENT_GLOW.whalesong[1] : MOMENT_GLOW.whalesong[0]},${r.a})`; ctx.lineWidth = 2 * u;
       ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, TAU); ctx.stroke();
       return true;
     });
@@ -1010,7 +1013,7 @@
     hatchlings: () => { for (const [x, y, ph] of [[28, 24, 0], [64, 32, 1], [98, 22, 2], [42, 58, 3], [84, 60, 4]]) drawHatchling(x, y, 1, 24, ph); },
     whalesong: () => {
       drawHumpback({ x: 56, y: 46, dir: 1, size: 90, ph: 0, yOff: 0 });
-      ctx.strokeStyle = "rgba(220,240,255,0.8)"; ctx.lineWidth = 1.5;
+      ctx.strokeStyle = `rgba(${glowOf("whalesong")},0.8)`; ctx.lineWidth = 1.5;
       for (const r of [8, 16, 24]) { ctx.beginPath(); ctx.arc(96, 40, r, -0.8, 0.8); ctx.stroke(); }
     },
     serpent: () => {

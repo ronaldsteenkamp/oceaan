@@ -612,6 +612,7 @@
         if (claim(20)) {
           const dir = Math.random() < 0.5 ? 1 : -1, n = 18 + Math.floor(Math.random() * 12);
           C.logged = false;
+          momentShiny("crabmarch", C, 30 * u, () => { const c = C.list[0]; return c ? [c.x, sandY(c.x) - c.s * 0.4] : [-999, -999]; }, () => C.list.length > 0);
           for (let i = 0; i < n; i++) C.queue.push({ dir, s: (8 + Math.random() * 4) * u, speed: 1.1 + Math.random() * 0.5, pause: 0, leg: Math.random() * TAU, color: "#d8302a", leaving: dir });
         }
       }
@@ -621,7 +622,8 @@
       if (C.next <= 0) {
         const c = C.queue.shift(); c.x = c.dir > 0 ? -30 : W + 30; C.list.push(c); C.next = 0.25 + Math.random() * 0.35;
         c.shinyBase = hexHue(c.color);
-        maybeShiny("crab", c, c.s * 0.8, () => [c.x, sandY(c.x) + 5 * u - c.s * 0.45], () => scene.march.list.includes(c));
+        if (C.shiny) c.shiny = "crabmarch";
+        else maybeShiny("crab", c, c.s * 0.8, () => [c.x, sandY(c.x) + 5 * u - c.s * 0.45], () => scene.march.list.includes(c));
       }
     }
 
@@ -633,7 +635,8 @@
       if (v.ringT <= 0) {
         v.ringT = 1.3; v.ringsLeft--;
         const d = v.pod[0];
-        S.bubbleRings.push({ x: v.x + d.dx * v.dir + v.dir * v.size * 0.4, y: v.y + d.dy, r: 14 * u, ph: Math.random() * TAU });
+        if (!v.ringMoment) { v.ringMoment = {}; momentShiny("bubblerings", v.ringMoment, 20 * u, () => S.bubbleRings.length ? [S.bubbleRings[0].x, S.bubbleRings[0].y] : [-999, -999], () => S.bubbleRings.length > 0); }
+        S.bubbleRings.push({ x: v.x + d.dx * v.dir + v.dir * v.size * 0.4, y: v.y + d.dy, r: 14 * u, ph: Math.random() * TAU, shiny: !!v.ringMoment.shiny });
         watch("bubblerings", () => S.bubbleRings.map(r => [r.x, r.y]), 12 * u);
       }
     }
@@ -683,7 +686,7 @@
       const top = water.surface ? waveY(r.x) + 4 * u : -20 * u;
       if (r.y < top) { if (water.surface) ripples.push({ x: r.x, r: 1, a: 0.6 }); return false; }
       const w = r.r * (1 + Math.sin(r.ph) * 0.12), h = r.r * 0.3 * (1 - Math.sin(r.ph) * 0.2);
-      ctx.strokeStyle = "rgba(235,248,255,0.7)"; ctx.lineWidth = 3 * u;
+      ctx.strokeStyle = `rgba(${MOMENT_GLOW.bubblerings[r.shiny ? 1 : 0]},0.7)`; ctx.lineWidth = 3 * u;
       ctx.beginPath(); ctx.ellipse(r.x, r.y, w, h, Math.sin(r.ph * 0.5) * 0.15, 0, TAU); ctx.stroke();
       ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 1 * u;
       ctx.beginPath(); ctx.ellipse(r.x, r.y - h * 0.3, w * 0.8, h * 0.6, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
@@ -973,7 +976,7 @@
     crabmarch: () => { for (let i = 0; i < 6; i++) drawCrab({ x: 12 + i * 19, dir: 1, s: 12, speed: 0, pause: 9, leg: i, color: "#d8302a", leaving: 1 }, 0); },
     bubblerings: () => {
       drawDolphin(30, 56, 1, -0.2, 50, 0);
-      for (const [x, y, r] of [[70, 40, 10], [84, 22, 12], [96, 8, 13]]) { ctx.strokeStyle = "rgba(235,248,255,0.85)"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.3, 0, 0, TAU); ctx.stroke(); }
+      for (const [x, y, r] of [[70, 40, 10], [84, 22, 12], [96, 8, 13]]) { ctx.strokeStyle = `rgba(${glowOf("bubblerings")},0.85)`; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.3, 0, 0, TAU); ctx.stroke(); }
     },
     aurora: () => {
       const g = ctx.createLinearGradient(0, 0, 0, TH); g.addColorStop(0, "#0c2238"); g.addColorStop(1, "#03080e");

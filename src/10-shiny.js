@@ -63,6 +63,11 @@
     }
     registerMoreShinies(s, add, tag);
     registerWave2Shinies(s, add);
+    // the coral family on the floor (a clam with the golden pearl is the pearl's, not its own)
+    for (const g of s.ground) {
+      if (g.kind === "coral" || g.kind === "anemone" || g.kind === "sponges") add(g.kind, g, g.w * 0.3, () => [g.x, sandY(g.x) - 25 * u]);
+      if (g.kind === "clam" && g.pearl !== "gold") add("clam", g, g.s, () => [g.x, sandY(g.x) - g.s * 0.4]);
+    }
     registerRareShinies(s, add);
     registerFaunaShinies(s, add);
     // The moray in the wreck's hole. Rolled last, so the shinies of older shared seeds stay the same.
@@ -100,6 +105,12 @@
     ghostdiver: pal("#96ffd7>#c8a0ff #cdffeb>#ecdcff #061e20>#1a0830"),
     ghostsub: pal("#9affd8>#ff9a5a #3a8a74>#a83a1a #5ad0a0>#ffc060 #061e20>#2a0a04 #d8fff0>#fff0c8 #e8fff4>#ffe08a"),
     eelmigration: pal("", { body: "#f2c040" }),
+    // the moments with animals
+    baitball: pal("", { hue: 45, sat: 1.6, lit: -0.05 }),     // a golden ball of fish
+    sardinerun: pal("", { hue: 330, sat: 1.4 }),            // a rose-pink run
+    crabmarch: pal("", { hue: 205, sat: 1.1 }),             // blue crabs on the march
+    jellybloom: pal("", { hue: 160, sat: 1.4 }),            // a sea-green swarm
+    spawning: pal("", { rot: 0 }), coralspawn: pal("", { rot: 0 }), whalesong: pal("", { rot: 0 }), bubblerings: pal("", { rot: 0 }), // the animals keep their colours; the eggs and rings change (MOMENT_GLOW)
     // the sixth wave
     leviathan: pal("#0a141c>#2a0a1a #ffd27a>#7affd8"),
     lighthouse: pal("#dcffe6>#ffb860 #e8f8f0>#f2c040 #c85a5a>#3a5ad8"), // a golden lighthouse with an amber beam
@@ -162,6 +173,21 @@
     if (s.ghostSub) add("ghostsub", s.ghostSub, 50 * u, () => [s.ghostSub.x, s.ghostSub.cy || s.ghostSub.y]);
     if (s.ghostDiver) add("ghostdiver", s.ghostDiver, 24 * u, () => [s.ghostDiver.x, s.ghostDiver.cy || s.ghostDiver.y]);
   }
+
+  // A moment with animals can be shiny as a whole: one roll when it starts. holder keeps the moment's state, get says
+  // where it is and alive whether it is still there. The self-test makes every moment shiny, so all of it gets drawn.
+  function momentShiny(key, holder, r, get, alive) {
+    scene.shinies = scene.shinies.filter(e => e.obj !== holder);
+    delete holder.shiny;
+    if (selfTesting || Math.random() < shinyChance(key)) { holder.shiny = key; scene.shinies.push({ key, obj: holder, r, get, alive, temp: true }); }
+    return !!holder.shiny;
+  }
+  // The colour of the eggs, specks and rings of a moment: its own colour, or the shiny one while a shiny is drawn
+  // (in the ocean inside shinyDraw, in the logbook picture of the shiny).
+  const MOMENT_GLOW = { spawning: ["255,240,200", "150,255,190"], coralspawn: ["255,170,200", "140,210,255"], whalesong: ["220,240,255", "255,190,240"], bubblerings: ["235,248,255", "255,224,140"] };
+  const glowOf = key => MOMENT_GLOW[key][shinyPal ? 1 : 0];
+  // a colour in a moment's shiny scheme, for colours worked out before the drawing starts
+  function inPal(key, fn) { const keep = shinyPal; shinyPal = SHINY_PAL[key]; try { return fn(); } finally { shinyPal = keep; } }
 
   // A creature that has left and come back (or is new) gets a fresh shiny roll.
   function maybeShiny(key, obj, r, get, alive) {

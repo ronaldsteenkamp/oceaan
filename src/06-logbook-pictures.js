@@ -178,12 +178,12 @@
     spawning: () => {
       drawFishShape(38, 38, 0.1, 16, "#ef6f5e", "#7d2b22", 0.5, false);
       drawFishShape(84, 50, Math.PI - 0.1, 16, "#ef6f5e", "#7d2b22", 1.5, false);
-      ctx.fillStyle = "rgba(255,240,200,0.9)";
+      ctx.fillStyle = `rgba(${glowOf("spawning")},0.9)`;
       for (let i = 0; i < 26; i++) { ctx.beginPath(); ctx.arc(60 + Math.cos(i * 2.4) * (4 + i * 0.9), 44 + Math.sin(i * 2.4) * (3 + i * 0.6), 1.3, 0, TAU); ctx.fill(); }
     },
     coralspawn: () => {
       drawCoral({ x: 60, parts: buildCoral(90) });
-      ctx.fillStyle = "rgba(255,170,200,0.95)";
+      ctx.fillStyle = `rgba(${glowOf("coralspawn")},0.95)`;
       for (let i = 0; i < 30; i++) { ctx.beginPath(); ctx.arc(20 + (i * 29) % 80, 8 + (i * 17) % 50, 1.5, 0, TAU); ctx.fill(); }
     },
     storm: () => {

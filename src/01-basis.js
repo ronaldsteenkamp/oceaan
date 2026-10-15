@@ -240,6 +240,8 @@
   const SHINY_OTHER = {
     hatchlings: 150, eelmigration: 600, kraken: 50, ghost: 50, whalefall: 50, serpent: 50, megalodon: 50,
     goldpearl: 50, mobydick: 50, ghostdiver: 50, ghostsub: 50, leviathan: 50, lighthouse: 50, mermaid: 225,
+    // the moments with animals: one roll when the moment starts (see momentShiny in 10-shiny.js)
+    coralspawn: 40, spawning: 40, jellybloom: 40, crabmarch: 40, sardinerun: 40, baitball: 40, whalesong: 40, bubblerings: 40,
   };
   const SHINY_N = Object.assign({}, SHINY_OTHER, animalTable("shiny"));
   // Calendar events: a few days a year the ocean is a little different, for everyone on that date. They only change

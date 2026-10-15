@@ -336,6 +336,7 @@
     B.active = true; B.age = 0;
     B.R = Math.min(W, H) * 0.14;
     watch("baitball", () => B.active ? [B.cx, B.cy] : null, B.R);
+    momentShiny("baitball", B, B.R, () => [B.cx, B.cy], () => B.active);
     B.cx = W * (0.35 + Math.random() * 0.3); B.cy = H * (0.3 + Math.random() * 0.15);
     B.rot = Math.random() < 0.5 ? 1 : -1;
     const n = Math.round(90 + 50 * Math.min(1, (W * H) / (1280 * 800)));
@@ -408,7 +409,8 @@
       }
     }
     ctx.globalAlpha = 1 - outF;
-    const main = sh("#cfd8dc"), dark = sh("#5a6a74");
+    // a shiny ball is one colour scheme for all its fish (the hunters keep their own)
+    const [main, dark] = B.shiny ? inPal("baitball", () => [sh("#cfd8dc"), sh("#5a6a74")]) : [sh("#cfd8dc"), sh("#5a6a74")];
     for (let i = B.age > 31 ? -1 : B.fish.length - 1; i >= 0; i--) {
       const f = B.fish[i];
       f.a += f.sp * B.rot * k;
@@ -453,9 +455,11 @@
         cx /= sp.fish.length; cy /= sp.fish.length;
         for (let i = 0; i < 24; i++) eggs.push({ x: cx + (Math.random() - 0.5) * 40 * u, y: cy + (Math.random() - 0.5) * 30 * u, life: 8 + Math.random() * 3, sp });
         watch("spawning", () => eggs.length ? eggs.map(e => [e.x, e.y]) : null, 10 * u);
+        if (!S.spawnMoment) S.spawnMoment = {};
+        momentShiny("spawning", S.spawnMoment, 20 * u, () => eggs.length ? [eggs[0].x, eggs[0].y] : [-999, -999], () => eggs.length > 0);
       }
     }
-    ctx.fillStyle = "rgba(255,240,200,0.75)";
+    ctx.fillStyle = `rgba(${S.spawnMoment && S.spawnMoment.shiny ? MOMENT_GLOW.spawning[1] : MOMENT_GLOW.spawning[0]},0.8)`;
     eggs = eggs.filter(e => {
       e.life -= dtSec;
       e.y += 0.05 * u * k; e.x += (current * 0.4 + Math.sin(t + e.life) * 0.1) * k;
@@ -478,6 +482,7 @@
     const corals = scene.ground.filter(g => g.kind === "coral");
     if (corals.length && scene.moon.phase >= 0.97 && night > 0.6 && water.surface) {
       // on a full-moon night the reef releases its eggs all at once
+      if (!scene.coralMoment) { scene.coralMoment = {}; momentShiny("coralspawn", scene.coralMoment, 30 * u, () => coralSpawn.length ? [coralSpawn[0].x, coralSpawn[0].y] : [-999, -999], () => coralSpawn.length > 0); }
       if (Math.random() < 0.6 * k) {
         const g = corals[Math.floor(Math.random() * corals.length)], p = g.parts[Math.floor(Math.random() * g.parts.length)];
         coralSpawn.push({ x: g.x + p.dx + (Math.random() - 0.5) * 20 * u, y: sandY(g.x + p.dx) - 15 * u, vy: -(0.3 + Math.random() * 0.4) * u, r: (1.2 + Math.random() * 1.5) * u, ph: Math.random() * TAU });
@@ -485,7 +490,7 @@
       const cp = !scene.coralLogged && coralSpawn.find(p => lit(p.x, p.y, 10 * u));
       if (cp && hold("coralspawn", [cp.x, cp.y])) { scene.coralLogged = true; seen("coralspawn", [cp.x, cp.y]); }
     }
-    ctx.fillStyle = "rgba(255,170,200,0.85)";
+    ctx.fillStyle = `rgba(${scene.coralMoment && scene.coralMoment.shiny ? MOMENT_GLOW.coralspawn[1] : MOMENT_GLOW.coralspawn[0]},0.85)`;
     coralSpawn = coralSpawn.filter(p => {
       p.y += p.vy * k; p.x += (Math.sin(t + p.ph) * 0.2 + current * 0.5) * k;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill();

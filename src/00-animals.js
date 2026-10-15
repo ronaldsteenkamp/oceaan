@@ -961,6 +961,7 @@
     },
     coral: {
       nl: "Koraaltuin", en: "Coral garden", family: "Koralen, sponzen en schelpen", sci: "Anthozoa",
+      shiny: 60, pal: "", palRule: { hue: 285, hueLight: 300, hueDark: 260, sat: 1.25 },
       fact: ["Koraal is geen plant maar een kolonie van piepkleine diertjes: poliepen.",
         "Coral is not a plant but a colony of tiny animals: polyps."],
       note: ["Koralen leven samen met piepkleine algen in hun weefsel. Wordt het water te warm, dan stoten ze die af en verbleken ze.",
@@ -968,6 +969,7 @@
     },
     anemone: {
       nl: "Anemoon", en: "Anemone", family: "Koralen, sponzen en schelpen", sci: "Heteractis magnifica",
+      shiny: 60, pal: "", palRule: { hue: 190, hueLight: 175, sat: 1.3 },
       fact: ["Een anemoon steekt met netelcellen, maar clownvissen worden beschermd door een slijmlaagje.",
         "An anemone stings with stinging cells, but clownfish are protected by a layer of mucus."],
       note: ["Een anemoon kan heel langzaam over de bodem schuiven op zijn voet, om een betere plek te zoeken.",
@@ -975,6 +977,7 @@
     },
     sponges: {
       nl: "Sponzen", en: "Sponges", family: "Koralen, sponzen en schelpen", sci: "Porifera",
+      shiny: 60, pal: "", palRule: { hue: 48, hueDark: 30, sat: 1.4 },
       fact: ["Sponzen zijn dieren zonder organen. Ze pompen elke dag duizenden liters water door hun lichaam om voedsel eruit te halen.",
         "Sponges are animals without organs. Every day they pump thousands of litres of water through their bodies to filter out food."],
       note: ["Sommige sponzen worden duizenden jaren oud. Ze horen bij de oudste dieren op aarde.",
@@ -982,6 +985,7 @@
     },
     clam: {
       nl: "Reuzenschelp", en: "Giant clam", family: "Koralen, sponzen en schelpen", sci: "Tridacna gigas",
+      shiny: 60, pal: "", palRule: { hue: 330, hueLight: 345, sat: 1.3 },
       fact: ["Een reuzenschelp kan meer dan een meter breed en wel honderd jaar oud worden. Algen in zijn mantel geven hem kleur.",
         "A giant clam can grow more than a metre wide and live for a hundred years. Algae in its mantle give it colour."],
       note: ["Dat een reuzenschelp een duiker kan vangen, is een fabel. Hij sluit zich daarvoor veel te langzaam.",

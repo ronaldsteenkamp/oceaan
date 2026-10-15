@@ -66,7 +66,7 @@
   "ground": "anchor@0.92,anemone@0.17,bottle@0.46,chest@0.31,coral@0.56,eels@0.08,sponges@0.83",
   "life": "angelfish×1,archer×1,cleaners×1,crab×3,crownthorns×1,eels×1,hawksbill×1,moorish×1,octopus×1,puffer×1,ray×1,seahorse×2,slugs×3,squid×3,starfish×2,stonefish×1,urchin×1,xmastree×2",
   "fauna": "stonefish@0.95,xmastree@0.37,xmastree@0.77,moorish@0.28,angelfish@0.44,crownthorns@0.56,hawksbill@0.6",
-  "shinies": "",
+  "shinies": "anemone",
   "timers": "132,89,54,43"
  },
  "8": {

@@ -1153,7 +1153,7 @@
     const R = S.sardines;
     if (R.enabled && !R.active) {
       R.timer -= dtSec;
-      if (R.timer <= 0) { R.timer = 180 + Math.random() * 160; if (claim(40)) { startSardines(R); watch("sardinerun", () => R.active ? [[R.x, R.cy], [R.x - R.dir * R.len * 0.25, R.cy], [R.x + R.dir * R.len * 0.25, R.cy]] : null, 40 * u); } }
+      if (R.timer <= 0) { R.timer = 180 + Math.random() * 160; if (claim(40)) { startSardines(R); momentShiny("sardinerun", R, 40 * u, () => [R.x, R.cy], () => R.active); watch("sardinerun", () => R.active ? [[R.x, R.cy], [R.x - R.dir * R.len * 0.25, R.cy], [R.x + R.dir * R.len * 0.25, R.cy]] : null, 40 * u); } }
     }
     // shooting stars on a clear night
     const M = S.meteor;
@@ -1299,7 +1299,7 @@
     if (R.active) {
       R.x += R.dir * 1.3 * u * k; R.ph += 0.06 * k;
       ctx.save();
-      ctx.fillStyle = sh("#c8d8e4");
+      ctx.fillStyle = R.shiny ? inPal("sardinerun", () => sh("#c8d8e4")) : sh("#c8d8e4");
       ctx.beginPath();
       for (const [ox, oy, p] of R.fish) {
         const x = R.x + ox + Math.sin(R.ph + p) * 10 * u, wob = Math.sin(ox * 0.004 + R.ph * 0.7) * 30 * u, y = R.cy + oy * 46 * u * (1 - Math.abs(ox) / R.len) + wob + Math.cos(R.ph * 1.3 + p) * 4 * u;
@@ -1444,7 +1444,7 @@
       ctx.restore();
     },
     sardinerun: () => {
-      ctx.fillStyle = "#c8d8e4"; ctx.beginPath();
+      ctx.fillStyle = sh("#c8d8e4"); ctx.beginPath();
       for (let i = 0; i < 90; i++) { const x = 4 + (i * 53) % 112, y = 30 + ((i * 29) % 30) - Math.abs(x - 60) * 0.1, d = 1; ctx.moveTo(x + d * 4, y); ctx.lineTo(x - 3, y - 1.4); ctx.lineTo(x - 5, y - 2.4); ctx.lineTo(x - 4, y); ctx.lineTo(x - 5, y + 2.4); ctx.lineTo(x - 3, y + 1.4); ctx.closePath(); }
       ctx.fill();
       drawDolphin(34, 66, 1, -0.15, 44, 0.5);
