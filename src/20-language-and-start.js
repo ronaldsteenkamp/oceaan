@@ -164,6 +164,9 @@
       if (!THUMBS[base]) errors.push(`logboek ${k}: plaatje ontbreekt`);
     }
     if (new Set(AQ_ALL).size !== AQ_ALL.length) errors.push("aquarium: dubbele sleutel in AQ_ALL");
+    if (new Set(MILESTONES.map(m => m.id)).size !== MILESTONES.length) errors.push("mijlpalen: dubbele id");
+    for (const [id, key] of STICKERS) if (!MILESTONES.some(m => m.id === id) || !THUMBS[key]) errors.push(`sticker ${id}: mijlpaal of plaatje (${key}) ontbreekt`);
+    for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }
   }
 
   // The same seed must be the same ocean on a computer, a phone and a phone on its side.

@@ -342,7 +342,8 @@
   // every animal that lives in one water, for the water milestones
   const waterAnimals = name => { const w = WATERS.find(x => x.name === name); const dieren = groupKeys("Dieren"); return [...new Set([...Object.keys(w.life), ...w.visitors])].filter(k => dieren.includes(k)); };
   const rescued = () => store.get("oceaan-gered", 0);
-  const waterTier = (id, nl, en, name, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${waterAnimals(name).length} dieren van de ${wordNl}`, `all ${waterAnimals(name).length} animals of the ${wordEn}`],
+  // wordNl and wordEn include the article: "de Noordzee", "het kelpwoud"; "the North Sea", "the kelp forest"
+  const waterTier = (id, nl, en, name, wordNl, wordEn) => ({ id, name: [nl, en], goal: [`alle ${waterAnimals(name).length} dieren van ${wordNl}`, `all ${waterAnimals(name).length} animals of ${wordEn}`],
     prog: () => { const keys = waterAnimals(name); return [keys.filter(k => logbook.has(k)).length, keys.length]; }, reward: ["een sticker in je logboek", "a sticker in your logbook"] });
   // the photo tasks of the photo book (checked in 19-quests.js)
   const PHOTO_TASKS = [
@@ -379,14 +380,22 @@
     allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things", "een pijl die altijd naar iets zeldzaams wijst", "an arrow that always points to something rare"),
     { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: ["fotofilters voor je camera", "photo filters for your camera"] },
     { id: "rd", name: ["Redder", "Rescuer"], goal: ["5 dieren uit een spooknet bevrijd", "5 animals freed from a ghost net"], prog: () => [rescued(), 5], reward: ["een sticker, en bevrijde dieren zwemmen eerst een bedankrondje om je duiker", "a sticker, and freed animals first swim a thank-you lap round your diver"] },
-    waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "Noordzee", "North Sea"),
-    waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "diepzee", "deep sea"),
+    waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "de Noordzee", "the North Sea"),
+    waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "de diepzee", "the deep sea"),
+    waterTier("wr", "Rifkenner", "Reef expert", "rif", "het koraalrif", "the coral reef"),
+    waterTier("wk", "Kelpkenner", "Kelp expert", "kelpwoud", "het kelpwoud", "the kelp forest"),
+    waterTier("wi", "Poolreiziger", "Polar explorer", "ijszee", "de IJszee", "the polar sea"),
+    waterTier("wm", "Wortelkruiper", "Root crawler", "mangrove", "de mangrove", "the mangrove"),
+    waterTier("wg", "Grotduiker", "Cave diver", "grot", "de onderwatergrot", "the underwater cave"),
+    waterTier("wl", "Lagunekenner", "Lagoon expert", "lagune", "de lagune", "the lagoon"),
+    waterTier("ws", "Wierzwerver", "Weed wanderer", "sargasso", "de Sargassozee", "the Sargasso Sea"),
     { id: "vh", name: ["Volhouder", "Keeper-upper"], goal: ["7 opdrachten van de dag", "7 quests of the day"], prog: () => [store.get("oceaan-dagen", 0), 7], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "fj", name: ["Fotojager", "Photo hunter"], goal: ["het hele fotoboek", "the whole photo book"], prog: () => [PHOTO_TASKS.filter(x => store.get("oceaan-fotoboek", []).includes(x[0])).length, PHOTO_TASKS.length], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "sk", name: ["Sterrenkijker", "Stargazer"], goal: ["vallende sterren, maansverduistering en noorderlicht", "shooting stars, lunar eclipse and northern lights"], prog: () => [["meteor", "eclipse", "aurora"].filter(k => logbook.has(k)).length, 3], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
   ];
   // the stickers that milestones give, with the animal or moment shown on each
-  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];
+  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["wr", "clown"], ["wk", "otters"], ["wi", "polarbear"], ["wm", "archer"],
+    ["wg", "nautilus"], ["wl", "dugong"], ["ws", "sargassumfish"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
