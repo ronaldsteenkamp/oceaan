@@ -486,7 +486,7 @@
 
   // The backup holds everything you have collected: the logbook and also the album, rescued animals,
   // quests of the day, the photo book and the shinies you picked. Settings (volume, language) stay out.
-  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze"];
+  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze", "oceaan-speurlijst"];
   function exportLog() {
     const d = new Date().toISOString().slice(0, 10);
     const voortgang = {};
@@ -529,6 +529,7 @@
         saveAlbum();
       }
       shinyPick = new Set(store.get("oceaan-shinykeuze", []));
+      if (Array.isArray(p["oceaan-speurlijst"])) { hunt = [...new Set([...hunt, ...p["oceaan-speurlijst"]])].filter(k => typeof k === "string" && LOGGABLE.has(k) && !logbook.has(k)).slice(0, HUNT_MAX); saveHunt(); }
     }
     saveLog();
     applyRewards();

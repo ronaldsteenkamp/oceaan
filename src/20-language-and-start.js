@@ -115,6 +115,12 @@
       panelTab = "set"; renderPanel();
       for (const f of ["missing", "found", "shiny", "album", "all"]) { panelTab = "log"; logFilter = f; renderPanel(); }
       logFilter = "all";
+      // the hunt list: the page, the button and every kind of key (not saved: hunt is put back afterwards)
+      const keepHunt = hunt;
+      hunt = ["octopus", "shiny:crab", "aurora"];
+      for (const k of [...LOGGABLE]) huntChance(k);
+      panelTab = "log"; renderPanel(); openDetail("octopus"); closeDetail();
+      hunt = keepHunt;
       setLang(LANG === "nl" ? "en" : "nl"); panelTab = "log"; renderPanel(); openDetail("octopus"); panelTab = "set"; renderPanel();
       setLang(LANG === "nl" ? "en" : "nl");
       panelEl.hidden = true;

@@ -461,6 +461,7 @@
     rareEl.hidden = !scene.rare;
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
+    setTimeout(huntNotice, 1200);
     updateClock();
     describeScene();
     fade = soft ? 0.9 : 1;

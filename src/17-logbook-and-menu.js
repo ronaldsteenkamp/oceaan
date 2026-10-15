@@ -174,7 +174,7 @@
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
           ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
-        </dl>${detailNavHTML(key)}`,
+        </dl>${huntButtonHTML(key)}${detailNavHTML(key)}`,
     });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
@@ -392,6 +392,7 @@
     if (b.id === "photoDelete") { document.getElementById("photoDeleteConfirm").hidden = false; b.hidden = true; return; }
     if (b.id === "photoDeleteYes") { album = album.filter(x => x.id !== b.dataset.id); saveAlbum(); closeDetail(); toast(L("Foto verwijderd", "Photo removed")); return; }
     if (b.id === "detailBack") { closeDetail(); return; }
+    if (b.dataset.hunt) { toggleHunt(b.dataset.hunt); openDetail(detailKey, true); const hb = panelBody.querySelector("[data-hunt]"); if (hb) hb.focus(); return; }
     if (b.dataset.dnav) { detailStep(Number(b.dataset.dnav)); return; }
     if (b.id === "logExport") { exportLog(); return; }
     if (b.id === "logImport") { document.getElementById("logFile").click(); return; }

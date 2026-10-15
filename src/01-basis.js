@@ -288,6 +288,7 @@
     saveLog();
     fresh.add(key); saveFresh();
     announceNew(key);
+    huntFound(key);
     queueDiscovery(key, pos);
     if (panelEl.hidden || panelTab !== "log") bookDot.hidden = false;
     checkMilestones(before);

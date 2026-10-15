@@ -154,3 +154,55 @@
       <h4>${L(`Je vriend heeft, en jij nog niet (${theyHave.length})`, `Your friend has, and you do not yet (${theyHave.length})`)}</h4>${list(theyHave)}
       <h4>${L(`Jij hebt, en je vriend nog niet (${iHave.length})`, `You have, and your friend does not yet (${iHave.length})`)}</h4>${list(iHave)}`;
   }
+
+  // ---- the hunt list -----------------------------------------------------------------------
+  // Up to three things you have not found yet, pinned from their logbook page. A new ocean tells you when one of them
+  // is here (or may turn up), and finding one crosses it off. The sonar keeps listening only for rare things.
+  const HUNT_KEY = "oceaan-speurlijst", HUNT_MAX = 3;
+  let hunt = store.get(HUNT_KEY, []).filter(k => typeof k === "string" && LOGGABLE.has(k) && !logbook.has(k)).slice(0, HUNT_MAX);
+  const saveHunt = () => store.set(HUNT_KEY, hunt);
+  function toggleHunt(key) {
+    if (hunt.includes(key)) hunt = hunt.filter(k => k !== key);
+    else if (hunt.length >= HUNT_MAX) { toast(L(`Je speurlijst is vol (${HUNT_MAX}). Haal er eerst een af.`, `Your hunt list is full (${HUNT_MAX}). Take one off first.`)); return; }
+    else hunt.push(key);
+    saveHunt();
+  }
+  function huntButtonHTML(key) {
+    if (logbook.has(key)) return "";
+    const on = hunt.includes(key);
+    return `<button type="button" class="nb-back nb-hunt${on ? " on" : ""}" data-hunt="${key}" aria-pressed="${on}">${on ? L("✓ Op je speurlijst", "✓ On your hunt list") : L("+ Op mijn speurlijst", "+ Add to my hunt list")}</button>`;
+  }
+  // the hunt list on the first page of the logbook
+  function huntHTML() {
+    const list = hunt.filter(k => !logbook.has(k));
+    if (!list.length) return `<p class="nb-note">${L("Tip: zet iets wat je nog zoekt op je speurlijst, via zijn pagina in het logboek.", "Tip: put something you are still looking for on your hunt list, from its page in the logbook.")}</p>`;
+    return `<h4 class="nb-fam">${L("Speurlijst", "Hunt list")} <span>${list.length}/${HUNT_MAX}</span></h4><div class="cards">` +
+      list.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), false, true) : bookCard(k, false)).join("") + `</div>`;
+  }
+  // called from seen(): a find on the hunt list is crossed off
+  function huntFound(key) {
+    if (!hunt.includes(key)) return;
+    hunt = hunt.filter(k => k !== key); saveHunt();
+    toast(L(`Van je speurlijst gevonden: ${nm(key)}!`, `Found from your hunt list: ${nm(key)}!`), "important");
+  }
+  // "here" when it is in this ocean right now, "can" when it may turn up (a visitor, a moment, a shiny), "" when not
+  function huntChance(key) {
+    if (key.startsWith("w:")) return "";
+    const shiny = key.startsWith("shiny:"), base = shiny ? key.slice(6) : key, S = scene, life = presentLife(S);
+    const here = !!life[base] || S.ground.some(g => g.kind === base) || S.rare === base;
+    if (here) return shiny ? "can" : "here";
+    if (RARE_KEYS.includes(base)) return "";
+    if (water.visitors.includes(base)) return "can";
+    // moments: read the Dutch hint, which names the waters ("in de IJszee"), "elk water" or "wateren met een oppervlak"
+    const hint = (EVENT_HINTS[base] || "").toLowerCase();
+    if (MOMENT_KEYS.includes(base) && !hint.includes("behalve de " + NAMES["w:" + water.name].toLowerCase())
+      && (hint.includes(NAMES["w:" + water.name].toLowerCase()) || hint.includes("elk water") || (hint.includes("oppervlak") && water.surface))) return "can";
+    return "";
+  }
+  function huntNotice() {
+    if (aquarium || selfTesting || rebuilding || !hunt.length) return;
+    const here = hunt.filter(k => huntChance(k) === "here"), can = hunt.filter(k => huntChance(k) === "can");
+    const names = keys => keys.map(nm).join(L(" en ", " and "));
+    if (here.length) toast(L(`Speurlijst: ${names(here)} ${here.length > 1 ? "zijn" : "is"} hier! Roep de duiker.`, `Hunt list: ${names(here)} ${here.length > 1 ? "are" : "is"} here! Call the diver.`), "important");
+    if (can.length) toast(L(`Speurlijst: hier kan ${names(can)} langskomen.`, `Hunt list: ${names(can)} may turn up here.`));
+  }

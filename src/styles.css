@@ -382,6 +382,8 @@
   .nb-photo.shinybig { box-shadow: 0 0 0 3px rgba(214, 165, 40, 0.8), 0 8px 20px rgba(60, 40, 10, 0.15); }
   .nb-photo figcaption { padding-top: 6px; text-align: center; font-family: var(--hand); font-size: 24px; font-weight: 600; color: var(--ink); }
   .nb-back { align-self: flex-start; padding: 6px 14px; border-radius: 999px; font-size: 13px; }
+  .nb .nb-hunt { display: block; margin: 12px 0 4px; }
+  .nb .nb-hunt.on { background: #e6f4ef; border-color: rgba(40, 110, 95, 0.55); color: #1d5a4e; }
   .nb-fact { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
   .nb-dl { display: grid; gap: 8px; margin: 4px 0 0; }
   .nb-dl div { padding: 6px 0 6px 12px; border-left: 3px solid rgba(41, 80, 122, 0.4); }
