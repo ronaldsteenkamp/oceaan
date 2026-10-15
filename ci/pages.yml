@@ -1,0 +1,52 @@
+# To use: move this file to .github/workflows/ (needs a GitHub token with the "workflow" scope).
+# Builds the ocean from src/, runs the self-test in headless Chrome, and publishes dist/ to GitHub Pages.
+# On a pull request (or a push to another branch) it only builds and tests.
+name: Bouwen, testen en publiceren
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow==11.2.1
+      - name: Bouwen en zelftest
+        run: python build.py
+      - name: Schermafbeeldingen bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schermafbeeldingen
+          path: checks/*.png
+          if-no-files-found: ignore
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
