@@ -322,39 +322,12 @@
     return false;
   }
 
-  // Each ocean gives at most four new finds, so the logbook fills up slowly. The count is kept per ocean (its seed or
-  // aquarium code), so opening the same ocean again gives nothing extra. Waters, shinies, rare things and the practice
-  // dives do not count: those are always kept.
-  const FIND_CAP = 4, CAP_KEY = "oceaan-vondsten";
-  const capFree = key => key.startsWith("w:") || key.startsWith("shiny:") || RARE_KEYS.includes(key) || !!(aquarium && aquarium.intro);
-  const oceanCode = () => String(aquarium ? aqCode() : seed);
-  const capCount = () => store.get(CAP_KEY, {})[oceanCode()] || 0;
-  const capFull = key => !capFree(key) && !logbook.has(key) && capCount() >= FIND_CAP;
-  let capTold = null;
-  function capAdd() {
-    const m = store.get(CAP_KEY, {}), code = oceanCode(), n = (m[code] || 0) + 1;
-    delete m[code]; m[code] = n; // the most recent ocean last; only the last 200 are remembered
-    const keys = Object.keys(m);
-    for (const k of keys.slice(0, Math.max(0, keys.length - 200))) delete m[k];
-    store.set(CAP_KEY, m);
-    if (n >= FIND_CAP) capNote();
-  }
-  // said once per ocean: when the fourth find comes in, or the first time something new is passed by after that
-  function capNote() {
-    if (capTold === oceanCode()) return;
-    capTold = oceanCode();
-    toast(L(`Deze oceaan heeft je ${FIND_CAP} nieuwe vondsten gegeven. Meer nieuws vind je in een volgende oceaan; shiny's en zeldzame dingen tellen altijd.`,
-      `This ocean has given you ${FIND_CAP} new finds. You will find more in the next ocean; shinies and rare things always count.`));
-  }
-
   let rebuilding = false;
   function seen(key, pos) {
     if (!NAMES[key] || rebuilding || !LOGGABLE.has(key)) return;
     questEvent("seen", key);
     const entry = logbook.get(key);
     if (entry) { entry.n++; saveLog(); return; }
-    if (capFull(key)) { capNote(); return; }
-    if (!capFree(key)) capAdd();
     const before = reached();
     const d = new Date();
     logbook.set(key, { n: 1, first: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` });

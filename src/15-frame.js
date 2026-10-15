@@ -70,6 +70,8 @@
     if (audio.ac) { if (document.hidden) audio.ac.suspend(); else if (audio.on) audio.ac.resume(); }
   });
 
+  // what the water is multiplied with in the deepest night (see step)
+  const NIGHT_BLUE = [52, 78, 140];
   // two see-through colours laid on top of each other, as one colour: [r, g, b, alpha] -> "rgba(...)"
   function mixVeils(a, b) {
     if (!a && !b) return null;
@@ -242,11 +244,19 @@
     if (S.season === "herfst") tint = [70, 90, 50, 0.12 * (1 - night * 0.6)];
     else if (S.season === "lente") tint = [60, 150, 80, 0.09 * (1 - night * 0.6)];
     else if (S.season === "winter" && S.cold) tint = [170, 200, 235, 0.09 * (1 - night * 0.5)];
-    // murky or crowded water never goes fully black, so there is always something to see
-    const darkRaw = night * (water.glow ? 0.3 : 0.52) + stormLevel() * 0.15;
-    const dark = darkRaw > 0.01 ? Math.min(water.denseKelp || S.season === "herfst" ? 0.36 : 0.5, darkRaw) : 0;
-    const veil = mixVeils(tint, dark > 0 ? [2, 6, 22, dark] : null);
+    const veil = mixVeils(tint, null);
     if (veil) { ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H); }
+    // The night does not lay a grey veil over the water but multiplies it with deep night blue: the water gets darker,
+    // while colours and contrast stay, so what gives light (the lamp, jellies, glowing specks) stands out clearly.
+    // Murky or crowded water never goes as dark, so there is always something to see.
+    const darkRaw = night * (water.glow ? 0.55 : 1) + stormLevel() * 0.3;
+    const dark = Math.min(water.denseKelp || S.season === "herfst" ? 0.72 : 1, darkRaw);
+    if (dark > 0.01) {
+      ctx.globalCompositeOperation = "multiply";
+      ctx.fillStyle = `rgb(${NIGHT_BLUE.map(c => Math.round(255 + (c - 255) * dark)).join(",")})`;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "source-over";
+    }
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
     drawMoon();

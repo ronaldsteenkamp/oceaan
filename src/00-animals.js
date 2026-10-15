@@ -1309,7 +1309,7 @@
       nl: "Eidereend", en: "Common eider", family: "Zoogdieren en vogels", sci: "Somateria mollissima",
       life: { wadden: 0.6 },
       shiny: 150, hue: 40,
-      pal: "#1a1c20>#6a4428 #f2efe6>#d8b48a #a8d0a0>#e8c860 #9aa88a>#c89a5a",
+      pal: "#1a1c20>#6a4428 #f2efe6>#d8b48a #a8d0a0>#e8c860 #9aa88a>#c89a5a #f2ddc8>#b8865a",
       fact: ["Een eidereend duikt naar mosselen en kokkels en slikt ze in één keer heel door. Zijn sterke maag maalt de schelpen fijn.",
         "An eider dives for mussels and cockles and swallows them whole. Its strong stomach grinds the shells up."],
       note: ["Een eidereend bekleedt haar nest met zachte donsveren uit haar eigen borst. Daar komt het woord eiderdons vandaan.",

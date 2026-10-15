@@ -107,8 +107,10 @@
 
   // A common eider, a drake: a white back and breast, a black belly and cap, a pale green nape and a long sloping
   // bill. It floats on the swell and now and then dives down for cockles, which it swallows whole.
-  const EID_BODY = "M -40 -4 C -38 -18 -16 -24 6 -22 C 16 -22 22 -24 25 -30 C 28 -38 37 -42 43 -38 C 47 -35 47 -29 44 -25 C 40 -20 35 -14 32 -6 C 26 3 2 6 -22 5 C -34 4 -42 2 -40 -4 Z";
-  const EID_BILL = "M 42 -37 C 50 -35 56 -31 59 -27 C 54 -25.5 48 -26 43 -28 Z";
+  // (drawn like the pelican: a body that floats low, and a separate rounded head on a short neck)
+  const EID_BODY = "M -42 -4 C -40 -17 -20 -22 2 -20 C 14 -19 22 -16 26 -10 C 30 -3 24 3 4 5 C -16 6 -36 5 -42 -4 Z";
+  const EID_HEAD = "M 12 -16 C 15 -25 20 -33 26 -37 C 30 -41 37 -42 41 -39 C 44 -37 45 -33 44 -30 C 41 -27 36 -24 33 -18 C 30 -12 20 -11 12 -16 Z";
+  const EID_BILL = "M 41 -38 C 47 -36 54 -31 58 -26 C 52 -25 47 -26 43 -29 Z";
   function drawEider(f) {
     const s = f.s, under = f.under || 0;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100);
@@ -116,13 +118,18 @@
     if (under < 0.12) {
       ctx.save(); ctx.translate(-6, 3); ctx.rotate(Math.sin(f.ph * 2) * 0.5); fillUnder(P("M -3 0 L 3 0 L 6 10 L -6 10 Z"), sh("#8a8a6a")); ctx.restore();
       fillWith(P(EID_BODY), white);
-      // black flanks and tail, a black cap, and the soft green nape
+      // black flanks and tail, and the creamy pink breast of a drake
       paintInside(P(EID_BODY), black, P("M -60 -9 C -30 -6 0 -6 32 -10 L 40 20 L -60 20 Z"));
       paintInside(P(EID_BODY), black, P("M -60 -30 L -30 -30 L -30 10 L -60 10 Z"));
-      paintInside(P(EID_BODY), black, P("M 26 -46 L 50 -46 L 50 -35 C 44 -34 34 -34 26 -36 Z"));
-      paintInside(P(EID_BODY), green, P("M 24 -32 C 28 -26 32 -24 36 -26 C 36 -30 30 -34 24 -34 Z"));
+      paintInside(P(EID_BODY), sh("#f2ddc8"), P("M 8 -21 C 22 -21 30 -12 28 -9 L 10 -9 Z"));
+      // the head: a black cap down to the eye and the soft green nape
+      fillWith(P(EID_HEAD), white);
+      paintInside(P(EID_HEAD), black, P("M 26 -48 L 52 -48 L 52 -35 C 46 -35 36 -35 27 -37 Z"));
+      paintInside(P(EID_HEAD), green, P("M 18 -33 C 24 -27 30 -26 34 -29 C 33 -34 28 -37 22 -37 Z"));
       fillWith(P(EID_BILL), bill);
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(40, -33, 1.6, 0, TAU); ctx.fill();
+      // the standard eye: a dark dot with a small light catch
+      ctx.fillStyle = "#101418"; ctx.beginPath(); ctx.arc(38.5, -33.5, 1.9, 0, TAU); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.beginPath(); ctx.arc(37.9, -34.2, 0.6, 0, TAU); ctx.fill();
       underVeil(P(EID_BODY));
       ripple(-38, 30, f.ph);
     } else {

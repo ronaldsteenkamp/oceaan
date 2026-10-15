@@ -247,7 +247,7 @@
     reportEl.setAttribute("aria-label", L("Duikverslag", "Dive report"));
     const show = finds.slice(0, 8), more = finds.length - show.length;
     reportEl.innerHTML = `<p class="dr-title">${L("Duikverslag", "Dive report")}</p>
-      <p class="dr-sum">${finds.length === 1 ? L("Deze duik: 1 nieuwe vondst", "This dive: 1 new find") : L(`Deze duik: ${finds.length} nieuwe vondsten`, `This dive: ${finds.length} new finds`)}${aquarium && aquarium.intro ? "" : ` · ${L("deze oceaan", "this ocean")} ${Math.min(FIND_CAP, capCount())}/${FIND_CAP}`}</p>
+      <p class="dr-sum">${finds.length === 1 ? L("Deze duik: 1 nieuwe vondst", "This dive: 1 new find") : L(`Deze duik: ${finds.length} nieuwe vondsten`, `This dive: ${finds.length} new finds`)}</p>
       <div class="dr-grid">${show.map(k => `<figure${k.startsWith("shiny:") ? ' class="shiny"' : ""}><img alt="" src="${thumbURL(k, true, 2)}"><figcaption></figcaption></figure>`).join("")}</div>
       ${more > 0 ? `<p class="dr-more">${L(`en nog ${more}, in je logboek`, `and ${more} more, in your logbook`)}</p>` : ""}`;
     reportEl.querySelectorAll("figcaption").forEach((c, i) => { c.textContent = nmBreak(show[i]); });

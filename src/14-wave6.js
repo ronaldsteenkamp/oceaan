@@ -599,11 +599,14 @@
     ctx.save(); ctx.translate(-32, 0); ctx.rotate(Math.sin(f.ph * 2) * 0.25); fillWith(P(GAR_TAIL), fin); ctx.restore();
     fillWith(P(GAR_DORSAL), fin); fillWith(P(GAR_ANAL), fin);
     fillWith(P(GAR_BODY), orange);
-    ctx.save(); ctx.clip(P(GAR_BODY)); ctx.fillStyle = light; ctx.beginPath(); ctx.ellipse(12, -9, 28, 7, -0.1, 0, TAU); ctx.fill(); ctx.restore();
+    // the light falls from above: a deeper orange back, a paler belly
+    paintInside(P(GAR_BODY), fin, P("M -40 -30 L 50 -30 L 50 -12 C 30 -9 0 -9 -40 -8 Z"));
+    paintInside(P(GAR_BODY), light, P("M -40 8 C 0 6 30 6 50 5 L 50 30 L -40 30 Z"));
     ctx.save(); ctx.translate(16, 4); ctx.rotate(0.4 + Math.sin(f.ph * 4) * 0.35); ctx.fillStyle = fin; ctx.beginPath(); ctx.ellipse(-5, 0, 7, 3.2, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.strokeStyle = fin; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(44, 3); ctx.quadraticCurveTo(40, 6, 36, 5); ctx.stroke();
-    ctx.fillStyle = sh("#f8b070"); ctx.beginPath(); ctx.arc(32, -6, 4.8, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.arc(32.6, -6, 3, 0, TAU); ctx.fill();
+    // the standard eye: a dark dot with a small light catch
+    ctx.fillStyle = "#101418"; ctx.beginPath(); ctx.arc(32.4, -6, 3, 0, TAU); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.beginPath(); ctx.arc(31.4, -7, 1, 0, TAU); ctx.fill();
     ctx.restore();
   }
   // A leopard shark: slim and bronze-grey, with dark saddles across its back and spots on its sides.

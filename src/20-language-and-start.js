@@ -114,15 +114,7 @@
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
     }
     checkPictures(errors);
-    // four new finds per ocean: a full ocean stops ordinary finds, never a shiny, a rare thing or a water
-    try {
-      const keep = store.get(CAP_KEY, {}), full = Object.assign({}, keep, { [oceanCode()]: FIND_CAP });
-      store.set(CAP_KEY, full);
-      const plain = BASE_LOG_KEYS.find(k => !logbook.has(k) && !capFree(k));
-      if (plain && !capFull(plain)) errors.push(`vondstenlimiet: ${plain} wordt niet tegengehouden in een volle oceaan`);
-      if (capFull("shiny:crab") || capFull(RARE_KEYS[0]) || capFull("w:rif")) errors.push("vondstenlimiet: shiny, zeldzaam of water wordt tegengehouden");
-      store.set(CAP_KEY, keep);
-    } catch (e) { errors.push("vondstenlimiet: " + e.message); }
+    checkNewLimit(errors);
     for (const e of new Set(thumbErrors)) errors.push(`plaatje ${e}`);
     for (const b of brushLeaks) errors.push(`penseel niet teruggezet na een frame (${b})`);
     try {
@@ -280,12 +272,29 @@
       for (const [nl, en, keys] of subs) {
         html += `<h3>${L(nl, en)}</h3><div class="sb-grid">` + keys.map(k => {
           const pics = [thumbURL(k, true), SHINY_KEYS.includes(k) ? thumbURL("shiny:" + k, true) : "", FULL_THUMBS.has(k) ? "" : thumbURL(k, false)];
-          return `<figure><div>${pics.filter(Boolean).map(src => `<img alt="" src="${src}">`).join("")}</div><figcaption>${nm(k)}</figcaption></figure>`;
+          return `<figure data-key="${k}"><div>${pics.filter(Boolean).map(src => `<img alt="" src="${src}">`).join("")}</div><figcaption>${nm(k)}</figcaption></figure>`;
         }).join("") + `</div>`;
       }
     }
     el.innerHTML = html;
     document.body.appendChild(el);
+  }
+
+  // An ocean for a player with an empty logbook holds at most four new animals, and building it twice gives the same ocean.
+  function checkNewLimit(errors) {
+    const keep = { W, H, u, rng, scene, water, seed, leaveOut }, wasTesting = selfTesting;
+    try {
+      selfTesting = false;
+      for (let sd = 1; sd <= 12; sd++) {
+        W = 1440; H = 900; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd);
+        buildLimited(true);
+        const here = newHere(), first = here.join(",");
+        if (here.length > NEW_LIMIT) errors.push(`nieuwe dieren: oceaan ${sd} heeft er ${here.length} (${first})`);
+        rng = mulberry32(sd); buildLimited(true);
+        if (newHere().join(",") !== first) errors.push(`nieuwe dieren: oceaan ${sd} is de tweede keer anders`);
+      }
+    } catch (e) { errors.push("nieuwe dieren: " + e.message); }
+    finally { selfTesting = wasTesting; ({ W, H, u, rng, scene, water, seed, leaveOut } = keep); }
   }
 
   // Every animal's picture has something on it, also after it has been put in its frame.
@@ -320,7 +329,7 @@
   resize();
   // read the address before newVariant writes the seed into it
   const startHash = location.hash;
-  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek))?$/.exec(startHash);
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek|nacht))?$/.exec(startHash);
   if (startHash === "#stijlblad") {
     welcomeEl.hidden = true;
     newVariant(7, false);
@@ -340,6 +349,8 @@
       }, 1900); // late, so the screenshot catches the ring and the polaroid halfway
     }
     if (screenTest[2] === "menu") menuBtn.click();
+    // the middle of the night (the day takes 160 seconds; night is deepest halfway)
+    if (screenTest[2] === "nacht") scene.dayOffset = 0.5 - t / 160;
   } else {
     const initial = seedFromHash();
     initIntro();

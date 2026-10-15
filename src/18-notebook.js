@@ -34,7 +34,7 @@
       ${eventHTML()}
       ${huntHTML()}
       ${glintHTML()}
-      <p class="nb-note">${L(`Elke oceaan geeft hooguit ${FIND_CAP} nieuwe vondsten. Shiny's en zeldzame dingen tellen altijd.`, `Every ocean gives at most ${FIND_CAP} new finds. Shinies and rare things always count.`)}</p>
+      <p class="nb-note">${L(`In elke oceaan zwemmen hooguit ${NEW_LIMIT} dieren die nog niet in je logboek staan. Momenten en zeldzame dingen komen daar nog bij.`, `Every ocean holds at most ${NEW_LIMIT} animals that are not in your logbook yet. Moments and rare things come on top of that.`)}</p>
       <p class="nb-note">${introLeft() ? L(`Nieuwe oceaan: eerst je oefenduiken, nog ${INTRO.length - introDone()}. Daarna elke ${durationText(lockSeconds())}.`, `New ocean: first your practice dives, ${INTRO.length - introDone()} to go. After that every ${durationText(lockSeconds())}.`) : store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
       <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;

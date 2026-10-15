@@ -52,8 +52,7 @@
   // Something new for the logbook needs a moment in the lamp: a ring fills up in about a second (half a second in calm
   // mode), and it is forgiving: when the lamp slips off, the ring only slowly runs back. What is already in the logbook,
   // and the water itself, count at once.
-  // no ring for what is known already, or for something new once this ocean has given its four finds
-  const holdNeed = key => selfTesting || key.startsWith("w:") || logbook.has(key) || !LOGGABLE.has(key) || capFull(key) ? 0 : restMode ? 0.5 : 1;
+  const holdNeed = key => selfTesting || key.startsWith("w:") || logbook.has(key) || !LOGGABLE.has(key) ? 0 : restMode ? 0.5 : 1;
   function checkWatch() {
     if ((!diverMode && !subLamp()) || !scene.watch.length) return;
     const dt = Math.min(0.1, frameK / 60);
@@ -214,7 +213,25 @@
   const FLOOR_KEEP = new Set(["whalefall", "chest", "bottle", "clam", "volcano"]);
   const FLOOR_FULL_W = { wreck: 520, plane: 380, whalefall: 420, city: 340 };
   const FLOOR_BUDGET = 820, FLOOR_BIG = 2;
+  // Every water has its own things on the floor; anything else that only decorates (a diving helmet, a phone box,
+  // amphorae outside the cave) is "general", and a random ocean gets at most one of those.
+  const OWN_PROPS = {
+    rif: ["coral", "anemone", "sponges", "seagrass", "wreck", "rocks"],
+    diepzee: ["vent", "brine", "volcano", "rocks", "wreck"],
+    noordzee: ["wreck", "mine", "anchor", "plane", "bell", "rocks", "car"],
+    kelpwoud: ["rocks", "arch", "anchor", "wheel", "seagrass"],
+    ijszee: ["rocks", "anchor", "wreck", "brine"],
+    mangrove: ["seagrass", "rocks", "idol", "wheel"],
+    grot: ["ruins", "statue", "amphora", "idol", "skull", "rocks", "arch"],
+    lagune: ["seagrass", "coral", "anemone", "sponges", "rocks"],
+    sargasso: ["wreck", "bell", "wheel", "plane", "cannon", "anchor"],
+    wadden: ["wreck", "anchor", "bell", "seagrass", "rocks"],
+  };
   function calmFloor(big, small) {
+    const own = new Set(OWN_PROPS[water.name] || []);
+    let general = 0;
+    const once = g => !PROP_KEYS.includes(g.kind) || own.has(g.kind) || FLOOR_KEEP.has(g.kind) || LOGGABLE.has(g.kind) || general++ < 1;
+    big = big.filter(once); small = small.filter(once);
     const width = g => (FLOOR_FULL_W[g.kind] || g.w / u) + 30;
     const must = new Set(), kinds = new Set();
     for (const g of [...big, ...small]) if ((FLOOR_KEEP.has(g.kind) || LOGGABLE.has(g.kind)) && !kinds.has(g.kind)) { must.add(g); kinds.add(g.kind); }
@@ -226,10 +243,41 @@
     return [big.filter(g => keep.has(g)), small.filter(g => keep.has(g))];
   }
 
+  // After the practice dives an ocean holds at most four animals that are not in your logbook yet (visitors that may
+  // come by count too). Which four is fixed per seed. The others are left out by building the ocean again with their
+  // chance set to nothing: every die still rolls, so the rest of the ocean stays as it was. The choice is kept for
+  // this ocean, so turning the phone does not bring them back. Waters, moments, rare things and shinies do not count,
+  // fish schools and jellies are always there, and an aquarium keeps what was chosen.
+  const NEW_LIMIT = 4;
+  let leaveOut = null;
+  function newHere() {
+    const life = presentLife(scene);
+    return [...new Set([...Object.keys(life).filter(k => life[k]), ...scene.visitorPool])]
+      .filter(k => ANIMALS[k] && !logbook.has(k) && k !== "fish" && k !== "jelly").sort();
+  }
+  function buildLimited(limit) {
+    leaveOut = null;
+    buildScene();
+    if (!limit) return;
+    const keep = new Set(sub("nieuw", () => shuffle(newHere())).slice(0, NEW_LIMIT));
+    const out = new Set();
+    // leaving something out can let another animal in (the dice fall a little differently): then that one goes too
+    for (let i = 0; i < 6; i++) {
+      const extra = newHere().filter(k => !keep.has(k));
+      if (!extra.length) break;
+      for (const k of extra) out.add(k);
+      leaveOut = out; rng = mulberry32(seed); buildScene();
+    }
+  }
+
   function buildScene() {
     shadeCache.clear();
     const wi = waterOfSeed(seed, rng());
     water = aquarium ? aqWater(aquarium) : WATERS[wi];
+    if (leaveOut && leaveOut.size && !aquarium) water = Object.assign({}, water, {
+      life: Object.fromEntries(Object.entries(water.life).map(([k, v]) => [k, leaveOut.has(k) ? 0 : v])),
+      visitors: water.visitors.filter(k => !leaveOut.has(k)),
+    });
     const density = Math.max(0.45, Math.min(1.2, (W * H) / (1280 * 800)));
     const P = water.props, Lf = water.life;
     const s = { sand: { frac: range(0.08, 0.13), o1: range(0, TAU), o2: range(0, TAU) } };
@@ -525,7 +573,7 @@
     rng = mulberry32(seed);
     const ev = aquarium ? null : activeEvent();
     oceanBoost = (personalOcean && !aquarium && !selfTesting ? glintBoost() : 1) * (ev && ev.shiny || 1);
-    buildScene();
+    buildLimited(!aquarium && !selfTesting);
     if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
     personalOcean = false;
     seedEl.textContent = seed + oceanTag();
