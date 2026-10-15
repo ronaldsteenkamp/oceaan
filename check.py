@@ -3,7 +3,7 @@
 Gebruik: python check.py [pagina] [--zaden-vastleggen]
 Standaard wordt dist/oceaan.html gecontroleerd (eerst bouwen met python build.py). Het script:
   1. opent de pagina met #zelftest in een onzichtbare Chrome en leest de uitslag;
-  2. vergelijkt de eerste 30 oceanen met zaden.json en meldt welke gedeelde links er nu anders uitzien
+  2. vergelijkt 35 vaste oceanen (seeds 1 tot 30 en vijf Waddenzee-seeds) met zaden.json en meldt welke gedeelde links er nu anders uitzien
      (een waarschuwing, geen fout; met --zaden-vastleggen wordt de nieuwe stand de standaard);
   3. maakt schermafbeeldingen op computer-, tablet- en telefoonformaat in checks/.
 Geeft exitcode 1 als de zelftest een fout vindt.
@@ -63,7 +63,7 @@ def self_test(url, count=40):
 
 
 def compare_seeds(prints):
-    """Vergelijkt de vingerafdruk van de eerste 30 oceanen met zaden.json. Een verschil is geen fout (soms is het
+    """Vergelijkt de vingerafdruk van de vaste oceanen met zaden.json. Een verschil is geen fout (soms is het
     de bedoeling), maar wel iets om te weten: wie een oude link opent, ziet dan een andere oceaan."""
     if "--zaden-vastleggen" in sys.argv or not SEEDS.exists():
         SEEDS.write_text(json.dumps(prints, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
@@ -76,7 +76,7 @@ def compare_seeds(prints):
             parts = sorted(k for k in set(now) | set(before) if before.get(k) != now.get(k))
             changed.append(f"  oceaan {sd}: {', '.join(parts)}")
     if not changed:
-        return "zaden: de eerste 30 oceanen zijn hetzelfde als voorheen"
+        return f"zaden: de {len(prints)} vaste oceanen zijn hetzelfde als voorheen"
     return (f"LET OP: {len(changed)} van de {len(prints)} gedeelde oceanen zien er nu anders uit (oude links tonen iets anders):\n"
             + "\n".join(changed) + "\nIs dat de bedoeling? Leg de nieuwe stand vast met: python build.py --zaden-vastleggen")
 

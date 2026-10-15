@@ -317,7 +317,7 @@
   // Globetrotter: choose which water the next ocean has. The water follows from the first number of a seed,
   // so a seed with the chosen water is easy to find.
   function seedForWater(wi) {
-    for (let i = 0; i < 20000; i++) { const s = randomSeed(); if (Math.floor(mulberry32(s >>> 0)() * WATERS.length) === wi) return s; }
+    for (let i = 0; i < 20000; i++) { const s = randomSeed(); if (waterOfSeed(s, mulberry32(s >>> 0)()) === wi) return s; }
     return randomSeed();
   }
   let waterPickEl = null;

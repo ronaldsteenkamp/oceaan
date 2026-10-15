@@ -28,7 +28,7 @@
     if (s.pistol) s.pistol.x = remap(s.pistol.x);
     if (s.spider) s.spider.x = remap(s.spider.x);
 
-    s.eels = { enabled: ["sargasso", "noordzee", "kelpwoud", "mangrove"].includes(water.name), timer: range(50, 120), list: [], logged: false };
+    s.eels = { enabled: ["sargasso", "noordzee", "kelpwoud", "mangrove", "wadden"].includes(water.name), timer: range(50, 120), list: [], logged: false };
     s.quake = { timer: range(110, 260), age: -1 };
     s.march = { enabled: !s.canyon, timer: range(70, 160), queue: [], list: [], next: 0, logged: false };
     s.bubbleRings = [];

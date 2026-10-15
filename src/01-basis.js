@@ -107,7 +107,22 @@
       surface: true, sargasso: true, fewKelp: true,
       props: { anchor: 0.4, bell: 0.3, bottle: 0.7, canyon: 0.4, chest: 0.4, helmet: 0.3, idol: 0.1, mine: 0.3, phonebox: 0.1, plane: 0.3, rocks: 0.5, skull: 0.4, wheel: 0.4, wreck: 0.5 },
       visitors: [] },
+    // The Wadden Sea: shallow, cool and murky with sand and silt, flat as a table (no abyss), with sandbanks near the top.
+    // It came after the first nine: only seeds from WADDEN_SEED up are Wadden Sea, so every older link stays the same.
+    { name: "wadden", top: "#9cb2a2", mid: "#5a7466", bottom: "#28382e", tintK: 0.32,
+      ray: "240,245,225", rayA: 0.07, snow: "215,212,190",
+      sand: ["#aa9e80", "#5a5240"], rock: "#5c5a4e",
+      kelp: ["#6a7a3a", "#7a8a42", "#556a30"],
+      fish: [["#c8d0cc", "#5a6a66"], ["#b8b090", "#5a5440"], ["#d0d8d8", "#6a7478"]],
+      jelly: ["240,230,210", "225,235,250"], glow: false, whale: "18,34,30",
+      surface: true, mudflat: true, fewKelp: true,
+      props: { anchor: 0.45, bell: 0.2, bottle: 0.6, cannon: 0.15, chest: 0.25, helmet: 0.2, mine: 0.25, rocks: 0.3, seagrass: 0.6, skull: 0.1, wheel: 0.3, wreck: 0.3 },
+      visitors: [] },
   ];
+  // How the water of an ocean is chosen: the first roll of a seed picks one of the first nine waters, as it always did.
+  // Seeds from WADDEN_SEED up (randomSeed gives them about one time in eleven) are the Wadden Sea.
+  const FIRST_WATERS = 9, WADDEN_SEED = 1e9, SEED_RANGE = 1.1e9;
+  const waterOfSeed = (sd, firstRoll) => sd >= WADDEN_SEED ? WATERS.findIndex(w => w.name === "wadden") : Math.floor(firstRoll * FIRST_WATERS);
   for (const w of WATERS) w.life = {};
   for (const [key, a] of Object.entries(ANIMALS)) {
     for (const w of WATERS) {
@@ -121,9 +136,11 @@
   const LIFE_KEYS = Object.keys(ANIMALS).filter(k => ANIMALS[k].life);
   const VIS_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].visits), "sub"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse"];
-  // An aquarium code has one bit per key, in this order. Keys only ever go at the end, so codes stay readable:
-  // AQ_BASE is the order up to the sixth wave, and new animals follow in the order of 00-animals.js.
-  const AQ_BASE = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish", "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal", "mermaid", "kraken", "ghost", "whalefall", "amphora", "car", "bell", "clam", "seagrass", "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga", "serpent", "megalodon", "goldpearl", "wheel", "idol", "phonebox", "sponges", "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale", "aurora", "mobydick", "ghostdiver", "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear", "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller", "ghostsub", "xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet", "herring", "greenland", "leatherback", "leviathan", "lighthouse"];
+  // An aquarium code has one bit per key, in this order. Keys only ever go at the end, so codes stay readable.
+  // A new animal that lives somewhere or visits goes at the end of AQ_BASE by hand (the self-test checks it), so its bit
+  // never moves, wherever its record stands in 00-animals.js.
+  const AQ_BASE = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish", "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal", "mermaid", "kraken", "ghost", "whalefall", "amphora", "car", "bell", "clam", "seagrass", "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga", "serpent", "megalodon", "goldpearl", "wheel", "idol", "phonebox", "sponges", "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale", "aurora", "mobydick", "ghostdiver", "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear", "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller", "ghostsub", "xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet", "herring", "greenland", "leatherback", "leviathan", "lighthouse",
+    "lugworm", "cockle", "shrimp", "eider"];
   const AQ_ALL = [...AQ_BASE, ...Object.keys(ANIMALS).filter(k => (ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k))];
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_BASE.
@@ -134,6 +151,7 @@
     rif: ["mermaid", "goldpearl"], lagune: ["goldpearl", "mermaid"], diepzee: ["kraken", "megalodon", "whalefall", "ghostsub", "leviathan"],
     noordzee: ["ghost", "ghostdiver", "ghostsub", "lighthouse"], kelpwoud: ["mermaid", "serpent", "lighthouse"], ijszee: ["mobydick", "ghostsub", "lighthouse"],
     mangrove: ["serpent"], grot: ["ghostdiver", "kraken"], sargasso: ["ghost", "mobydick", "megalodon", "whalefall", "leviathan"],
+    wadden: ["lighthouse", "ghost"],
   };
   const MOMENT_KEYS = ["giant", "baitball", "spawning", "coralspawn", "storm", "eruption", "task", "jellybloom", "glowtide", "hatchlings", "whalesong",
     "eelmigration", "quake", "crabmarch", "bubblerings", "ghostnet", "waterspout", "whirlpool", "sardinerun", "meteor", "eclipse"];
@@ -141,7 +159,7 @@
   const NAMES = {
     "w:rif": "Koraalrif", "w:diepzee": "Diepzee", "w:noordzee": "Noordzee", "w:kelpwoud": "Kelpwoud",
     "w:ijszee": "IJszee", "w:mangrove": "Mangrove", "w:grot": "Onderwatergrot", "w:lagune": "Lagune",
-    "w:sargasso": "Sargassozee", wreck: "Piratenwrak", plane: "Vliegtuigwrak", chest: "Schatkist",
+    "w:sargasso": "Sargassozee", "w:wadden": "Waddenzee", wreck: "Piratenwrak", plane: "Vliegtuigwrak", chest: "Schatkist",
     anchor: "Anker", cannon: "Kanon", ruins: "Zuilen", statue: "Atlantis",
     city: "Gezonken stad", arch: "Rotsboog", helmet: "Duikerhelm", mine: "Zeemijn",
     bottle: "Flessenpost", skull: "Doodshoofd", vent: "Heetwaterbron", volcano: "Onderzeese vulkaan",
@@ -161,7 +179,7 @@
   const NAMES_EN = {
     "w:rif": "Coral reef", "w:diepzee": "Deep sea", "w:noordzee": "North Sea", "w:kelpwoud": "Kelp forest",
     "w:ijszee": "Polar sea", "w:mangrove": "Mangrove", "w:grot": "Underwater cave", "w:lagune": "Lagoon",
-    "w:sargasso": "Sargasso Sea", wreck: "Pirate wreck", plane: "Plane wreck", chest: "Treasure chest",
+    "w:sargasso": "Sargasso Sea", "w:wadden": "Wadden Sea", wreck: "Pirate wreck", plane: "Plane wreck", chest: "Treasure chest",
     anchor: "Anchor", cannon: "Cannon", ruins: "Columns", statue: "Atlantis",
     city: "Sunken town", arch: "Rock arch", helmet: "Diving helmet", mine: "Sea mine",
     bottle: "Message in a bottle", skull: "Skull", vent: "Hydrothermal vent", volcano: "Undersea volcano",
@@ -184,7 +202,7 @@
   const LOG_SUBS = {
     "Wateren": [
       ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
-      ["Koel en open", "Cool and open", ["w:kelpwoud", "w:noordzee", "w:sargasso"]],
+      ["Koel en open", "Cool and open", ["w:wadden", "w:kelpwoud", "w:noordzee", "w:sargasso"]],
       ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
     ],
     "Dieren": FAMILIES.map(([nl, en]) => [nl, en, Object.keys(ANIMALS).filter(k => ANIMALS[k].family === nl)]),
@@ -403,7 +421,9 @@
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
     shinyTier("s50", "Glanskenner", "Shine connoisseur", 50),
     { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
-    allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
+    // whoever had all nine waters before the Wadden Sea came keeps this reward (see GLOBE_KEY below)
+    Object.assign(allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
+      { prog: () => { const n = groupKeys("Wateren").length; return store.get(GLOBE_KEY, false) ? [n, n] : [groupHave("Wateren"), n]; } }),
     allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam en een extra veldnotitie bij elk dier in je logboek", "the scientific name and an extra field note for every animal in your logbook"),
     { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: ["een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"] },
     allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
@@ -423,6 +443,12 @@
     { id: "fj", name: ["Fotojager", "Photo hunter"], goal: ["het hele fotoboek", "the whole photo book"], prog: () => [PHOTO_TASKS.filter(x => store.get("oceaan-fotoboek", []).includes(x[0])).length, PHOTO_TASKS.length], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "sk", name: ["Sterrenkijker", "Stargazer"], goal: ["vallende sterren, maansverduistering en noorderlicht", "shooting stars, lunar eclipse and northern lights"], prog: () => [["meteor", "eclipse", "aurora"].filter(k => logbook.has(k)).length, 3], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
   ];
+  // The Wadden Sea made ten waters. A logbook that already had the first nine keeps the Globetrotter reward;
+  // this is worked out once, on the first visit after the update (called from the start in 20-language-and-start.js).
+  const GLOBE_KEY = "oceaan-wereldreiziger";
+  function keepGlobetrotter() {
+    if (WATERS.slice(0, FIRST_WATERS).every(w => logbook.has("w:" + w.name))) store.set(GLOBE_KEY, true);
+  }
   // the stickers that milestones give, with the animal or moment shown on each
   const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["wr", "clown"], ["wk", "otters"], ["wi", "polarbear"], ["wm", "archer"],
     ["wg", "nautilus"], ["wl", "dugong"], ["ws", "sargassumfish"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];

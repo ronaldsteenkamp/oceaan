@@ -839,21 +839,27 @@
     }
   }
 
+  // Animals from the seventh round on (stream: true) roll from a stream of their own, so adding one never moves
+  // anything in the oceans that already existed; the older ones keep rolling from the main stream, as they always did.
   function buildFauna(s, Lf, remap) {
     s.fauna = [];
     for (const key in FAUNA) {
-      const F = FAUNA[key];
-      if (!chance(Lf[key] || 0)) continue;
-      if ((F.kind === "surface" || F.kind === "dive") && !water.surface) continue;
-      if (s.season === "winter" && s.cold && ANIMALS[key] && ANIMALS[key].winterLeaves && ((seed + key.length) & 1)) continue; // many seabirds leave in winter
-      const n = F.count ? F.count[0] + Math.floor(rng() * (F.count[1] - F.count[0] + 1)) : 1;
-      for (let i = 0; i < n; i++) {
-        const o = { key, x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(F.size[0], F.size[1]) * u, ph: range(0, TAU), tx: rng() * W };
-        o.band = F.band ? range(F.band[0], F.band[1]) : 0.5;
-        o.lift = F.lift ? range(F.lift[0], F.lift[1]) * u : 0;
-        if (F.kind === "floor" || F.kind === "glide") o.x = remap(o.x);
-        s.fauna.push(o);
-      }
+      if (FAUNA[key].stream) sub("fauna:" + key, () => spawnFauna(s, key, Lf, remap));
+      else spawnFauna(s, key, Lf, remap);
+    }
+  }
+  function spawnFauna(s, key, Lf, remap) {
+    const F = FAUNA[key];
+    if (!chance(Lf[key] || 0)) return;
+    if ((F.kind === "surface" || F.kind === "dive") && !water.surface) return;
+    if (s.season === "winter" && s.cold && ANIMALS[key] && ANIMALS[key].winterLeaves && ((seed + key.length) & 1)) return; // many seabirds leave in winter
+    const n = F.count ? F.count[0] + Math.floor(rng() * (F.count[1] - F.count[0] + 1)) : 1;
+    for (let i = 0; i < n; i++) {
+      const o = { key, x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(F.size[0], F.size[1]) * u, ph: range(0, TAU), tx: rng() * W };
+      o.band = F.band ? range(F.band[0], F.band[1]) : 0.5;
+      o.lift = F.lift ? range(F.lift[0], F.lift[1]) * u : 0;
+      if (F.kind === "floor" || F.kind === "glide") o.x = remap(o.x);
+      s.fauna.push(o);
     }
   }
   function faunaPresent(S) {

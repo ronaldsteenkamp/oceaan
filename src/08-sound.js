@@ -116,7 +116,7 @@
   const SCALES = {
     rif: [0, 2, 4, 7, 9, 12, 14], diepzee: [0, 3, 5, 7, 10], noordzee: [0, 2, 3, 7, 9, 12],
     kelpwoud: [0, 2, 5, 7, 9, 12], ijszee: [0, 4, 7, 11, 14, 19],
-    mangrove: [0, 2, 3, 7, 8, 12], grot: [0, 1, 5, 7, 8], lagune: [0, 2, 4, 7, 9, 11, 14], sargasso: [0, 2, 5, 7, 10, 12],
+    mangrove: [0, 2, 3, 7, 8, 12], grot: [0, 1, 5, 7, 8], lagune: [0, 2, 4, 7, 9, 11, 14], sargasso: [0, 2, 5, 7, 10, 12], wadden: [0, 2, 4, 5, 9, 12],
   };
   const ROOT = { rif: 261.6, diepzee: 110, noordzee: 196, kelpwoud: 220, ijszee: 329.6, mangrove: 174.6, grot: 130.8, lagune: 293.7, sargasso: 164.8 };
   function playNote() {

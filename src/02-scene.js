@@ -169,7 +169,7 @@
 
   function buildScene() {
     shadeCache.clear();
-    const wi = Math.floor(rng() * WATERS.length);
+    const wi = waterOfSeed(seed, rng());
     water = aquarium ? aqWater(aquarium) : WATERS[wi];
     const density = Math.max(0.45, Math.min(1.2, (W * H) / (1280 * 800)));
     const P = water.props, Lf = water.life;
@@ -496,7 +496,7 @@
     canvas.setAttribute("aria-label", L("Onderwaterwereld. ", "Underwater world. ") + text);
   }
 
-  function randomSeed() { return Math.floor(Math.random() * 1e9); }
+  function randomSeed() { return Math.floor(Math.random() * SEED_RANGE); }
   function seedFromHash() {
     const h = (location.hash || "").slice(1);
     const aq = parseAq(h);

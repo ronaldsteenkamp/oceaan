@@ -66,7 +66,7 @@
     for (let sd = 1; sd <= count; sd++) {
       try {
         forceEvent = [null, ...EVENTS][sd % (EVENTS.length + 1)];
-        newVariant(sd, false);
+        newVariant(sd % 5 === 0 ? WADDEN_SEED + sd : sd, false); // every fifth ocean is a Wadden Sea
         const S = scene;
         S.forceVisitor = types[sd % types.length]; S.visitor = null; S.visitorTimer = 0;
         S.bait.enabled = true; S.bait.timer = 0; S.storm.enabled = !!water.surface; S.storm.timer = 0;
@@ -172,6 +172,11 @@
       if (!THUMBS[base]) errors.push(`logboek ${k}: plaatje ontbreekt`);
     }
     if (new Set(AQ_ALL).size !== AQ_ALL.length) errors.push("aquarium: dubbele sleutel in AQ_ALL");
+    for (const k of Object.keys(ANIMALS)) if ((ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k)) errors.push(`aquarium: zet ${k} achteraan in AQ_BASE (01-basis.js)`);
+    // animals after the sixth round roll from their own stream, so they never change the oceans that were already there
+    for (const k of AQ_BASE.slice(AQ_BASE.indexOf("lighthouse") + 1)) if (FAUNA[k] && !FAUNA[k].stream) errors.push(`dier ${k}: zet stream: true in FAUNA`);
+    if (!WATERS.some(w => w.name === "wadden") || waterOfSeed(WADDEN_SEED, 0) !== WATERS.findIndex(w => w.name === "wadden")) errors.push("wateren: de Waddenzee is niet te kiezen");
+    for (let i = 0; i < FIRST_WATERS; i++) if (waterOfSeed(5, (i + 0.5) / FIRST_WATERS) !== i) errors.push("wateren: oude seeds kiezen een ander water");
     for (const ev of EVENTS) {
       if (!/^\d\d-\d\d$/.test(ev.from) || !/^\d\d-\d\d$/.test(ev.to) || !ev.nl || !ev.en || !Array.isArray(ev.say) || ev.say.length !== 2) errors.push(`event ${ev.id}: datum, naam of tekst klopt niet`);
       for (const k of (ev.rare ? ev.rare.keys : [])) if (!RARE_KEYS.includes(k)) errors.push(`event ${ev.id}: onbekend zeldzaam ding ${k}`);
@@ -191,7 +196,7 @@
         Object.keys(life).filter(k => life[k]).sort().join(","), scene.shinies.map(e => e.key).sort().join(",")].join(" | ");
     };
     try {
-      for (let sd = 1; sd <= 30; sd++) {
+      for (const sd of [...Array.from({ length: 30 }, (_, i) => i + 1), WADDEN_SEED + 1, WADDEN_SEED + 2, WADDEN_SEED + 3]) {
         const a = look(1440, 900, sd), b = look(390, 844, sd), c = look(844, 390, sd);
         if (a !== b || b !== c) { errors.push(`seed ${sd} is niet overal dezelfde oceaan:
   ${a}
@@ -201,13 +206,13 @@
     } finally { ({ W, H, u, rng, scene, water, seed } = keep); }
   }
 
-  // A fingerprint of the first 30 oceans, for check.py: it compares them with zaden.json, so you see when
+  // A fingerprint of 35 fixed oceans (seeds 1 to 30 and five Wadden Sea seeds), for check.py: it compares them with zaden.json, so you see when
   // a change (a new animal, another chance) makes old shared links show a different ocean.
   function seedPrints() {
     const keep = { W, H, u, rng, scene, water, seed }, out = {};
     const r2 = v => Math.round(v * 100) / 100;
     try {
-      for (let sd = 1; sd <= 30; sd++) {
+      for (const sd of [...Array.from({ length: 30 }, (_, i) => i + 1), ...[1, 2, 3, 4, 5].map(i => WADDEN_SEED + i)]) {
         W = 1440; H = 900; u = Math.max(0.6, Math.min(W, H) / 700); seed = sd; rng = mulberry32(sd); buildScene();
         const life = presentLife(scene), S = scene;
         out[sd] = {
@@ -241,6 +246,7 @@
   // ---- start -------------------------------------------------------------
   // ask the browser to keep this page's storage, so the logbook is not cleared to make room (granted for installed apps)
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+  if (!store.get("oceaan-wadden-gezien", false)) { keepGlobetrotter(); store.set("oceaan-wadden-gezien", true); }
   applyLang();
   applyRewards();
   resize();

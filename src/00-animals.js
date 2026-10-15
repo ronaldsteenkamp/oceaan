@@ -307,7 +307,7 @@
     },
     herring: {
       nl: "Haring", en: "Herring", family: "Vissen", sci: "Clupea harengus",
-      visits: { noordzee: 2 },
+      visits: { noordzee: 2, wadden: 2 },
       shiny: 225, hue: 195,
       pal: "#2e5a6a>#6a2a6a #c8d6de>#f8e0f0",
       fact: ["Haring zwemt in scholen van soms miljoenen vissen. Haringen maken geluid door luchtbelletjes uit hun achterste te laten.",
@@ -327,7 +327,7 @@
     },
     flatfish: {
       nl: "Schol", en: "Plaice", family: "Vissen", sci: "Pleuronectes platessa",
-      life: { noordzee: 0.6 },
+      life: { noordzee: 0.6, wadden: 0.8 },
       shiny: 150, hue: 25,
       pal: "#8a7050>#3a4a7a #a08868>#5a6a9a #e8783a>#f2d040 #c8b890>#d8e0f0",
       fact: ["Een jonge schol zwemt rechtop, met een oog aan elke kant. Als hij groeit, schuift één oog naar de andere kant en gaat hij plat op de bodem liggen.",
@@ -619,7 +619,7 @@
     },
     comb: {
       nl: "Ribkwal", en: "Comb jelly", family: "Kwallen", sci: "Mnemiopsis leidyi",
-      life: { diepzee: 0.7, noordzee: 0.3, ijszee: 0.8, grot: 0.6, sargasso: 0.4 },
+      life: { diepzee: 0.7, noordzee: 0.3, ijszee: 0.8, grot: 0.6, sargasso: 0.4, wadden: 0.5 },
       shiny: 300, hue: 200,
       pal: "", palRule: { body: "#ffd24a" },
       fact: ["Ribkwallen zijn geen echte kwallen. Het regenbooglicht komt van rijen trilhaartjes die het licht breken.",
@@ -740,7 +740,7 @@
     },
     crab: {
       nl: "Krab", en: "Crab", family: "Schaaldieren en degenkrab", sci: "Brachyura",
-      life: { rif: 0.9, diepzee: 0.8, noordzee: 1, kelpwoud: 0.9, ijszee: 0.6, mangrove: 1, grot: 0.7, lagune: 0.7, sargasso: 0.4 },
+      life: { rif: 0.9, diepzee: 0.8, noordzee: 1, kelpwoud: 0.9, ijszee: 0.6, mangrove: 1, grot: 0.7, lagune: 0.7, sargasso: 0.4, wadden: 1 },
       shiny: 750,
       pal: "#5a2418>#14304a", palRule: { hue: 205, sat: 0.95 },
       fact: ["Krabben lopen meestal zijwaarts, omdat hun poten zo scharnieren dat dat het snelst gaat.",
@@ -750,7 +750,7 @@
     },
     hermit: {
       nl: "Heremietkreeft", en: "Hermit crab", family: "Schaaldieren en degenkrab", sci: "Pagurus bernhardus",
-      life: { rif: 0.8, diepzee: 0.4, noordzee: 0.7, kelpwoud: 0.8, ijszee: 0.3, mangrove: 0.8, grot: 0.4, lagune: 0.8 },
+      life: { rif: 0.8, diepzee: 0.4, noordzee: 0.7, kelpwoud: 0.8, ijszee: 0.3, mangrove: 0.8, grot: 0.4, lagune: 0.8, wadden: 0.4 },
       shiny: 150, hue: 15,
       pal: "#d9543b>#2a8a7a #c9603c>#1f6a5e", palRule: { hue: 296, sat: 0.9 },
       fact: ["Een heremietkreeft verhuist naar een grotere schelp als hij gegroeid is.",
@@ -819,9 +819,19 @@
       note: ["Ondanks zijn naam is een degenkrab geen krab: hij is meer familie van spinnen en schorpioenen.",
         "Despite its name, a horseshoe crab is not a crab: it is more closely related to spiders and scorpions."],
     },
+    shrimp: {
+      nl: "Garnalen", en: "Brown shrimp", family: "Schaaldieren en degenkrab", sci: "Crangon crangon",
+      life: { wadden: 1 },
+      shiny: 600, shinyNl: "garnaal", shinyEn: "brown shrimp", hue: 40,
+      pal: "#c8bca0>#7ab8f0 #7a6a50>#1c4a8a #a8987a>#4a7ab8",
+      fact: ["Een garnaal graaft zich overdag in het zand in. Alleen zijn ogen en voelsprieten steken er dan nog boven uit.",
+        "During the day a brown shrimp digs itself into the sand. Only its eyes and feelers still stick out."],
+      note: ["Garnalen zijn bijna doorzichtig en kunnen hun kleur aanpassen aan de bodem, van licht zand tot donker slib.",
+        "Brown shrimp are almost see-through and can change their colour to match the bottom, from pale sand to dark silt."],
+    },
     starfish: {
       nl: "Zeester", en: "Starfish", family: "Zeesterren, egels, slakken en wormen", sci: "Asterias rubens",
-      life: { rif: 1, diepzee: 0.5, noordzee: 0.9, kelpwoud: 0.9, ijszee: 0.9, mangrove: 0.4, grot: 0.4, lagune: 1, sargasso: 0.3 },
+      life: { rif: 1, diepzee: 0.5, noordzee: 0.9, kelpwoud: 0.9, ijszee: 0.9, mangrove: 0.4, grot: 0.4, lagune: 1, sargasso: 0.3, wadden: 0.6 },
       shiny: 300,
       pal: "", palRule: { hue: 268, lit: -0.04 },
       fact: ["Een zeester kan een verloren arm weer aangroeien.",
@@ -920,6 +930,17 @@
       note: ["De twee spiraaltjes zijn eigenlijk kieuwen: ermee ademt het wormpje en vangt het piepkleine voedseldeeltjes uit het water.",
         "The two spirals are really gills: the worm breathes with them and catches tiny food particles from the water."],
     },
+    lugworm: {
+      nl: "Wadpier", en: "Lugworm", family: "Zeesterren, egels, slakken en wormen", sci: "Arenicola marina",
+      life: { wadden: 0.9 },
+      shiny: 300, hue: 350,
+      pal: "#a8505a>#f0c040 #7a3040>#b8860b",
+      hint: ["leeft in de Waddenzee; zie je een kronkelig zandhoopje, wacht dan tot zijn staart eruit komt", "lives in the Wadden Sea; when you see a coiled heap of sand, wait for its tail to come out"],
+      fact: ["Een wadpier woont in een U-vormige gang in het zand. De kronkelige zandhoopjes op het wad zijn zijn poep.",
+        "A lugworm lives in a U-shaped burrow in the sand. The coiled little heaps of sand on the mudflats are its poo."],
+      note: ["Een wadpier eet zand en verteert de piepkleine beestjes en het slib dat ertussen zit, net zoals een regenworm dat op het land doet.",
+        "A lugworm eats sand and digests the tiny creatures and silt in between, just like an earthworm does on land."],
+    },
     coral: {
       nl: "Koraaltuin", en: "Coral garden", family: "Koralen, sponzen en schelpen", sci: "Anthozoa",
       fact: ["Koraal is geen plant maar een kolonie van piepkleine diertjes: poliepen.",
@@ -947,6 +968,16 @@
         "A giant clam can grow more than a metre wide and live for a hundred years. Algae in its mantle give it colour."],
       note: ["Dat een reuzenschelp een duiker kan vangen, is een fabel. Hij sluit zich daarvoor veel te langzaam.",
         "That a giant clam can trap a diver is a myth. It closes far too slowly for that."],
+    },
+    cockle: {
+      nl: "Kokkel", en: "Cockle", family: "Koralen, sponzen en schelpen", sci: "Cerastoderma edule",
+      life: { wadden: 0.8 },
+      shiny: 300, hue: 40,
+      pal: "#e8dcc0>#f4b860 #b8a07a>#c86a28 #c8b490>#e08a3a #d8c8a8>#f2d8b0 #a89070>#c87a40",
+      fact: ["Een kokkel kan springen: met zijn gespierde voet duwt hij zich weg als er een zeester aankomt.",
+        "A cockle can jump: it pushes itself away with its muscular foot when a starfish comes near."],
+      note: ["Aan de ringen op zijn schelp kun je zien hoe oud een kokkel ongeveer is, net als aan de jaarringen van een boom.",
+        "From the rings on its shell you can roughly tell how old a cockle is, just like the growth rings of a tree."],
     },
     turtle: {
       nl: "Zeeschildpad", en: "Sea turtle", family: "Reptielen", sci: "Chelonia mydas",
@@ -1020,7 +1051,7 @@
     },
     porpoise: {
       nl: "Bruinvis", en: "Harbour porpoise", family: "Walvissen en dolfijnen", sci: "Phocoena phocoena",
-      life: { noordzee: 0.45 },
+      life: { noordzee: 0.45, wadden: 0.35 },
       shiny: 75, hue: 210,
       pal: "#3e464e>#f2f0ec #d8dcde>#f8e0e4",
       fact: ["De bruinvis is de kleinste walvis van de Noordzee en ook de walvis die je daar het vaakst ziet. Hij is schuw en laat zich maar kort zien.",
@@ -1140,7 +1171,7 @@
     },
     seal: {
       nl: "Zeehond", en: "Seal", family: "Zoogdieren en vogels", sci: "Phoca vitulina",
-      life: { kelpwoud: 0.4, ijszee: 0.9 },
+      life: { kelpwoud: 0.4, ijszee: 0.9, wadden: 1 },
       shiny: 750, hue: 210,
       pal: "#6f7478>#e8e4dc #3e4246>#a8a29a #a9aca8>#ffffff",
       fact: ["Een zeehond kan tijdens het duiken zijn hartslag flink verlagen om zuurstof te sparen.",
@@ -1254,7 +1285,7 @@
     },
     cormorant: {
       nl: "Aalscholver", en: "Cormorant", family: "Zoogdieren en vogels", sci: "Phalacrocorax carbo",
-      life: { noordzee: 0.5, kelpwoud: 0.4, mangrove: 0.3 },
+      life: { noordzee: 0.5, kelpwoud: 0.4, mangrove: 0.3, wadden: 0.4 },
       winterLeaves: true,
       shiny: 75, hue: 200,
       pal: "#1e2226>#f0f0ea #2e4a3a>#c8d0c8 #e8b040>#e8603a",
@@ -1273,6 +1304,16 @@
         "A pelican's throat pouch can hold more water than its stomach. It scoops up fish with it."],
       note: ["Roze pelikanen vissen soms samen: in een halve kring drijven ze de vissen naar ondiep water.",
         "Great white pelicans sometimes fish together: in a half circle they drive the fish into shallow water."],
+    },
+    eider: {
+      nl: "Eidereend", en: "Common eider", family: "Zoogdieren en vogels", sci: "Somateria mollissima",
+      life: { wadden: 0.6 },
+      shiny: 150, hue: 40,
+      pal: "#1a1c20>#6a4428 #f2efe6>#d8b48a #a8d0a0>#e8c860 #9aa88a>#c89a5a",
+      fact: ["Een eidereend duikt naar mosselen en kokkels en slikt ze in één keer heel door. Zijn sterke maag maalt de schelpen fijn.",
+        "An eider dives for mussels and cockles and swallows them whole. Its strong stomach grinds the shells up."],
+      note: ["Een eidereend bekleedt haar nest met zachte donsveren uit haar eigen borst. Daar komt het woord eiderdons vandaan.",
+        "An eider lines her nest with soft down from her own breast. That is where the word eiderdown comes from."],
     },
   };
   // a table of one field of every animal, for instance animalTable("fact", 0) for all Dutch facts

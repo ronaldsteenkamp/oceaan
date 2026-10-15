@@ -1,6 +1,6 @@
 # Oceaan
 
-Een levende onderwaterwereld die elke keer anders is, in negen wateren van koraalrif en lagune tot Sargassozee, mangrove en onderwatergrot: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang, een megalodon, de witte potvis of een spookduiker. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
+Een levende onderwaterwereld die elke keer anders is, in tien wateren van koraalrif en lagune tot Sargassozee, mangrove, onderwatergrot en Waddenzee: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang, een megalodon, de witte potvis of een spookduiker. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
 
 Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon kun je hem als app op je beginscherm zetten; daarna werkt hij ook zonder internet.
 
@@ -35,6 +35,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `12-lagoon-and-sargasso.js` | lagune, Sargassozee, de derde ronde, noorderlicht en de sonar |
 | `13-fauna-system.js` | het systeem dat dieren laat zwemmen, kruipen en drijven (`FAUNA`, `FAUNA_VIS`) en de vierde ronde |
 | `14-wave6.js` | de zesde ronde: dertig dieren, de klimmende ijsbeer, zes momenten en twee legendes |
+| `14-wave7-wadden.js` | de zevende ronde: de Waddenzee met wadpier, kokkel, garnalen en eidereend |
 | `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
 | `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
 | `17-logbook-and-menu.js` | weetjes van de rest, detailkaarten, album en "Maken en delen" |
@@ -53,7 +54,7 @@ Dit bouwt `dist/` (de pagina `oceaan.html`, die ook als claude.ai-artifact wordt
 
 De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk logboekplaatje en controleert ook: of elk dier compleet geregistreerd is, of dezelfde seed op computer, telefoon en liggende telefoon dezelfde oceaan geeft, terugkerende shiny dieren, en of er tekenfouten zijn ingeslikt.
 
-**Gedeelde oceanen:** de zelftest vergelijkt de eerste 30 oceanen met `zaden.json` (water, seizoen, zeldzaamheid, bodem, dieren en hun plek, shiny's, timers). Verandert er iets, bijvoorbeeld door een nieuw dier of een andere kans, dan meldt de build welke oceanen en welk onderdeel: wie een oude link opent, ziet dan iets anders. Is dat de bedoeling, leg de nieuwe stand dan vast met `python build.py --zaden-vastleggen` en commit `zaden.json` mee.
+**Gedeelde oceanen:** de zelftest vergelijkt 35 vaste oceanen (seeds 1 tot 30 en vijf Waddenzee-seeds) met `zaden.json` (water, seizoen, zeldzaamheid, bodem, dieren en hun plek, shiny's, timers). Verandert er iets, bijvoorbeeld door een nieuw dier of een andere kans, dan meldt de build welke oceanen en welk onderdeel: wie een oude link opent, ziet dan iets anders. Is dat de bedoeling, leg de nieuwe stand dan vast met `python build.py --zaden-vastleggen` en commit `zaden.json` mee.
 
 **Publiceren:** `python publish.py` bouwt en test de oceaan en zet `dist/` op de branch `gh-pages`; GitHub Pages toont die branch. De bouwresultaten staan zo nooit in `main`. De versie is een vingerafdruk van de pagina: alleen bij een echte wijziging krijgen geïnstalleerde apps de melding "nieuwe versie". In `ci/pages.yml` staat een GitHub Action die precies hetzelfde (ook naar `gh-pages`) bij elke push naar `main` vanzelf doet, zodat GitHub Pages altijd de branch `gh-pages` blijft tonen; die werkt zodra hij in `.github/workflows/` staat en het GitHub-token de scope `workflow` heeft (`gh auth refresh -h github.com -s workflow`).
 
@@ -65,7 +66,7 @@ De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk l
 2. **Tekenen**: schrijf een `function drawX(f)` (of `drawX(x, y, dir, L, ph)` voor een bezoeker) in een bestand bij zijn ronde, bijvoorbeeld `14-wave6.js`, en zet het dier in `FAUNA` (met `kind`, `size`, `draw`, `thumb`) of `FAUNA_VIS`. Een bodemdier (`kind: "floor"` of `"glide"`) krijgt vanzelf zand in zijn logboekplaatje, en een bezoeker in `FAUNA_VIS` vanzelf zijn tekening en grootte. Gebruik hex-kleuren met `sh("#...")`, zodat het water en de shiny ze kunnen omzetten.
 3. **`python build.py`**: de zelftest zegt precies wat er nog mist ("dier x: mist ...").
 
-Een nieuw dier krijgt vanzelf een plek achteraan in de aquariumcode, dus oude aquariumlinks blijven werken.
+Zet een nieuw dier dat ergens leeft of langskomt ook achteraan in `AQ_BASE` (`01-basis.js`): zo houdt het een vaste plek in de aquariumcode en blijven oude aquariumlinks werken. Geef een nieuw dier in `FAUNA` ook `stream: true`, dan gooit het met een eigen dobbelsteen en blijven bestaande oceanen precies hetzelfde (de zelftest controleert beide).
 
 ## Credits
 

@@ -39,6 +39,11 @@
     if (w.glow) { ctx.fillStyle = "rgba(120,240,255,0.8)"; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.arc((i * 37) % TW, (i * 23) % 60 + 6, 1, 0, TAU); ctx.fill(); } }
     if (w.surface) { ctx.strokeStyle = "rgba(255,255,255,0.45)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 8); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 8 + Math.sin(x * 0.12) * 1.5); ctx.stroke(); }
     if (w.ice) { ctx.fillStyle = "rgba(240,250,255,0.95)"; ctx.fillRect(18, 0, 40, 9); ctx.fillRect(74, 0, 28, 7); }
+    if (w.mudflat) {
+      // a sandbank just under the surface, with lugworm casts on the flat bottom
+      ctx.fillStyle = w.sand[0]; ctx.beginPath(); ctx.moveTo(40, 30); ctx.quadraticCurveTo(70, 12, 104, 30); ctx.fill();
+      ctx.fillStyle = w.sand[1]; for (const x of [22, 54, 90]) { ctx.beginPath(); ctx.ellipse(x, 74, 4, 2, 0, 0, TAU); ctx.fill(); }
+    }
     if (w.caustics) {
       ctx.strokeStyle = "rgba(255,255,230,0.5)"; ctx.lineWidth = 1;
       for (let i = 0; i < 3; i++) { ctx.beginPath(); for (let x = 0; x <= TW; x += 6) ctx.lineTo(x, 66 + i * 3 + Math.sin(x * 0.2 + i * 2) * 2); ctx.stroke(); }
