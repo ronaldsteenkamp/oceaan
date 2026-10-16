@@ -404,17 +404,14 @@
       ctx.beginPath(); ctx.moveTo(s * 0.35, -s * 0.6); ctx.lineTo(e1x, e1y); ctx.moveTo(s * 0.3, -s * 0.6); ctx.lineTo(e2x, e2y); ctx.stroke();
       eye(e1x, e1y, s * 0.05, "#111"); eye(e2x, e2y, s * 0.05, "#111");
     }
+    // the borrowed home: a pointed snail shell (like a whelk), whorls getting smaller towards the tip, opening at the front
     ctx.fillStyle = sh(h.shell);
-    ctx.beginPath(); ctx.arc(-s * 0.1, -s * 0.55, s * 0.55, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(-s * 0.55, -s * 0.85); ctx.lineTo(-s * 1.0, -s * 1.15); ctx.lineTo(-s * 0.4, -s * 1.0); ctx.fill();
-    ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = Math.max(1, s * 0.06);
-    ctx.beginPath();
-    for (let a = 0; a < TAU * 2; a += 0.2) {
-      const r = s * 0.5 * (1 - a / (TAU * 2.2));
-      const px = -s * 0.1 + Math.cos(a) * r, py = -s * 0.55 + Math.sin(a) * r;
-      a ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-    }
-    ctx.stroke();
+    const whorls = [[-0.05, -0.5, 0.55, 0.45], [-0.55, -0.82, 0.32, 0.27], [-0.86, -1.02, 0.19, 0.16], [-1.05, -1.14, 0.1, 0.08]];
+    for (const [wx, wy, rx, ry] of whorls) { ctx.beginPath(); ctx.ellipse(s * wx, s * wy, s * rx, s * ry, -0.5, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.beginPath(); ctx.ellipse(s * 0.32, -s * 0.42, s * 0.16, s * 0.26, -0.2, 0, TAU); ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = Math.max(1, s * 0.05);
+    for (const [wx, wy, rx, ry] of whorls.slice(1)) { ctx.beginPath(); ctx.ellipse(s * wx, s * wy, s * rx, s * ry, -0.5, 0.2, 2.2); ctx.stroke(); }
     ctx.restore();
   }
 

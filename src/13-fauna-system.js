@@ -417,7 +417,8 @@
     for (let i = 0; i < 10; i++) {
       const a = -Math.PI / 2 + (i - 4.5) * 0.28 + Math.sin(f.ph * 0.8 + i) * 0.12, len = s * (1.0 + (i % 3) * 0.15);
       const col = sh(i % 2 ? "#f2c030" : "#e8603a");
-      const cx = Math.cos(a) * len * 0.5 + Math.sin(f.ph + i) * s * 0.08, cy = -s * 0.2 + Math.sin(a) * len * 0.5, ex = Math.cos(a) * len, ey = -s * 0.2 + Math.sin(a) * len + s * 0.15;
+      // the feathery arms rise from the small body and curl outwards and down at the tips, like a fountain
+      const cx = Math.cos(a) * len * 0.45 + Math.sin(f.ph + i) * s * 0.08, cy = -s * 0.2 + Math.sin(a) * len * 1.0, ex = Math.cos(a) * len * 1.15, ey = -s * 0.2 + Math.sin(a) * len * 0.5 + s * 0.05;
       ctx.strokeStyle = col; ctx.lineWidth = Math.max(0.8, s * 0.05);
       ctx.beginPath(); ctx.moveTo(0, -s * 0.2); ctx.quadraticCurveTo(cx, cy, ex, ey); ctx.stroke();
       ctx.lineWidth = Math.max(0.5, s * 0.02);

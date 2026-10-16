@@ -506,14 +506,15 @@
     d.cy = y;
     ctx.save(); ctx.translate(d.x, y); ctx.scale(faceOf(d), 1); ctx.rotate(Math.sin(d.ph * 0.5) * 0.06);
     const pts = [];
-    for (let i = 0; i <= 12; i++) { const f = i / 12; pts.push([s * (0.5 - f), Math.sin(f * 3 + 0.4) * s * 0.12 + f * f * s * 0.15]); }
+    for (let i = 0; i <= 12; i++) { const f = i / 12; pts.push([s * (0.5 - f), Math.sin(f * 3 + 0.4) * s * 0.2 + f * f * s * 0.2]); } // an S-curve: the neck bends like a seahorse's
     ctx.fillStyle = leaf;
-    for (const i of [2, 4, 6, 8, 10]) {
-      const [x, yy] = pts[i];
+    // leafy lobes on the neck, the back, the belly and the tail; smaller ones at both ends
+    for (const i of [1, 2, 4, 6, 8, 10, 11]) {
+      const [x, yy] = pts[i], ls = i === 1 || i === 11 ? 0.6 : 1;
       for (const side of [-1, 1]) {
         ctx.save(); ctx.translate(x, yy); ctx.rotate(side * (1.2 + Math.sin(d.ph * 2 + i) * 0.15) - 0.3);
-        ctx.beginPath(); ctx.ellipse(s * 0.12, 0, s * 0.13, s * 0.04, 0, 0, TAU); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(s * 0.2, s * 0.03, s * 0.07, s * 0.03, 0.5, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(s * 0.12 * ls, 0, s * 0.13 * ls, s * 0.04 * ls, 0, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(s * 0.2 * ls, s * 0.03 * ls, s * 0.07 * ls, s * 0.03 * ls, 0.5, 0, TAU); ctx.fill();
         ctx.restore();
       }
     }
