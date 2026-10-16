@@ -776,7 +776,7 @@
     surgeonfish: { kind: "swim", size: [20, 26], band: [0.3, 0.65], speed: 0.5, draw: drawSurgeon, thumb: 72 },
     mandarinfish: { kind: "swim", size: [13, 16], band: [0.7, 0.8], speed: 0.25, draw: drawMandarin, thumb: 84 },
     needlefish: { kind: "swim", size: [32, 42], band: [0.06, 0.16], speed: 0.9, draw: drawNeedle, thumb: 64 },
-    seasnake: { kind: "swim", size: [44, 56], band: [0.4, 0.7], speed: 0.5, draw: drawSeaSnake, thumb: 96 },
+    seasnake: { kind: "swim", size: [44, 56], band: [0.08, 0.25], speed: 0.5, draw: drawSeaSnake, thumb: 96 },
     seakrait: { kind: "swim", size: [42, 52], band: [0.45, 0.75], speed: 0.5, draw: drawKrait, thumb: 96 },
     electricray: { kind: "glide", size: [28, 36], lift: [14, 26], speed: 0.3, draw: drawElectricRay, thumb: 70 },
     guitarfish: { kind: "glide", size: [44, 56], lift: [10, 20], speed: 0.35, draw: drawGuitar, thumb: 96 },
@@ -796,7 +796,7 @@
   };
   const FAUNA_VIS = {
     thresher: { size: () => (180 + Math.random() * 60) * u, speed: 1.1, draw: drawThresher, thumb: 84 },
-    whitetip: { size: () => (130 + Math.random() * 40) * u, speed: 1.0, draw: drawWhitetip, thumb: 104 },
+    whitetip: { size: () => (75 + Math.random() * 20) * u, speed: 1.0, draw: drawWhitetip, thumb: 104 },
     greatwhite: { size: () => (230 + Math.random() * 70) * u, speed: 0.9, draw: drawGreatWhite, thumb: 104 },
     marlin: { size: () => (170 + Math.random() * 50) * u, speed: 2.2, draw: drawMarlin, thumb: 92 },
     tuna: { size: () => (70 + Math.random() * 20) * u, speed: 1.8, draw: drawTuna, thumb: 40 },

@@ -654,9 +654,30 @@
   const VISITOR_SIZE = {
     humpback: () => Math.min(W * 0.95, 950 * u),
     manta: () => rndV(110, 170) * u, turtle: () => rndV(70, 100) * u,
-    dolphins: () => rndV(70, 95) * u, swordfish: () => rndV(130, 180) * u, sub: () => rndV(120, 170) * u,
+    dolphins: () => rndV(95, 125) * u, swordfish: () => rndV(130, 180) * u, sub: () => rndV(120, 170) * u,
     narwhal: () => rndV(110, 150) * u, mermaid: () => rndV(110, 140) * u,
   };
+
+  // Visitors that breathe air, and how deep their middle stays when they come up (in parts of their length).
+  const BREATHERS = {
+    humpback: 0.05, finwhale: 0.035, bluewhale: 0.035, spermwhale: 0.06, orca: 0.07, beluga: 0.08, narwhal: 0.07,
+    pilotwhale: 0.09, falsekiller: 0.09, dolphins: 0.11, turtle: 0.14, leatherback: 0.12, manatee: 0.1, sealion: 0.1,
+  };
+  // the whales whose breath shows as a spout of mist above the water
+  const SPOUTERS = new Set(["humpback", "finwhale", "bluewhale", "spermwhale", "orca", "beluga", "narwhal", "pilotwhale", "falsekiller"]);
+  // the spout: soft puffs of mist that rise from the blowhole and fade
+  function drawBlow(v) {
+    const B = v.blow, f = B.age / 2.2, y = waveY(B.x);
+    ctx.save();
+    ctx.fillStyle = "rgba(240,248,255,1)";
+    for (let i = 0; i < 5; i++) {
+      const g = Math.min(1, B.age * 3 - i * 0.25);
+      if (g <= 0) continue;
+      ctx.globalAlpha = (1 - f) * 0.5 * (1 - i * 0.12);
+      ctx.beginPath(); ctx.arc(B.x + (i % 2 ? 1 : -1) * i * 2 * u, y - B.h * g * (0.3 + i * 0.18), B.h * (0.12 + i * 0.05), 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
 
   function spawnVisitor() {
     const pool = scene.visitorPool;
@@ -679,6 +700,7 @@
     }
     v.margin = type === "dolphins" ? size * (v.pod.length + 1.5) : type === "narwhal" ? size * 1.8 : size * 1.3;
     v.x = dir > 0 ? -size * 1.3 : W + size * 1.3;
+    if (BREATHERS[type] !== undefined && Math.random() < 0.75) v.breathAt = 0.15 + Math.random() * 0.35;
     scene.visitor = v;
     const alive = () => scene.visitor === v;
     if (type === "dolphins") {
@@ -707,7 +729,20 @@
     v.x += v.dir * sp * k;
     v.ph += (VISITOR_PHASE[v.type] || 0.03) * k;
     v.yOff = Math.sin(v.ph * 0.7) * v.size * (v.type === "humpback" ? 0.02 : 0.04);
-    if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
+    // an air breather comes up once on its way across, to breathe at the surface; a whale blows a spout
+    const depth = water.surface && v.breathAt !== undefined ? BREATHERS[v.type] : undefined;
+    const across = v.dir > 0 ? v.x / W : 1 - v.x / W;
+    const up = depth === undefined ? 0 : Math.sin(Math.min(1, Math.max(0, (across - v.breathAt) / 0.35)) * Math.PI);
+    if (up > 0) {
+      v.yOff += (waveY(v.x) + v.size * depth - v.y - v.yOff) * up;
+      if (up > 0.97 && !v.blown) {
+        v.blown = true;
+        const hx = v.x + v.dir * v.size * (v.type === "spermwhale" ? 0.45 : 0.3);
+        splash(hx);
+        if (SPOUTERS.has(v.type)) v.blow = { x: hx, age: 0, h: Math.min(90 * u, v.size * 0.12) };
+      }
+    } else if (water.surface) { const lim = waveY(v.x) + v.size * 0.18; if (v.y + v.yOff < lim) v.y = lim - v.yOff; }
+    if (v.blow && (v.blow.age += dtSec) > 2.2) v.blow = null;
     // hunters steer towards the biggest school
     if (BIG_SHARKS.has(v.type) || v.type === "swordfish" || v.type === "hammerhead" || v.type === "orca") {
       let best = null;

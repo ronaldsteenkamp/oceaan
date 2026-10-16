@@ -24,7 +24,7 @@
     s.pistol = chance(Lf.pistol || 0) ? { x: rng() * W, ph: range(0, TAU), cool: range(2, 6), snap: 0, out: 0 } : null;
     const mat = s.sargassum.length ? s.sargassum[0] : null;
     s.frogfish = chance(Lf.sargassumfish || 0) && mat ? { mat, dx: range(-0.2, 0.2), s: range(22, 28) * u, ph: range(0, TAU), gulp: 0, cool: range(4, 9) } : null;
-    s.spider = chance(Lf.spidercrab || 0) ? { x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(26, 34) * u, leg: 0, speed: range(0.15, 0.3), pause: 0 } : null;
+    s.spider = chance(Lf.spidercrab || 0) ? { x: rng() * W, dir: chance(0.5) ? 1 : -1, s: range(42, 54) * u, leg: 0, speed: range(0.15, 0.3), pause: 0 } : null;
     if (s.pistol) s.pistol.x = remap(s.pistol.x);
     if (s.spider) s.spider.x = remap(s.spider.x);
 
@@ -546,7 +546,7 @@
   Object.assign(VISITOR_PHASE, { crocodile: 0.02, whaleshark: 0.02, sealion: 0.04, eagleray: 0.03, spermwhale: 0.012 });
   Object.assign(VISITOR_SIZE, {
     crocodile: () => (200 + Math.random() * 60) * u, whaleshark: () => Math.min(W * 0.6, (380 + Math.random() * 120) * u), sealion: () => (90 + Math.random() * 30) * u,
-    eagleray: () => (110 + Math.random() * 40) * u, spermwhale: () => Math.min(W * 0.55, (420 + Math.random() * 120) * u),
+    eagleray: () => (110 + Math.random() * 40) * u, spermwhale: () => Math.min(W * 0.85, (780 + Math.random() * 120) * u),
   });
 
   // ---- moments and rare things ----------------------------------------------

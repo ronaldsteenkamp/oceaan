@@ -218,6 +218,7 @@
     drawWave2Front(k);
     drawWave6Front(k);
     if (v && VISITOR_DRAW[v.type]) shinyDraw(v.type === "dolphins" ? null : v, () => VISITOR_DRAW[v.type](v));
+    if (v && v.blow) drawBlow(v);
     updateAndDrawDiver(k);
     checkWatch();
     drawHoldRings();
