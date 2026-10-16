@@ -525,6 +525,18 @@ Zes dieren uit de lijst hierboven, voor de wateren die het minst hadden. Ze roll
 
 Kanttekening: *Lucifuga* leeft vooral in de overgang van zoet naar zout water; in de zoute grot van het spel is hij plausibel, niet helemaal zuiver.
 
+### 5.2 Toegevoegd in de negende ronde (16 oktober 2026)
+
+| sleutel | dier | wateren | waarom het klopt | bron |
+|---|---|---|---|---|
+| `sheephead` | Californische schapenkop, *Semicossyphus pulcher* | kelpwoud 0.5 | Californisch kelpwoud; eet zee-egels en helpt zo het kelp; geboren als vrouwtje, grote dieren worden mannetje | [Wikipedia](https://en.wikipedia.org/wiki/California_sheephead) |
+| `remipede` | Remipede, *Xibalbanus tulumensis* | grot 0.3 | anchialine grotten; blind, kleurloos, zwemt met de buik omhoog; gifapparaat; eerste soort in 1979 gevonden op de Bahama's | [Wikipedia: Remipedia](https://en.wikipedia.org/wiki/Remipedia) |
+| `yeticrab` | Yetikrab, *Kiwa hirsuta* | diepzee 0.3, bij de heetwaterbron | ontdekt in 2005 op ±2200 m bij heetwaterbronnen; bacteriën op de haren zijn waarschijnlijk zijn hoofdvoedsel; ogen sterk gereduceerd | [Wikipedia](https://en.wikipedia.org/wiki/Kiwa_hirsuta) |
+| `sargslug` | Sargassumnaaktslak, *Scyllaea pelagica* | sargasso 0.4 | leeft op drijvend sargassum, goed gecamoufleerd; zwemt los van het wier een stukje door het lijf te buigen | [Wikipedia](https://en.wikipedia.org/wiki/Scyllaea_pelagica) |
+| `weddell` | Weddellzeehond, *Leptonychotes weddellii* (`pole: "s"`) | ijszee 0.5, alleen zuidpool | circumpolair rond Antarctica; houdt ademgaten in vast ijs open; duikt tot ±600 m, tot een uur; trillers en gezang onder het ijs | [Wikipedia](https://en.wikipedia.org/wiki/Weddell_seal) |
+
+De zwaaiende armen van de yetikrab zijn spelgedrag: bij een verwante soort (*Kiwa puravida*) is zwaaien beschreven, bij *K. hirsuta* niet. Het feit en de veldnotitie noemen het daarom niet.
+
 ---
 
 ## Bijlage A — Inventaris
