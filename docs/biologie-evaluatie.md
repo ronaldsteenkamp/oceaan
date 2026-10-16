@@ -510,6 +510,21 @@ De andere families op dezelfde manier. Het register herschikken verandert de vol
 - **Grot:** grotgarnaal, blinde grotvis (*Lucifuga*).
 - **Sargassozee:** sargassumkrab (eigen plaatje op het wier), sargassum-naaktslak, jonge karetschildpadden in het wier.
 
+### 5.1 Toegevoegd in de achtste ronde (16 oktober 2026)
+
+Zes dieren uit de lijst hierboven, voor de wateren die het minst hadden. Ze rollen uit hun eigen stroom (`stream: true`), dus bestaande oceanen blijven gelijk; in 8 van de 35 vaste oceanen komt alleen een nieuw dier bij (`zaden.json` is opnieuw vastgelegd).
+
+| sleutel | dier | wateren | waarom het klopt | bron |
+|---|---|---|---|---|
+| `sandeel` | Zandspieringen, *Ammodytes tobianus* | noordzee 0.6, wadden 0.5 | zandbodem van de getijdenzone tot ±30 m; graaft zich bij gevaar in, 's winters 20–50 cm diep | [MarLIN](https://www.marlin.ac.uk/species/detail/2067), [FishBase](https://www.fishbase.se/summary/Ammodytes-tobianus.html), [PANGAEA: Sylt-Rømø-bocht](https://service.tib.eu/ldmservice/dataset/png-doi-10-1594-pangaea-948881) |
+| `compass` | Kompaskwal, *Chrysaora hysoscella* | noordzee 0.4, wadden 0.4 | kustwateren van de NO-Atlantische Oceaan en de Noordzee; 16 bruine V's; eerst mannetje, dan ook vrouwtje | [Wikipedia](https://en.wikipedia.org/wiki/Chrysaora_hysoscella), [ADW](https://animaldiversity.org/accounts/Chrysaora_hysoscella) |
+| `loggerhead` | Onechte karetschildpad (jong), *Caretta caretta* | sargasso 0.3 | jongen brengen hun "verloren jaren" drijvend in sargassum door | [Witherington e.a. 2012, MEPS](https://int-res.com/abstracts/meps/v463/p1-22), [Royal Society 2014](https://royalsociety.org/news/2014/lost-years-loggerheads/) |
+| `cavefish` | Blinde grotvis, *Lucifuga spelaeotes* | grot 0.35 | anchialine grotten en blauwe gaten van de Bahama's, met zout water in de diepte; levendbarend is een kenmerk van de familie Bythitidae | [cavefishes.org.uk](https://cavefishes.org.uk/species-record.php?id=194) |
+| `tripodfish` | Driepootvis, *Bathypterois grallator* | diepzee 0.4 | 878–4720 m; staat op drie vinstralen met de kop naar de stroming; tegelijk mannetje en vrouwtje | [FishBase](https://www.fishbase.se/summary/9136) |
+| `polarcod` | Poolkabeljauw, *Boreogadus saida* (`pole: "n"`) | ijszee 0.5, alleen noordpool | leeft onder Arctisch zee-ijs en schuilt in spleten; antivries in het bloed; prooi van ringelrob, narwal en beloega | [Ocean Conservancy](https://oceanconservancy.org/wildlife-library/polar-cod/), [AWI](https://www.awi.de/en/about-us/service/press/single-view/billions-of-juvenile-fish-under-the-arctic-sea-ice.html) |
+
+Kanttekening: *Lucifuga* leeft vooral in de overgang van zoet naar zout water; in de zoute grot van het spel is hij plausibel, niet helemaal zuiver.
+
 ---
 
 ## Bijlage A — Inventaris
