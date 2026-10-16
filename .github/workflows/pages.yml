@@ -1,4 +1,4 @@
-# To use: move this file to .github/workflows/ (needs a GitHub token with the "workflow" scope).
+# Runs on every push: builds the ocean from src/, runs the self-test in headless Chrome, and on main puts dist/ on gh-pages.
 # Builds the ocean from src/, runs the self-test in headless Chrome, and on main puts dist/ on the branch gh-pages,
 # exactly like publish.py does. GitHub Pages keeps showing that branch, so the script and the Action never get in each other's way.
 # On a pull request (or a push to another branch) it only builds and tests.

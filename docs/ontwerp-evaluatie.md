@@ -233,6 +233,22 @@ Zelftest OK en `zaden.json` is ongewijzigd: geen enkele oceaan ziet er anders ui
 | 3.3 | Water-identiteit: props per water herzien, met minder algemene props en meer eigen props. Dit verandert seeds, dus samen met een nieuw `zaden.json` | L | `01-basis.js` (`WATERS.props`), `zaden.json` |
 | 3.4 | Nachtstand herzien: donkerder, maar met meer contrast in plaats van een waas | M | `07-surface-and-light.js`, `03-water-and-landmarks.js` |
 
+### Stand van uitvoering (16 oktober 2026)
+
+| # | stand |
+| --- | --- |
+| 2.1 | ✓ families lopen door (al eerder); de dierpagina vult nu de hele spread: links de foto en een rij verwanten, rechts weetje, veldnotitie, waar, wanneer en hoe vaak |
+| 2.2 | ✓ niet-gevonden momenten en zeldzaamheden zijn silhouetten (stond al) |
+| 2.4 | deels: welkom en duikverslag hebben papier en plakband; het menu heeft Caveat-koppen maar blijft donker glas |
+| 2.5 | ✓ gouden lichtrand bij elke shiny (stond al) |
+| 2.6 | ✓ `#stijlblad` bestaat en `check.py` maakt er een schermafbeelding van |
+| 2.8 | ✓ reduced motion: geen bubbels of deeltjes, alleen fades in het boek (stond al) |
+| 2.9 | ✓ duiker 66 in plaats van 58 u, met een zachte lichtcirkel |
+| 3.1 | ✓ hogere bodem en verspreide scholen op staand scherm (stond al); nu ook ~12% grotere `u` op de telefoon |
+| 3.3 | ✓ eigen vondsten voor Wadden (mosselbank) en Sargasso (drijfhout met eendenmosselen); duikerhelm, amforen, mijnen en auto minder in wateren waar ze niet horen; `zaden.json` opnieuw vastgelegd |
+| 3.4 | ✓ de nacht vermenigvuldigt met nachtblauw in plaats van een grijze waas (stond al) |
+| 2.3, 2.7, 3.2 | nog open |
+
 ## 5. Vragen aan jou
 
 Voordat ik fase 1 uitvoer, wil ik graag weten:
