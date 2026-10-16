@@ -210,7 +210,8 @@
   // a fixed width, counted in u (so the same on every screen; a wreck counts at its full size). What you play with
   // (a chest, a bottle, a clam, a volcano, a whale fall) and one of every kind that goes into the logbook always stay.
   // Big things come first, so they keep their spot; an aquarium keeps everything that was chosen.
-  const FLOOR_KEEP = new Set(["whalefall", "chest", "bottle", "clam", "volcano"]);
+  // driftwood floats at the surface, so it never crowds the floor
+  const FLOOR_KEEP = new Set(["whalefall", "chest", "bottle", "clam", "volcano", "driftwood"]);
   const FLOOR_FULL_W = { wreck: 520, plane: 380, whalefall: 420, city: 340 };
   const FLOOR_BUDGET = 820, FLOOR_BIG = 2;
   // Every water has its own things on the floor; anything else that only decorates (a diving helmet, a phone box,
@@ -218,14 +219,14 @@
   const OWN_PROPS = {
     rif: ["coral", "anemone", "sponges", "seagrass", "wreck", "rocks"],
     diepzee: ["vent", "brine", "volcano", "rocks", "wreck"],
-    noordzee: ["wreck", "mine", "anchor", "plane", "bell", "rocks", "car"],
+    noordzee: ["wreck", "mine", "anchor", "plane", "bell", "rocks", "car", "mussels"],
     kelpwoud: ["rocks", "arch", "anchor", "wheel", "seagrass"],
     ijszee: ["rocks", "anchor", "wreck", "brine"],
     mangrove: ["seagrass", "rocks", "idol", "wheel"],
     grot: ["ruins", "statue", "amphora", "idol", "skull", "rocks", "arch"],
     lagune: ["seagrass", "coral", "anemone", "sponges", "rocks"],
-    sargasso: ["wreck", "bell", "wheel", "plane", "cannon", "anchor"],
-    wadden: ["wreck", "anchor", "bell", "seagrass", "rocks"],
+    sargasso: ["driftwood", "wreck", "bell", "wheel", "plane", "cannon", "anchor"],
+    wadden: ["mussels", "wreck", "anchor", "bell", "seagrass", "rocks"],
   };
   function calmFloor(big, small) {
     const own = new Set(OWN_PROPS[water.name] || []);
@@ -348,6 +349,8 @@
     if (chance(P.brine)) small.push({ kind: "brine", w: 170 * u, s: range(50, 70) * u });
     addMoreGround(s, P, big, small);
     addWave2Ground(s, P, big, small);
+    // the finds of the tenth round roll from a stream of their own
+    sub("ground:w10", () => addWave10Ground(s, P, big, small));
     if (!aquarium) [big, small] = calmFloor(big, small);
     // on a phone the big landmarks shrink so more of them fit side by side
     if (W < 600) for (const g of big) if (g.kind !== "city") { g.w *= 0.7; if (g.s) g.s *= 0.7; }

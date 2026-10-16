@@ -36,7 +36,7 @@
       kelp: ["#2e6e4c", "#3f8a57", "#24573f"],
       fish: [["#f2b134", "#8a5810"], ["#ef6f5e", "#7d2b22"], ["#e7eef0", "#6f818a"], ["#7fd8c9", "#2d6f66"], ["#3e6fd1", "#16306b"], ["#f4d24a", "#3a3a3a"]],
       jelly: ["255,196,224", "255,232,200"], glow: false, whale: "8,38,62", surface: true,
-      props: { amphora: 0.25, anchor: 0.5, anemone: 0.95, arch: 0.45, bell: 0.2, bottle: 0.5, cannon: 0.45, canyon: 0.3, car: 0.15, chest: 0.75, city: 0.15, clam: 0.7, coral: 1, helmet: 0.4, idol: 0.12, mine: 0.2, phonebox: 0.05, plane: 0.3, rocks: 0.6, ruins: 0.3, seagrass: 0.5, skull: 0.35, sponges: 0.6, statue: 0.3, wheel: 0.25, wreck: 0.8 },
+      props: { amphora: 0.25, anchor: 0.5, anemone: 0.95, arch: 0.45, bell: 0.2, bottle: 0.5, cannon: 0.45, canyon: 0.3, car: 0.15, chest: 0.75, city: 0.15, clam: 0.7, coral: 1, helmet: 0.2, idol: 0.12, mine: 0.1, phonebox: 0.05, plane: 0.3, rocks: 0.6, ruins: 0.3, seagrass: 0.5, skull: 0.35, sponges: 0.6, statue: 0.3, wheel: 0.25, wreck: 0.8 },
       visitors: ["sub"] },
     { name: "diepzee", top: "#143e68", mid: "#081a33", bottom: "#02050c", tintK: 0.5,
       ray: "150,200,255", rayA: 0.05, snow: "170,210,255",
@@ -44,7 +44,7 @@
       kelp: ["#123c3f", "#0f3134", "#18484a"],
       fish: [["#9cc3e6", "#3a5a7a"], ["#cfdbe6", "#5a6a7a"], ["#5e86b8", "#203a5c"], ["#e0a96d", "#6b4320"]],
       jelly: ["120,240,255", "255,120,220", "180,150,255"], glow: true, whale: "2,8,18", giantSquid: true,
-      props: { amphora: 0.2, anchor: 0.4, arch: 0.6, bell: 0.25, bottle: 0.3, brine: 0.5, cannon: 0.4, canyon: 0.5, car: 0.05, chest: 0.65, city: 0.1, helmet: 0.4, idol: 0.15, mine: 0.4, plane: 0.3, rocks: 0.7, ruins: 0.4, skull: 0.7, sponges: 0.4, statue: 0.45, vent: 0.95, volcano: 0.45, wheel: 0.2, wreck: 0.85 },
+      props: { amphora: 0.2, anchor: 0.4, arch: 0.6, bell: 0.25, bottle: 0.3, brine: 0.5, cannon: 0.4, canyon: 0.5, car: 0.05, chest: 0.65, city: 0.1, helmet: 0.2, idol: 0.15, mine: 0.4, plane: 0.3, rocks: 0.7, ruins: 0.4, skull: 0.7, sponges: 0.4, statue: 0.45, vent: 0.95, volcano: 0.45, wheel: 0.2, wreck: 0.85 },
       visitors: ["sub", "sub"] },
     { name: "noordzee", top: "#64a096", mid: "#2f6566", bottom: "#0e2a2d", tintK: 0.28,
       ray: "235,250,230", rayA: 0.09, snow: "225,235,220",
@@ -52,7 +52,7 @@
       kelp: ["#4a6a30", "#5b7a35", "#39552a"],
       fish: [["#c9d6d2", "#5f716d"], ["#a4b9b4", "#45584f"], ["#e2b47e", "#7a5530"], ["#8fa7b8", "#3c5260"]],
       jelly: ["240,220,200", "220,235,255"], glow: false, whale: "12,38,40", surface: true,
-      props: { amphora: 0.15, anchor: 0.75, anemone: 0.3, arch: 0.5, bell: 0.4, bottle: 0.6, brine: 0.2, cannon: 0.65, canyon: 0.3, car: 0.3, chest: 0.5, city: 0.3, helmet: 0.5, mine: 0.6, phonebox: 0.2, plane: 0.4, rocks: 0.9, ruins: 0.4, seagrass: 0.4, skull: 0.45, sponges: 0.2, statue: 0.25, wheel: 0.35, wreck: 0.85 },
+      props: { amphora: 0.05, anchor: 0.75, anemone: 0.3, arch: 0.5, bell: 0.4, bottle: 0.6, brine: 0.2, cannon: 0.65, canyon: 0.3, car: 0.3, chest: 0.5, city: 0.3, helmet: 0.5, mine: 0.6, mussels: 0.2, phonebox: 0.2, plane: 0.4, rocks: 0.9, ruins: 0.4, seagrass: 0.4, skull: 0.45, sponges: 0.2, statue: 0.25, wheel: 0.35, wreck: 0.85 },
       visitors: ["sub"] },
     { name: "kelpwoud", top: "#5aa58a", mid: "#1f5a50", bottom: "#0a2624", tintK: 0.25,
       ray: "235,255,220", rayA: 0.12, snow: "225,240,215",
@@ -61,7 +61,7 @@
       fish: [["#c9a46a", "#5f4a2a"], ["#e88a3a", "#6b3a14"], ["#a9b8b0", "#4a5a52"], ["#3f5f7a", "#1a2c3a"]],
       jelly: ["255,215,170", "235,225,255"], glow: false, whale: "10,36,34",
       surface: true, denseKelp: true,
-      props: { amphora: 0.15, anchor: 0.5, arch: 0.5, bell: 0.3, bottle: 0.4, cannon: 0.3, canyon: 0.25, car: 0.2, chest: 0.45, city: 0.2, helmet: 0.5, mine: 0.35, phonebox: 0.1, plane: 0.3, rocks: 0.9, seagrass: 0.3, skull: 0.3, sponges: 0.3, statue: 0.2, wheel: 0.25, wreck: 0.5 },
+      props: { amphora: 0, anchor: 0.5, arch: 0.5, bell: 0.3, bottle: 0.4, cannon: 0.3, canyon: 0.25, car: 0.2, chest: 0.45, city: 0.2, helmet: 0.25, mine: 0.35, phonebox: 0.1, plane: 0.3, rocks: 0.9, seagrass: 0.3, skull: 0.3, sponges: 0.3, statue: 0.2, wheel: 0.25, wreck: 0.5 },
       visitors: ["sub"] },
     { name: "ijszee", poles: true, top: "#86bfd0", mid: "#2b5e7a", bottom: "#0a2236", tintK: 0.25,
       ray: "235,248,255", rayA: 0.12, snow: "235,245,255",
@@ -70,7 +70,7 @@
       fish: [["#c7d2d8", "#5a6870"], ["#9fb0bc", "#3e4c56"], ["#d9c8a6", "#6a5a3c"]],
       jelly: ["220,240,255", "255,225,240"], glow: false, whale: "12,34,50",
       surface: true, ice: true, fewKelp: true,
-      props: { amphora: 0.05, anchor: 0.5, arch: 0.5, bell: 0.35, bottle: 0.3, brine: 0.25, cannon: 0.3, canyon: 0.35, car: 0.1, chest: 0.3, helmet: 0.4, mine: 0.5, plane: 0.3, rocks: 1, skull: 0.3, sponges: 0.3, volcano: 0.1, wheel: 0.3, wreck: 0.55 },
+      props: { amphora: 0, anchor: 0.5, arch: 0.5, bell: 0.35, bottle: 0.3, brine: 0.25, cannon: 0.3, canyon: 0.35, car: 0, chest: 0.3, helmet: 0.2, mine: 0.5, plane: 0.3, rocks: 1, skull: 0.3, sponges: 0.3, volcano: 0.1, wheel: 0.3, wreck: 0.55 },
       visitors: ["sub"] },
     { name: "mangrove", top: "#7fa66a", mid: "#3b5e3c", bottom: "#16271a", tintK: 0.3,
       ray: "245,255,220", rayA: 0.13, snow: "220,230,190",
@@ -79,7 +79,7 @@
       fish: [["#e8d070", "#6a5a20"], ["#9ab8c8", "#3a5868"], ["#f08a4a", "#6a3414"], ["#c8c8b0", "#5a5a48"]],
       jelly: ["240,220,170", "220,240,200"], glow: false, whale: "20,40,24",
       surface: true, mangrove: true, fewKelp: true,
-      props: { amphora: 0.2, anchor: 0.4, arch: 0.2, bell: 0.25, bottle: 0.6, cannon: 0.2, car: 0.35, chest: 0.5, helmet: 0.3, idol: 0.1, phonebox: 0.1, plane: 0.15, rocks: 0.6, seagrass: 0.9, skull: 0.4, sponges: 0.3, wheel: 0.2, wreck: 0.3 },
+      props: { amphora: 0.2, anchor: 0.4, arch: 0.2, bell: 0.25, bottle: 0.6, cannon: 0.2, car: 0.35, chest: 0.5, helmet: 0.15, idol: 0.1, phonebox: 0.1, plane: 0.15, rocks: 0.6, seagrass: 0.9, skull: 0.4, sponges: 0.3, wheel: 0.2, wreck: 0.3 },
       visitors: [] },
     { name: "grot", top: "#1f4f63", mid: "#0c2433", bottom: "#03080e", tintK: 0.45,
       ray: "200,240,255", rayA: 0.2, snow: "190,220,235",
@@ -106,7 +106,7 @@
       fish: [["#9ac0e0", "#3a5a7a"], ["#d8e4ee", "#5a6a7a"], ["#f2c040", "#6a5010"]],
       jelly: ["200,230,255", "255,210,240"], glow: false, whale: "6,24,48",
       surface: true, sargasso: true, fewKelp: true,
-      props: { anchor: 0.4, bell: 0.3, bottle: 0.7, canyon: 0.4, chest: 0.4, helmet: 0.3, idol: 0.1, mine: 0.3, phonebox: 0.1, plane: 0.3, rocks: 0.5, skull: 0.4, wheel: 0.4, wreck: 0.5 },
+      props: { anchor: 0.4, bell: 0.3, bottle: 0.7, canyon: 0.4, chest: 0.4, driftwood: 0.5, helmet: 0.15, idol: 0.1, mine: 0.3, phonebox: 0.1, plane: 0.3, rocks: 0.5, skull: 0.4, wheel: 0.4, wreck: 0.5 },
       visitors: [] },
     // The Wadden Sea: shallow, cool and murky with sand and silt, flat as a table (no abyss), with sandbanks near the top.
     // It came after the first nine: only seeds from WADDEN_SEED up are Wadden Sea, so every older link stays the same.
@@ -117,7 +117,7 @@
       fish: [["#c8d0cc", "#5a6a66"], ["#b8b090", "#5a5440"], ["#d0d8d8", "#6a7478"]],
       jelly: ["240,230,210", "225,235,250"], glow: false, whale: "18,34,30",
       surface: true, mudflat: true, fewKelp: true,
-      props: { anchor: 0.45, bell: 0.2, bottle: 0.6, cannon: 0.15, chest: 0.25, helmet: 0.2, mine: 0.25, rocks: 0.3, seagrass: 0.6, skull: 0.1, wheel: 0.3, wreck: 0.3 },
+      props: { anchor: 0.45, bell: 0.2, bottle: 0.6, cannon: 0.15, chest: 0.25, helmet: 0.1, mine: 0.25, mussels: 0.6, rocks: 0.3, seagrass: 0.6, skull: 0.1, wheel: 0.3, wreck: 0.3 },
       visitors: [] },
   ];
   // How the water of an ocean is chosen: the first roll of a seed picks one of the first nine waters, as it always did.
@@ -133,7 +133,7 @@
   }
 
   // Everything the aquarium can switch on, and everything the logbook can record.
-  const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "amphora", "car", "bell", "clam", "seagrass", "wheel", "idol", "phonebox", "sponges"];
+  const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "amphora", "car", "bell", "clam", "seagrass", "wheel", "idol", "phonebox", "sponges", "mussels", "driftwood"];
   const LIFE_KEYS = Object.keys(ANIMALS).filter(k => ANIMALS[k].life);
   const VIS_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].visits), "sub"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse"];
@@ -143,7 +143,8 @@
   const AQ_BASE = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "crab", "starfish", "urchin", "octopus", "ray", "eels", "seahorse", "puffer", "angler", "moray", "squid", "hermit", "slugs", "comb", "lantern", "otters", "seal", "penguins", "mantis", "archer", "cleaners", "flyingfish", "whale", "humpback", "shark", "turtle", "manta", "dolphins", "swordfish", "sub", "narwhal", "mermaid", "kraken", "ghost", "whalefall", "amphora", "car", "bell", "clam", "seagrass", "cassiopea", "lionfish", "cuttlefish", "lobster", "nautilus", "isopod", "seadragon", "manatee", "orca", "hammerhead", "sunfish", "beluga", "serpent", "megalodon", "goldpearl", "wheel", "idol", "phonebox", "sponges", "parrotfish", "boxfish", "pistol", "sargassumfish", "spidercrab", "crocodile", "whaleshark", "sealion", "eagleray", "spermwhale", "aurora", "mobydick", "ghostdiver", "triggerfish", "wrasse", "surgeonfish", "mandarinfish", "frogfish", "scorpionfish", "stonefish", "blenny", "goby", "needlefish", "electricray", "guitarfish", "sanddollar", "brittlestar", "seacucumber", "featherstar", "seasnake", "seakrait", "iguana", "albatross", "cormorant", "pelican", "walrus", "polarbear", "thresher", "whitetip", "greatwhite", "marlin", "tuna", "barracuda", "coelacanth", "sawfish", "bluewhale", "finwhale", "pilotwhale", "falsekiller", "ghostsub", "xmastree", "coconut", "moorish", "angelfish", "crownthorns", "hawksbill", "horseshoe", "dugong", "mudskipper", "puffin", "gannet", "porpoise", "flatfish", "cod", "wolffish", "garibaldi", "leopardshark", "manowar", "glaucus", "icefish", "leopardseal", "krill", "vampire", "dumbo", "viperfish", "gulper", "hatchet", "herring", "greenland", "leatherback", "leviathan", "lighthouse",
     "lugworm", "cockle", "shrimp", "eider",
     "sandeel", "compass", "loggerhead", "cavefish", "tripodfish", "polarcod",
-    "sheephead", "remipede", "yeticrab", "sargslug", "weddell"];
+    "sheephead", "remipede", "yeticrab", "sargslug", "weddell",
+    "mussels", "driftwood"];
   const AQ_ALL = [...AQ_BASE, ...Object.keys(ANIMALS).filter(k => (ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k))];
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_BASE.
@@ -168,7 +169,7 @@
     bottle: "Flessenpost", skull: "Doodshoofd", vent: "Heetwaterbron", volcano: "Onderzeese vulkaan",
     brine: "Pekelmeer", rocks: "Rotsblokken", canyon: "Afgrond", amphora: "Amforen",
     car: "Gezonken auto", bell: "Scheepsbel", seagrass: "Zeegrasveld", wheel: "Scheepsroer",
-    idol: "Gouden beeldje", phonebox: "Telefooncel", aurora: "Noorderlicht", baitball: "Bait-ball",
+    idol: "Gouden beeldje", phonebox: "Telefooncel", mussels: "Mosselbank", driftwood: "Drijfhout met eendenmosselen", aurora: "Noorderlicht", baitball: "Bait-ball",
     bubblerings: "Bellenringen", coralspawn: "Koraalpaai", crabmarch: "Krabbentrek", eclipse: "Maansverduistering",
     eelmigration: "Palingtrek", eruption: "Vulkaanuitbarsting", ghostnet: "Spooknet", glowtide: "Zeevonken",
     hatchlings: "Babyschildpadjes", jellybloom: "Kwallenzwerm", meteor: "Vallende sterren", quake: "Zeebeving",
@@ -188,7 +189,7 @@
     bottle: "Message in a bottle", skull: "Skull", vent: "Hydrothermal vent", volcano: "Undersea volcano",
     brine: "Brine pool", rocks: "Boulders", canyon: "Abyss", amphora: "Amphorae",
     car: "Sunken car", bell: "Ship's bell", seagrass: "Seagrass meadow", wheel: "Ship's wheel",
-    idol: "Golden idol", phonebox: "Phone box", aurora: "Northern lights", baitball: "Bait ball",
+    idol: "Golden idol", phonebox: "Phone box", mussels: "Mussel bed", driftwood: "Driftwood with goose barnacles", aurora: "Northern lights", baitball: "Bait ball",
     bubblerings: "Bubble rings", coralspawn: "Coral spawning", crabmarch: "Crab march", eclipse: "Lunar eclipse",
     eelmigration: "Eel migration", eruption: "Volcanic eruption", ghostnet: "Ghost net", glowtide: "Sea sparkle",
     hatchlings: "Turtle hatchlings", jellybloom: "Jellyfish swarm", meteor: "Shooting stars", quake: "Seaquake",

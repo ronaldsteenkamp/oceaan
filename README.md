@@ -38,6 +38,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `14-wave6.js` | de zesde ronde: dertig dieren, de klimmende ijsbeer, zes momenten en twee legendes |
 | `14-wave7-wadden.js` | de zevende ronde: de Waddenzee met wadpier, kokkel, garnalen en eidereend |
 | `14-wave8.js` | de achtste ronde: zandspieringen, kompaskwal, jonge onechte karetschildpad, blinde grotvis, driepootvis en poolkabeljauw |
+| `14-wave10-finds.js` | eigen vondsten voor de Waddenzee (mosselbank) en de Sargassozee (drijfhout met eendenmosselen) |
 | `14-wave9.js` | de negende ronde: Californische schapenkop, remipede, yetikrab, sargassumnaaktslak en weddellzeehond |
 | `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
 | `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
