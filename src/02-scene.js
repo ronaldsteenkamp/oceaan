@@ -270,6 +270,10 @@
     }
   }
 
+  // an animal of one pole (pole: "n" or "s" in 00-animals.js) only lives in a polar sea at that pole
+  const onPole = (k, pole) => !ANIMALS[k] || !ANIMALS[k].pole || ANIMALS[k].pole === pole;
+  // the name of the water of this ocean, with the pole for the polar sea
+  const waterTitle = () => nm("w:" + water.name) + (water.pole ? " · " + (water.pole === "n" ? L("noordpool", "North Pole") : L("zuidpool", "South Pole")) : "");
   function buildScene() {
     shadeCache.clear();
     const wi = waterOfSeed(seed, rng());
@@ -278,6 +282,16 @@
       life: Object.fromEntries(Object.entries(water.life).map(([k, v]) => [k, leaveOut.has(k) ? 0 : v])),
       visitors: water.visitors.filter(k => !leaveOut.has(k)),
     });
+    // The polar sea lies at the north pole or the south pole (a roll of its own, so the rest of the ocean stays put):
+    // polar bears never meet penguins. An aquarium mixes them as the player likes.
+    if (water.poles && !aquarium) {
+      const pole = sub("pole", () => rng() < 0.5 ? "n" : "s");
+      water = Object.assign({}, water, {
+        pole,
+        life: Object.fromEntries(Object.entries(water.life).map(([k, v]) => [k, onPole(k, pole) ? v : 0])),
+        visitors: water.visitors.filter(k => onPole(k, pole)),
+      });
+    }
     const density = Math.max(0.45, Math.min(1.2, (W * H) / (1280 * 800)));
     const P = water.props, Lf = water.life;
     const s = { sand: { frac: range(0.08, 0.13), o1: range(0, TAU), o2: range(0, TAU) } };
@@ -579,7 +593,7 @@
     if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
     personalOcean = false;
     seedEl.textContent = seed + oceanTag();
-    biomeEl.textContent = nm("w:" + water.name) + oceanTag();
+    biomeEl.textContent = waterTitle() + oceanTag();
     rareEl.hidden = !scene.rare;
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
@@ -599,7 +613,7 @@
     const S = scene, life = presentLife(S);
     const things = [...new Set(S.ground.filter(g => NAMES[g.kind]).map(g => nm(g.kind)))];
     const animals = ["fish", "jelly", ...LIFE_KEYS].filter(k => k === "fish" || (k === "jelly" ? S.jellies.length : life[k])).map(k => nm(k).toLowerCase());
-    const text = `${nm("w:" + water.name)}, ${clockEl.textContent}. ` +
+    const text = `${waterTitle()}, ${clockEl.textContent}. ` +
       (things.length ? L("Op de bodem: ", "On the seabed: ") + things.join(", ").toLowerCase() + ". " : "") +
       L("Dieren: ", "Animals: ") + animals.join(", ") + "." + (S.rare ? L(" Zeldzaam: ", " Rare: ") + nm(S.rare).toLowerCase() + "." : "");
     sceneDescEl.textContent = text;

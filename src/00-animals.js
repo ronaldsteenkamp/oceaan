@@ -15,6 +15,7 @@
   //   hint               [nl, en] where to find it, when the waters alone do not tell
   //   capital            ["nl", "en"]: the languages in which the name starts with a proper noun, so it keeps its
   //                      capital after "Shiny " ("Shiny Groenlandse haai", but "Shiny clownvis")
+  //   pole               "n" or "s": an animal of the polar sea that only lives at the north or the south pole
   //   winterLeaves       true for seabirds that leave a cold sea in winter (in about half of those oceans)
   //   fact, note         [nl, en] the fact on its logbook page, and the field note of the Biologist reward
   //
@@ -356,6 +357,7 @@
     wolffish: {
       nl: "Zeewolf", en: "Atlantic wolffish", family: "Vissen", sci: "Anarhichas lupus",
       life: { noordzee: 0.3, ijszee: 0.3 },
+      pole: "n",
       capital: ["en"],
       shiny: 75, shinyEn: "atlantic wolffish", hue: 210,
       pal: "#6a7480>#c8a8d8 #3a424c>#6a3a8a #5a646e>#9a7ab0 #9aa2aa>#f0e0f8 #4a525c>#4a2a5a #c8c0a0>#f2d040",
@@ -367,6 +369,7 @@
     icefish: {
       nl: "IJsvis", en: "Icefish", family: "Vissen", sci: "Chaenocephalus aceratus",
       life: { ijszee: 0.4 },
+      pole: "s",
       shiny: 75, hue: 190,
       pal: "#dfe8ea>#ffe0c8 #a8b8bc>#e8a878 #3a4a50>#8a3a1a",
       fact: ["Het bloed van een ijsvis is doorzichtig, omdat er geen rode kleurstof in zit. Ze zijn de enige gewervelde dieren zonder.",
@@ -527,6 +530,7 @@
     greenland: {
       nl: "Groenlandse haai", en: "Greenland shark", family: "Haaien en grote vissen", sci: "Somniosus microcephalus",
       visits: { ijszee: 2 },
+      pole: "n",
       capital: ["nl", "en"],
       shiny: 225, shinyNl: "groenlandse haai", shinyEn: "greenland shark", hue: 35,
       pal: "#4e4a44>#c8d8e8 #7a766c>#f2f6fa #36322e>#8aa0b8 #e8e0b0>#f25a5a",
@@ -749,6 +753,7 @@
     krill: {
       nl: "Krill", en: "Krill", family: "Schaaldieren en degenkrab", sci: "Euphausia superba",
       life: { ijszee: 0.5 },
+      pole: "s",
       shiny: 75, hue: 8,
       pal: "#e86a5a>#5ad8f0",
       fact: ["Krill zijn kleine garnaaltjes, maar samen wegen ze misschien wel meer dan alle mensen op aarde bij elkaar.",
@@ -1124,6 +1129,7 @@
     beluga: {
       nl: "Beluga", en: "Beluga", family: "Walvissen en dolfijnen", sci: "Delphinapterus leucas",
       visits: { ijszee: 2 },
+      pole: "n",
       shiny: 225, hue: 200,
       pal: "#eef2f2>#6a7a8a #c8d2d6>#4a5a6a #8a9498>#2a3440",
       fact: ["Belugas worden ook wel zeekanaries genoemd, omdat ze zoveel fluiten, klikken en piepen.",
@@ -1134,6 +1140,7 @@
     narwhal: {
       nl: "Narwal", en: "Narwhal", family: "Walvissen en dolfijnen", sci: "Monodon monoceros",
       visits: { ijszee: 2 },
+      pole: "n",
       shiny: 225, hue: 200,
       pal: "#8e969a>#2a2e3a #4a5256>#e8ecf0 #6e767a>#1a1e28 #c8ccce>#5a6070 #ece4cc>#f2d880 #a89e84>#c8a040",
       fact: ["De slagtand van een narwal is een tand die door de bovenlip naar buiten groeit, soms bijna drie meter lang.",
@@ -1194,6 +1201,7 @@
     seal: {
       nl: "Zeehond", en: "Seal", family: "Zoogdieren en vogels", sci: "Phoca vitulina",
       life: { kelpwoud: 0.4, ijszee: 0.9, wadden: 1 },
+      pole: "n",
       shiny: 750, hue: 210,
       pal: "#6f7478>#e8e4dc #3e4246>#a8a29a #a9aca8>#ffffff",
       fact: ["Een zeehond kan tijdens het duiken zijn hartslag flink verlagen om zuurstof te sparen.",
@@ -1214,6 +1222,7 @@
     leopardseal: {
       nl: "Luipaardrob", en: "Leopard seal", family: "Zoogdieren en vogels", sci: "Hydrurga leptonyx",
       life: { ijszee: 0.3 },
+      pole: "s",
       shiny: 75, hue: 210,
       pal: "#5a626a>#e8e4dc #c8ccd0>#ffffff #2e343a>#8a8a92 #4a5258>#c8c4bc",
       fact: ["De luipaardrob is een van de grootste jagers rond de Zuidpool. Hij eet pinguïns, vis en krill.",
@@ -1224,6 +1233,7 @@
     walrus: {
       nl: "Walrus", en: "Walrus", family: "Zoogdieren en vogels", sci: "Odobenus rosmarus",
       life: { ijszee: 0.6 },
+      pole: "n",
       shiny: 75, hue: 25,
       pal: "#b4806a>#c8c8d0 #8a5a48>#8a8a98 #d4a48c>#e8e8f0 #f4ecd8>#f2d060",
       fact: ["Een walrus trekt zich met zijn slagtanden op het ijs. Met zijn snorharen voelt hij schelpdieren in de bodem.",
@@ -1254,9 +1264,10 @@
     polarbear: {
       nl: "IJsbeer", en: "Polar bear", family: "Zoogdieren en vogels", sci: "Ursus maritimus",
       life: { ijszee: 0.4 },
+      pole: "n",
       shiny: 75, hue: 50,
       pal: "#f4f0e2>#c8a070 #d6cfba>#a07a50",
-      hint: ["zwemt in de IJszee, klimt soms op een ijsschots en springt er weer af", "swims in the Arctic Sea, sometimes climbs onto an ice floe and jumps off again"],
+      hint: ["zwemt in de IJszee bij de noordpool, klimt soms op een ijsschots en springt er weer af", "swims in the polar sea at the North Pole, sometimes climbs onto an ice floe and jumps off again"],
       fact: ["Een ijsbeer kan dagenlang zwemmen en wordt soms honderd kilometer van land gezien.",
         "A polar bear can swim for days and is sometimes seen a hundred kilometres from land."],
       note: ["Onder de witte vacht van een ijsbeer zit een zwarte huid. Zijn haren zijn eigenlijk doorzichtig en hol.",
@@ -1265,6 +1276,7 @@
     penguins: {
       nl: "Pinguïns", en: "Penguins", family: "Zoogdieren en vogels", sci: "Aptenodytes forsteri",
       life: { ijszee: 1 },
+      pole: "s",
       shiny: 1500, shinyNl: "pinguïn", shinyEn: "penguin", hue: 210,
       pal: "#15181c>#8a6a4a #f2f2ec>#fbf6ee #f29a2e>#e8604a #f2be3c>#f2e0a0",
       fact: ["Pinguïns kunnen niet vliegen, maar onder water vliegen ze bijna, met hun vleugels als vinnen.",
@@ -1275,6 +1287,7 @@
     puffin: {
       nl: "Papegaaiduiker", en: "Puffin", family: "Zoogdieren en vogels", sci: "Fratercula arctica",
       life: { noordzee: 0.4, ijszee: 0.3 },
+      pole: "n",
       winterLeaves: true,
       shiny: 75, hue: 20,
       pal: "#1a1c20>#f2f0ea #f2f0ea>#2a3a5a #f0602a>#5ad0f0 #56647a>#f2c040 #f2c040>#f05a2a #e05040>#3a8ad8",
@@ -1297,6 +1310,7 @@
     albatross: {
       nl: "Albatros", en: "Albatross", family: "Zoogdieren en vogels", sci: "Diomedea exulans",
       life: { kelpwoud: 0.2, ijszee: 0.4 },
+      pole: "s",
       winterLeaves: true,
       shiny: 75, hue: 200,
       pal: "#f6f6f2>#f2e6c8 #d8dadc>#e0c890 #3a3a42>#6a3a20 #2a2a30>#4a2a14 #f0b0a0>#e8c040 #d88a78>#c89a20 #f0b8a0>#e8c040",

@@ -63,7 +63,7 @@
       surface: true, denseKelp: true,
       props: { amphora: 0.15, anchor: 0.5, arch: 0.5, bell: 0.3, bottle: 0.4, cannon: 0.3, canyon: 0.25, car: 0.2, chest: 0.45, city: 0.2, helmet: 0.5, mine: 0.35, phonebox: 0.1, plane: 0.3, rocks: 0.9, seagrass: 0.3, skull: 0.3, sponges: 0.3, statue: 0.2, wheel: 0.25, wreck: 0.5 },
       visitors: ["sub"] },
-    { name: "ijszee", top: "#86bfd0", mid: "#2b5e7a", bottom: "#0a2236", tintK: 0.25,
+    { name: "ijszee", poles: true, top: "#86bfd0", mid: "#2b5e7a", bottom: "#0a2236", tintK: 0.25,
       ray: "235,248,255", rayA: 0.12, snow: "235,245,255",
       sand: ["#7d8a90", "#3a4448"], rock: "#4a555c",
       kelp: ["#5d7a66", "#4f6b5a", "#6b8a70"],

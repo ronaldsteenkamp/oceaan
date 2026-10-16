@@ -39,7 +39,7 @@
     photoView.setAttribute("aria-label", L("Foto", "Photo"));
     if (scene) {
       rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
-      biomeEl.textContent = nm("w:" + water.name) + oceanTag();
+      biomeEl.textContent = waterTitle() + oceanTag();
       updateClock(); describeScene();
     }
   }

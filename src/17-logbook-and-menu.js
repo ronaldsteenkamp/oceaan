@@ -238,7 +238,9 @@
     }
     const hints = LANG === "en" ? EVENT_HINTS_EN : EVENT_HINTS;
     if (hints[key]) return hints[key];
-    const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name));
+    const pole = (ANIMALS[key] || {}).pole;
+    const atPole = w => w.poles && pole ? (pole === "n" ? L(" bij de noordpool", " at the North Pole") : L(" bij de zuidpool", " at the South Pole")) : "";
+    const where = WATERS.filter(w => (w.props[key] || 0) > 0 || (w.life[key] || 0) > 0 || w.visitors.includes(key)).map(w => nm("w:" + w.name) + atPole(w));
     return where.length ? L("komt voor in ", "found in ") + where.join(", ") : "";
   }
 
@@ -493,7 +495,7 @@
     const date = new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "nl-NL", { day: "numeric", month: "long", year: "numeric" });
     g.fillStyle = "#2b2a33"; g.textBaseline = "middle";
     g.font = `600 ${Math.round(bottom * 0.36)}px Caveat, "Segoe Print", cursive`;
-    g.fillText(`${nm("w:" + water.name)} · ${date}`, pad, ih + pad + bottom * 0.42);
+    g.fillText(`${waterTitle()} · ${date}`, pad, ih + pad + bottom * 0.42);
     g.font = `${Math.round(bottom * 0.17)}px "DM Mono", monospace`; g.fillStyle = "rgba(43,42,51,0.6)";
     g.fillText(`${L("oceaan", "ocean")} ${seed}${scene.rare ? " · " + nm(scene.rare) : ""}`, pad, ih + pad + bottom * 0.75);
     return c;
