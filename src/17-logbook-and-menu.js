@@ -174,18 +174,30 @@
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
       body: `<h2 class="nb-title small">${nm(base)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
-        ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>` : ""}`,
+        ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>`
+          : !rewards.has("ga") && FIELD_NOTES[base] ? `<p class="nb-note-field locked"><b>${L("Veldnotitie", "Field note")}</b> ${L("Hier komt een tweede weetje bij zodra je de mijlpaal Bioloog haalt: alle dieren gevonden.", "A second fact appears here once you reach the Biologist milestone: every animal found.")}</p>` : ""}`,
       side: `<dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}
           ${!e ? `<div><dt>${L("Gezien", "Seen")}</dt><dd>${L("Nog niet gevonden", "Not found yet")}${huntButtonHTML(key)}</dd></div>` : ""}
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
+          ${e && e.n > 1 ? `<div><dt>${L("Aantal keer", "Times seen")}</dt><dd>${L(`${e.n} keer gezien`, `seen ${e.n} times`)}</dd></div>` : ""}
         </dl>`,
+      kin: kinHTML(base, group),
       nav: detailNavHTML(key),
     });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
     (step && panelBody.querySelector(`[data-dnav="${step > 0 ? 1 : -1}"]`) || tabBtn || document.getElementById("detailBack")).focus();
+  }
+  // On a spread the photo page also shows the neighbours of this animal in its family, as small polaroids to leaf to.
+  function kinHTML(base, group) {
+    const sub = (LOG_SUBS[group] || []).find(sb => sb[2].includes(base));
+    if (!sub || group === "Wateren") return "";
+    const keys = sub[2].filter(k => k !== base && inLogWater(k));
+    if (!keys.length) return "";
+    const i = Math.max(0, sub[2].indexOf(base) - 1), pick = [...keys.slice(i), ...keys.slice(0, i)].slice(0, 3);
+    return `<div class="nb-kin"><h4 class="nb-fam">${L(sub[0], sub[1])} <span>${keys.filter(k => logbook.has(k)).length + (logbook.has(base) ? 1 : 0)}/${keys.length + 1}</span></h4><div class="cards">${pick.map(k => bookCard(k, false)).join("")}</div></div>`;
   }
   function shinyOdds(base) {
     const n = SHINY_N[base] || 200;

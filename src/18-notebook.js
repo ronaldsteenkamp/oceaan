@@ -277,7 +277,9 @@
     const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
     // on one page: the way back and the colour tabs in one row, the photo beside where and when, then the notes
     if (single) left.innerHTML = `<div class="nb-detail one"><div class="nb-dhead">${n.back}<div>${photo.top}</div></div><div class="nb-dpair">${photo.figure}${n.side}</div>${n.body}${n.nav}</div>`;
-    else { left.innerHTML = `<div class="nb-detail">${photo.top}${photo.figure}${n.side}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.nav}</div>`; }
+    // on a spread: the photo and its family on the left, the notes with where and when on the right
+    else { left.innerHTML = `<div class="nb-detail">${photo.top}${photo.figure}${n.kin || ""}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.side}${n.nav}</div>`; }
+    fillIn(panelBody);
     fitDetail();
   }
   // A page of the book never scrolls: when the notes do not fit, the photo gets smaller, and then the writing a little

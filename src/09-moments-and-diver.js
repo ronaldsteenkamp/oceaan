@@ -723,6 +723,10 @@
       });
       ctx.globalCompositeOperation = "source-over";
     }
+    // a soft circle of light around the diver, so it stays easy to find in dark water
+    const halo = ctx.createRadialGradient(d.x, d.y, L * 0.1, d.x, d.y, L * 0.75);
+    halo.addColorStop(0, "rgba(255,246,208,0.16)"); halo.addColorStop(1, "rgba(255,246,208,0)");
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(d.x, d.y, L * 0.75, 0, TAU); ctx.fill();
     ctx.save();
     ctx.translate(d.x, d.y);
     ctx.rotate(d.heading);
@@ -732,7 +736,7 @@
   }
 
   // The diver's length in u: the one figure you play, so a little bigger than the fish around it
-  const DIVER_L = 58;
+  const DIVER_L = 66;
   // The diver seen from the side, facing right, in local coordinates where L is its length.
   // c holds the colours, so the ghost diver can be drawn with exactly the same shape.
   function drawDiverBody(L, kick, c) {

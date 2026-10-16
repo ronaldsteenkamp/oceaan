@@ -480,6 +480,10 @@
   /* the field note on an animal's page (Biologist reward): a pencil note on a strip of tape */
   .nb-note-field { margin: 2px 0 0; padding: var(--sp-2) var(--sp-3); font-size: 13.5px; line-height: 1.5; color: var(--ink); background: rgba(236, 222, 178, 0.55); border-left: 3px solid rgba(41, 80, 122, 0.45); transform: rotate(-0.4deg); }
   .nb-note-field b { font-family: var(--hand); font-size: 18px; font-weight: 600; color: var(--pencil); margin-right: 4px; }
+  .nb-note-field.locked { color: var(--ink-faint); background: rgba(236, 222, 178, 0.28); border-left-style: dashed; }
+  .nb-kin { margin-top: var(--sp-4); }
+  .nb-kin .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
+  .nb-right .nb-detail > .nb-dl { margin-top: var(--sp-2); }
   /* a page of the book never scrolls (fitDetail makes it fit) */
   .nb-detail { overflow: hidden; }
   .nb-detail.roll { overflow-y: auto; scrollbar-width: none; touch-action: pan-y; }
