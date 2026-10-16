@@ -635,7 +635,7 @@
 
   // The size unit: the short side of the window over 700. A phone held upright counts its width over 560, so the
   // animals are a little bigger there and fill the narrow screen better.
-  const uFor = (w, h) => Math.max(0.6, Math.min(w, h) / (h > w * 1.25 ? 560 : 700));
+  const uFor = (w, h) => Math.max(0.6, Math.min(w, h) / (h > w * 1.25 ? 500 : 700));
   // On a tall screen there is much more open water above the floor than on a computer: what swims at a height set as
   // a part of the screen is spread over more of it, so the middle is not empty. Only the layout changes, never a die.
   const tallScreen = () => H > W * 1.25;
