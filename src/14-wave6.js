@@ -622,9 +622,10 @@
   }
 
   // ---- the Sargasso Sea -----------------------------------------------------------
-  // A Portuguese man o' war: a purple-blue sail of gas that floats on the waves, with long stinging tentacles below.
-  const MOW_FLOAT = "M -40 2 C -42 -6 -30 -14 -10 -16 C 10 -18 30 -14 40 -6 C 44 -2 42 2 36 3 Z";
-  const MOW_CREST = "M -26 -14 C -20 -30 -6 -34 4 -30 C 14 -36 26 -26 30 -12 Z";
+  // A Portuguese man o' war: a long, lopsided balloon of gas that floats on the waves, raised at one end, with a low
+  // wavy crest along the top that works as a sail, and long stinging tentacles in bunches below.
+  const MOW_FLOAT = "M -42 2 C -46 -6 -38 -12 -20 -13 C 0 -14 22 -16 36 -22 C 46 -26 50 -14 44 -4 C 40 2 30 4 18 4 C -2 5 -24 5 -42 2 Z";
+  const MOW_CREST = "M -30 -12 C -27 -19 -21 -20 -17 -15 C -13 -22 -6 -23 -2 -16 C 2 -24 10 -25 14 -18 C 18 -26 27 -28 30 -21 C 34 -28 42 -30 40 -20 Z";
   function drawManowar(f) {
     const s = f.s, tl = f.tl || 320;
     ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100); ctx.rotate(Math.sin(f.ph * 1.3) * 0.06);
@@ -644,7 +645,7 @@
     ctx.globalAlpha = 0.85; fillWith(P(MOW_FLOAT), sh("#8a9ae8")); ctx.globalAlpha = 1;
     fillWith(P(MOW_CREST), sh("#b8a8f0"));
     ctx.strokeStyle = sh("#e87ab0"); ctx.lineWidth = 1.6; ctx.stroke(P(MOW_CREST));
-    ctx.strokeStyle = sh("#d8c8f8"); ctx.lineWidth = 0.8; ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.moveTo(-18 + i * 9, -20 + Math.abs(i - 2) * 2); ctx.lineTo(-16 + i * 9, -10); } ctx.stroke();
+    ctx.strokeStyle = sh("#d8c8f8"); ctx.lineWidth = 0.8; ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.moveTo(-22 + i * 13, -17 - i * 1.6); ctx.lineTo(-21 + i * 13, -12 - i * 1.4); } ctx.stroke();
     underVeil(P(MOW_FLOAT));
     ripple(-40, 40, f.ph);
     ctx.restore();

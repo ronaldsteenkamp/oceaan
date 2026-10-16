@@ -9,7 +9,8 @@
   const FISH_DORSAL = "M -42 -36 C -22 -68 24 -66 44 -34 Z";
   const FISH_ANAL = "M -34 31 C -24 50 -4 50 6 34 Z";
   const FISH_PEC = "M 34 8 C 22 14 12 22 10 30 C 22 28 32 20 38 10 Z";
-  const CLOWN_BANDS = "M 34 -60 L 54 -60 L 54 60 L 34 60 Z M -24 -60 L -2 -60 C -10 -20 -10 20 -2 60 L -24 60 C -32 20 -32 -20 -24 -60 Z";
+  // the three white bands of a clownfish: behind the eye, round the middle (bulging forward) and on the tail stalk
+  const CLOWN_BANDS = "M 34 -60 L 54 -60 L 54 60 L 34 60 Z M -24 -60 L -2 -60 C -10 -20 -10 20 -2 60 L -24 60 C -32 20 -32 -20 -24 -60 Z M -76 -60 L -64 -60 L -64 60 L -76 60 Z";
   function drawFishShape(x, y, ang, L, main, dark, ph, stripes) {
     ctx.save();
     ctx.translate(x, y);
@@ -18,9 +19,11 @@
     const k = L / 100, big = L > 9;
     main = sc(main); dark = sc(dark);
     ctx.scale(k, k * (stripes ? 1.2 : 1));
-    ctx.fillStyle = dark;
-    ctx.save(); ctx.translate(-80, 0); ctx.rotate(Math.sin(ph) * 0.4); ctx.fill(P(FISH_TAIL)); ctx.restore();
+    // a clownfish has orange fins with a thin black edge; other fish have dark fins
+    ctx.fillStyle = stripes ? main : dark; ctx.strokeStyle = dark; ctx.lineWidth = 5;
+    ctx.save(); ctx.translate(-80, 0); ctx.rotate(Math.sin(ph) * 0.4); ctx.fill(P(FISH_TAIL)); if (stripes) ctx.stroke(P(FISH_TAIL)); ctx.restore();
     ctx.fill(P(FISH_DORSAL)); ctx.fill(P(FISH_ANAL));
+    if (stripes) { ctx.stroke(P(FISH_DORSAL)); ctx.stroke(P(FISH_ANAL)); }
     ctx.fillStyle = main; ctx.fill(P(FISH_BODY));
     if (stripes) {
       // a clownfish: white bands edged in black
@@ -222,6 +225,12 @@
     for (let s = 4; s >= 0; s--) { const xa = -1 + (s / 4) * 2; p.quadraticCurveTo(xa + 0.25, 0.18, xa, 0); }
     return p;
   })();
+  // the four rings you see through a moon jelly (its reproductive organs), in the same unit size as the bell
+  const JELLY_RINGS = (() => {
+    const p = new Path2D();
+    for (const x of [-0.48, -0.16, 0.16, 0.48]) { p.moveTo(x + 0.11, -0.42); p.arc(x, -0.42, 0.11, 0, Math.PI * 1.75); }
+    return p;
+  })();
   const JELLY_GRADS = new WeakMap();
   function jellyGradient(col) {
     let m = JELLY_GRADS.get(ctx);
@@ -268,13 +277,14 @@
 
       ctx.lineWidth = Math.max(0.7, 0.9 * u);
       ctx.strokeStyle = `rgba(${jc},0.32)`;
-      const n = 7, len = j.r * j.tl;
+      // a fringe of many short tentacles round the rim, and four long frilly arms in the middle
+      const n = 13, len = j.r * j.tl, fringe = len * 0.45;
       for (let i = 0; i < n; i++) {
-        const x0 = -bw * 0.8 + (i * 1.6 * bw) / (n - 1);
+        const x0 = -bw * 0.92 + (i * 1.84 * bw) / (n - 1);
         ctx.beginPath();
         ctx.moveTo(x0, 0);
         for (let s = 1; s <= 10; s++) {
-          const yy = (s / 10) * len * (0.8 + (i % 3) * 0.15);
+          const yy = (s / 10) * fringe * (0.8 + (i % 3) * 0.15);
           const xx = x0 * (1 - s * 0.03) + Math.sin(t * 1.8 - s * 0.55 + i) * j.r * 0.18 * (s / 10);
           ctx.lineTo(xx, yy);
         }
@@ -293,6 +303,7 @@
       ctx.save(); ctx.scale(bw, bh);
       ctx.fillStyle = jellyGradient(jc);
       ctx.fill(JELLY_BELL);
+      ctx.lineWidth = 0.08; ctx.strokeStyle = `rgba(${jc},0.75)`; ctx.stroke(JELLY_RINGS);
       ctx.restore();
       ctx.shadowBlur = 0;
       ctx.restore();

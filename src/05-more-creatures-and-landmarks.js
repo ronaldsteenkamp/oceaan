@@ -501,15 +501,20 @@
           ctx.beginPath(); ctx.ellipse(c.x, c.y, c.r * 0.65, c.r, 0, 0, TAU); ctx.fill(); ctx.stroke();
         });
       } else {
-        // rows of beating cilia scatter light into rainbows
-        // one colour per row of the comb, so each row is a single fill (eight times fewer colour changes than per dot)
+        // eight rows of beating cilia run from top to bottom (four on the side we see) and scatter light into rainbows;
+        // the colour runs down each row, so a row is drawn as a few fills of one colour each
         const a = 0.55 + 0.35 * Math.sin(t * 2 + c.ph), dot = Math.max(0.7, 1.1 * u), gold = c.shiny || (shinyPal && shinyPal.body);
-        for (let j = 0; j < 10; j++) {
-          const yy = -0.85 + j * 0.19, span = Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.65, cy = c.y + yy * c.r;
-          ctx.fillStyle = gold ? `rgba(255,${200 + ((j * 7) % 40)},90,${a.toFixed(2)})` : `hsla(${Math.round(t * 240 + j * 36) % 360} 90% 65% / ${a.toFixed(2)})`;
-          ctx.beginPath();
-          for (let r = 0; r < 8; r++) { const x = c.x + (r / 7 - 0.5) * 1.1 * span; ctx.moveTo(x + dot, cy); ctx.arc(x, cy, dot, 0, TAU); }
-          ctx.fill();
+        for (let row = 0; row < 4; row++) {
+          const fx = -0.75 + row * 0.5;
+          for (let band = 0; band < 3; band++) {
+            ctx.fillStyle = gold ? `rgba(255,${200 + ((row * 13 + band * 7) % 40)},90,${a.toFixed(2)})` : `hsla(${Math.round(t * 240 + band * 70 + row * 25) % 360} 90% 65% / ${a.toFixed(2)})`;
+            ctx.beginPath();
+            for (let d = band * 4; d < band * 4 + 4; d++) {
+              const yy = -0.82 + d * 0.15, x = c.x + fx * Math.sqrt(Math.max(0, 1 - yy * yy)) * c.r * 0.6, y = c.y + yy * c.r;
+              ctx.moveTo(x + dot, y); ctx.arc(x, y, dot, 0, TAU);
+            }
+            ctx.fill();
+          }
         }
       }
     }
