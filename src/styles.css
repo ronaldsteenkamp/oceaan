@@ -188,6 +188,12 @@
   #panel { z-index: 30; }
   #toast { z-index: 35; }
   .panel-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-3) var(--sp-6); border-bottom: 1px solid var(--line); }
+  /* the menu belongs to the notebook family: a strip of tape over its top edge and a paper-coloured line under its head */
+  #panel:not(.book) .panel-head { position: relative; border-bottom-color: rgba(245, 236, 214, 0.22); }
+  #panel:not(.book) .panel-head::before {
+    content: ""; position: absolute; top: -7px; left: 50%; width: 92px; height: 18px; transform: translateX(-50%) rotate(-2deg);
+    background: var(--tape); opacity: 0.9; pointer-events: none;
+  }
   .panel-head h2 { margin: 0; font-family: var(--hand); font-size: 28px; font-weight: 600; line-height: 1.05; color: var(--paper); }
   .icon-btn { width: 36px; height: 36px; padding: 0; display: inline-grid; place-items: center; border-radius: var(--r-md); background: transparent; border-color: transparent; color: var(--text-dim); }
   .icon-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: transparent; color: var(--text); }
