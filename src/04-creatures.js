@@ -225,12 +225,6 @@
     for (let s = 4; s >= 0; s--) { const xa = -1 + (s / 4) * 2; p.quadraticCurveTo(xa + 0.25, 0.18, xa, 0); }
     return p;
   })();
-  // the four rings you see through a moon jelly (its reproductive organs), in the same unit size as the bell
-  const JELLY_RINGS = (() => {
-    const p = new Path2D();
-    for (const x of [-0.48, -0.16, 0.16, 0.48]) { p.moveTo(x + 0.11, -0.42); p.arc(x, -0.42, 0.11, 0, Math.PI * 1.75); }
-    return p;
-  })();
   const JELLY_GRADS = new WeakMap();
   function jellyGradient(col) {
     let m = JELLY_GRADS.get(ctx);
@@ -277,14 +271,13 @@
 
       ctx.lineWidth = Math.max(0.7, 0.9 * u);
       ctx.strokeStyle = `rgba(${jc},0.32)`;
-      // a fringe of many short tentacles round the rim, and four long frilly arms in the middle
-      const n = 13, len = j.r * j.tl, fringe = len * 0.45;
+      const n = 7, len = j.r * j.tl;
       for (let i = 0; i < n; i++) {
-        const x0 = -bw * 0.92 + (i * 1.84 * bw) / (n - 1);
+        const x0 = -bw * 0.8 + (i * 1.6 * bw) / (n - 1);
         ctx.beginPath();
         ctx.moveTo(x0, 0);
         for (let s = 1; s <= 10; s++) {
-          const yy = (s / 10) * fringe * (0.8 + (i % 3) * 0.15);
+          const yy = (s / 10) * len * (0.8 + (i % 3) * 0.15);
           const xx = x0 * (1 - s * 0.03) + Math.sin(t * 1.8 - s * 0.55 + i) * j.r * 0.18 * (s / 10);
           ctx.lineTo(xx, yy);
         }
@@ -303,7 +296,6 @@
       ctx.save(); ctx.scale(bw, bh);
       ctx.fillStyle = jellyGradient(jc);
       ctx.fill(JELLY_BELL);
-      ctx.lineWidth = 0.08; ctx.strokeStyle = `rgba(${jc},0.75)`; ctx.stroke(JELLY_RINGS);
       ctx.restore();
       ctx.shadowBlur = 0;
       ctx.restore();

@@ -223,43 +223,36 @@
     const target = g.shut > 0 ? 0 : 0.35 + 0.65 * Math.max(0, Math.sin(g.ph));
     g.open += (target - g.open) * Math.min(1, (g.shut > 0 ? 0.2 : 0.03) * Math.max(k, 0.0001));
     if (k === 0) g.open = target;
-    // A real giant clam sits with its hinge in the sand and its opening towards the light. We see one half of the
-    // shell from the side: a broad, ribbed fan with a deeply waved rim, and above it the coloured mantle, full of
-    // algae, that swells out of the shell as the clam opens.
-    const s = g.s, y = sandY(g.x) + 5 * u, rimY = -s * 0.5, swell = s * (0.04 + g.open * 0.26);
+    const s = g.s, y = sandY(g.x) + 5 * u, lip = s * (0.06 + g.open * 0.3), cy = -s * 0.38;
     const shell = sh("#d8d0c0"), ridge = sh("#a89c88");
     ctx.save(); ctx.translate(g.x, y);
-    // the mantle: a wavy lip over the whole width of the shell
     ctx.fillStyle = sh(g.mantle);
-    ctx.beginPath(); ctx.moveTo(-s * 0.92, rimY + s * 0.08);
-    for (let i = 0; i <= 12; i++) {
-      const x = -s * 0.92 + i / 12 * s * 1.84, arch = Math.sin(i / 12 * Math.PI);
-      ctx.lineTo(x, rimY - swell * (0.45 + 0.55 * arch) - Math.sin(i * 1.9 + g.ph * 2) * s * 0.03);
-    }
-    ctx.lineTo(s * 0.92, rimY + s * 0.08); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, cy, s * 0.85, lip + s * 0.04, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = "rgba(255,255,255,0.35)";
-    for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.arc(i * s * 0.24, rimY - swell * 0.55, s * 0.03, 0, TAU); ctx.fill(); }
-    if (g.pearl === "gold" && g.open > 0.45) {
-      const py = rimY - swell * 0.75;
-      ctx.fillStyle = sc("#f2c440");
-      ctx.beginPath(); ctx.arc(0, py, s * 0.15, 0, TAU); ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(-s * 0.04, py - s * 0.04, s * 0.035, 0, TAU); ctx.fill();
-      const tw = 0.5 + 0.5 * Math.sin(t * 3); ctx.fillStyle = `rgba(255,240,170,${0.25 * tw})`; ctx.beginPath(); ctx.arc(0, py, s * 0.3, 0, TAU); ctx.fill();
+    for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.arc(i * s * 0.2, cy + Math.sin(i + g.ph * 3) * lip * 0.3, s * 0.035, 0, TAU); ctx.fill(); }
+    if (g.pearl && g.open > 0.45) {
+      const gold = g.pearl === "gold";
+      ctx.fillStyle = gold ? sc("#f2c440") : sc("#f4f0ea");
+      ctx.beginPath(); ctx.arc(0, cy, s * (gold ? 0.17 : 0.12), 0, TAU); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(-s * 0.04, cy - s * 0.04, s * 0.035, 0, TAU); ctx.fill();
+      if (gold) { const tw = 0.5 + 0.5 * Math.sin(t * 3); ctx.fillStyle = `rgba(255,240,170,${0.25 * tw})`; ctx.beginPath(); ctx.arc(0, cy, s * 0.3, 0, TAU); ctx.fill(); }
     }
-    // the shell: five big waves along the rim, and a rib running down from every crest towards the hinge
-    const crests = [];
+    // lower shell with a wavy rim
     ctx.fillStyle = shell;
-    ctx.beginPath(); ctx.moveTo(-s, rimY + s * 0.06);
-    for (let i = 0; i <= 10; i++) {
-      const x = -s + i * s * 0.2, yy = rimY + (i % 2 ? -s * 0.13 : s * 0.06) * (1 - Math.abs(x / s) * 0.3);
-      ctx.lineTo(x, yy);
-      if (i % 2) crests.push([x, yy]);
-    }
-    ctx.quadraticCurveTo(s * 0.95, s * 0.02, 0, s * 0.03); ctx.quadraticCurveTo(-s * 0.95, s * 0.02, -s, rimY + s * 0.06); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-s, cy + lip * 0.3);
+    for (let i = 0; i <= 10; i++) ctx.lineTo(-s + i * s * 0.2, cy + lip * 0.3 + (i % 2 ? s * 0.08 : 0));
+    ctx.quadraticCurveTo(s * 0.9, s * 0.05, 0, s * 0.05); ctx.quadraticCurveTo(-s * 0.9, s * 0.05, -s, cy + lip * 0.3); ctx.fill();
+    // upper shell lifts as it opens
+    const top = cy - lip;
+    ctx.beginPath(); ctx.moveTo(-s, top);
+    for (let i = 0; i <= 10; i++) ctx.lineTo(-s + i * s * 0.2, top - (i % 2 ? s * 0.08 : 0));
+    ctx.quadraticCurveTo(s * 0.9, top - s * 0.4, 0, top - s * 0.42); ctx.quadraticCurveTo(-s * 0.9, top - s * 0.4, -s, top); ctx.fill();
     ctx.strokeStyle = ridge; ctx.lineWidth = Math.max(0.7, s * 0.03);
-    ctx.beginPath();
-    for (const [x, yy] of crests) { ctx.moveTo(x, yy + s * 0.04); ctx.lineTo(x * 0.4, s * 0.01); }
-    ctx.stroke();
+    for (let i = 1; i < 10; i += 2) {
+      const x = -s + i * s * 0.2;
+      ctx.beginPath(); ctx.moveTo(x, cy + lip * 0.3 + s * 0.08); ctx.lineTo(x * 0.5, s * 0.02); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, top - s * 0.08); ctx.lineTo(x * 0.5, top - s * 0.38); ctx.stroke();
+    }
     ctx.restore();
   }
 

@@ -11,7 +11,7 @@ Uitgevoerd in zes commits:
 | Biologie: elk dier in zijn eigen water, groepsnamen, betere feiten | verspreiding Noordzee/kelpwoud/Sargassozee/diepzee/grot/bezoekers, groepsnamen als SCI, reuzenschelp alleen rif en lagune, alle feitcorrecties, Tuinalen, Lamantijn, Yellow-bellied sea snake | 3.2–3.10 |
 | IJszee: noordpool en zuidpool apart | veld `pole` in het register, poolkeuze per oceaan uit een eigen stroom, titel "IJszee · noordpool/zuidpool", pool in de logboekhint | 3.1 |
 | Gedrag: dieren in verhouding, ademen aan het oppervlak, zeeslang bovenin | orka, potvis, witpuntrifhaai, dolfijn, Japanse reuzenkrab; luchthappers komen ademen, walvissen blazen; zeeslang vlak onder het oppervlak | 3.11 |
-| Tekeningen: reuzenschelp, Portugees oorlogsschip, ribkwal, oorkwal, clownvis | 3.12 (Middel) | 3.12 |
+| Tekeningen: reuzenschelp, Portugees oorlogsschip, ribkwal, oorkwal, clownvis | 3.12 (Middel); oorkwal en reuzenschelp later op verzoek teruggezet naar de oude tekening | 3.12 |
 | Tekeningen en shiny's: haarster, bladzeedraak, heremiet, echte kleurvarianten | 3.12 (Laag) en 3.13 | 3.12–3.13 |
 | (vaste oceanen vastgelegd in `zaden.json`) | oude links tonen een andere oceaan; dat was afgesproken | — |
 
