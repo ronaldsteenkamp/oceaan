@@ -250,6 +250,8 @@
   // this ocean, so turning the phone does not bring them back. Waters, moments, rare things and shinies do not count,
   // fish schools and jellies are always there, and an aquarium keeps what was chosen.
   const NEW_LIMIT = 4;
+  // Reef keeper (110 finds) makes it five
+  const newLimit = () => rewards.has("m110") ? NEW_LIMIT + 1 : NEW_LIMIT;
   let leaveOut = null;
   function newHere() {
     const life = presentLife(scene);
@@ -260,7 +262,7 @@
     leaveOut = null;
     buildScene();
     if (!limit) return;
-    const keep = new Set(sub("nieuw", () => shuffle(newHere())).slice(0, NEW_LIMIT));
+    const keep = new Set(sub("nieuw", () => shuffle(newHere())).slice(0, newLimit()));
     const out = new Set();
     // leaving something out can let another animal in (the dice fall a little differently): then that one goes too
     for (let i = 0; i < 6; i++) {
@@ -601,6 +603,7 @@
     rareEl.textContent = scene.rare ? L("zeldzaam: ", "rare: ") + nm(scene.rare).toLowerCase() : "";
     try { history.replaceState(null, "", "#" + (aquarium ? aqCode() : seed)); } catch (e) {}
     setTimeout(huntNotice, 1200);
+    setTimeout(newNotice, 1400);
     // the first ocean of an event day says what is going on
     if (ev && !selfTesting) {
       const told = `${ev.id}-${new Date().toDateString()}`;

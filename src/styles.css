@@ -542,3 +542,5 @@
   #welcomeGo:hover { background: #1f4066; border-color: #1f4066; }
   #diveReport figure { box-shadow: var(--shadow-paper); }
   #diveReport figure.shiny { box-shadow: 0 0 0 2px rgba(214, 165, 40, 0.8), var(--shadow-paper); }
+  /* Sparkle seeker: a shiny you have not found yet shows its colours, pale and grey */
+  .card.peek img, .nb-photo.peek img { opacity: 0.5; filter: saturate(0.6); }

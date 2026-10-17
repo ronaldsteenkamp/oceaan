@@ -17,7 +17,8 @@
   function bookCard(k, isNew, forceShiny) {
     const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
     const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-    return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e ? 1 : 0}"><span>${nmBreak(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
+    const peek = shinyMode && !e && rewards.has("s5");  // Sparkle seeker: the colours of a shiny you still miss, pale
+    return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}${peek ? " peek" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e || peek ? 1 : 0}"><span>${nmBreak(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
   }
 
   // The content of the book as a list of blocks; the pages are filled from it by measuring what fits.
@@ -35,7 +36,7 @@
       ${questHTML()}
       ${eventHTML()}
       ${glintHTML()}
-      <p class="nb-note">${L(`In elke oceaan zwemmen hooguit ${NEW_LIMIT} dieren die nog niet in je logboek staan. Momenten en zeldzame dingen komen daar nog bij.`, `Every ocean holds at most ${NEW_LIMIT} animals that are not in your logbook yet. Moments and rare things come on top of that.`)}</p>
+      <p class="nb-note">${L(`In elke oceaan zwemmen hooguit ${newLimit()} dieren die nog niet in je logboek staan. Momenten en zeldzame dingen komen daar nog bij.`, `Every ocean holds at most ${newLimit()} animals that are not in your logbook yet. Moments and rare things come on top of that.`)}</p>
       <p class="nb-note">${introLeft() ? L(`Nieuwe oceaan: eerst je oefenduiken, nog ${INTRO.length - introDone()}. Daarna elke ${durationText(lockSeconds())}.`, `New ocean: first your practice dives, ${INTRO.length - introDone()} to go. After that every ${durationText(lockSeconds())}.`) : store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
       <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;

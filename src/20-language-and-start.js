@@ -205,6 +205,7 @@
     }
     if (new Set(MILESTONES.map(m => m.id)).size !== MILESTONES.length) errors.push("mijlpalen: dubbele id");
     for (const id of STICKERS) if (!MILESTONES.some(m => m.id === id) || !STICKER_ART[id]) errors.push(`sticker ${id}: mijlpaal of plaatje ontbreekt`);
+    for (const m of MILESTONES) if (!m.reward) errors.push(`mijlpaal ${m.id}: geen beloning`);
     for (const id of STICKERS) try { stickerURL(id); } catch (e) { errors.push(`sticker ${id}: ${e.message}`); }
     for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }
   }
@@ -302,7 +303,7 @@
         W = 1440; H = 900; u = uFor(W, H); seed = sd; rng = mulberry32(sd);
         buildLimited(true);
         const here = newHere(), first = here.join(",");
-        if (here.length > NEW_LIMIT) errors.push(`nieuwe dieren: oceaan ${sd} heeft er ${here.length} (${first})`);
+        if (here.length > newLimit()) errors.push(`nieuwe dieren: oceaan ${sd} heeft er ${here.length} (${first})`);
         rng = mulberry32(sd); buildLimited(true);
         if (newHere().join(",") !== first) errors.push(`nieuwe dieren: oceaan ${sd} is de tweede keer anders`);
       }

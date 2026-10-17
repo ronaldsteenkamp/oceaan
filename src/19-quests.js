@@ -157,14 +157,15 @@
   }
 
   // ---- the hunt list -----------------------------------------------------------------------
-  // Up to three things you have not found yet, pinned from their logbook page. A new ocean tells you when one of them
+  // Up to three things you have not found yet (five with Deep explorer), pinned from their logbook page. A new ocean tells you when one of them
   // is here (or may turn up), and finding one crosses it off. The sonar keeps listening only for rare things.
-  const HUNT_KEY = "oceaan-speurlijst", HUNT_MAX = 3;
+  const HUNT_KEY = "oceaan-speurlijst", HUNT_MAX = 5;
+  const huntMax = () => rewards.has("m130") ? HUNT_MAX : 3;  // Deep explorer (130 finds) gives five places
   let hunt = store.get(HUNT_KEY, []).filter(k => typeof k === "string" && LOGGABLE.has(k) && !logbook.has(k)).slice(0, HUNT_MAX);
   const saveHunt = () => store.set(HUNT_KEY, hunt);
   function toggleHunt(key) {
     if (hunt.includes(key)) hunt = hunt.filter(k => k !== key);
-    else if (hunt.length >= HUNT_MAX) { toast(L(`Je speurlijst is vol (${HUNT_MAX}). Haal er eerst een af.`, `Your hunt list is full (${HUNT_MAX}). Take one off first.`)); return; }
+    else if (hunt.length >= huntMax()) { toast(L(`Je speurlijst is vol (${huntMax()}). Haal er eerst een af.`, `Your hunt list is full (${huntMax()}). Take one off first.`)); return; }
     else hunt.push(key);
     saveHunt();
   }
@@ -177,7 +178,7 @@
   function huntHTML() {
     const list = hunt.filter(k => !logbook.has(k));
     if (!list.length) return `<p class="nb-note">${L("Tip: zet iets wat je nog zoekt op je speurlijst, via zijn pagina in het logboek.", "Tip: put something you are still looking for on your hunt list, from its page in the logbook.")}</p>`;
-    return `<h4 class="nb-fam">${L("Speurlijst", "Hunt list")} <span>${list.length}/${HUNT_MAX}</span></h4><div class="cards">` +
+    return `<h4 class="nb-fam">${L("Speurlijst", "Hunt list")} <span>${list.length}/${Math.max(huntMax(), list.length)}</span></h4><div class="cards">` +
       list.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), false, true) : bookCard(k, false)).join("") + `</div>`;
   }
   // called from seen(): a find on the hunt list is crossed off
@@ -200,6 +201,14 @@
       && (hint.includes(NAMES["w:" + water.name].toLowerCase()) || hint.includes("elk water") || (hint.includes("oppervlak") && water.surface))) return "can";
     return "";
   }
+  // Living encyclopedia (150 finds): a new ocean says how many animals you do not have yet are to be found here
+  function newNotice() {
+    if (aquarium || selfTesting || rebuilding || !rewards.has("m150")) return;
+    const n = newHere().length;
+    toast(n === 0 ? L("In deze oceaan zijn geen nieuwe dieren te vinden.", "There are no new animals to find in this ocean.")
+      : n === 1 ? L("In deze oceaan is 1 nieuw dier te vinden.", "There is 1 new animal to find in this ocean.")
+      : L(`In deze oceaan zijn ${n} nieuwe dieren te vinden.`, `There are ${n} new animals to find in this ocean.`));
+  }
   function huntNotice() {
     if (aquarium || selfTesting || rebuilding || !hunt.length) return;
     const here = hunt.filter(k => huntChance(k) === "here"), can = hunt.filter(k => huntChance(k) === "can");
@@ -210,10 +219,10 @@
 
   // the glitter meter on the first page of the logbook (see shinyChance in 01-basis.js)
   function glintHTML() {
-    const n = Math.min(store.get(GLINT_KEY, 0), GLINT_MAX);
+    const n = Math.min(store.get(GLINT_KEY, 0), glintMax());
     if (!n) return "";
     const x = glintBoost().toFixed(2).replace(/0$/, ""), xs = LANG === "en" ? x : x.replace(".", ",");
-    const dots = Math.round(n / GLINT_MAX * 10);
+    const dots = Math.round(n / glintMax() * 10);
     return `<p class="nb-note nb-glint"><b>${L("Glinstermeter", "Glitter meter")}</b> <span aria-hidden="true">${"✦".repeat(dots)}${"·".repeat(10 - dots)}</span> ` +
       L(`Shiny's zijn nu ${xs}× zo vaak. Een nieuwe shiny maakt de meter weer leeg.`, `Shinies are now ${xs}× as common. A new shiny empties the meter again.`) + `</p>`;
   }

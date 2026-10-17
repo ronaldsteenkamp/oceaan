@@ -271,11 +271,13 @@
   }
 
   // The glitter meter: every ocean of your own (not a shared link, not an aquarium) without a new shiny makes shinies
-  // a little more likely, up to three times as often after 40 oceans; a new shiny empties it again. It is personal:
+  // a little more likely, up to three times as often after 40 oceans (four after 60 with Shine connoisseur, and with
+  // every shiny found it stays at five); a new shiny empties it again. It is personal:
   // a shared ocean shows its usual shinies, and the boost is fixed per ocean, so turning the phone changes nothing.
   const GLINT_KEY = "oceaan-glinster", GLINT_MAX = 40;
   let oceanBoost = 1, personalOcean = false;
-  const glintBoost = () => 1 + Math.min(store.get(GLINT_KEY, 0), GLINT_MAX) * 0.05;
+  const glintMax = () => rewards.has("s50") ? 60 : GLINT_MAX;
+  const glintBoost = () => rewards.has("sall") ? 5 : 1 + Math.min(store.get(GLINT_KEY, 0), glintMax()) * 0.05;
   // in an aquarium with "Everything shiny" every animal is shiny (those do not count for the logbook)
   const shinyChance = key => aquarium && aquarium.shiny ? 1 : Math.min(1, (selfTesting ? 1 : oceanBoost) / (SHINY_N[key] || 200));
   const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...Object.keys(SHINY_OTHER)];
@@ -419,17 +421,17 @@
     tier("m50", "Oceanograaf", "Oceanographer", 50, "elke 15 seconden een nieuwe oceaan", "a new ocean every 15 seconds"),
     tier("m75", "Duikmeester", "Dive master", 75, "elke 7,5 seconden een nieuwe oceaan", "a new ocean every 7.5 seconds"),
     tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
-    // between 90 and everything: steps to keep going for
-    tier("m110", "Rifwachter", "Reef keeper", 110),
-    tier("m130", "Diepzeeverkenner", "Deep explorer", 130),
-    tier("m150", "Levende encyclopedie", "Living encyclopedia", 150),
+    // between 90 and everything: help with finding the last ones
+    tier("m110", "Rifwachter", "Reef keeper", 110, "5 nieuwe dieren per oceaan in plaats van 4", "5 new animals per ocean instead of 4"),
+    tier("m130", "Diepzeeverkenner", "Deep explorer", 130, "een speurlijst met 5 plekken in plaats van 3", "a hunt list with 5 places instead of 3"),
+    tier("m150", "Levende encyclopedie", "Living encyclopedia", 150, "elke nieuwe oceaan zegt hoeveel nieuwe dieren er te vinden zijn", "every new ocean tells you how many new animals there are to find"),
     { id: "mall", name: ["Meester van de zee", "Master of the sea"], goal: ["alles gevonden", "everything found"], prog: () => [foundCount(), BASE_LOG_KEYS.length], reward: ["elke seconde een nieuwe oceaan", "a new ocean every second"] },
     shinyTier("s1", "Eerste shiny", "First shiny", 1, "een belletje als er een shiny in beeld komt", "a little bell when a shiny comes into view"),
-    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5),
+    shinyTier("s5", "Glinsterzoeker", "Sparkle seeker", 5, "in je logboek zie je alvast de kleuren van de shiny's die je nog mist", "your logbook shows the colours of the shinies you still miss"),
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
-    shinyTier("s50", "Glanskenner", "Shine connoisseur", 50),
-    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["een gouden duikpak", "a golden diving suit"] },
+    shinyTier("s50", "Glanskenner", "Shine connoisseur", 50, "de glinstermeter loopt door tot vier keer zo vaak", "the glitter meter goes on to four times as often"),
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["shiny's komen in je eigen oceanen vijf keer zo vaak", "shinies turn up five times as often in your own oceans"] },
     // whoever had all nine waters before the Wadden Sea came keeps this reward (see GLOBE_KEY below)
     Object.assign(allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
       { prog: () => { const n = groupKeys("Wateren").length; return store.get(GLOBE_KEY, false) ? [n, n] : [groupHave("Wateren"), n]; } }),
