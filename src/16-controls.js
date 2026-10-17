@@ -542,7 +542,7 @@
 
   // The backup holds everything you have collected: the logbook and also the album, rescued animals,
   // quests of the day, the photo book and the shinies you picked. Settings (volume, language) stay out.
-  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze", "oceaan-speurlijst"];
+  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze", "oceaan-speurlijst", "oceaan-mijlpalen", "oceaan-spookjager"];
   function exportLog() {
     const d = new Date().toISOString().slice(0, 10);
     const voortgang = {};
@@ -578,7 +578,8 @@
     const p = data && data.voortgang;
     if (p && typeof p === "object") {
       for (const k of ["oceaan-gered", "oceaan-dagen"]) if (typeof p[k] === "number") store.set(k, Math.max(store.get(k, 0), p[k]));
-      for (const k of ["oceaan-fotoboek", "oceaan-shinykeuze"]) if (Array.isArray(p[k])) store.set(k, [...new Set([...store.get(k, []), ...p[k].filter(x => typeof x === "string")])]);
+      if (p["oceaan-spookjager"] === true) store.set("oceaan-spookjager", true);
+      for (const k of ["oceaan-fotoboek", "oceaan-shinykeuze", "oceaan-mijlpalen"]) if (Array.isArray(p[k])) store.set(k, [...new Set([...store.get(k, []), ...p[k].filter(x => typeof x === "string")])]);
       if (Array.isArray(p["oceaan-album"])) {
         const have = new Set(album.map(x => x.id));
         for (const ph of p["oceaan-album"]) if (ph && typeof ph.img === "string" && ph.img.startsWith("data:image/jpeg") && !have.has(ph.id)) album.push(ph);
@@ -589,6 +590,7 @@
       if (Array.isArray(p["oceaan-speurlijst"])) { hunt = [...new Set([...hunt, ...p["oceaan-speurlijst"]])].filter(k => typeof k === "string" && LOGGABLE.has(k) && !logbook.has(k)).slice(0, HUNT_MAX); saveHunt(); }
     }
     saveLog();
+    earned = null;  // read the merged milestones again
     applyRewards();
     return incoming.size;
   }

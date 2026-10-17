@@ -175,7 +175,7 @@
       body: `<h2 class="nb-title small">${nm(base)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}
         <p class="nb-fact">${fact}</p>
         ${rewards.has("ga") && (LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base] ? `<p class="nb-note-field"><b>${L("Veldnotitie", "Field note")}</b> ${(LANG === "en" ? FIELD_NOTES_EN : FIELD_NOTES)[base]}</p>`
-          : !rewards.has("ga") && FIELD_NOTES[base] ? `<p class="nb-note-field locked"><b>${L("Veldnotitie", "Field note")}</b> ${L("Hier komt een tweede weetje bij zodra je de mijlpaal Bioloog haalt: alle dieren gevonden.", "A second fact appears here once you reach the Biologist milestone: every animal found.")}</p>` : ""}`,
+          : !rewards.has("ga") && FIELD_NOTES[base] ? `<p class="nb-note-field locked"><b>${L("Veldnotitie", "Field note")}</b> ${L("Hier komt een tweede weetje bij zodra je de mijlpaal Bioloog haalt: de helft van alle dieren gevonden.", "A second fact appears here once you reach the Biologist milestone: half of all animals found.")}</p>` : ""}`,
       side: `<dl class="nb-dl">
           ${isShiny ? `<div><dt>${L("Kans", "Chance")}</dt><dd>${shinyOdds(base)}</dd></div>`
             : `<div><dt>${L("Waar", "Where")}</dt><dd>${where ? where.charAt(0).toUpperCase() + where.slice(1) : L("Overal", "Everywhere")}</dd></div>`}

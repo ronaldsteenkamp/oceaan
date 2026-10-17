@@ -544,3 +544,7 @@
   #diveReport figure.shiny { box-shadow: 0 0 0 2px rgba(214, 165, 40, 0.8), var(--shadow-paper); }
   /* Sparkle seeker: a shiny you have not found yet shows its colours, pale and grey */
   .card.peek img, .nb-photo.peek img { opacity: 0.5; filter: saturate(0.6); }
+  /* the milestones: a small heading per kind, and under each milestone what it gives */
+  .nb-msgroup { margin: var(--sp-2) 0 4px; font-family: var(--hand); font-size: 20px; font-weight: 600; line-height: 1.1; color: var(--pencil); }
+  .nb-msgroup span { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--ink-soft); margin-left: 4px; }
+  .nb-check .gives { display: block; margin-top: 1px; font-family: var(--sans, system-ui, sans-serif); font-size: 12px; line-height: 1.3; color: var(--ink-faint); }

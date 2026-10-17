@@ -149,6 +149,34 @@
       g.fillStyle = "#e3b64a";
       for (const [x, y] of [[52, 20], [47, 23], [26, 40], [29, 37], [76, 34], [73, 32], [74, 64], [71, 66], [28, 70], [31, 72]]) { g.beginPath(); g.arc(x, y, 2.4, 0, TAU); g.fill(); }
     },
+    // Mudflat walker: the Wadden Sea at low tide, with a seal on the sandbank and a lugworm's cast in the wet sand
+    wd: g => {
+      stBack(g, "#d9e6ea", "#b9cfd6", 100);
+      g.fillStyle = "#f2e6c4"; g.beginPath(); g.arc(78, 20, 7, 0, TAU); g.fill();
+      // the flat: wet sand, a gully of water and the dry sandbank behind it
+      g.fillStyle = "#c8b48a"; g.fillRect(0, 44, 100, 56);
+      stPath(g, "M0 58 C20 54 34 62 52 58 C70 54 84 60 100 56 L100 66 C82 70 70 64 52 68 C34 72 18 64 0 68 Z", "#7fa3ae");
+      g.fillStyle = "rgba(255,255,255,0.45)"; g.fillRect(18, 61, 12, 1.2); g.fillRect(60, 60, 16, 1.2);
+      stPath(g, "M0 44 C24 40 40 46 62 42 C78 40 90 44 100 42 L100 50 C80 52 60 48 40 52 C24 54 10 50 0 52 Z", "#dccaa0");
+      // a seal resting on the sandbank
+      g.save(); g.translate(40, 45); g.scale(1.45, 1.45); g.translate(-40, -45);
+      g.fillStyle = "#8d8a82"; g.beginPath(); g.ellipse(38, 44, 15, 5.5, -0.08, 0, TAU); g.fill();
+      g.fillStyle = "#a8a59c"; g.beginPath(); g.ellipse(36, 46, 11, 2.6, -0.08, 0, TAU); g.fill();
+      g.fillStyle = "#8d8a82"; g.beginPath(); g.arc(53, 40, 5, 0, TAU); g.fill();
+      stPath(g, "M23 44 L17 40 L18 46 Z", "#7a776f");
+      stEye(g, 55, 39, 1.1);
+      g.fillStyle = "#3a3a36"; g.beginPath(); g.arc(57.6, 41, 0.8, 0, TAU); g.fill();
+      g.restore();
+      // ripples in the wet sand and a lugworm's cast with its little pit
+      g.strokeStyle = "rgba(120,96,58,0.45)"; g.lineWidth = 1.2; g.lineCap = "round";
+      for (const y of [76, 84, 92]) { g.beginPath(); for (let x = 4; x <= 96; x += 2) { const yy = y + Math.sin(x * 0.35) * 1.2; x === 4 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.stroke(); }
+      g.strokeStyle = "#a88f62"; g.lineWidth = 3;
+      g.beginPath(); g.moveTo(58, 82); g.bezierCurveTo(52, 76, 66, 74, 62, 80); g.bezierCurveTo(58, 86, 72, 86, 70, 79); g.bezierCurveTo(68, 74, 78, 76, 76, 82); g.stroke();
+      g.fillStyle = "#9c8558"; g.beginPath(); g.ellipse(36, 80, 3.4, 1.6, 0, 0, TAU); g.fill();
+      // a cockle shell
+      g.fillStyle = "#efe4cf"; g.beginPath(); g.arc(22, 90, 4, Math.PI, TAU); g.fill();
+      g.strokeStyle = "rgba(150,120,80,0.6)"; g.lineWidth = 0.8; for (const dx of [-2, 0, 2]) { g.beginPath(); g.moveTo(22, 90); g.lineTo(22 + dx * 1.4, 86.4); g.stroke(); }
+    },
     // Stargazer: a crescent moon and a shooting star over the night sea
     sk: g => {
       stBack(g, "#1b2752", "#0f1838", 74);

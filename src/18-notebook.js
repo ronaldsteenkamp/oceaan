@@ -52,13 +52,21 @@
     }
     blocks.push({ html: intro, group: "intro" });
 
-    const msItems = MILESTONES.map(m => {
-      const [have, need] = m.prog(), done = have >= need;
-      const tip = m.reward ? L("Beloning: ", "Reward: ") + L(m.reward[0], m.reward[1]) : "";
-      return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}</span><span class="how">${done ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`}</span>${m.reward ? `<i class="gift" title="${tip}" aria-label="${tip}">★</i>` : ""}</li>`;
-    });
-    blocks.push({ head: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${MILESTONES.filter(m => m.need()).length}/${MILESTONES.length}</span></h4><p class="nb-note">${L("Een ★ betekent dat je er iets voor krijgt. Haal je alle mijlpalen, dan wordt je logboek goud.", "A ★ means you get something for it. Reach every milestone and your logbook turns gold.")}</p>`,
-      headMore: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${L("vervolg", "continued")}</span></h4>`, cards: msItems, open: `<ul class="nb-check">`, close: `</ul>`, group: "intro" });
+    // the milestones, under a heading per kind; under each one what it gives, so you can read it on a phone too
+    const msItem = m => {
+      const [have, need] = m.prog(), done = rewards.has(m.id);
+      // a reached milestone keeps its tick when an update raises the goal; then the count shows what is new
+      const how = done && have >= need ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`;
+      const gives = (m.event ? L(m.goal[0], m.goal[1]) + " → " : "→ ") + L(m.reward[0], m.reward[1]);
+      return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}<small class="gives">${gives}</small></span><span class="how">${how}</span></li>`;
+    };
+    const forGold = MILESTONES.filter(m => !m.event);
+    blocks.push({ html: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${forGold.filter(m => rewards.has(m.id)).length}/${forGold.length}</span></h4><p class="nb-note">${L("Elke mijlpaal geeft je iets. Haal je ze allemaal (de Spookjager telt niet mee), dan wordt je logboek goud.", "Every milestone gives you something. Reach them all (Ghost hunter does not count) and your logbook turns gold.")}</p>`, group: "intro" });
+    for (const [nl, en, ids] of MILESTONE_GROUPS) {
+      const ms = ids.map(id => MILESTONES.find(m => m.id === id));
+      blocks.push({ head: `<h5 class="nb-msgroup">${L(nl, en)} <span>${ms.filter(m => rewards.has(m.id)).length}/${ms.length}</span></h5>`,
+        headMore: `<h5 class="nb-msgroup">${L(nl, en)} <span>${L("vervolg", "continued")}</span></h5>`, cards: ms.map(msItem), open: `<ul class="nb-check">`, close: `</ul>`, group: "intro" });
+    }
     // the stickers from the milestones, stuck in at a slant; the ones still to earn are dashed outlines
     // (sticker by sticker, so they can start on the page where the milestones end)
     blocks.push({ head: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${STICKERS.filter(id => rewards.has(id)).length}/${STICKERS.length}</span></h4>`,

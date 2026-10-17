@@ -1,10 +1,12 @@
 # Mijlpalen en beloningen: overzicht en voorstellen
 
-Stand van 17 oktober 2026 (na de nieuwe logboekindeling, de eigen stickers en de nieuwe beloningen). De mijlpalen staan in `MILESTONES` in `src/01-basis.js`. De beloningen werken op de plekken die in de laatste kolom staan.
+Stand van 17 oktober 2026, na de nieuwe beloningen, het bewaren van mijlpalen, de Wadloper en de Spookjager. De mijlpalen staan in `MILESTONES` in `src/01-basis.js`, de kopjes in `MILESTONE_GROUPS`.
 
 ## 1. Overzicht
 
-Er zijn **34 mijlpalen**. Het logboek telt 184 vondsten: 10 wateren, 139 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 161 shiny's.
+Er zijn **39 mijlpalen**, onder vijf kopjes. 38 tellen mee voor het gouden logboek; de Spookjager niet, omdat je die alleen in de Spookweek kunt halen. Het logboek telt 184 vondsten: 10 wateren, 139 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 161 shiny's.
+
+Een gehaalde mijlpaal blijft gehaald. Hij staat opgeslagen in `oceaan-mijlpalen` en gaat mee in het reservebestand. Komen er in een update dieren bij, dan stijgt het doel, maar je houdt je beloning.
 
 ### Vondsten (9)
 
@@ -14,35 +16,39 @@ Er zijn **34 mijlpalen**. Het logboek telt 184 vondsten: 10 wateren, 139 dieren,
 | m25 | Zeekenner | 25 vondsten | elke 30 s |
 | m50 | Oceanograaf | 50 vondsten | elke 15 s |
 | m75 | Duikmeester | 75 vondsten | elke 7,5 s |
-| m100 | Zeeheld | **90** vondsten | gouden randjes in het logboek, elke 5 s |
-| m110 | Rifwachter | 110 vondsten | 5 nieuwe dieren per oceaan in plaats van 4 (`02-scene.js`) |
-| m130 | Diepzeeverkenner | 130 vondsten | een speurlijst met 5 plekken in plaats van 3 (`19-quests.js`) |
-| m150 | Levende encyclopedie | 150 vondsten | elke nieuwe oceaan meldt hoeveel nieuwe dieren er te vinden zijn (`19-quests.js`) |
+| m90 | Zeeheld | 90 vondsten | gouden randjes in het logboek, elke 5 s (het id was `m100`) |
+| m110 | Rifwachter | 110 vondsten | 5 nieuwe dieren per oceaan in plaats van 4 |
+| m130 | Diepzeeverkenner | 130 vondsten | een speurlijst met 5 plekken in plaats van 3 |
+| m150 | Levende encyclopedie | 150 vondsten | elke nieuwe oceaan meldt hoeveel nieuwe dieren er te vinden zijn |
 | mall | Meester van de zee | alles (184) | elke seconde een nieuwe oceaan |
 
-### Shiny's (6)
+### Shiny's (9)
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
-| s1 | Eerste shiny | 1 | belletje als er een shiny in beeld komt (`10-shiny.js`) |
+| s1 | Eerste shiny | 1 | belletje als er een shiny in beeld komt |
 | s5 | Glinsterzoeker | 5 | shiny's die je nog mist, zie je vaag in hun kleuren in het logboek |
-| s15 | Shinyjager | 15 | shiny's laten een glinsterspoor achter (`10-shiny.js`) |
-| s30 | Shinyverzamelaar | 30 | sterretjes achter je duiker (`09-moments-and-diver.js`) |
-| s50 | Glanskenner | 50 | de glinstermeter loopt door tot 4× (was 3×) |
-| sall | Glimmende legende | alle 161 | shiny's komen in je eigen oceanen 5× zo vaak (was: gouden duikpak) |
+| s15 | Shinyjager | 15 | shiny's laten een glinsterspoor achter |
+| s30 | Shinyverzamelaar | 30 | sterretjes achter je duiker |
+| s50 | Glanskenner | 50 | de glinstermeter loopt door tot 4× |
+| s75 | Glinsterspeurder | 75 | het belletje klinkt al als er ergens in de oceaan een shiny zwemt |
+| s100 | Glimmeester | 100 | de glinstermeter loopt door tot 5× |
+| s125 | Glansduiker | 125 | elke nieuwe oceaan meldt of er een shiny zwemt die je nog mist |
+| sall | Glimmende legende | alle 161 | shiny's komen in je eigen oceanen 6× zo vaak |
 
-### Een hele groep (6)
+### Hulp bij het zoeken (5)
+
+De hulpmiddelen komen halverwege, zodat je er nog iets mee kunt vinden.
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
 | gw | Wereldreiziger | alle 10 wateren | zelf het water kiezen (R ingedrukt houden) |
-| ga | Bioloog | alle 139 dieren | wetenschappelijke naam en veldnotitie bij elk dier |
-| gv | Gastvrij | alle 32 bezoekers | knop om een bezoeker te roepen (B) |
-| gm | Oog voor het moment | alle 23 momenten | knop om een moment op te roepen (M) |
-| gr | Mythejager | alle 12 zeldzame dingen | pijl die naar iets zeldzaams wijst |
-| ph | Fotograaf | 5 foto's in je album | fotofilters |
+| ga | Bioloog | 70 van de 139 dieren | wetenschappelijke naam en veldnotitie bij elk dier |
+| gv | Gastvrij | 16 van de 32 bezoekers | knop om een bezoeker te roepen (B) |
+| gm | Oog voor het moment | 12 van de 23 momenten | knop om een moment op te roepen (M) |
+| gr | Mythejager | 6 van de 12 zeldzame dingen | pijl die naar iets zeldzaams wijst |
 
-### Wateren (9), elk met een sticker
+### Wateren (10), elk met een sticker
 
 | id | Naam | Dieren in dat water |
 | --- | --- | --- |
@@ -50,23 +56,23 @@ Er zijn **34 mijlpalen**. Het logboek telt 184 vondsten: 10 wateren, 139 dieren,
 | wm | Wortelkruiper | 38 |
 | wr | Rifkenner | 58 |
 | ws | Wierzwerver | 28 |
+| wd | Wadloper | 15 |
 | nz | Noordzeekenner | 37 |
 | wk | Kelpkenner | 32 |
 | wi | Poolreiziger | 30 |
 | wg | Grotduiker | 23 |
 | dz | Diepzeeduiker | 29 |
-| — | *(Waddenzee: geen mijlpaal)* | 15 |
 
-### Bijzonder (4), met een sticker
+### Bijzonder (6)
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
+| ph | Fotograaf | 5 foto's in je album | fotofilters |
 | rd | Redder | 5 dieren uit een spooknet bevrijd | sticker, en een bedankrondje om de duiker |
 | vh | Volhouder | 7 opdrachten van de dag | sticker |
 | fj | Fotojager | het hele fotoboek (8 foto-opdrachten) | sticker |
 | sk | Sterrenkijker | vallende sterren, maansverduistering en noorderlicht | sticker |
-
-Wie **alle** 34 mijlpalen heeft, krijgt een gouden logboekknop.
+| sj | Spookjager | een spook gevonden in de Spookweek (24 oktober tot 2 november) | spoken komen in je eigen oceanen vaker langs, het hele jaar |
 
 ## 2. Wat goed werkt
 
@@ -76,6 +82,8 @@ Wie **alle** 34 mijlpalen heeft, krijgt een gouden logboekknop.
 - **Een mix van soorten doelen.** Er zijn naast verzamelen ook mijlpalen voor redden, fotograferen en dagopdrachten. Zo is er ook iets te doen voor wie niet alles wil vinden.
 
 ## 3. Problemen en voorstellen
+
+De punten 3.1 tot en met 3.6 en de Spookweek-mijlpaal uit 3.8 zijn uitgevoerd; het overzicht hierboven laat de huidige stand zien. De rest staat er als achtergrond.
 
 ### Hoog
 
@@ -146,11 +154,15 @@ De Spookweek begint op 24 oktober. Laat eventstickers niet meetellen voor het go
 - Volhouder telt dagen, niet dagen op rij. Dat is vriendelijk; een tweede stap bij 30 opdrachten zou een langer doel geven.
 - Rifkenner vraagt 58 dieren en Grotduiker 23. Het rif is daardoor veel zwaarder dan de rest. Dat mag, maar dan past de rif-sticker beter later in de lijst.
 
-## 4. Volgorde van uitvoeren
+## 4. Stand
 
-1. **3.1 Beloningen bewaren.** Eerst, want elke volgende update met nieuwe dieren kost spelers anders hun beloningen. Hernoem in dezelfde stap `m100`.
-2. **3.2 Wadloper en 3.3 de beloning zichtbaar op de telefoon.** Klein werk.
-3. **3.4 Kopjes in de lijst.**
-4. **3.6 De extra shinystappen.**
-5. **3.5 Hulpmiddelen halverwege**, als je het spel iets makkelijker wilt maken.
-6. **3.7–3.9** naar smaak; eventstickers het liefst voor 24 oktober.
+Gedaan op 17 oktober 2026:
+
+1. **3.1** Mijlpalen worden bewaard (`oceaan-mijlpalen`, ook in het reservebestand); `m100` heet nu `m90`, en oude opgeslagen waarden worden omgezet.
+2. **3.2** De Wadloper, met een eigen sticker.
+3. **3.3 en 3.4** In de lijst staat onder elke mijlpaal wat hij geeft, en de mijlpalen staan onder vijf kopjes met een teller.
+4. **3.5** De hulpmiddelen komen halverwege.
+5. **3.6** Extra shinystappen bij 75, 100 en 125, en elke mijlpaal heeft een beloning (de zelftest eist dat).
+6. **3.8** De Spookjager voor de Spookweek.
+
+Nog open: 3.7 (twee keer goud), de rest van 3.8 (speurlijst en aquarium), 3.9 (de Fotojager) en 3.10.

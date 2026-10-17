@@ -201,13 +201,16 @@
       && (hint.includes(NAMES["w:" + water.name].toLowerCase()) || hint.includes("elk water") || (hint.includes("oppervlak") && water.surface))) return "can";
     return "";
   }
-  // Living encyclopedia (150 finds): a new ocean says how many animals you do not have yet are to be found here
+  // Living encyclopedia (150 finds): a new ocean says how many animals you do not have yet are to be found here.
+  // Shine diver (125 shinies): it also says whether a shiny you still miss swims here.
   function newNotice() {
-    if (aquarium || selfTesting || rebuilding || !rewards.has("m150")) return;
-    const n = newHere().length;
-    toast(n === 0 ? L("In deze oceaan zijn geen nieuwe dieren te vinden.", "There are no new animals to find in this ocean.")
-      : n === 1 ? L("In deze oceaan is 1 nieuw dier te vinden.", "There is 1 new animal to find in this ocean.")
+    if (aquarium || selfTesting || rebuilding) return;
+    // only when there is something new: an ocean without new animals stays quiet
+    const n = rewards.has("m150") ? newHere().length : 0;
+    if (n) toast(n === 1 ? L("In deze oceaan is 1 nieuw dier te vinden.", "There is 1 new animal to find in this ocean.")
       : L(`In deze oceaan zijn ${n} nieuwe dieren te vinden.`, `There are ${n} new animals to find in this ocean.`));
+    if (rewards.has("s125") && scene.shinies.some(e => !logbook.has("shiny:" + e.key)))
+      toast(L("Er zwemt hier een shiny die je nog niet hebt!", "A shiny you do not have yet swims here!"), "important");
   }
   function huntNotice() {
     if (aquarium || selfTesting || rebuilding || !hunt.length) return;

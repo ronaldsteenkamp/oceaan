@@ -206,6 +206,9 @@
     if (new Set(MILESTONES.map(m => m.id)).size !== MILESTONES.length) errors.push("mijlpalen: dubbele id");
     for (const id of STICKERS) if (!MILESTONES.some(m => m.id === id) || !STICKER_ART[id]) errors.push(`sticker ${id}: mijlpaal of plaatje ontbreekt`);
     for (const m of MILESTONES) if (!m.reward) errors.push(`mijlpaal ${m.id}: geen beloning`);
+    const grouped = MILESTONE_GROUPS.flatMap(g => g[2]);
+    for (const m of MILESTONES) if (grouped.filter(id => id === m.id).length !== 1) errors.push(`mijlpaal ${m.id}: hoort precies één keer in MILESTONE_GROUPS (01-basis.js)`);
+    for (const id of grouped) if (!MILESTONES.some(m => m.id === id)) errors.push(`MILESTONE_GROUPS: onbekende mijlpaal ${id}`);
     for (const id of STICKERS) try { stickerURL(id); } catch (e) { errors.push(`sticker ${id}: ${e.message}`); }
     for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }
   }

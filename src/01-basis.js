@@ -271,13 +271,15 @@
   }
 
   // The glitter meter: every ocean of your own (not a shared link, not an aquarium) without a new shiny makes shinies
-  // a little more likely, up to three times as often after 40 oceans (four after 60 with Shine connoisseur, and with
-  // every shiny found it stays at five); a new shiny empties it again. It is personal:
+  // a little more likely, up to three times as often after 40 oceans (four with Shine connoisseur, five with Shimmer
+  // master; with every shiny found it stays at six); a new shiny empties it again. It is personal:
   // a shared ocean shows its usual shinies, and the boost is fixed per ocean, so turning the phone changes nothing.
+  // the ghosts that Ghost week brings, and that the Ghost hunter milestone (sj) is about
+  const SPOOK_RARES = EVENTS.find(e => e.id === "spookweek").rare.keys;
   const GLINT_KEY = "oceaan-glinster", GLINT_MAX = 40;
-  let oceanBoost = 1, personalOcean = false;
-  const glintMax = () => rewards.has("s50") ? 60 : GLINT_MAX;
-  const glintBoost = () => rewards.has("sall") ? 5 : 1 + Math.min(store.get(GLINT_KEY, 0), glintMax()) * 0.05;
+  let oceanBoost = 1, personalOcean = false, oceanGhosts = false;
+  const glintMax = () => rewards.has("s100") ? 80 : rewards.has("s50") ? 60 : GLINT_MAX;
+  const glintBoost = () => rewards.has("sall") ? 6 : 1 + Math.min(store.get(GLINT_KEY, 0), glintMax()) * 0.05;
   // in an aquarium with "Everything shiny" every animal is shiny (those do not count for the logbook)
   const shinyChance = key => aquarium && aquarium.shiny ? 1 : Math.min(1, (selfTesting ? 1 : oceanBoost) / (SHINY_N[key] || 200));
   const SHINY_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].shiny), ...Object.keys(SHINY_OTHER)];
@@ -336,6 +338,9 @@
   function seen(key, pos) {
     if (!NAMES[key] || rebuilding || !LOGGABLE.has(key)) return;
     questEvent("seen", key);
+    if (!store.get(SPOOK_KEY, false) && SPOOK_RARES.includes(key) && (activeEvent() || {}).id === "spookweek") {
+      const before = reached(); store.set(SPOOK_KEY, true); checkMilestones(before);
+    }
     const entry = logbook.get(key);
     if (entry) { entry.n++; saveLog(); return; }
     const before = reached();
@@ -415,12 +420,18 @@
     ["aurora", "Een foto onder het noorderlicht", "A photo under the northern lights"],
     ["leviathan", "De Leviathan in beeld", "The Leviathan in view"],
   ];
+  // the helping rewards come halfway, while there is still something to find with them
+  const halfOf = (id, nl, en, keys, wordNl, wordEn, rewardNl, rewardEn) => ({ id, name: [nl, en],
+    goal: [`${Math.ceil(keys().length / 2)} van de ${keys().length} ${wordNl}`, `${Math.ceil(keys().length / 2)} of the ${keys().length} ${wordEn}`],
+    prog: () => [keys().filter(k => logbook.has(k)).length, Math.ceil(keys().length / 2)], reward: [rewardNl, rewardEn] });
+  // Ghost week: a ghost found during the week (see seen()) makes ghosts come by more often in your own oceans
+  const SPOOK_KEY = "oceaan-spookjager";
   const MILESTONES = [
     tier("m10", "Ontdekker", "Explorer", 10, "elke 75 seconden een nieuwe oceaan", "a new ocean every 75 seconds"),
     tier("m25", "Zeekenner", "Sea expert", 25, "elke 30 seconden een nieuwe oceaan", "a new ocean every 30 seconds"),
     tier("m50", "Oceanograaf", "Oceanographer", 50, "elke 15 seconden een nieuwe oceaan", "a new ocean every 15 seconds"),
     tier("m75", "Duikmeester", "Dive master", 75, "elke 7,5 seconden een nieuwe oceaan", "a new ocean every 7.5 seconds"),
-    tier("m100", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
+    tier("m90", "Zeeheld", "Sea hero", 90, "gouden randjes in je logboek en elke 5 seconden een nieuwe oceaan", "golden edges in your logbook and a new ocean every 5 seconds"),
     // between 90 and everything: help with finding the last ones
     tier("m110", "Rifwachter", "Reef keeper", 110, "5 nieuwe dieren per oceaan in plaats van 4", "5 new animals per ocean instead of 4"),
     tier("m130", "Diepzeeverkenner", "Deep explorer", 130, "een speurlijst met 5 plekken in plaats van 3", "a hunt list with 5 places instead of 3"),
@@ -431,28 +442,44 @@
     shinyTier("s15", "Shinyjager", "Shiny hunter", 15, "shiny's laten een glinsterend spoor achter", "shinies leave a glittering trail"),
     shinyTier("s30", "Shinyverzamelaar", "Shiny collector", 30, "een spoor van sterretjes achter je duiker", "a trail of stars behind your diver"),
     shinyTier("s50", "Glanskenner", "Shine connoisseur", 50, "de glinstermeter loopt door tot vier keer zo vaak", "the glitter meter goes on to four times as often"),
-    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["shiny's komen in je eigen oceanen vijf keer zo vaak", "shinies turn up five times as often in your own oceans"] },
+    shinyTier("s75", "Glinsterspeurder", "Glitter tracker", 75, "het belletje klinkt al als er ergens in de oceaan een shiny zwemt", "the bell already rings when a shiny swims anywhere in the ocean"),
+    shinyTier("s100", "Glimmeester", "Shimmer master", 100, "de glinstermeter loopt door tot vijf keer zo vaak", "the glitter meter goes on to five times as often"),
+    shinyTier("s125", "Glansduiker", "Shine diver", 125, "elke nieuwe oceaan zegt of er een shiny zwemt die je nog mist", "every new ocean tells you whether a shiny you still miss swims there"),
+    { id: "sall", name: ["Glimmende legende", "Shining legend"], goal: ["alle shiny's", "every shiny"], prog: () => [shinyCount(), SHINY_KEYS.length], reward: ["shiny's komen in je eigen oceanen zes keer zo vaak", "shinies turn up six times as often in your own oceans"] },
     // whoever had all nine waters before the Wadden Sea came keeps this reward (see GLOBE_KEY below)
     Object.assign(allOf("gw", "Wereldreiziger", "Globetrotter", "Wateren", "wateren", "waters", "zelf het water kiezen: houd R of de nieuwe-oceaanknop ingedrukt", "choosing the water yourself: hold down R or the new-ocean button"),
       { prog: () => { const n = groupKeys("Wateren").length; return store.get(GLOBE_KEY, false) ? [n, n] : [groupHave("Wateren"), n]; } }),
-    allOf("ga", "Bioloog", "Biologist", "Dieren", "dieren", "animals", "de wetenschappelijke naam en een extra veldnotitie bij elk dier in je logboek", "the scientific name and an extra field note for every animal in your logbook"),
-    { id: "gv", name: ["Gastvrij", "Welcoming host"], goal: [`alle ${VIS_KEYS.length} bezoekers`, `all ${VIS_KEYS.length} visitors`], prog: () => [VIS_KEYS.filter(k => logbook.has(k)).length, VIS_KEYS.length], reward: ["een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"] },
-    allOf("gm", "Oog voor het moment", "Moment catcher", "Momenten", "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
-    allOf("gr", "Mythejager", "Myth hunter", "Zeldzaam", "zeldzame dingen", "rare things", "een pijl die altijd naar iets zeldzaams wijst", "an arrow that always points to something rare"),
-    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: ["fotofilters voor je camera", "photo filters for your camera"] },
-    { id: "rd", name: ["Redder", "Rescuer"], goal: ["5 dieren uit een spooknet bevrijd", "5 animals freed from a ghost net"], prog: () => [rescued(), 5], reward: ["een sticker, en bevrijde dieren zwemmen eerst een bedankrondje om je duiker", "a sticker, and freed animals first swim a thank-you lap round your diver"] },
-    waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "de Noordzee", "the North Sea"),
-    waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "de diepzee", "the deep sea"),
+    halfOf("ga", "Bioloog", "Biologist", () => groupKeys("Dieren"), "dieren", "animals", "de wetenschappelijke naam en een extra veldnotitie bij elk dier in je logboek", "the scientific name and an extra field note for every animal in your logbook"),
+    halfOf("gv", "Gastvrij", "Welcoming host", () => VIS_KEYS, "bezoekers", "visitors", "een knop om een bezoeker te roepen (B)", "a button to call a visitor (B)"),
+    halfOf("gm", "Oog voor het moment", "Moment catcher", () => groupKeys("Momenten"), "momenten", "moments", "een knop om een moment op te roepen (M)", "a button to call up a moment (M)"),
+    halfOf("gr", "Mythejager", "Myth hunter", () => groupKeys("Zeldzaam"), "zeldzame dingen", "rare things", "een pijl die altijd naar iets zeldzaams wijst", "an arrow that always points to something rare"),
+    // the waters in the order of the logbook
+    waterTier("wl", "Lagunekenner", "Lagoon expert", "lagune", "de lagune", "the lagoon"),
+    waterTier("wm", "Wortelkruiper", "Root crawler", "mangrove", "de mangrove", "the mangrove"),
     waterTier("wr", "Rifkenner", "Reef expert", "rif", "het koraalrif", "the coral reef"),
+    waterTier("ws", "Wierzwerver", "Weed wanderer", "sargasso", "de Sargassozee", "the Sargasso Sea"),
+    waterTier("wd", "Wadloper", "Mudflat walker", "wadden", "de Waddenzee", "the Wadden Sea"),
+    waterTier("nz", "Noordzeekenner", "North Sea expert", "noordzee", "de Noordzee", "the North Sea"),
     waterTier("wk", "Kelpkenner", "Kelp expert", "kelpwoud", "het kelpwoud", "the kelp forest"),
     waterTier("wi", "Poolreiziger", "Polar explorer", "ijszee", "de IJszee", "the polar sea"),
-    waterTier("wm", "Wortelkruiper", "Root crawler", "mangrove", "de mangrove", "the mangrove"),
     waterTier("wg", "Grotduiker", "Cave diver", "grot", "de onderwatergrot", "the underwater cave"),
-    waterTier("wl", "Lagunekenner", "Lagoon expert", "lagune", "de lagune", "the lagoon"),
-    waterTier("ws", "Wierzwerver", "Weed wanderer", "sargasso", "de Sargassozee", "the Sargasso Sea"),
+    waterTier("dz", "Diepzeeduiker", "Deep-sea diver", "diepzee", "de diepzee", "the deep sea"),
+    { id: "ph", name: ["Fotograaf", "Photographer"], goal: ["5 foto's in je album", "5 photos in your album"], prog: () => [typeof album === "undefined" ? 0 : album.length, 5], reward: ["fotofilters voor je camera", "photo filters for your camera"] },
+    { id: "rd", name: ["Redder", "Rescuer"], goal: ["5 dieren uit een spooknet bevrijd", "5 animals freed from a ghost net"], prog: () => [rescued(), 5], reward: ["een sticker, en bevrijde dieren zwemmen eerst een bedankrondje om je duiker", "a sticker, and freed animals first swim a thank-you lap round your diver"] },
     { id: "vh", name: ["Volhouder", "Keeper-upper"], goal: ["7 opdrachten van de dag", "7 quests of the day"], prog: () => [store.get("oceaan-dagen", 0), 7], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "fj", name: ["Fotojager", "Photo hunter"], goal: ["het hele fotoboek", "the whole photo book"], prog: () => [PHOTO_TASKS.filter(x => store.get("oceaan-fotoboek", []).includes(x[0])).length, PHOTO_TASKS.length], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
     { id: "sk", name: ["Sterrenkijker", "Stargazer"], goal: ["vallende sterren, maansverduistering en noorderlicht", "shooting stars, lunar eclipse and northern lights"], prog: () => [["meteor", "eclipse", "aurora"].filter(k => logbook.has(k)).length, 3], reward: ["een sticker in je logboek", "a sticker in your logbook"] },
+    // only to be had during Ghost week, so it does not count for the golden logbook
+    { id: "sj", event: true, name: ["Spookjager", "Ghost hunter"], goal: ["een spook gevonden in de Spookweek (24 oktober tot 2 november)", "a ghost found during Ghost week (24 October to 2 November)"],
+      prog: () => [store.get(SPOOK_KEY, false) ? 1 : 0, 1], reward: ["spoken komen in je eigen oceanen vaker langs, het hele jaar", "ghosts come by more often in your own oceans, all year round"] },
+  ];
+  // the milestones on the first page of the logbook, under a heading per kind
+  const MILESTONE_GROUPS = [
+    ["Vondsten", "Finds", ["m10", "m25", "m50", "m75", "m90", "m110", "m130", "m150", "mall"]],
+    ["Shiny's", "Shinies", ["s1", "s5", "s15", "s30", "s50", "s75", "s100", "s125", "sall"]],
+    ["Hulp bij het zoeken", "Help with searching", ["gw", "ga", "gv", "gm", "gr"]],
+    ["Wateren", "Waters", ["wl", "wm", "wr", "ws", "wd", "nz", "wk", "wi", "wg", "dz"]],
+    ["Bijzonder", "Special", ["ph", "rd", "vh", "fj", "sk", "sj"]],
   ];
   // The Wadden Sea made ten waters. A logbook that already had the first nine keeps the Globetrotter reward;
   // this is worked out once, on the first visit after the update (called from the start in 20-language-and-start.js).
@@ -461,15 +488,21 @@
     if (WATERS.slice(0, FIRST_WATERS).every(w => logbook.has("w:" + w.name))) store.set(GLOBE_KEY, true);
   }
   // the milestones that give a sticker, in the order of the stickers page; each has its own picture in 06-stickers.js
-  const STICKERS = ["rd", "nz", "dz", "wr", "wk", "wi", "wm", "wg", "wl", "ws", "sk", "vh", "fj"];
+  const STICKERS = ["rd", "wl", "wm", "wr", "ws", "wd", "nz", "wk", "wi", "wg", "dz", "sk", "vh", "fj"];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
+  // A milestone once reached stays reached: new animals in an update raise the goal, but never take a reward away.
+  // Kept in localStorage (and in the backup file); "m100" was the old name of Sea hero.
+  const EARNED_KEY = "oceaan-mijlpalen";
+  let earned = null;
+  const earnedSet = () => earned || (earned = new Set(store.get(EARNED_KEY, []).filter(id => typeof id === "string").map(id => id === "m100" ? "m90" : id)));
   let rewards = new Set();
-  const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);
+  const reached = () => MILESTONES.filter(m => earnedSet().has(m.id) || m.need()).map(m => m.id);
   function applyRewards() {
     rewards = new Set(reached());
-    bookBtn.dataset.rank = MILESTONES.every(m => rewards.has(m.id)) ? "gold" : "";
+    if (!selfTesting && [...rewards].some(id => !earnedSet().has(id))) { for (const id of rewards) earned.add(id); store.set(EARNED_KEY, [...earned]); }
+    bookBtn.dataset.rank = MILESTONES.filter(m => !m.event).every(m => rewards.has(m.id)) ? "gold" : "";
     bookBtn.classList.remove("glitter");
-    panelEl.classList.toggle("gilded", rewards.has("m100"));
+    panelEl.classList.toggle("gilded", rewards.has("m90"));
     // the call buttons only appear once they are earned
     const vb = document.getElementById("callVisitor"), mb = document.getElementById("callMoment");
     if (vb) vb.hidden = !rewards.has("gv");
