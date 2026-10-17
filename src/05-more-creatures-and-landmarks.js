@@ -531,7 +531,7 @@
     if (water.surface) y = Math.max(y, waveY(se.x) + se.s * 0.25);
     se.y = y;
     const ang = Math.atan2(Math.cos(se.ph) * 70 * u * 0.018, 1.1 * u);
-    const s = se.s, body = sh("#6f7478"), spot = sh("#3e4246"), belly = sh("#a9aca8");
+    const s = se.s, body = sh("#7a7468"), spot = sh("#4a4438"), belly = sh("#b4b0a4");
     ctx.save();
     ctx.translate(se.x, y);
     ctx.scale(faceOf(se), 1);
@@ -541,20 +541,25 @@
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-s * 0.25, -s * 0.12); ctx.lineTo(-s * 0.22, 0); ctx.lineTo(-s * 0.25, s * 0.12); ctx.fill();
     ctx.restore();
     ctx.beginPath(); ctx.ellipse(0, 0, s * 0.55, s * 0.16, 0, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(s * 0.5, -s * 0.02, s * 0.15, s * 0.12, 0, 0, TAU); ctx.fill();
+    // a round head with a high forehead and a short, dog-like muzzle
+    ctx.beginPath(); ctx.ellipse(s * 0.48, -s * 0.03, s * 0.14, s * 0.13, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(s * 0.6, s * 0.01, s * 0.08, s * 0.065, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = belly;
     ctx.beginPath(); ctx.ellipse(s * 0.05, s * 0.08, s * 0.45, s * 0.06, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = spot;
-    for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(-s * 0.35 + i * s * 0.1, -s * 0.06 + ((i * 7) % 3) * s * 0.03, s * 0.018, 0, TAU); ctx.fill(); }
+    for (let i = 0; i < 16; i++) { ctx.beginPath(); ctx.arc(-s * 0.4 + i * s * 0.055, -s * 0.07 + ((i * 7) % 4) * s * 0.025, s * 0.012, 0, TAU); ctx.fill(); }
     ctx.fillStyle = body;
     ctx.save(); ctx.translate(s * 0.25, s * 0.1); ctx.rotate(0.6 + Math.sin(t * 3) * 0.3);
     ctx.beginPath(); ctx.ellipse(-s * 0.08, 0, s * 0.12, s * 0.04, 0, 0, TAU); ctx.fill();
     ctx.restore();
     ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(s * 0.55, -s * 0.06, s * 0.025, 0, TAU); ctx.arc(s * 0.64, 0, s * 0.015, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(s * 0.52, -s * 0.07, s * 0.028, 0, TAU); ctx.fill();
+    // the nostrils form a V at the tip of the muzzle
+    ctx.strokeStyle = "#111"; ctx.lineWidth = Math.max(0.8, s * 0.012); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(s * 0.655, -s * 0.03); ctx.lineTo(s * 0.67, -s * 0.005); ctx.lineTo(s * 0.685, -s * 0.03); ctx.stroke();
     ctx.strokeStyle = "rgba(230,230,220,0.6)"; ctx.lineWidth = 0.8;
     ctx.beginPath();
-    for (let i = -1; i <= 1; i++) { ctx.moveTo(s * 0.62, s * 0.02); ctx.lineTo(s * 0.75, s * 0.02 + i * s * 0.04); }
+    for (let i = -1; i <= 1; i++) { ctx.moveTo(s * 0.63, s * 0.03); ctx.lineTo(s * 0.76, s * 0.03 + i * s * 0.04); }
     ctx.stroke();
     ctx.restore();
   }

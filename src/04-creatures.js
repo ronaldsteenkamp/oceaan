@@ -820,7 +820,7 @@
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
-    const back = sca("#121a22", 0.92), white = sca("#dce6eb", 0.9);
+    const back = sca("#2a3846", 0.95), white = sca("#dce6eb", 0.92);
     // the short tail
     ctx.strokeStyle = back; ctx.lineWidth = Math.max(1, L * 0.014); ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(-L * 0.28, 0); ctx.quadraticCurveTo(-L * 0.42, Math.sin(v.ph * 2) * L * 0.03, -L * 0.56, 0); ctx.stroke();

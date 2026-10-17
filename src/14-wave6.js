@@ -602,6 +602,13 @@
     // the light falls from above: a deeper orange back, a paler belly
     paintInside(P(GAR_BODY), fin, P("M -40 -30 L 50 -30 L 50 -12 C 30 -9 0 -9 -40 -8 Z"));
     paintInside(P(GAR_BODY), light, P("M -40 8 C 0 6 30 6 50 5 L 50 30 L -40 30 Z"));
+    // rows of scales, a slightly paler edge to the fins, and a deeper notch where the dorsal fin rises
+    ctx.save(); ctx.clip(P(GAR_BODY)); ctx.strokeStyle = fin; ctx.lineWidth = 0.8;
+    for (let r = 0; r < 3; r++) for (let i = 0; i < 6; i++) { const x = 14 - i * 8 - (r % 2) * 4, y = -8 + r * 7; ctx.beginPath(); ctx.arc(x, y, 3.4, -1.2, 1.2); ctx.stroke(); }
+    ctx.restore();
+    ctx.strokeStyle = light; ctx.lineWidth = 1; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(24, -19); ctx.bezierCurveTo(8, -30, -22, -28, -37, -7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(14, 19); ctx.bezierCurveTo(0, 26, -22, 24, -37, 7); ctx.stroke();
     ctx.save(); ctx.translate(16, 4); ctx.rotate(0.4 + Math.sin(f.ph * 4) * 0.35); ctx.fillStyle = fin; ctx.beginPath(); ctx.ellipse(-5, 0, 7, 3.2, 0, 0, TAU); ctx.fill(); ctx.restore();
     ctx.strokeStyle = fin; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(44, 3); ctx.quadraticCurveTo(40, 6, 36, 5); ctx.stroke();
     // the standard eye: a dark dot with a small light catch
@@ -1076,7 +1083,7 @@
     ctx.fillStyle = "rgba(235,248,255,0.7)"; for (const [x, y, r] of [[22, 16, 2.4], [28, 10, 1.6], [16, 8, 1.4], [32, 20, 1.2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
-  THUMBS.hatchet = () => { for (const [x, y, sz] of [[36, 38, 42], [82, 50, 46], [70, 20, 34]]) drawHatchet({ x, cy: y, dir: 1, s: sz, ph: x }); };
+  THUMBS.hatchet = () => drawHatchet({ x: 58, cy: 40, dir: 1, s: 96, ph: 1 });
   THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
 
   // ---- moments ---------------------------------------------------------------------

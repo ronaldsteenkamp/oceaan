@@ -413,7 +413,7 @@
     }
     if (l.x < scene.floorL + 30 * u) l.dir = 1;
     if (l.x > scene.floorR - 30 * u) l.dir = -1;
-    const s = l.s, body = sh("#2f4a78"), dark = sh("#1c2c4a"), light = sh("#5a78a8");
+    const s = l.s, body = sh("#3f62a0"), dark = sh("#2c4272"), light = sh("#7a98c8");
     ctx.save(); ctx.translate(l.x, sandY(l.x) + 3 * u); ctx.scale(faceOf(l) * s / 100, s / 100);
     // walking legs
     ctx.strokeStyle = dark; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";

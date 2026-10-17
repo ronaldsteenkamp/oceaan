@@ -110,7 +110,7 @@
     jelly: () => { scene.jellies = [{ x: 60, y: 30, r: 20, ph: 1.2, sp: 0, drift: 0, col: "255,196,224", tl: 2 }]; updateAndDrawJellies(0); },
     crab: () => drawCrab({ x: 60, dir: 1, s: 26, speed: 0, pause: 9, leg: 0, color: "#d9543b" }, 0),
     starfish: () => drawStarfish({ x: 60, s: 22, rot: 0.25, color: "#e8743b" }),
-    urchin: () => drawUrchin({ x: 60, s: 15, color: "#3b2340" }),
+    urchin: () => drawUrchin({ x: 60, s: 15, color: "#6a3a78" }),
     octopus: () => drawOctopus({ x: 60, dir: 1, s: 30, hue: 18, cool: 1e9, dash: 0, scare: 0 }, 0),
     ray: () => drawRay({ x: 66, dir: 1, s: 58, speed: 0, ph: 0, lift: 26 }, 0),
     seahorse: () => drawSeahorse({ px: 60, py: 52, s: 32, dir: 1, ph: 0, color: "#f2b134" }),
@@ -145,11 +145,7 @@
       drawCleaner(42, 34, 0.3, 18, 0.5);
       drawCleaner(78, 52, -0.2, 18, 1.5);
     },
-    grouper: () => {
-      drawFishShape(60, 42, 0, 32, sh("#7a5a3a"), sh("#3e2c1c"), 0.5, false);
-      ctx.fillStyle = sh("#5a3f26");
-      for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(60 + ((i % 4) * 0.3 - 0.45) * 32, 42 + (Math.floor(i / 4) * 0.2 - 0.12) * 32, 1.6, 0, TAU); ctx.fill(); }
-    },
+    grouper: () => drawGrouper(60, 42, 1, 70, 0.5),
     humpback: () => drawHumpback({ x: 64, y: 38, dir: 1, size: 100, ph: 0, yOff: 0 }),
     turtle: () => drawTurtle({ x: 56, y: 44, dir: 1, size: 70, ph: 0, yOff: 0 }),
     manta: () => drawManta({ x: 66, y: 42, dir: 1, size: 64, ph: 0, yOff: 0 }),
@@ -215,6 +211,8 @@
   // a bottom dweller keeps its place on the sand. Measured once per animal, from a first quick drawing.
   // Birds on the water keep their own framing (the waterline runs across the picture) and get a strip of sky instead.
   const thumbFits = new Map();
+  // flat or thin animals on the floor look lost at the usual size; they may fill a little more of the picture
+  const THUMB_ZOOM = { slugs: 1.35, brittlestar: 1.1, sanddollar: 1.15, lugworm: 1.3, pistol: 1.3, horseshoe: 1.1 };
   const skyThumb = base => FAUNA[base] && (FAUNA[base].kind === "surface" || FAUNA[base].kind === "dive");
   function thumbFit(base) {
     if (thumbFits.has(base)) return thumbFits.get(base);
@@ -224,7 +222,7 @@
       // a picture that is mostly background (a coral garden, an animal at the surface) stays as it is drawn
       if (box && box.w < TW * 0.97 && box.cover < 0.5) {
         const floor = FLOOR_THUMBS.has(base) || (FAUNA[base] && FAUNA[base].kind === "floor");
-        const s = Math.max(0.6, Math.min(2.2, Math.min(TW * 0.62 / box.w, TH * (floor ? 0.6 : 0.66) / box.h)));
+        const s = Math.max(0.6, Math.min(2.2, Math.min(TW * 0.62 / box.w, TH * (floor ? 0.6 : 0.66) / box.h))) * (THUMB_ZOOM[base] || 1);
         const cx = (box.x0 + box.x1) / 2;
         fit = [s, TW / 2 - cx * s, floor ? box.y1 * (1 - s) : TH * 0.47 - (box.y0 + box.y1) / 2 * s];
       }

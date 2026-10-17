@@ -294,6 +294,31 @@
     });
   }
 
+  // A giant grouper: a heavy, brown fish with a big head and wide mouth, a spiny dorsal fin, a rounded tail and darker
+  // blotches. Drawn in units where 100 is its length; face is 1 or -1.
+  const GRP_BODY = "M 50 4 C 49 -8 38 -18 18 -20 C -4 -22 -24 -17 -36 -9 L -40 0 L -36 9 C -24 17 -4 21 18 19 C 38 17 49 13 50 4 Z";
+  const GRP_DORSAL = "M 28 -17 L 25 -26 L 20 -19 L 15 -27 L 10 -20 L 4 -27 L -2 -21 L -8 -26 L -14 -19 C -22 -24 -30 -19 -36 -9 L -30 -10 C -10 -18 10 -20 28 -17 Z";
+  const GRP_ANAL = "M 2 18 C -8 26 -22 24 -32 10 L -26 9 C -16 14 -6 17 2 18 Z";
+  const GRP_TAIL = "M 0 -8 C -8 -14 -18 -14 -21 -6 C -22 -2 -22 2 -21 6 C -18 14 -8 14 0 8 Z";
+  const GRP_PEC = "M 0 0 C -3 -5 -12 -7 -16 -3 C -15 2 -8 5 0 0 Z";
+  function drawGrouper(x, y, face, L, ph) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(face * L / 100, L / 100);
+    const body = sh("#7a5a3a"), back = sh("#3e2c1c"), blot = sh("#5a3f26");
+    ctx.save(); ctx.translate(-38, 0); ctx.rotate(Math.sin(ph * 2) * 0.18); fillWith(P(GRP_TAIL), blot); ctx.restore();
+    fillWith(P(GRP_DORSAL), blot); fillWith(P(GRP_ANAL), blot);
+    fillWith(P(GRP_BODY), body);
+    paintInside(P(GRP_BODY), back, P("M -50 -30 L 60 -30 L 60 -12 C 30 -9 0 -10 -50 -6 Z"));
+    // the irregular darker blotches over its sides
+    ctx.save(); ctx.clip(P(GRP_BODY)); ctx.fillStyle = blot; ctx.beginPath();
+    for (const [bx, by, r] of [[24, -2, 4], [12, 6, 5], [2, -6, 5], [-10, 4, 5.5], [-22, -4, 4.5], [-30, 5, 3.5], [8, -12, 3], [-16, 12, 3.5]]) { ctx.moveTo(bx + r, by); ctx.ellipse(bx, by, r, r * 0.75, 0.4, 0, TAU); }
+    ctx.fill(); ctx.restore();
+    // the wide mouth with its jutting lower jaw, a pectoral fin and the eye
+    ctx.strokeStyle = back; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(50, 5); ctx.quadraticCurveTo(42, 9, 34, 7); ctx.stroke();
+    ctx.save(); ctx.translate(22, 6); ctx.rotate(0.3 + Math.sin(ph * 3) * 0.2); fillWith(P(GRP_PEC), blot); ctx.restore();
+    eye(36, -6, 2.6);
+    ctx.restore();
+  }
   function drawStation(st, k) {
     const sx = st.x, sy = sandY(st.x) - 55 * u, gp = st.grouper, L = gp.s;
     gp.timer -= k / 60; gp.ph += 0.06 * k;
@@ -311,9 +336,7 @@
     gp.y += Math.max(-sp, Math.min(sp, dy * 0.01)) * u * k;
     if (Math.abs(dx) > 3 * u && gp.state !== "clean") gp.face = Math.sign(dx);
     shinyDraw(gp, () => {
-      drawFishShape(gp.x, gp.y, gp.face > 0 ? 0 : Math.PI, L, sh("#7a5a3a"), sh("#3e2c1c"), gp.ph * (gp.state === "clean" ? 0.3 : 1), false);
-      ctx.fillStyle = sh("#5a3f26");
-      for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(gp.x + gp.face * ((i % 4) * 0.3 - 0.45) * L, gp.y + (Math.floor(i / 4) * 0.2 - 0.12) * L, L * 0.05, 0, TAU); ctx.fill(); }
+      drawGrouper(gp.x, gp.y, gp.face > 0 ? 1 : -1, L * 2, gp.ph * (gp.state === "clean" ? 0.3 : 1));
     });
     if (gp.state === "clean") {
       ctx.fillStyle = "#1a1210";

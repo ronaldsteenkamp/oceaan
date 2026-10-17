@@ -473,7 +473,7 @@
   }
 
   function drawEagleray(v) {
-    const L = v.size, skin = sh("#2a3442"), spot = sh("#e8eef2"), flap = Math.sin(v.ph * 3);
+    const L = v.size, skin = sh("#3e4e62"), spot = sh("#e8eef2"), flap = Math.sin(v.ph * 3);
     ctx.save(); ctx.translate(v.x, v.y + v.yOff); ctx.scale(faceOf(v), 1);
     ctx.strokeStyle = skin; ctx.lineWidth = Math.max(1, L * 0.012);
     ctx.beginPath(); ctx.moveTo(-L * 0.2, 0); ctx.quadraticCurveTo(-L * 0.6, Math.sin(v.ph * 2) * L * 0.05, -L * 0.95, Math.sin(v.ph * 2 + 1) * L * 0.08); ctx.stroke();

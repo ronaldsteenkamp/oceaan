@@ -736,7 +736,7 @@
   const PILOT_FLIP = "M 0 0 C -2 6 -8 12 -16 14 C -10 8 -5 3 -2 -1 Z";
   const WHALE_FLUKE = "M 2 0 C -4 -4 -10 -8 -16 -11 C -13 -5 -13 5 -16 11 C -10 8 -4 4 2 0 Z";
   function drawPilot(x, y, dir, L, ph) {
-    const black = sh("#22262a");
+    const black = sh("#3a4248");
     ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.04);
     ctx.save(); ctx.translate(-44, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); fillWith(P(WHALE_FLUKE), black); ctx.restore();
     fillWith(P(PILOT_FIN), black);
@@ -752,7 +752,7 @@
   const FALSE_FIN = "M 4 -10 C 2 -18 -2 -24 -8 -27 C -7 -20 -9 -14 -14 -9 Z";
   const FALSE_FLIP = "M 0 0 C -1 3 -2 5 -5 6 C -8 9 -12 12 -16 13 C -11 8 -6 4 -2 -1 Z";
   function drawFalseOne(x, y, dir, L, ph) {
-    const black = sh("#16181a");
+    const black = sh("#33383e");
     ctx.save(); ctx.translate(x, y); ctx.scale(dir * L / 100, L / 100); ctx.rotate(Math.sin(ph) * 0.04);
     ctx.save(); ctx.translate(-46, 0); ctx.rotate(Math.sin(ph * 2) * 0.2); fillWith(P(WHALE_FLUKE), black); ctx.restore();
     fillWith(P(FALSE_FIN), black);

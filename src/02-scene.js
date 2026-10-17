@@ -444,7 +444,7 @@
       x: rng() * W, s: range(9, 15) * u, rot: range(0, TAU), color: pick(["#e8743b", "#c94f7c", "#8e5bd0", "#f0b13c", "#d9473d"]),
     })) : [];
     s.urchins = chance(Lf.urchin) ? Array.from({ length: 1 + Math.floor(rng() * 3) }, () => ({
-      x: rng() * W, s: range(7, 11) * u, color: pick(["#3b2340", "#2a2a3d", "#4a2a2a"]),
+      x: rng() * W, s: range(7, 11) * u, color: pick(["#6a3a78", "#4a4a78", "#7a3a3a"]),
     })) : [];
     s.octopus = chance(Lf.octopus) ? {
       x: range(0.15, 0.85) * W, dir: chance(0.5) ? 1 : -1, s: range(26, 36) * u,
