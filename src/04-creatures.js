@@ -814,43 +814,59 @@
     ctx.restore();
   }
 
-  // A manta seen from the side as it flies through the water: a flat body, the near wing beating up, the far wing
-  // down with its white underside showing, the two head fins curled forward and the gill slits on its white belly.
+  // A manta seen from the side as it flies through the water. Both wings beat together, the way real mantas swim
+  // (Fish et al. 2016): the downstroke is quicker than the upstroke (43% against 57% of a beat), it glides a moment at
+  // the top, the wing tips go higher above the body than below it and lag behind the base like a wave running out
+  // along the wing, and the body stays level, only pitching a little: nose up on the downstroke, down on the upstroke.
+  // stroke(c): where the wings are at point c (0..1) of a beat, 1 = up, -1 = down
+  function mantaStroke(c) {
+    c = ((c % 1) + 1) % 1;
+    if (c < 0.43) return Math.cos(Math.PI * c / 0.43);
+    return -Math.cos(Math.PI * Math.min(1, (c - 0.43) / 0.57 / 0.85));
+  }
   function drawManta(v) {
-    const L = v.size, flap = Math.sin(v.ph * 2);
+    const L = v.size, c = v.ph * 1.3 / TAU;                            // about 0.3 beats a second, as measured
+    const base = mantaStroke(c), tip = mantaStroke(c - 0.09);          // the tip follows the base a little later
+    const reach = p => L * (p > 0 ? 0.36 : 0.26) * p;                   // higher up than down
+    const down = (c % 1 + 1) % 1 < 0.43;
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
+    ctx.rotate((down ? -1 : 1) * 0.035 * Math.abs(Math.sin(Math.PI * base)));
     const back = sca("#2a3846", 0.95), white = sca("#dce6eb", 0.92);
-    // the far wing, beating down: its white underside with a dark edge
-    const farTip = L * (0.2 - 0.14 * flap);
-    ctx.fillStyle = white;
-    ctx.beginPath(); ctx.moveTo(L * 0.16, L * 0.03);
-    ctx.quadraticCurveTo(L * 0.06, farTip * 0.7, -L * 0.1, farTip);
-    ctx.quadraticCurveTo(-L * 0.12, farTip * 0.45, -L * 0.26, L * 0.03); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = back;
-    ctx.beginPath(); ctx.moveTo(-L * 0.1, farTip); ctx.quadraticCurveTo(-L * 0.12, farTip * 0.45, -L * 0.26, L * 0.03);
-    ctx.lineTo(-L * 0.22, L * 0.03); ctx.quadraticCurveTo(-L * 0.12, farTip * 0.5, -L * 0.1, farTip); ctx.fill();
-    // the short, thin tail
+    // one wing from the shoulder to the tip; its underside shows as a white band when the wing is up
+    const wing = (dx, k, col) => {
+      const ty = -reach(tip) * k, my = -reach(base) * 0.55 * k;
+      ctx.beginPath(); ctx.moveTo(L * 0.18 + dx, -L * 0.02);
+      ctx.quadraticCurveTo(L * 0.08 + dx, my, -L * 0.06 + dx, ty);
+      ctx.quadraticCurveTo(-L * 0.1 + dx, my * 0.8, -L * 0.27 + dx, 0); ctx.closePath();
+      ctx.fillStyle = col; ctx.fill();
+      if (tip > 0.15) {
+        ctx.save(); ctx.clip(); ctx.fillStyle = white;
+        ctx.beginPath(); ctx.moveTo(L * 0.18 + dx, -L * 0.005); ctx.quadraticCurveTo(L * 0.08 + dx, my + L * 0.025, -L * 0.06 + dx, ty + L * 0.03);
+        ctx.lineTo(-L * 0.06 + dx, ty + L * 0.08); ctx.quadraticCurveTo(L * 0.08 + dx, my + L * 0.08, L * 0.18 + dx, L * 0.04); ctx.fill();
+        ctx.restore();
+      }
+    };
+    // the far wing first, a little behind and smaller, then the tail
+    wing(L * 0.03, 0.85, sca("#2a3846", 0.8));
     ctx.strokeStyle = back; ctx.lineWidth = Math.max(1, L * 0.012); ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(-L * 0.28, 0); ctx.quadraticCurveTo(-L * 0.42, Math.sin(v.ph * 2) * L * 0.02, -L * 0.52, L * 0.01); ctx.stroke();
-    // the flat body: dark above, white below
+    // the flat body: dark above, white below, with five gill slits behind the head
     ctx.fillStyle = back;
     ctx.beginPath(); ctx.ellipse(0, 0, L * 0.31, L * 0.065, 0, 0, TAU); ctx.fill();
     ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, L * 0.31, L * 0.065, 0, 0, TAU); ctx.clip();
     ctx.fillStyle = white; ctx.fillRect(-L * 0.32, L * 0.015, L * 0.64, L * 0.06); ctx.restore();
-    // five gill slits on the belly behind the head
     ctx.strokeStyle = back; ctx.lineWidth = Math.max(0.6, L * 0.004);
     for (let i = 0; i < 5; i++) { const gx = L * (0.17 - i * 0.025); ctx.beginPath(); ctx.moveTo(gx, L * 0.025); ctx.lineTo(gx - L * 0.008, L * 0.05); ctx.stroke(); }
-    // the near wing, beating up, with a lighter leading edge and a white shoulder mark
-    const nearTip = -L * (0.3 + 0.16 * flap);
-    ctx.fillStyle = back;
-    ctx.beginPath(); ctx.moveTo(L * 0.2, -L * 0.03);
-    ctx.quadraticCurveTo(L * 0.12, nearTip * 0.75, -L * 0.06, nearTip);
-    ctx.quadraticCurveTo(-L * 0.08, nearTip * 0.4, -L * 0.27, -L * 0.02); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = white;
-    ctx.beginPath(); ctx.moveTo(L * 0.14, -L * 0.05); ctx.quadraticCurveTo(L * 0.08, nearTip * 0.45, L * 0.02, nearTip * 0.55);
-    ctx.quadraticCurveTo(L * 0.05, nearTip * 0.3, L * 0.08, -L * 0.05); ctx.closePath(); ctx.fill();
+    // the near wing, with the white shoulder mark on its upper side
+    wing(0, 1, back);
+    if (base > -0.2) {
+      const my = -reach(base) * 0.55;
+      ctx.fillStyle = white;
+      ctx.beginPath(); ctx.moveTo(L * 0.14, -L * 0.045); ctx.quadraticCurveTo(L * 0.1, my * 0.7, L * 0.04, my * 0.85);
+      ctx.quadraticCurveTo(L * 0.07, my * 0.5, L * 0.08, -L * 0.045); ctx.closePath(); ctx.fill();
+    }
     // the two head fins, curled forward on either side of the wide mouth
     ctx.fillStyle = back;
     for (const [y, r] of [[-L * 0.03, -0.25], [L * 0.03, 0.25]]) {
