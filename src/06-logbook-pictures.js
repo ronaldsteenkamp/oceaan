@@ -148,7 +148,7 @@
     grouper: () => drawGrouper(60, 42, 1, 70, 0.5),
     humpback: () => drawHumpback({ x: 64, y: 38, dir: 1, size: 100, ph: 0, yOff: 0 }),
     turtle: () => drawTurtle({ x: 56, y: 44, dir: 1, size: 70, ph: 0, yOff: 0 }),
-    manta: () => drawManta({ x: 66, y: 42, dir: 1, size: 64, ph: 0, yOff: 0 }),
+    manta: () => drawManta({ x: 62, y: 46, dir: 1, size: 96, ph: 0.4, yOff: 0 }),
     dolphins: () => drawDolphin(62, 42, 1, -0.1, 96, 0),
     swordfish: () => drawSwordfish({ x: 52, y: 46, dir: 1, size: 90, ph: 0, yOff: 0 }),
     sub: () => drawSub({ x: 62, y: 46, dir: 1, size: 90, ph: 0, yOff: 0 }),

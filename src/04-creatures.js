@@ -814,39 +814,53 @@
     ctx.restore();
   }
 
+  // A manta seen from the side as it flies through the water: a flat body, the near wing beating up, the far wing
+  // down with its white underside showing, the two head fins curled forward and the gill slits on its white belly.
   function drawManta(v) {
-    const L = v.size;
-    const flap = 0.82 + 0.18 * Math.sin(v.ph * 2);
+    const L = v.size, flap = Math.sin(v.ph * 2);
     ctx.save();
     ctx.translate(v.x, v.y + v.yOff);
     ctx.scale(faceOf(v), 1);
     const back = sca("#2a3846", 0.95), white = sca("#dce6eb", 0.92);
-    // the short tail
-    ctx.strokeStyle = back; ctx.lineWidth = Math.max(1, L * 0.014); ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(-L * 0.28, 0); ctx.quadraticCurveTo(-L * 0.42, Math.sin(v.ph * 2) * L * 0.03, -L * 0.56, 0); ctx.stroke();
-    // the wings, swept back like a bird's, with a pointed tip
-    ctx.fillStyle = back;
-    ctx.beginPath();
-    ctx.moveTo(L * 0.3, -L * 0.08);
-    ctx.quadraticCurveTo(L * 0.18, -L * 0.36 * flap, -L * 0.04, -L * 0.62 * flap);
-    ctx.quadraticCurveTo(-L * 0.08, -L * 0.3, -L * 0.3, -L * 0.07);
-    ctx.lineTo(-L * 0.3, L * 0.07);
-    ctx.quadraticCurveTo(-L * 0.08, L * 0.3, -L * 0.04, L * 0.62 * flap);
-    ctx.quadraticCurveTo(L * 0.18, L * 0.36 * flap, L * 0.3, L * 0.08);
-    ctx.closePath(); ctx.fill();
-    // the white shoulder marks, like a V on its back
+    // the far wing, beating down: its white underside with a dark edge
+    const farTip = L * (0.2 - 0.14 * flap);
     ctx.fillStyle = white;
-    for (const sd of [-1, 1]) {
-      ctx.beginPath(); ctx.moveTo(L * 0.2, sd * L * 0.07); ctx.quadraticCurveTo(L * 0.12, sd * L * 0.2 * flap, -L * 0.02, sd * L * 0.3 * flap);
-      ctx.quadraticCurveTo(L * 0.06, sd * L * 0.16, L * 0.08, sd * L * 0.07); ctx.closePath(); ctx.fill();
-    }
-    // the head and the two head fins, curled forward like horns
+    ctx.beginPath(); ctx.moveTo(L * 0.16, L * 0.03);
+    ctx.quadraticCurveTo(L * 0.06, farTip * 0.7, -L * 0.1, farTip);
+    ctx.quadraticCurveTo(-L * 0.12, farTip * 0.45, -L * 0.26, L * 0.03); ctx.closePath(); ctx.fill();
     ctx.fillStyle = back;
-    ctx.beginPath(); ctx.ellipse(L * 0.28, 0, L * 0.07, L * 0.085, 0, 0, TAU); ctx.fill();
-    for (const sd of [-1, 1]) {
-      ctx.beginPath(); ctx.moveTo(L * 0.32, sd * L * 0.04); ctx.quadraticCurveTo(L * 0.42, sd * L * 0.07, L * 0.41, sd * L * 0.02);
-      ctx.quadraticCurveTo(L * 0.4, sd * L * 0.045, L * 0.34, sd * L * 0.075); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-L * 0.1, farTip); ctx.quadraticCurveTo(-L * 0.12, farTip * 0.45, -L * 0.26, L * 0.03);
+    ctx.lineTo(-L * 0.22, L * 0.03); ctx.quadraticCurveTo(-L * 0.12, farTip * 0.5, -L * 0.1, farTip); ctx.fill();
+    // the short, thin tail
+    ctx.strokeStyle = back; ctx.lineWidth = Math.max(1, L * 0.012); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-L * 0.28, 0); ctx.quadraticCurveTo(-L * 0.42, Math.sin(v.ph * 2) * L * 0.02, -L * 0.52, L * 0.01); ctx.stroke();
+    // the flat body: dark above, white below
+    ctx.fillStyle = back;
+    ctx.beginPath(); ctx.ellipse(0, 0, L * 0.31, L * 0.065, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, L * 0.31, L * 0.065, 0, 0, TAU); ctx.clip();
+    ctx.fillStyle = white; ctx.fillRect(-L * 0.32, L * 0.015, L * 0.64, L * 0.06); ctx.restore();
+    // five gill slits on the belly behind the head
+    ctx.strokeStyle = back; ctx.lineWidth = Math.max(0.6, L * 0.004);
+    for (let i = 0; i < 5; i++) { const gx = L * (0.17 - i * 0.025); ctx.beginPath(); ctx.moveTo(gx, L * 0.025); ctx.lineTo(gx - L * 0.008, L * 0.05); ctx.stroke(); }
+    // the near wing, beating up, with a lighter leading edge and a white shoulder mark
+    const nearTip = -L * (0.3 + 0.16 * flap);
+    ctx.fillStyle = back;
+    ctx.beginPath(); ctx.moveTo(L * 0.2, -L * 0.03);
+    ctx.quadraticCurveTo(L * 0.12, nearTip * 0.75, -L * 0.06, nearTip);
+    ctx.quadraticCurveTo(-L * 0.08, nearTip * 0.4, -L * 0.27, -L * 0.02); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = white;
+    ctx.beginPath(); ctx.moveTo(L * 0.14, -L * 0.05); ctx.quadraticCurveTo(L * 0.08, nearTip * 0.45, L * 0.02, nearTip * 0.55);
+    ctx.quadraticCurveTo(L * 0.05, nearTip * 0.3, L * 0.08, -L * 0.05); ctx.closePath(); ctx.fill();
+    // the two head fins, curled forward on either side of the wide mouth
+    ctx.fillStyle = back;
+    for (const [y, r] of [[-L * 0.03, -0.25], [L * 0.03, 0.25]]) {
+      ctx.save(); ctx.translate(L * 0.3, y); ctx.rotate(r);
+      ctx.beginPath(); ctx.moveTo(0, -L * 0.012); ctx.quadraticCurveTo(L * 0.08, -L * 0.02, L * 0.085, L * 0.005);
+      ctx.quadraticCurveTo(L * 0.06, L * 0.0, L * 0.05, L * 0.015); ctx.lineTo(0, L * 0.012); ctx.closePath(); ctx.fill();
+      ctx.restore();
     }
+    ctx.fillStyle = sca("#0c1218", 0.9); ctx.beginPath(); ctx.ellipse(L * 0.31, 0, L * 0.012, L * 0.018, 0, 0, TAU); ctx.fill();
+    eye(L * 0.25, -L * 0.035, Math.max(0.8, L * 0.01), "#0a0e12");
     ctx.restore();
   }
 
