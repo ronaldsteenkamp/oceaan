@@ -205,22 +205,24 @@
   // The logbook in a sensible order: each group is split into small families. The animals come in the order of FAMILIES.
   const LOG_SUBS = {
     "Wateren": [
-      ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
-      ["Koel en open", "Cool and open", ["w:wadden", "w:kelpwoud", "w:noordzee", "w:sargasso"]],
-      ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
+      ["Warme zeeën", "Warm seas", ["w:lagune", "w:mangrove", "w:rif", "w:sargasso"]],
+      ["Koele zeeën", "Cool seas", ["w:wadden", "w:noordzee", "w:kelpwoud"]],
+      ["Koud of donker", "Cold or dark", ["w:ijszee", "w:grot", "w:diepzee"]],
     ],
     "Dieren": FAMILIES.map(([nl, en, keys]) => [nl, en, keys.filter(k => ANIMALS[k] && ANIMALS[k].family === nl)]),
     "Momenten": [
-      ["Weer en aarde", "Weather and earth", ["storm", "waterspout", "quake", "eruption", "whirlpool", "glowtide", "meteor", "eclipse", "aurora"]],
-      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings", "sardinerun"]],
-      ["Dieren in actie", "Animals in action", ["baitball", "whalesong", "bubblerings"]],
-      ["Speurtochten", "Quests", ["treasure", "task"]],
+      ["Weer", "Weather", ["storm", "waterspout"]],
+      ["Aarde en stroming", "Earth and currents", ["quake", "eruption", "whirlpool"]],
+      ["Lichten in de nacht", "Lights in the night", ["glowtide", "meteor", "eclipse", "aurora"]],
+      ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "hatchlings", "jellybloom", "sardinerun", "crabmarch", "eelmigration"]],
+      ["Dieren in actie", "Animals in action", ["baitball", "bubblerings", "whalesong"]],
       ["Mensen op zee", "People at sea", ["sub", "ghostnet"]],
+      ["Speurtochten", "Quests", ["treasure", "task"]],
     ],
     "Zeldzaam": [
-      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "mobydick", "leviathan"]],
-      ["Spoken", "Ghosts", ["ghost", "ghostdiver", "ghostsub", "lighthouse"]],
-      ["Wonderen", "Wonders", ["goldpearl", "whalefall"]],
+      ["Legendes", "Legends", ["mermaid", "serpent", "kraken", "megalodon", "leviathan"]],
+      ["Spoken", "Ghosts", ["ghostdiver", "ghostsub", "ghost", "lighthouse"]],
+      ["Wonderen", "Wonders", ["goldpearl", "mobydick", "whalefall"]],
     ],
   };
   const LOG_ALL = {

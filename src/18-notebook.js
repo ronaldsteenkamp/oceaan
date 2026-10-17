@@ -4,8 +4,10 @@
   let bookPages = [], bookGroups = [], bookJumps = {}, bookAt = 0, bookTurning = false, bookFilter = "all";
   const bookSingle = () => panelEl.clientWidth < 760;
   // the last field is the tab's colour: --tab-<name> in styles.css
-  const BOOK_TABS = [["intro", "Overzicht", "Overview", "intro"], ["Dieren", null, null, "animals"], ["Momenten", null, null, "moments"],
-    ["Zeldzaam", null, null, "rare"], ["Wateren", null, null, "waters"], ["album", "Foto's", "Photos", "photos"], ["keep", "Bewaren", "Keep", "keep"]];
+  const BOOK_TABS = [["intro", "Overzicht", "Overview", "intro"], ["Wateren", null, null, "waters"], ["Dieren", null, null, "animals"], ["Momenten", null, null, "moments"],
+    ["Zeldzaam", null, null, "rare"], ["album", "Foto's", "Photos", "photos"], ["keep", "Bewaren", "Keep", "keep"]];
+  // the parts of the book in the order of the tabs: first the waters, then who lives there, what happens and what is rare
+  const BOOK_PARTS = ["Wateren", "Dieren", "Momenten", "Zeldzaam"];
   const tabLabel = t => t[1] ? L(t[1], t[2]) : groupName(t[0]);
 
   // every photo sits a little crooked, always the same way for the same animal
@@ -62,13 +64,13 @@
       headMore: `<h4 class="nb-fam">${L("Stickers", "Stickers")} <span>${L("vervolg", "continued")}</span></h4>`, open: `<div class="nb-stickers">`, close: `</div>`, group: "intro",
       cards: STICKERS.map(([id, key], i) => { const m = MILESTONES.find(x => x.id === id), got = rewards.has(id); return `<figure class="nb-sticker${got ? " on" : ""}" style="--tilt:${(i % 2 ? 5 : -6)}deg" title="${L(m.goal[0], m.goal[1])}">${got ? `<img alt="" src="${thumbURL(key, true, 2)}">` : `<span aria-hidden="true">?</span>`}<figcaption>${breakable(L(m.name[0], m.name[1]))}</figcaption></figure>`; }) });
 
-    // the families; the animals start on a new page, the groups after them carry on where the previous one ended.
+    // the families; the first part starts on a new page, the parts after it carry on where the previous one ended.
     // The Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
     const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
     const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
-    // in the same order as the tabs: animals, moments, rare things, and then the waters
-    for (const title of ["Dieren", "Momenten", "Zeldzaam", "Wateren"]) {
+    // in the same order as the tabs
+    for (const title of BOOK_PARTS) {
       const grp = LOG_GROUPS.find(g => g[0] === title);
       if (!grp) continue;
       const subs = grp[2];
@@ -77,7 +79,7 @@
         const vis = keys.filter(show);
         if (!vis.length) continue;
         blocks.push({ head: `<h4 class="nb-fam">${L(nl, en)} <span>${vis.filter(has).length}/${vis.length}</span></h4>`, headMore: `<h4 class="nb-fam">${L(nl, en)} <span>${L("vervolg", "continued")}</span></h4>`,
-          cards: vis.map(k => bookCard(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)), newPage: first && title === "Dieren", groupStart: first, group: title, jump: first ? title : null });
+          cards: vis.map(k => bookCard(k, fresh.has(shinyMode ? "shiny:" + k : k) && has(k), shinyMode)), newPage: first && !blocks.some(b => BOOK_PARTS.includes(b.group)), groupStart: first, group: title, jump: first ? title : null });
         first = false;
       }
     }
@@ -302,7 +304,7 @@
   function bookOrder() {
     const shinyMode = logFilter === "shiny";
     const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
-    return ["Dieren", "Momenten", "Zeldzaam", "Wateren"].flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
+    return BOOK_PARTS.flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
   }
   function detailNeighbours(key) {
     const base = key.replace("shiny:", ""), order = bookOrder(), i = order.indexOf(base);

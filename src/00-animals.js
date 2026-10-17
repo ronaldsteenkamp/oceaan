@@ -40,8 +40,9 @@
   //  9. Check a new animal on the style sheet (open the page with #stijlblad) next to the others of its family.
   const FAMILIES = [
     ["Vissen van warm, ondiep water", "Fish of warm, shallow water", ["fish", "goby", "mandarinfish", "cleaners", "clown", "mudskipper", "moorish", "wrasse", "archer", "surgeonfish", "triggerfish", "boxfish", "puffer", "angelfish", "eels", "scorpionfish", "lionfish", "stonefish", "parrotfish", "needlefish", "moray", "barracuda", "grouper"]],
-    ["Vissen van koele en open zee", "Fish of cool and open seas", ["sargassumfish", "flyingfish", "tuna", "swordfish", "marlin", "sunfish", "garibaldi", "sheephead", "sandeel", "herring", "flatfish", "cod", "wolffish"]],
-    ["Vissen van koud en donker water", "Fish of cold and dark water", ["icefish", "polarcod", "cavefish", "lantern", "hatchet", "viperfish", "angler", "gulper", "tripodfish", "coelacanth"]],
+    ["Vissen van de open oceaan", "Fish of the open ocean", ["sargassumfish", "flyingfish", "tuna", "swordfish", "marlin", "sunfish"]],
+    ["Vissen van koele zeeën", "Fish of cool seas", ["garibaldi", "sheephead", "sandeel", "herring", "flatfish", "cod", "wolffish"]],
+    ["Vissen van koud of donker water", "Fish of cold or dark water", ["icefish", "polarcod", "cavefish", "lantern", "hatchet", "viperfish", "angler", "gulper", "tripodfish", "coelacanth"]],
     ["Zeepaardjes en zeedraken", "Seahorses and seadragons", ["seahorse", "seadragon"]],
     ["Haaien", "Sharks", ["whitetip", "hammerhead", "whaleshark", "leopardshark", "thresher", "greatwhite", "greenland"]],
     ["Roggen", "Rays", ["electricray", "ray", "guitarfish", "eagleray", "sawfish", "manta"]],
@@ -69,7 +70,7 @@
         "A school can turn as one in a fraction of a second. Each fish only pays attention to its nearest neighbours."],
     },
     lantern: {
-      nl: "Lantaarnvis", en: "Lanternfish", family: "Vissen van koud en donker water", sci: "Myctophidae",
+      nl: "Lantaarnvis", en: "Lanternfish", family: "Vissen van koud of donker water", sci: "Myctophidae",
       life: { diepzee: 1, ijszee: 0.3, grot: 0.2, sargasso: 0.4 },
       shiny: 500, hue: 215,
       pal: "#1c2633>#6a1838 #0b1119>#2a0612",
@@ -159,7 +160,7 @@
         "Lionfish do not belong in the Caribbean. They probably got there from aquariums, and eat so many small fish that divers actively catch them."],
     },
     flyingfish: {
-      nl: "Vliegende vis", en: "Flying fish", family: "Vissen van koele en open zee", sci: "Exocoetidae",
+      nl: "Vliegende vis", en: "Flying fish", family: "Vissen van de open oceaan", sci: "Exocoetidae",
       life: { rif: 0.85, kelpwoud: 0.2, lagune: 0.3, sargasso: 0.9 },
       shiny: 450,
       pal: "#4f86c6>#e8583a #24466e>#8a1c2a #dfe8ef>#fff2e2",
@@ -169,7 +170,7 @@
         "By tapping the water with its tail, a flying fish can stretch its flight to as long as forty seconds."],
     },
     angler: {
-      nl: "Hengelvis", en: "Anglerfish", family: "Vissen van koud en donker water", sci: "Melanocetus johnsonii",
+      nl: "Hengelvis", en: "Anglerfish", family: "Vissen van koud of donker water", sci: "Melanocetus johnsonii",
       life: { diepzee: 1 },
       shiny: 75, hue: 220,
       pal: "#1b1e26>#5c2c14 #070709>#2a0e06 #b8d8e8>#ff9a3a #e9e4d2>#fff6d8",
@@ -179,7 +180,7 @@
         "In some kinds of anglerfish the male is tiny. He bites onto the female and grows into her."],
     },
     sargassumfish: {
-      nl: "Sargassumvis", en: "Sargassum fish", family: "Vissen van koele en open zee", sci: "Histrio histrio",
+      nl: "Sargassumvis", en: "Sargassum fish", family: "Vissen van de open oceaan", sci: "Histrio histrio",
       life: { sargasso: 1 },
       shiny: 75, hue: 40,
       pal: "#b8902e>#c84a2a #6a5218>#6a1c12 #c8a840>#c8a840 #a89030>#a89030 #7a6a24>#7a6a24",
@@ -312,7 +313,7 @@
         "Emperor angelfish can make a loud knocking sound, for example when they are startled."],
     },
     garibaldi: {
-      nl: "Garibaldi", en: "Garibaldi", family: "Vissen van koele en open zee", sci: "Hypsypops rubicundus",
+      nl: "Garibaldi", en: "Garibaldi", family: "Vissen van koele zeeën", sci: "Hypsypops rubicundus",
       life: { kelpwoud: 0.6 },
       shiny: 75, hue: 22,
       pal: "#f2701e>#2a6ad8 #e05a14>#1a3a9a #f8a050>#7ab8f8 #f8b070>#f2d040",
@@ -332,7 +333,7 @@
         "A mudskipper also breathes through its skin, as long as it stays wet. That is why it rolls through a puddle now and then."],
     },
     herring: {
-      nl: "Haring", en: "Herring", family: "Vissen van koele en open zee", sci: "Clupea harengus",
+      nl: "Haring", en: "Herring", family: "Vissen van koele zeeën", sci: "Clupea harengus",
       visits: { noordzee: 2, wadden: 2 },
       shiny: 225, hue: 195,
       pal: "#2e5a6a>#6a2a6a #c8d6de>#f8e0f0",
@@ -342,7 +343,7 @@
         "Herring used to be so important that people said Amsterdam was built on herring bones."],
     },
     cod: {
-      nl: "Kabeljauw", en: "Cod", family: "Vissen van koele en open zee", sci: "Gadus morhua",
+      nl: "Kabeljauw", en: "Cod", family: "Vissen van koele zeeën", sci: "Gadus morhua",
       life: { noordzee: 0.5 },
       shiny: 75, hue: 55,
       pal: "#8a8458>#c8502a #6e6a44>#8a2a1a #5e5a38>#6a1a10 #e8e2cc>#f8e0c8 #f0ead0>#f8d0a0 #d8c890>#f2d040",
@@ -352,7 +353,7 @@
         "With the barbel on its chin the cod feels and tastes for food on the seabed."],
     },
     flatfish: {
-      nl: "Schol", en: "Plaice", family: "Vissen van koele en open zee", sci: "Pleuronectes platessa",
+      nl: "Schol", en: "Plaice", family: "Vissen van koele zeeën", sci: "Pleuronectes platessa",
       life: { noordzee: 0.6, wadden: 0.8 },
       shiny: 150, hue: 25,
       pal: "#8a7050>#3a4a7a #a08868>#5a6a9a #e8783a>#f2d040 #c8b890>#d8e0f0",
@@ -362,7 +363,7 @@
         "A plaice can change its colour to match the seabed, so it becomes almost invisible."],
     },
     wolffish: {
-      nl: "Zeewolf", en: "Atlantic wolffish", family: "Vissen van koele en open zee", sci: "Anarhichas lupus",
+      nl: "Zeewolf", en: "Atlantic wolffish", family: "Vissen van koele zeeën", sci: "Anarhichas lupus",
       life: { noordzee: 0.3, ijszee: 0.3 },
       pole: "n",
       capital: ["en"],
@@ -374,7 +375,7 @@
         "The wolffish's blood holds a kind of antifreeze, so it does not freeze in the icy water."],
     },
     icefish: {
-      nl: "IJsvis", en: "Icefish", family: "Vissen van koud en donker water", sci: "Chaenocephalus aceratus",
+      nl: "IJsvis", en: "Icefish", family: "Vissen van koud of donker water", sci: "Chaenocephalus aceratus",
       life: { ijszee: 0.4 },
       pole: "s",
       shiny: 75, hue: 190,
@@ -385,7 +386,7 @@
         "Icefish live in the icy water around Antarctica. Water that cold holds a lot of oxygen."],
     },
     hatchet: {
-      nl: "Bijlvisjes", en: "Hatchetfish", family: "Vissen van koud en donker water", sci: "Argyropelecus",
+      nl: "Bijlvisjes", en: "Hatchetfish", family: "Vissen van koud of donker water", sci: "Argyropelecus",
       life: { diepzee: 0.5 },
       shiny: 225, shinyNl: "bijlvisje", hue: 205,
       pal: "#c8d4dc>#f2d070 #3a4a58>#8a5a10 #9aa8b4>#e8b040 #6ad0ff>#ff7a5a #e8eef2>#fff4d0",
@@ -395,7 +396,7 @@
         "Their big tube eyes look upwards, searching for the outline of prey above them."],
     },
     viperfish: {
-      nl: "Addervis", en: "Viperfish", family: "Vissen van koud en donker water", sci: "Chauliodus sloani",
+      nl: "Addervis", en: "Viperfish", family: "Vissen van koud of donker water", sci: "Chauliodus sloani",
       life: { diepzee: 0.45 },
       shiny: 75, hue: 200,
       pal: "#1a2428>#3a1a3a #3a4c58>#7a3a7a #e8eef0>#f2d040 #7ad8ff>#7aff9a #bdf2ff>#d8ffe0 #6ad8ff>#7aff9a #9aa8b0>#e8c0f0",
@@ -405,7 +406,7 @@
         "With a light on a long fin ray, the viperfish lures small fish towards it in the dark."],
     },
     gulper: {
-      nl: "Pelikaanaal", en: "Pelican eel", family: "Vissen van koud en donker water", sci: "Eurypharynx pelecanoides",
+      nl: "Pelikaanaal", en: "Pelican eel", family: "Vissen van koud of donker water", sci: "Eurypharynx pelecanoides",
       life: { diepzee: 0.3 },
       shiny: 75, hue: 330,
       pal: "#5a4a5a>#c8784a #16141a>#3a1a1a #2a1a24>#6a1a1a #ff5a8a>#5af0ff #ff8ab0>#bff8ff #8a96a0>#f2d040",
@@ -415,7 +416,7 @@
         "At the tip of its whip-like tail sits a pink light. Perhaps it uses it to lure prey."],
     },
     sandeel: {
-      nl: "Zandspieringen", en: "Sand eels", family: "Vissen van koele en open zee", sci: "Ammodytes tobianus",
+      nl: "Zandspieringen", en: "Sand eels", family: "Vissen van koele zeeën", sci: "Ammodytes tobianus",
       life: { noordzee: 0.6, wadden: 0.5 },
       shiny: 300, shinyNl: "zandspiering", shinyEn: "sand eel", hue: 140,
       pal: "#c8d4d0>#eec060 #4e6e62>#a8582a #8aa49a>#d8904a #eef2ee>#fff2c8",
@@ -426,7 +427,7 @@
         "Sand eels are the main food of many seabirds, such as puffins and kittiwakes. Harbour porpoises like to eat them too."],
     },
     cavefish: {
-      nl: "Blinde grotvis", en: "Cave brotula", family: "Vissen van koud en donker water", sci: "Lucifuga spelaeotes",
+      nl: "Blinde grotvis", en: "Cave brotula", family: "Vissen van koud of donker water", sci: "Lucifuga spelaeotes",
       life: { grot: 0.35 },
       shiny: 150, hue: 0,
       pal: "#e8c8c4>#bcbcf2 #c8a0a0>#7a6ac8 #d8b0ac>#9a90e0 #b07878>#4a3a9a",
@@ -437,7 +438,7 @@
         "His family, the brotulas, does not lay eggs: the females give birth to live young."],
     },
     tripodfish: {
-      nl: "Driepootvis", en: "Tripod fish", family: "Vissen van koud en donker water", sci: "Bathypterois grallator",
+      nl: "Driepootvis", en: "Tripod fish", family: "Vissen van koud of donker water", sci: "Bathypterois grallator",
       life: { diepzee: 0.4 },
       shiny: 150, hue: 220,
       pal: "#6a6e78>#e8c0c8 #4e525c>#c8909a #9a9ea6>#f6e6ea #8a8e96>#f0d8dc",
@@ -448,7 +449,7 @@
         "Every tripod fish is male and female at the same time. In the empty deep sea it can have young with any other tripod fish it meets."],
     },
     polarcod: {
-      nl: "Poolkabeljauw", en: "Polar cod", family: "Vissen van koud en donker water", sci: "Boreogadus saida",
+      nl: "Poolkabeljauw", en: "Polar cod", family: "Vissen van koud of donker water", sci: "Boreogadus saida",
       life: { ijszee: 0.5 }, pole: "n",
       shiny: 300, hue: 40,
       pal: "#6a6458>#2a4a7a #4a4438>#16284a #d8dcd8>#d8ecf8 #8a8270>#5a8ac8",
@@ -459,7 +460,7 @@
         "Ringed seals, narwhals and belugas eat lots of polar cod. It is one of the most important fish of the Arctic Ocean."],
     },
     sheephead: {
-      nl: "Californische schapenkop", en: "California sheephead", family: "Vissen van koele en open zee", sci: "Semicossyphus pulcher",
+      nl: "Californische schapenkop", en: "California sheephead", family: "Vissen van koele zeeën", sci: "Semicossyphus pulcher",
       life: { kelpwoud: 0.5 },
       capital: ["nl", "en"],
       shiny: 150, hue: 15,
@@ -521,7 +522,7 @@
         "A great white can keep its body warmer than the sea, so it can hunt fast even in cold water."],
     },
     swordfish: {
-      nl: "Zeilvis", en: "Sailfish", family: "Vissen van koele en open zee", sci: "Istiophorus platypterus",
+      nl: "Zeilvis", en: "Sailfish", family: "Vissen van de open oceaan", sci: "Istiophorus platypterus",
       visits: { rif: 1, sargasso: 1 },
       shiny: 225, hue: 220,
       pal: "#2d4f8a>#1c1a26 #1e335a>#d8a020 #3a5fa8>#e8b830 #8ab8e8>#f4e8a0 #c9d4dc>#d8d0c0",
@@ -531,7 +532,7 @@
         "A sailfish can change colour in a few seconds. When it hunts, blue stripes light up along its body."],
     },
     marlin: {
-      nl: "Marlijn", en: "Marlin", family: "Vissen van koele en open zee", sci: "Makaira nigricans",
+      nl: "Marlijn", en: "Marlin", family: "Vissen van de open oceaan", sci: "Makaira nigricans",
       visits: { rif: 1, sargasso: 1 },
       shiny: 225, hue: 220,
       pal: "#1e3a6a>#4a1a6a #6ab0e8>#f2c040 #c8d8e8>#ecdcf2",
@@ -541,7 +542,7 @@
         "A female marlin can grow four times as heavy as a male: more than five hundred kilos."],
     },
     tuna: {
-      nl: "Tonijn", en: "Tuna", family: "Vissen van koele en open zee", sci: "Thunnus",
+      nl: "Tonijn", en: "Tuna", family: "Vissen van de open oceaan", sci: "Thunnus",
       visits: { rif: 1, noordzee: 1, sargasso: 1 },
       shiny: 225, hue: 220,
       pal: "#1e3050>#2a5a3a #c8d4dc>#ece2c8 #f2d030>#e84a6a",
@@ -561,7 +562,7 @@
         "Young barracudas grow up among mangroves and seagrass. Only when they are big do they move out to the open reef."],
     },
     sunfish: {
-      nl: "Maanvis", en: "Ocean sunfish", family: "Vissen van koele en open zee", sci: "Mola mola",
+      nl: "Maanvis", en: "Ocean sunfish", family: "Vissen van de open oceaan", sci: "Mola mola",
       visits: { rif: 1, diepzee: 1, noordzee: 1, kelpwoud: 1, sargasso: 1 },
       shiny: 225, hue: 210,
       pal: "#9aa4ae>#c8a8d8 #6a747e>#8a6aa0 #c8d0d6>#f4eaf8",
@@ -571,7 +572,7 @@
         "An ocean sunfish lays more eggs than any other vertebrate: hundreds of millions at a time."],
     },
     coelacanth: {
-      nl: "Coelacant", en: "Coelacanth", family: "Vissen van koud en donker water", sci: "Latimeria chalumnae",
+      nl: "Coelacant", en: "Coelacanth", family: "Vissen van koud of donker water", sci: "Latimeria chalumnae",
       visits: { diepzee: 1, grot: 1 },
       shiny: 150, hue: 220,
       pal: "#2a3a5a>#7a5a3a #3a4c70>#9a7a4a #1e2c46>#5a3e24 #e8eef2>#f2d880 #c8d8a0>#3ad8ff",

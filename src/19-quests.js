@@ -124,7 +124,7 @@
   };
   function waterFilterHTML() {
     return `<h4 class="nb-fam">${L("Water", "Water")}</h4><div class="filters" role="group" aria-label="${L("Water", "Water")}">` +
-      [["", L("Alle wateren", "All waters")], ...WATERS.map(w => [w.name, nm("w:" + w.name)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-logwater="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
+      [["", L("Alle wateren", "All waters")], ...groupKeys("Wateren").map(k => [k.slice(2), nm(k)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-logwater="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
   }
 
   // ---- comparing logbooks ----------------------------------------------------------------
