@@ -49,39 +49,44 @@
   }
 
   // ---- flounder -------------------------------------------------------------------------------------------
-  // A flatfish like the plaice, but plain brown-olive with dark and pale flecks and a row of rough bumps along its
-  // fins, and no orange spots. It lies in the sand and glides off when disturbed (moveFlatfish, as the plaice does).
+  // A flatfish like the plaice, but longer and more pointed, plain brown-olive with dark and pale flecks and no orange
+  // spots. Its sign is the rough skin: a row of bony bumps along the lateral line and along the base of its fins.
+  // It lies in the sand and glides off when disturbed (moveFlatfish, as the plaice does). view: how much from above.
+  const FLD_BODY = "M 52 0 C 48 -13 30 -24 6 -25 C -16 -25 -32 -15 -40 0 C -32 15 -16 25 6 25 C 30 24 48 13 52 0 Z";
+  const FLD_EDGE = "M 56 0 C 52 -17 30 -31 4 -31 C -20 -31 -40 -19 -50 0 C -40 19 -20 31 4 31 C 30 31 52 17 56 0 Z";
+  const FLD_TAIL = "M 0 -5 L -20 -15 C -15 -5 -15 5 -20 15 L 0 5 Z";
   function drawFlounder(f) {
     const s = f.s, b = f.bury || 0, swim = f.go > 0;
     sandShadow(f, s * 0.45);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * 0.42);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * (f.view || 0.42));
     const body = sh("#6f6448"), fin = sh("#857a5a"), blot = sh("#4e4632"), fleck = sh("#a39874"), bump = sh("#5a5038");
-    ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 3) * (swim ? 0.3 : 0.05)); fillWith(P(FLAT_TAIL), fin); ctx.restore();
-    ctx.save(); ctx.scale(1.1, 1.12 + Math.sin(f.ph * 3) * (swim ? 0.06 : 0.01)); fillWith(P(FLAT_BODY), fin); ctx.restore();
-    fillWith(P(FLAT_BODY), body);
-    ctx.save(); ctx.clip(P(FLAT_BODY));
+    ctx.save(); ctx.translate(-38, 0); ctx.rotate(Math.sin(f.ph * 3) * (swim ? 0.3 : 0.05)); fillWith(P(FLD_TAIL), fin); ctx.restore();
+    ctx.save(); ctx.scale(1, 1 + Math.sin(f.ph * 3) * (swim ? 0.06 : 0.01)); fillWith(P(FLD_EDGE), fin); ctx.restore();
+    fillWith(P(FLD_BODY), body);
+    ctx.save(); ctx.clip(P(FLD_BODY));
     ctx.fillStyle = blot; ctx.beginPath();
-    for (const [x, y, r] of [[22, -12, 5], [4, -18, 6], [-16, -10, 5], [12, 10, 6], [-8, 16, 5], [-28, 2, 4]]) { ctx.moveTo(x + r, y); ctx.ellipse(x, y, r, r * 0.8, 0.3, 0, TAU); }
+    for (const [x, y, r] of [[24, -12, 4.5], [6, -16, 5.5], [-14, -10, 5], [14, 11, 5.5], [-6, 15, 5], [-26, 4, 4]]) { ctx.moveTo(x + r, y); ctx.ellipse(x, y, r, r * 0.8, 0.3, 0, TAU); }
     ctx.fill();
     ctx.fillStyle = fleck; ctx.beginPath();
-    for (const [x, y] of [[30, -2], [14, -4], [-4, 4], [-20, -18], [0, 24], [-30, 12], [20, 20], [6, -26]]) { ctx.moveTo(x + 2, y); ctx.arc(x, y, 2, 0, TAU); }
+    for (const [x, y] of [[30, -4], [12, -6], [-6, 6], [-20, -16], [0, 21], [-30, 10], [22, 18], [8, -22]]) { ctx.moveTo(x + 1.8, y); ctx.arc(x, y, 1.8, 0, TAU); }
     ctx.fill();
     ctx.restore();
-    // the row of rough bumps along the base of the fins
+    // the rough skin: bony bumps along the lateral line and along the base of the fins
+    ctx.strokeStyle = bump; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(40, -2); ctx.quadraticCurveTo(10, -8, -36, 0); ctx.stroke();
     ctx.fillStyle = bump; ctx.beginPath();
-    for (let i = 0; i < 9; i++) { const a = -2.6 + i * 0.58, x = Math.cos(a) * 40, y = Math.sin(a) * 26; ctx.moveTo(x + 1.6, y); ctx.arc(x, y, 1.6, 0, TAU); }
+    for (let i = 0; i < 8; i++) { const t2 = i / 7, x = 36 - t2 * 70, y = -2 - Math.sin(t2 * Math.PI) * 5; ctx.moveTo(x + 2.2, y); ctx.arc(x, y, 2.2, 0, TAU); }
+    for (let i = 0; i < 10; i++) { const a = -2.7 + i * 0.6, x = Math.cos(a) * 44, y = Math.sin(a) * 24; ctx.moveTo(x + 1.5, y); ctx.arc(x, y, 1.5, 0, TAU); }
     ctx.fill();
     if (b > 0.02) {
-      ctx.save(); ctx.clip(P(FLAT_EDGE)); ctx.globalAlpha *= b * 0.9; ctx.fillStyle = water.sand[0]; ctx.fillRect(-70, -40, 130, 80); ctx.restore();
+      ctx.save(); ctx.clip(P(FLD_EDGE)); ctx.globalAlpha *= b * 0.9; ctx.fillStyle = water.sand[0]; ctx.fillRect(-70, -40, 130, 80); ctx.restore();
     }
     // the two eyes on the upper side, always peeking out of the sand
-    for (const [x, y] of [[32, -10], [36, 3]]) {
-      ctx.fillStyle = sh("#9a8e6a"); ctx.beginPath(); ctx.ellipse(x, y - 3, 4, 7, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(x + 1, y - 4, 2, 4, 0, 0, TAU); ctx.fill();
+    for (const [x, y] of [[36, -9], [40, 3]]) {
+      ctx.fillStyle = sh("#9a8e6a"); ctx.beginPath(); ctx.ellipse(x, y - 3, 3.6, 6.4, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#101010"; ctx.beginPath(); ctx.ellipse(x + 1, y - 4, 1.8, 3.6, 0, 0, TAU); ctx.fill();
     }
     ctx.restore();
   }
-
   // ---- whelk -----------------------------------------------------------------------------------------------
   // A big sea snail with a pointed, ribbed shell. It creeps over the bottom on its broad foot and smells its way
   // with a long siphon held up like a snorkel. When the diver comes close it pulls the siphon in.
@@ -188,3 +193,5 @@
   };
   Object.assign(FAUNA, W11_FAUNA);
   hookFauna(W11_FAUNA, {});
+  // in the logbook both flatfish lie on the sand seen a little more from above, so their shape and pattern show
+  THUMBS.flounder = () => drawFlounder({ x: 60, cy: sandY(60) - 16, dir: 1, s: 72, ph: 1, bury: 0, view: 0.75 });

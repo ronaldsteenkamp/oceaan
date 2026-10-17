@@ -470,7 +470,7 @@
   function drawFlatfish(f) {
     const s = f.s, b = f.bury || 0, swim = f.go > 0;
     sandShadow(f, s * 0.45);
-    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * 0.42);
+    ctx.save(); ctx.translate(f.x, f.cy); ctx.scale(faceOf(f) * s / 100, s / 100 * (f.view || 0.42));
     const body = sh("#8a7050"), fin = sh("#a08868"), spot = sh("#e8783a");
     ctx.save(); ctx.translate(-40, 0); ctx.rotate(Math.sin(f.ph * 3) * (swim ? 0.3 : 0.05)); fillWith(P(FLAT_TAIL), fin); ctx.restore();
     ctx.save(); ctx.scale(1.1, 1.12 + Math.sin(f.ph * 3) * (swim ? 0.06 : 0.01)); ctx.globalAlpha *= 0.85; fillWith(P(FLAT_BODY), fin); ctx.restore();
@@ -1083,6 +1083,7 @@
     ctx.fillStyle = "rgba(235,248,255,0.7)"; for (const [x, y, r] of [[22, 16, 2.4], [28, 10, 1.6], [16, 8, 1.4], [32, 20, 1.2]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
   };
   THUMBS.krill = () => drawKrill({ x: 60, cy: 42, dir: 1, s: 100, ph: 1.2 });
+  THUMBS.flatfish = () => drawFlatfish({ x: 60, cy: sandY(60) - 16, dir: 1, s: 70, ph: 1, bury: 0, view: 0.75 });
   THUMBS.hatchet = () => drawHatchet({ x: 58, cy: 40, dir: 1, s: 96, ph: 1 });
   THUMBS.gulper = () => drawGulper({ x: 54, cy: 40, dir: 1, s: 96, ph: 2 });
 
