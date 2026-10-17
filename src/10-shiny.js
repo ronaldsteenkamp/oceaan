@@ -73,7 +73,7 @@
     // The moray in the wreck's hole. Rolled last, so the shinies of older shared seeds stay the same.
     if (s.wreck && s.wreck.moray) {
       const w = s.wreck, m = w.moray;
-      add("moray", m, 14 * u, () => [w.x, sandY(w.x) - 40 * u], () => m.e > 0.3);
+      add("moray", m, 14 * u, () => morayHead(w), () => m.e > 0.3);
     }
     registerWave6Shinies(s, add);
     s.shinies = list;

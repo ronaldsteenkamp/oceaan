@@ -132,6 +132,14 @@
   }
 
   // ---- landmarks ---------------------------------------------------------
+  // The moray's head in the ocean, where drawWreck draws it: out of the hole in the side of the wreck, a little further
+  // out the more it shows itself. The shiny sparkle and the diver's lamp look here.
+  function morayHead(w) {
+    const L = w.w, y0 = w.y0 !== undefined ? w.y0 : sandY(w.x) + L * 0.05;
+    const len = Math.max(0.35, w.moray ? w.moray.e : 0) * 0.13 * L;
+    const px = 0.13 * L - len * 0.2, py = -0.05 * L - len, c = Math.cos(w.tilt), s = Math.sin(w.tilt);
+    return [w.x + faceOf(w) * (px * c - py * s), y0 + (px * s + py * c)];
+  }
   function drawWreck(g) {
     const L = g.w;
     const y0 = g.y0 !== undefined ? g.y0 : sandY(g.x) + L * 0.05;

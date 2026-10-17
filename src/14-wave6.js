@@ -314,7 +314,7 @@
     ctx.strokeStyle = sh("#f2c040"); ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(3.8, -4); ctx.lineTo(3.8, 7); ctx.stroke();
     if (fish) {
       // a row of little silver fish, hanging crosswise from the bill
-      ctx.strokeStyle = "#d8e2ea"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+      ctx.strokeStyle = sh("#d8e2ea"); ctx.lineWidth = 1.6; ctx.lineCap = "round";
       ctx.beginPath(); for (let i = 0; i < 3; i++) { const fx = 2 + i * 3; ctx.moveTo(fx, 3); ctx.lineTo(fx + Math.sin(ph * 3 + i) * 2, 13); } ctx.stroke();
     }
     ctx.restore();
@@ -363,7 +363,7 @@
     ctx.fillStyle = sh("#f2f2ec"); ctx.beginPath(); ctx.ellipse(0, 0, 9, 7, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#f0d890"); ctx.beginPath(); ctx.ellipse(-1, -2, 8, 5, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = sh("#a8b4c4"); ctx.beginPath(); ctx.moveTo(6, -2); ctx.lineTo(24, 1); ctx.lineTo(6, 3); ctx.fill();
-    ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(2, -1); ctx.lineTo(8, 0.5); ctx.stroke();
+    ctx.strokeStyle = sh("#1a1a1a"); ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(2, -1); ctx.lineTo(8, 0.5); ctx.stroke();
     ctx.fillStyle = sh("#c8e0f0"); ctx.beginPath(); ctx.arc(2, -1.5, 1.8, 0, TAU); ctx.fill();
     eye(2.2, -1.5, 1, "#101010");
     ctx.restore();

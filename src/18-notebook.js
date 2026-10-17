@@ -29,22 +29,22 @@
     const shinyGot = SHINY_KEYS.filter(k => logbook.has("shiny:" + k)).length;
     const news = LOG_GROUPS.flatMap(g => g[1]).filter(k => fresh.has(k) && logbook.has(k));
     const FILTERS = [["all", L("Alles", "All")], ["missing", L("Nog niet gevonden", "Not found yet")], ["found", L("Gevonden", "Found")], ["shiny", "Shiny"]];
+    const master = panelEl.classList.contains("goldcover");
     let intro = `<h2 class="nb-title">${L("Veldnotities", "Field notes")}</h2>
-      <p class="nb-sub">${L("Logboek van een onderzoeker onder water", "Logbook of an underwater researcher")}</p>
+      <p class="nb-sub">${master ? L("Logboek van een meester van de zee", "Logbook of a master of the sea") : L("Logboek van een onderzoeker onder water", "Logbook of an underwater researcher")}</p>
+      ${master ? `<p class="nb-seal">★ ${L("Alle mijlpalen gehaald", "Every milestone reached")}</p>` : ""}
       <p class="nb-stat">${L(`<b>${got}</b> van ${all.length} gezien · <b>${shinyGot}</b> van ${SHINY_KEYS.length} shiny`, `<b>${got}</b> of ${all.length} seen · <b>${shinyGot}</b> of ${SHINY_KEYS.length} shiny`)}</p>
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
       ${questHTML()}
       ${eventHTML()}
       ${glintHTML()}
       <p class="nb-note">${L(`In elke oceaan zwemmen hooguit ${newLimit()} dieren die nog niet in je logboek staan. Momenten en zeldzame dingen komen daar nog bij.`, `Every ocean holds at most ${newLimit()} animals that are not in your logbook yet. Moments and rare things come on top of that.`)}</p>
-      <p class="nb-note">${introLeft() ? L(`Nieuwe oceaan: eerst je oefenduiken, nog ${INTRO.length - introDone()}. Daarna elke ${durationText(lockSeconds())}.`, `New ocean: first your practice dives, ${INTRO.length - introDone()} to go. After that every ${durationText(lockSeconds())}.`) : store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
+      <p class="nb-note">${lockSeconds() === 0 ? L("Nieuwe oceaan: altijd meteen, zonder wachten.", "New ocean: always right away, without waiting.") : introLeft() ? L(`Nieuwe oceaan: eerst je oefenduiken, nog ${INTRO.length - introDone()}. Daarna elke ${durationText(lockSeconds())}.`, `New ocean: first your practice dives, ${INTRO.length - introDone()} to go. After that every ${durationText(lockSeconds())}.`) : store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
       <h4 class="nb-fam">${L("Laat zien", "Show")}</h4>
       <div class="filters" role="group" aria-label="${L("Laat zien", "Show")}">` + FILTERS.map(([id, label]) => `<button type="button" class="chip pick ${logFilter === id ? "on" : ""}" data-filter="${id}" aria-pressed="${logFilter === id}">${label}</button>`).join("") + `</div>`;
     blocks.push({ html: intro, newPage: true, group: "intro", jump: "intro" });
-    // the water filter and the new finds are blocks of their own, so on a phone they carry on overleaf instead of falling off the page
-    intro = waterFilterHTML();
-    // the hunt list comes after the filters, so a full list never pushes "Show" down
-    intro += huntHTML();
+    // the hunt list and the new finds are a block of their own, so on a phone they carry on overleaf instead of falling off the page
+    intro = huntHTML();
     if (news.length) {
       const show = news.slice(0, 6);
       intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
@@ -61,7 +61,7 @@
       return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}<small class="gives">${gives}</small></span><span class="how">${how}</span></li>`;
     };
     const forGold = MILESTONES.filter(m => !m.event);
-    blocks.push({ html: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${forGold.filter(m => rewards.has(m.id)).length}/${forGold.length}</span></h4><p class="nb-note">${L("Elke mijlpaal geeft je iets. Haal je ze allemaal (de Spookjager telt niet mee), dan wordt je logboek goud.", "Every milestone gives you something. Reach them all (Ghost hunter does not count) and your logbook turns gold.")}</p>`, group: "intro" });
+    blocks.push({ html: `<h4 class="nb-fam">${L("Mijlpalen", "Milestones")} <span>${forGold.filter(m => rewards.has(m.id)).length}/${forGold.length}</span></h4><p class="nb-note">${L("Elke mijlpaal geeft je iets. Haal je ze allemaal (de Spookjager telt niet mee), dan krijgt je logboek een gouden kaft.", "Every milestone gives you something. Reach them all (Ghost hunter does not count) and your logbook gets a golden cover.")}</p>`, group: "intro" });
     for (const [nl, en, ids] of MILESTONE_GROUPS) {
       const ms = ids.map(id => MILESTONES.find(m => m.id === id));
       blocks.push({ head: `<h5 class="nb-msgroup">${L(nl, en)} <span>${ms.filter(m => rewards.has(m.id)).length}/${ms.length}</span></h5>`,
@@ -77,7 +77,7 @@
     // The Shiny filter shows every animal with a shiny, in its shiny colours
     const shinyMode = logFilter === "shiny";
     const has = k => logbook.has(shinyMode ? "shiny:" + k : k);
-    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
+    const show = k => (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     // in the same order as the tabs
     for (const title of BOOK_PARTS) {
       const grp = LOG_GROUPS.find(g => g[0] === title);
@@ -312,7 +312,7 @@
   // From the page of one animal you leaf on to the next one, in the same order as the book and with the same filter.
   function bookOrder() {
     const shinyMode = logFilter === "shiny";
-    const show = k => inLogWater(k) && (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
+    const show = k => (shinyMode ? SHINY_KEYS.includes(k) : logFilter === "missing" ? !logbook.has(k) : logFilter === "found" ? logbook.has(k) : true);
     return BOOK_PARTS.flatMap(title => { const g = LOG_GROUPS.find(x => x[0] === title); return g ? g[1].filter(show) : []; });
   }
   function detailNeighbours(key) {

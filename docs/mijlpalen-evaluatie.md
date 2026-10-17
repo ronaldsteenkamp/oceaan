@@ -4,7 +4,7 @@ Stand van 17 oktober 2026, na de nieuwe beloningen, het bewaren van mijlpalen, d
 
 ## 1. Overzicht
 
-Er zijn **39 mijlpalen**, onder vijf kopjes. 38 tellen mee voor het gouden logboek; de Spookjager niet, omdat je die alleen in de Spookweek kunt halen. Het logboek telt 184 vondsten: 10 wateren, 139 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 161 shiny's.
+Er zijn **40 mijlpalen**, onder vijf kopjes. 39 tellen mee voor de gouden kaft; de Spookjager niet, omdat je die alleen in de Spookweek kunt halen. Het logboek telt 189 vondsten: 10 wateren, 144 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 166 shiny's.
 
 Een gehaalde mijlpaal blijft gehaald. Hij staat opgeslagen in `oceaan-mijlpalen` en gaat mee in het reservebestand. Komen er in een update dieren bij, dan stijgt het doel, maar je houdt je beloning.
 
@@ -16,11 +16,11 @@ Een gehaalde mijlpaal blijft gehaald. Hij staat opgeslagen in `oceaan-mijlpalen`
 | m25 | Zeekenner | 25 vondsten | elke 30 s |
 | m50 | Oceanograaf | 50 vondsten | elke 15 s |
 | m75 | Duikmeester | 75 vondsten | elke 7,5 s |
-| m90 | Zeeheld | 90 vondsten | gouden randjes in het logboek, elke 5 s (het id was `m100`) |
+| m90 | Zeeheld | 90 vondsten | gouden randjes om de foto's in het logboek, elke 5 s (het id was `m100`) |
 | m110 | Rifwachter | 110 vondsten | 5 nieuwe dieren per oceaan in plaats van 4 |
 | m130 | Diepzeeverkenner | 130 vondsten | een speurlijst met 5 plekken in plaats van 3 |
 | m150 | Levende encyclopedie | 150 vondsten | elke nieuwe oceaan meldt hoeveel nieuwe dieren er te vinden zijn |
-| mall | Meester van de zee | alles (184) | elke seconde een nieuwe oceaan |
+| mall | Meester van de zee | alles | geen wachttijd meer voor een nieuwe oceaan |
 
 ### Shiny's (9)
 
@@ -34,7 +34,7 @@ Een gehaalde mijlpaal blijft gehaald. Hij staat opgeslagen in `oceaan-mijlpalen`
 | s75 | Glinsterspeurder | 75 | het belletje klinkt al als er ergens in de oceaan een shiny zwemt |
 | s100 | Glimmeester | 100 | de glinstermeter loopt door tot 5× |
 | s125 | Glansduiker | 125 | elke nieuwe oceaan meldt of er een shiny zwemt die je nog mist |
-| sall | Glimmende legende | alle 161 | shiny's komen in je eigen oceanen 6× zo vaak |
+| sall | Glimmende legende | alle shiny's | gouden flippers en tank, en shiny's komen in je eigen oceanen 6× zo vaak |
 
 ### Hulp bij het zoeken (5)
 
@@ -56,23 +56,24 @@ De hulpmiddelen komen halverwege, zodat je er nog iets mee kunt vinden.
 | wm | Wortelkruiper | 38 |
 | wr | Rifkenner | 58 |
 | ws | Wierzwerver | 28 |
-| wd | Wadloper | 15 |
+| wd | Wadloper | 20 |
 | nz | Noordzeekenner | 37 |
 | wk | Kelpkenner | 32 |
 | wi | Poolreiziger | 30 |
 | wg | Grotduiker | 23 |
 | dz | Diepzeeduiker | 29 |
 
-### Bijzonder (6)
+### Bijzonder (7)
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
 | ph | Fotograaf | 5 foto's in je album | fotofilters |
 | rd | Redder | 5 dieren uit een spooknet bevrijd | sticker, en een bedankrondje om de duiker |
 | vh | Volhouder | 7 opdrachten van de dag | sticker |
+| vh30 | Doorzetter | 30 opdrachten van de dag | elke dag kun je je opdracht één keer wisselen |
 | fj | Fotojager | het hele fotoboek (8 foto-opdrachten) | sticker |
 | sk | Sterrenkijker | vallende sterren, maansverduistering en noorderlicht | sticker |
-| sj | Spookjager | een spook gevonden in de Spookweek (24 oktober tot 2 november) | spoken komen in je eigen oceanen vaker langs, het hele jaar |
+| sj | Spookjager | een spook gevonden in de Spookweek (24 oktober tot 2 november) | een Spookweek-sticker (spookschip onder de volle maan) |
 
 ## 2. Wat goed werkt
 
@@ -165,4 +166,9 @@ Gedaan op 17 oktober 2026:
 5. **3.6** Extra shinystappen bij 75, 100 en 125, en elke mijlpaal heeft een beloning (de zelftest eist dat).
 6. **3.8** De Spookjager voor de Spookweek.
 
-Nog open: 3.7 (twee keer goud), de rest van 3.8 (speurlijst en aquarium), 3.9 (de Fotojager) en 3.10.
+Daarna, ook op 17 oktober:
+
+7. **3.7** Zeeheld geeft alleen nog de gouden randjes; alle mijlpalen samen geven een gouden kaft, een eigen ondertitel ("Logboek van een meester van de zee") en een zegel op de titelpagina.
+8. **3.10** De Doorzetter (30 dagopdrachten) als tweede stap na de Volhouder.
+
+Nog open: de rest van 3.8 (speurlijst en aquarium) en 3.9 (de Fotojager).

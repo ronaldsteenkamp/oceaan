@@ -124,20 +124,18 @@
     seal: () => drawSeal({ x: 60, y0: -28, ph: Math.PI / 2, dir: 1, s: 80 }, 0),
     penguins: () => { scene.penguins = [{ ph: 2.2, x: 60, depth: 30, sp: 0, s: 36, dir: 1 }]; drawPenguins(0); },
     clown: () => drawFishShape(60, 42, 0.1, 22, "#f07c1e", "#1d1d1d", 0.5, true),
+    // a moray looks out of its hole in a rock; the rock is drawn behind it as a background (THUMB_BACKS)
     moray: () => {
-      drawRocks({ x: 60, stones: [[-6, 46, 34]] });
-      ctx.fillStyle = "#0a0806";
-      ctx.beginPath(); ctx.ellipse(62, 66, 11, 7, 0, 0, TAU); ctx.fill();
-      const body = sh("#6f7d3a");
-      ctx.strokeStyle = body; ctx.lineWidth = 9; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(62, 68); ctx.quadraticCurveTo(76, 48, 56, 36); ctx.stroke();
-      ctx.fillStyle = sh("#3d4520");
-      for (const [x, y] of [[66, 58], [70, 50], [64, 42]]) { ctx.beginPath(); ctx.arc(x, y, 1.3, 0, TAU); ctx.fill(); }
-      ctx.save(); ctx.translate(54, 34); ctx.rotate(-2.5);
-      ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(-4, 0, 10, 6, 0, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#2a1a12"; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(-5, 3); ctx.lineTo(-5, -1); ctx.fill();
-      ctx.fillStyle = "#f2e9c8"; ctx.beginPath(); ctx.arc(-6, -2.5, 1.6, 0, TAU); ctx.fill();
-      eye(-6.3, -2.5, 0.8, "#111");
+      const body = sh("#6f7d3a"), spot = sh("#3d4520"), sway = Math.sin(t * 1.2) * 1.5;
+      ctx.strokeStyle = body; ctx.lineWidth = 10; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(56, 70); ctx.quadraticCurveTo(54, 52, 64 + sway, 40); ctx.stroke();
+      ctx.fillStyle = spot;
+      for (const [x, y] of [[55, 62], [56, 54], [59, 47]]) { ctx.beginPath(); ctx.arc(x, y, 1.4, 0, TAU); ctx.fill(); }
+      ctx.save(); ctx.translate(64 + sway, 39); ctx.rotate(-0.35);
+      ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(4, 0, 11, 6.5, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = sh("#2a1a12"); ctx.beginPath(); ctx.moveTo(15, 1); ctx.lineTo(5, 4); ctx.lineTo(6, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#f2e9c8"; ctx.beginPath(); ctx.arc(7, -2.6, 1.7, 0, TAU); ctx.fill();
+      eye(7.3, -2.6, 0.9, "#111");
       ctx.restore();
     },
     mantis: () => drawMantis({ x: 56, s: 40, cool: 1e9, strike: 0, face: 1 }, 0),
@@ -276,8 +274,15 @@
   }
 
   // Draws one picture into a layer of the tiny world; fit = [scale, dx, dy] places it in the frame.
-  function thumbLayer(key, base, shiny, TS, fit) {
-    const fn = THUMBS[base];
+  // Backgrounds that belong to a picture but not to the animal (the moray's rock): drawn behind it, never shiny or dark.
+  const THUMB_BACKS = {
+    moray: () => {
+      drawRocks({ x: 58, stones: [[0, 40, 30]] });
+      ctx.fillStyle = "#0a0806"; ctx.beginPath(); ctx.ellipse(56, 72, 12, 7, 0, 0, TAU); ctx.fill();
+    },
+  };
+  function thumbLayer(key, base, shiny, TS, fit, only) {
+    const fn = only || THUMBS[base];
     const layer = document.createElement("canvas");
     layer.width = TW * TS; layer.height = TH * TS;
     if (fn) {
@@ -339,6 +344,7 @@
       o.lineTo(TW, TH); o.fill();
     };
     if (floor) sandFill(0);
+    if (THUMB_BACKS[base]) o.drawImage(thumbLayer(key, base, false, TS, THUMBS[base] ? thumbFit(base) : [1, 0, 0], THUMB_BACKS[base]), 0, 0, TW, TH);
     if (shiny) {
       // every shiny shares one sign besides its colours: a soft golden rim of light around its body
       // (only the shadow of the layer is drawn, the layer itself lies a picture's width outside)

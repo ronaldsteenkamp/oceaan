@@ -673,3 +673,16 @@ Bewegingsgetallen in spel-eenheden (`u`); band = deel van de schermhoogte, lift 
 | `cormorant` | Aalscholver / Cormorant | *Phalacrocorax carbo* | Zoogdieren en vogels | dive, 24–28, v 0.4 | mangrove 0.3, wadden 0.4, kelpwoud 0.4, noordzee 0.5 | 75 |
 | `pelican` | Pelikaan / Pelican | *Pelecanus onocrotalus* | Zoogdieren en vogels | surface, 32–38, v 0.12 | lagune 0.4, mangrove 0.5 | 75 |
 | `eider` | Eidereend / Common eider | *Somateria mollissima* | Zoogdieren en vogels | dive, 26–30, v 0.22 | wadden 0.6 | 150 |
+
+### 5.3 Toegevoegd in de elfde ronde (17 oktober 2026)
+
+Vijf dieren voor de Waddenzee, het kleinste water. Ze rollen uit hun eigen stroom (`stream: true`); bestaande oceanen blijven gelijk, alleen komen de nieuwe dieren erbij (`zaden.json` is opnieuw vastgelegd). De scholekster uit de lijst hierboven is niet gemaakt: die loopt op het droge wad en past niet in een onderwaterwereld.
+
+| sleutel | dier | wateren | waarom het klopt |
+|---|---|---|---|
+| `shorecrab` | Strandkrab, *Carcinus maenas* | wadden 0.8, noordzee 0.4 | de gewoonste krab van het wad; elders een invasieve soort |
+| `flounder` | Bot, *Platichthys flesus* | wadden 0.6, noordzee 0.2 | platvis van ondiepe kust en flodders; trekt ook rivieren op |
+| `whelk` | Wulk, *Buccinum undatum* | noordzee 0.5, wadden 0.3 | grote zeeslak van zand- en grindbodems; eikapsels spoelen aan |
+| `eelpout` | Puitaal, *Zoarces viviparus* | wadden 0.5, noordzee 0.3 | levendbarende bodemvis van de kust; groene graten (biliverdine) |
+| `greyseal` | Grijze zeehond, *Halichoerus grypus* | wadden 0.5, noordzee 0.35 | grootste roofdier van Nederland; ligt op de zandplaten van het wad |
+

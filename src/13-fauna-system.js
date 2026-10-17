@@ -526,7 +526,7 @@
     ctx.fillStyle = "#141414";
     ctx.beginPath(); ctx.arc(52, -14.5, 1.9, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.ellipse(71.5, -8, 3, 2.4, 0.3, 0, TAU); ctx.fill();
-    ctx.strokeStyle = "#8a8478"; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(70, -4.5); ctx.quadraticCurveTo(64, -3, 59, -3.5); ctx.stroke();
+    ctx.strokeStyle = sh("#8a8478"); ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(70, -4.5); ctx.quadraticCurveTo(64, -3, 59, -3.5); ctx.stroke();
     ripple(18, 58, f.ph);
     ctx.restore();
   }

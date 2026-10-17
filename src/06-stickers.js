@@ -177,6 +177,24 @@
       g.fillStyle = "#efe4cf"; g.beginPath(); g.arc(22, 90, 4, Math.PI, TAU); g.fill();
       g.strokeStyle = "rgba(150,120,80,0.6)"; g.lineWidth = 0.8; for (const dx of [-2, 0, 2]) { g.beginPath(); g.moveTo(22, 90); g.lineTo(22 + dx * 1.4, 86.4); g.stroke(); }
     },
+    // Ghost hunter (Ghost week): a pale ghost ship with tattered sails under a full moon
+    sj: g => {
+      stBack(g, "#2a1f44", "#140f26", 100);
+      stGlow(g, 72, 24, 8, "#f4f0d0");
+      g.fillStyle = "#fbf8e4"; g.beginPath(); g.arc(72, 24, 10, 0, TAU); g.fill();
+      for (const [x, y, r] of [[18, 20, 1.6], [34, 12, 1.2], [88, 48, 1.4], [12, 44, 1.1]]) stStar(g, x, y, r * 1.4, "#e8e0ff");
+      g.save(); g.globalAlpha = 0.85;
+      // masts and tattered sails, the hull, all in a ghostly green-white
+      g.strokeStyle = "#cfeee0"; g.lineWidth = 1.6; g.lineCap = "round";
+      for (const [x, top] of [[38, 26], [54, 20]]) { g.beginPath(); g.moveTo(x, 66); g.lineTo(x, top); g.stroke(); }
+      stPath(g, "M38 30 L52 32 L50 44 L46 41 L44 46 L40 43 L38 46 Z", "#bfe8d4");
+      stPath(g, "M54 24 L70 27 L68 42 L64 39 L61 45 L57 41 L54 44 Z", "#bfe8d4");
+      stPath(g, "M24 62 L78 62 L72 74 L30 74 Z", "#9fd8c0");
+      stPath(g, "M24 62 L20 56 L30 60 Z", "#9fd8c0");
+      g.restore();
+      stGlow(g, 44, 68, 1.4, "#fff6b0"); stGlow(g, 58, 68, 1.4, "#fff6b0");
+      stWaves(g, 74, "#1c1838", 5);
+    },
     // Stargazer: a crescent moon and a shooting star over the night sea
     sk: g => {
       stBack(g, "#1b2752", "#0f1838", 74);

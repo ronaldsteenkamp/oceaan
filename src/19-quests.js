@@ -21,7 +21,15 @@
   function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
   function todayQuest() {
     const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
-    return QUESTS[(day * 7 + 3) % QUESTS.length];
+    // Stayer (30 quests): a swapped quest is another one from the list, the same for everyone who swaps that day
+    const st = store.get(QUEST_KEY, null), alt = st && st.day === todayStr() && st.alt ? 5 : 0;
+    return QUESTS[(day * 7 + 3 + alt) % QUESTS.length];
+  }
+  function swapQuest() {
+    const s = questState();
+    if (!rewards.has("vh30") || s.done || s.alt) return;
+    store.set(QUEST_KEY, { day: s.day, have: 0, waters: [], done: false, alt: true });
+    toast(L(`Nieuwe opdracht van vandaag: ${todayQuest().nl.toLowerCase()}`, `New quest of the day: ${todayQuest().en.toLowerCase()}`));
   }
   function questState() {
     let s = store.get(QUEST_KEY, null);
@@ -55,7 +63,8 @@
   }
   function questHTML() {
     const q = todayQuest(), s = questState();
-    return `<p class="nb-quest"><b>${L("Opdracht van vandaag", "Today's quest")}</b> ${L(q.nl, q.en)} <span>${s.done ? L("✓ gelukt", "✓ done") : `${s.have}/${q.n}`}</span></p>`;
+    const swap = rewards.has("vh30") && !s.done && !s.alt ? ` <button type="button" class="nb-qswap" data-questswap="1">${L("wissel", "swap")}</button>` : "";
+    return `<p class="nb-quest"><b>${L("Opdracht van vandaag", "Today's quest")}</b> ${L(q.nl, q.en)}${swap} <span>${s.done ? L("✓ gelukt", "✓ done") : `${s.have}/${q.n}`}</span></p>`;
   }
 
   // ---- the photo book ---------------------------------------------------------------
@@ -97,35 +106,6 @@
       <ul class="nb-check">` + PHOTO_TASKS.map(([id, nl, en]) => `<li class="${done.includes(id) ? "on" : ""}"><span class="box" aria-hidden="true">${done.includes(id) ? "✓" : ""}</span><span class="what">${L(nl, en)}</span></li>`).join("") + `</ul>`;
   }
 
-  // ---- the water filter of the logbook ---------------------------------------------------
-  let logWater = "";
-  function inLogWater(k) {
-    if (!logWater) return true;
-    const w = WATERS.find(x => x.name === logWater);
-    if (!w) return true;
-    if (k.startsWith("w:")) return k === "w:" + logWater;
-    if (k === "fish" || k === "jelly") return true;
-    if ((w.props[k] || 0) > 0 || (w.life[k] || 0) > 0 || w.visitors.includes(k) || (RARES_BY_WATER[logWater] || []).includes(k)) return true;
-    const extra = WATER_OF[k];
-    return !!extra && extra(w);
-  }
-  // where the moments and the animals that belong to something (an anemone, a wreck, a chest) can be found
-  const waterHas = (w, prop) => (w.props[prop] || 0) > 0;
-  const WATER_OF = {
-    clown: w => waterHas(w, "anemone"), moray: w => waterHas(w, "wreck"), mimic: w => waterHas(w, "chest"), treasure: w => waterHas(w, "bottle"),
-    grouper: w => (w.life.cleaners || 0) > 0, giant: w => !!w.giantSquid, task: w => (w.life.seahorse || 0) > 0,
-    storm: w => !!w.surface, waterspout: w => !!w.surface, meteor: w => !!w.surface, eclipse: w => !!w.surface, glowtide: w => !!w.surface && !w.ice,
-    quake: () => true, spawning: () => true, jellybloom: () => true, crabmarch: () => true,
-    baitball: w => w.name !== "diepzee", ghostnet: w => w.name !== "diepzee" && w.name !== "grot",
-    eruption: w => waterHas(w, "volcano"), coralspawn: w => waterHas(w, "coral"),
-    aurora: w => ["ijszee", "noordzee", "kelpwoud"].includes(w.name), whirlpool: w => ["noordzee", "kelpwoud", "ijszee"].includes(w.name),
-    sardinerun: w => ["kelpwoud", "sargasso"].includes(w.name), eelmigration: w => ["sargasso", "noordzee", "kelpwoud", "mangrove"].includes(w.name),
-    bubblerings: w => w.visitors.includes("dolphins"), hatchlings: w => w.visitors.includes("turtle"), whalesong: w => w.visitors.includes("humpback"),
-  };
-  function waterFilterHTML() {
-    return `<h4 class="nb-fam">${L("Water", "Water")}</h4><div class="filters" role="group" aria-label="${L("Water", "Water")}">` +
-      [["", L("Alle wateren", "All waters")], ...groupKeys("Wateren").map(k => [k.slice(2), nm(k)])].map(([id, label]) => `<button type="button" class="chip pick ${logWater === id ? "on" : ""}" data-logwater="${id}" aria-pressed="${logWater === id}">${label}</button>`).join("") + `</div>`;
-  }
 
   // ---- comparing logbooks ----------------------------------------------------------------
   // A logbook code is one bit for every find, in alphabetical order of their keys, with the number of finds in front,

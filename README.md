@@ -7,7 +7,7 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon ku
 ## Bediening
 
 - Een nieuwe speler begint met drie **oefenduiken**: een rustige lagune, een koraalrif met een fles en de Noordzee met iets zeldzaams voor de sonar, steeds met een korte tip. Ze staan in `INTRO` in `01-basis.js`. Wie al vondsten heeft, slaat ze over.
-- De pijltjesknop onderaan (of R) geeft een nieuwe oceaan. Na de oefenduiken (of, voor wie ze oversloeg, na vijf vrije oceanen) wacht je tweeënhalve minuut, en elke mijlpaal van vondsten maakt dat korter, tot vijf seconden (één seconde als je alles hebt).
+- De pijltjesknop onderaan (of R) geeft een nieuwe oceaan. Na de oefenduiken (of, voor wie ze oversloeg, na vijf vrije oceanen) wacht je tweeënhalve minuut, en elke mijlpaal van vondsten maakt dat korter, tot vijf seconden; wie alles heeft gevonden, hoeft niet meer te wachten.
 - Roep de duiker met D; hij verschijnt bij je cursor. Houd zijn lamp ongeveer een seconde op iets nieuws (een ringetje loopt vol), dan gaat het in je logboek. Gewone vondsten vliegen als polaroidje naar het logboek terwijl je doorspeelt; alleen iets bijzonders (je eerste vondst, een shiny, iets zeldzaams, elke 50e vondst) krijgt een grote foto. Roep je de duiker terug of ga je naar een nieuwe oceaan, dan zie je een duikverslag met alles wat nieuw was; het sluit na vijf seconden vanzelf. De dieren reageren alleen op de duiker.
 - Houd ingedrukt om de vissen te voeren.
 - Zwem met de duiker naar een schatkist om hem te openen. Tik op een fles (schatkaart), een reuzenschelp of een verstopt zeepaardje.
@@ -40,12 +40,13 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `14-wave7-wadden.js` | de zevende ronde: de Waddenzee met wadpier, kokkel, garnalen en eidereend |
 | `14-wave8.js` | de achtste ronde: zandspieringen, kompaskwal, jonge onechte karetschildpad, blinde grotvis, driepootvis en poolkabeljauw |
 | `14-wave10-finds.js` | eigen vondsten voor de Waddenzee (mosselbank) en de Sargassozee (drijfhout met eendenmosselen) |
+| `14-wave11-wadden.js` | de elfde ronde: strandkrab, bot, wulk, puitaal en grijze zeehond voor de Waddenzee en de Noordzee |
 | `14-wave9.js` | de negende ronde: Californische schapenkop, remipede, yetikrab, sargassumnaaktslak en weddellzeehond |
 | `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
 | `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
 | `17-logbook-and-menu.js` | weetjes van de rest, detailkaarten, album en "Maken en delen" |
 | `18-notebook.js` | het logboek als notitieboek |
-| `19-quests.js` | opdracht van de dag, fotoboek, waterfilter, logboeken vergelijken |
+| `19-quests.js` | opdracht van de dag, fotoboek, speurlijst, logboeken vergelijken |
 | `20-language-and-start.js` | taal, zelftest en opstarten |
 
 ## Bouwen en testen

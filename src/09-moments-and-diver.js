@@ -731,7 +731,8 @@
     ctx.translate(d.x, d.y);
     ctx.rotate(d.heading);
     ctx.scale(1, Math.abs(d.roll) < 0.08 ? 0.08 * Math.sign(d.roll || 1) : d.roll);
-    drawDiverBody(L, d.kick, { suit: "#1d2228", fin: sh("#2f6fe0"), tank: sh("#e8b52a", -0.1), gear: "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
+    const gold = rewards.has("sall");  // Shining legend: golden fins and a golden tank
+    drawDiverBody(L, d.kick, { suit: "#1d2228", fin: gold ? "#f2d060" : sh("#2f6fe0"), tank: gold ? "#fff0b8" : sh("#e8b52a", -0.1), gear: "#4a4a4a", mask: "rgba(170,220,240,0.85)", lamp: "#fff6d0" });
     ctx.restore();
   }
 

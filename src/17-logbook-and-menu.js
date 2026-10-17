@@ -398,7 +398,7 @@
       openDetail(k, true); return;
     }
     if (b.dataset.filter) { logFilter = b.dataset.filter; renderPanel(); return; }
-    if (b.dataset.logwater !== undefined) { logWater = b.dataset.logwater; renderPanel(); return; }
+    if (b.dataset.questswap !== undefined) { swapQuest(); renderPanel(); return; }
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
     if (b.dataset.photo) { openPhoto(b.dataset.photo); return; }
     if (b.id === "photoSave") { const ph = album.find(x => x.id === b.dataset.id); if (ph) fetch(ph.img).then(r => r.blob()).then(bl => saveBlob(bl, `oceaan-${ph.seed}.jpg`)); return; }

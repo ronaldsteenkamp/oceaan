@@ -114,8 +114,8 @@
   "season": "lente",
   "rare": "",
   "ground": "anchor@0.53,anemone@0.97,bottle@0.37,chest@0.45,rocks@0.62,statue@0.75",
-  "life": "cod×1,crab×2,gannet×1,goby×2,hermit×2,lobster×1,shrimp×2,starfish×3,urchin×2",
-  "fauna": "goby@0.56,goby@0.98,gannet@0.39,cod@0.01,shrimp@0.8,shrimp@0.4",
+  "life": "cod×1,crab×2,gannet×1,goby×2,hermit×2,lobster×1,shorecrab×1,shrimp×2,starfish×3,urchin×2,whelk×1",
+  "fauna": "goby@0.56,goby@0.98,shorecrab@0.62,whelk@0.4,gannet@0.39,cod@0.01,shrimp@0.8,shrimp@0.4",
   "shinies": "",
   "timers": "63,79,91,17"
  },
@@ -144,8 +144,8 @@
   "season": "herfst",
   "rare": "",
   "ground": "bottle@0.17,ruins@0.09,wreck@0.48",
-  "life": "brittlestar×4,cod×1,crab×1,cuttlefish×1,porpoise×1,slugs×3,squid×3,starfish×4",
-  "fauna": "brittlestar@0.74,brittlestar@0.73,brittlestar@0.6,brittlestar@0.37,porpoise@0.86,cod@0.16",
+  "life": "brittlestar×4,cod×1,crab×1,cuttlefish×1,porpoise×1,slugs×3,squid×3,starfish×4,whelk×2",
+  "fauna": "brittlestar@0.74,brittlestar@0.73,brittlestar@0.6,brittlestar@0.37,whelk@0.59,whelk@0.43,porpoise@0.86,cod@0.16",
   "shinies": "",
   "timers": "90,109,51,44"
  },
@@ -234,8 +234,8 @@
   "season": "herfst",
   "rare": "lighthouse",
   "ground": "bottle@0.96,chest@0.06,wreck@0.47",
-  "life": "brittlestar×2,compass×1,cormorant×1,crab×3,flatfish×2,hermit×2,lobster×1,ray×1,sandeel×1,slugs×3,squid×5,starfish×2,urchin×1",
-  "fauna": "brittlestar@0.95,brittlestar@0.76,cormorant@0.39,flatfish@0.41,flatfish@0.69,sandeel@0.13,compass@0.43",
+  "life": "brittlestar×2,compass×1,cormorant×1,crab×3,eelpout×1,flatfish×2,greyseal×1,hermit×2,lobster×1,ray×1,sandeel×1,slugs×3,squid×5,starfish×2,urchin×1",
+  "fauna": "brittlestar@0.95,brittlestar@0.76,cormorant@0.39,eelpout@0.83,greyseal@0.54,flatfish@0.41,flatfish@0.69,sandeel@0.13,compass@0.43",
   "shinies": "",
   "timers": "99,99,110,22"
  },
@@ -304,8 +304,8 @@
   "season": "winter",
   "rare": "",
   "ground": "anchor@0.3,bottle@0.22,seagrass@0.48,wheel@0.7",
-  "life": "cockle×3,comb×4,cormorant×1,crab×1,eider×1,flatfish×1,porpoise×1,sandeel×1,seal×1,shrimp×2,starfish×3",
-  "fauna": "cormorant@0.92,porpoise@0.64,flatfish@0,cockle@0.91,cockle@0.63,cockle@0.71,shrimp@0.44,shrimp@0.96,eider@0.02,sandeel@0.9",
+  "life": "cockle×3,comb×4,cormorant×1,crab×1,eider×1,flatfish×1,flounder×2,greyseal×1,porpoise×1,sandeel×1,seal×1,shorecrab×3,shrimp×2,starfish×3",
+  "fauna": "cormorant@0.92,shorecrab@0.02,shorecrab@0.61,shorecrab@0.47,flounder@0.54,flounder@0.54,greyseal@0.36,porpoise@0.64,flatfish@0,cockle@0.91,cockle@0.63,cockle@0.71,shrimp@0.44,shrimp@0.96,eider@0.02,sandeel@0.9",
   "shinies": "",
   "timers": "145,99,97,25"
  },
@@ -314,8 +314,8 @@
   "season": "winter",
   "rare": "",
   "ground": "anchor@0.94,mussels@0.49,seagrass@0.65",
-  "life": "cockle×4,comb×2,crab×1,eider×1,flatfish×2,lugworm×4,sandeel×1,seal×1,shrimp×3",
-  "fauna": "flatfish@0.43,flatfish@0.98,lugworm@0.14,lugworm@0.89,lugworm@0.79,lugworm@0.89,cockle@0.6,cockle@0.12,cockle@0.85,cockle@0.6,shrimp@0.03,shrimp@0.71,shrimp@0.03,eider@0.16,sandeel@0.64",
+  "life": "cockle×4,comb×2,crab×1,eider×1,flatfish×2,flounder×1,greyseal×1,lugworm×4,sandeel×1,seal×1,shorecrab×2,shrimp×3,whelk×1",
+  "fauna": "shorecrab@0.26,shorecrab@0.88,flounder@0.57,whelk@0.59,greyseal@0.05,flatfish@0.43,flatfish@0.98,lugworm@0.14,lugworm@0.89,lugworm@0.79,lugworm@0.89,cockle@0.6,cockle@0.12,cockle@0.85,cockle@0.6,shrimp@0.03,shrimp@0.71,shrimp@0.03,eider@0.16,sandeel@0.64",
   "shinies": "flatfish",
   "timers": "149,97,101,50"
  },
@@ -324,8 +324,8 @@
   "season": "herfst",
   "rare": "",
   "ground": "mussels@0.95,seagrass@0.61",
-  "life": "cockle×2,comb×2,crab×3,flatfish×2,lugworm×2,porpoise×1,sandeel×1,seal×1,shrimp×3,starfish×3",
-  "fauna": "porpoise@0.39,flatfish@0.75,flatfish@0.25,lugworm@0.03,lugworm@0.84,cockle@0.23,cockle@0.2,shrimp@0.44,shrimp@0.9,shrimp@0.23,sandeel@0.34",
+  "life": "cockle×2,comb×2,crab×3,flatfish×2,greyseal×1,lugworm×2,porpoise×1,sandeel×1,seal×1,shorecrab×3,shrimp×3,starfish×3",
+  "fauna": "shorecrab@0.07,shorecrab@0.3,shorecrab@0.44,greyseal@0.55,porpoise@0.39,flatfish@0.75,flatfish@0.25,lugworm@0.03,lugworm@0.84,cockle@0.23,cockle@0.2,shrimp@0.44,shrimp@0.9,shrimp@0.23,sandeel@0.34",
   "shinies": "",
   "timers": "126,104,112,29"
  },
@@ -334,8 +334,8 @@
   "season": "zomer",
   "rare": "",
   "ground": "bottle@0.32,mine@0.04,rocks@0.18",
-  "life": "cockle×3,cormorant×1,crab×1,lugworm×3,seal×1,shrimp×2,starfish×3",
-  "fauna": "cormorant@0.58,lugworm@0.45,lugworm@0.15,lugworm@0.62,cockle@0.69,cockle@0.8,cockle@0.99,shrimp@0.48,shrimp@0.9",
+  "life": "cockle×3,cormorant×1,crab×1,flounder×2,lugworm×3,seal×1,shorecrab×1,shrimp×2,starfish×3",
+  "fauna": "cormorant@0.58,shorecrab@0.06,flounder@0.19,flounder@0.22,lugworm@0.45,lugworm@0.15,lugworm@0.62,cockle@0.69,cockle@0.8,cockle@0.99,shrimp@0.48,shrimp@0.9",
   "shinies": "",
   "timers": "116,77,51,37"
  },
@@ -344,8 +344,8 @@
   "season": "winter",
   "rare": "",
   "ground": "anchor@0.15,bell@0.54,bottle@0.84,mine@0.78,mussels@0.43",
-  "life": "cockle×3,compass×1,crab×1,lugworm×4,seal×1,shrimp×2,starfish×2",
-  "fauna": "lugworm@0.76,lugworm@0.75,lugworm@0.1,lugworm@0.1,cockle@0.88,cockle@0.87,cockle@0.05,shrimp@0.65,shrimp@0.91,compass@0.31",
+  "life": "cockle×3,compass×1,crab×1,eelpout×1,flounder×1,lugworm×4,seal×1,shorecrab×3,shrimp×2,starfish×2,whelk×1",
+  "fauna": "shorecrab@0.48,shorecrab@0.64,shorecrab@0.42,flounder@0.16,whelk@0.48,eelpout@0.63,lugworm@0.76,lugworm@0.75,lugworm@0.1,lugworm@0.1,cockle@0.88,cockle@0.87,cockle@0.05,shrimp@0.65,shrimp@0.91,compass@0.31",
   "shinies": "",
   "timers": "110,96,80,37"
  }

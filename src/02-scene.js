@@ -320,11 +320,6 @@
       const fits = ev.rare.keys.filter(k => (RARES_BY_WATER[water.name] || []).includes(k));
       if (fits.length && rng() < ev.rare.chance) s.rares = [fits[Math.floor(rng() * fits.length)]];
     });
-    // Ghost hunter reward (found a ghost in Ghost week): in your own oceans a ghost now and then, all year round
-    if (oceanGhosts && !aquarium && !selfTesting && !s.rares.length) sub("spookjager", () => {
-      const fits = SPOOK_RARES.filter(k => (RARES_BY_WATER[water.name] || []).includes(k));
-      if (fits.length && rng() < 0.1) s.rares = [fits[Math.floor(rng() * fits.length)]];
-    });
     s.rare = s.rares[0] || null;
 
     s.rays = Array.from({ length: 3 + Math.floor(rng() * 4) }, () => ({
@@ -599,7 +594,6 @@
     rng = mulberry32(seed);
     const ev = aquarium ? null : activeEvent();
     oceanBoost = (personalOcean && !aquarium && !selfTesting ? glintBoost() : 1) * (ev && ev.shiny || 1);
-    oceanGhosts = personalOcean && rewards.has("sj");  // fixed per ocean, like the boost, so turning the phone keeps the ghost
     buildLimited(!aquarium && !selfTesting);
     if (personalOcean && !aquarium && !selfTesting) store.set(GLINT_KEY, store.get(GLINT_KEY, 0) + 1);
     personalOcean = false;

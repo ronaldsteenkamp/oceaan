@@ -66,7 +66,7 @@
       urchin: () => S.urchins.map(o => [o.x, fy(o.x)]), octopus: () => S.octopus && [S.octopus.x, fy(S.octopus.x) - 20 * u],
       ray: () => S.ray && [S.ray.x, fy(S.ray.x) - S.ray.lift], eels: () => S.ground.filter(g => g.kind === "eels").map(g => [g.x, fy(g.x) - 30 * u]),
       seahorse: () => S.seahorses.map(h => [h.x, fy(h.x) - h.lift]), puffer: () => S.puffer && [S.puffer.x, S.puffer.y],
-      angler: () => S.angler && [S.angler.x, S.angler.y], moray: () => S.wreck && [S.wreck.x, fy(S.wreck.x) - 40 * u],
+      angler: () => S.angler && [S.angler.x, S.angler.y], moray: () => S.wreck && S.wreck.moray && morayHead(S.wreck),
       squid: () => S.squids.map(q => [q.x, q.y]), hermit: () => S.hermits.map(h => [h.x, fy(h.x)]), slugs: () => S.slugs.map(o => [o.x, fy(o.x)]),
       comb: () => S.combs.map(c => [c.x, c.y]), lantern: () => S.species.filter(sp => sp.lantern).flatMap(sp => sp.fish.map(f => [f.x, f.y])),
       otters: () => S.otters.map(o => [o.x, waveY(o.x)]), seal: () => S.seal && [S.seal.x, S.seal.y !== undefined ? S.seal.y : S.seal.y0],

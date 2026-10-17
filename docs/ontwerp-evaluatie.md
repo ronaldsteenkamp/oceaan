@@ -247,7 +247,10 @@ Zelftest OK en `zaden.json` is ongewijzigd: geen enkele oceaan ziet er anders ui
 | 3.1 | ✓ hogere bodem en verspreide scholen op staand scherm (stond al); nu ook ~12% grotere `u` op de telefoon |
 | 3.3 | ✓ eigen vondsten voor Wadden (mosselbank) en Sargasso (drijfhout met eendenmosselen); duikerhelm, amforen, mijnen en auto minder in wateren waar ze niet horen; `zaden.json` opnieuw vastgelegd |
 | 3.4 | ✓ de nacht vermenigvuldigt met nachtblauw in plaats van een grijze waas (stond al) |
-| 2.3, 2.7, 3.2 | nog open |
+| 2.3 | ✓ (17 oktober) alle lettergroottes lopen via de schaal in `styles.css` (`--fs-*` en `--hand-*`), met een paar tussenstappen; geen vaste px-maten meer |
+| 2.4 | ✓ (17 oktober) het menu is nu ook een bladzijde ruitjespapier met plakband, potloodblauwe koppen en knoppen, via de kleurtokens |
+| 3.2 | deels (17 oktober): kleuren in tekeningen die niet met het water mengden lopen nu via `sh()` (ijsbeer, papegaaiduiker); ogen blijven bewust helder. Een volledige tekenronde per dier is nog open |
+| 2.7 | nog open |
 
 ## 5. Vragen aan jou
 
