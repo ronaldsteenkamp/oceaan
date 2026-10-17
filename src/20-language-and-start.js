@@ -159,12 +159,17 @@
   // Is every animal fully registered? This replaces the old dier_check.py: a missing piece is an error here.
   function checkRegistry(errors) {
     const waterNames = WATERS.map(w => w.name), families = FAMILIES.map(f => f[0]);
+    for (const [fam, , keys] of FAMILIES) for (const k of keys)
+      if (!ANIMALS[k] || ANIMALS[k].family !== fam) errors.push(`FAMILIES: ${k} staat in de lijst van ${fam}, maar ${ANIMALS[k] ? "zijn family is " + ANIMALS[k].family : "is geen dier"}`);
+    for (const k of new Set(FAMILIES.flatMap(f => f[2]).filter((k, i, all) => all.indexOf(k) !== i))) errors.push(`FAMILIES: ${k} staat er twee keer in`);
+    for (const q of QUESTS) for (const f of q.kind === "fam" ? [].concat(q.fam) : []) if (!families.includes(f)) errors.push(`dagopdracht: onbekende familie ${f}`);
     const pair = v => Array.isArray(v) && v.length === 2 && v.every(x => typeof x === "string" && x.length > 10);
     const lifeDrawn = new Set([...Object.keys(presentLife(scene)), ...Object.keys(FAUNA), "flyingfish"]); // flying fish have their own system (09)
     for (const [k, a] of Object.entries(ANIMALS)) {
       const miss = [];
       if (!a.nl || !a.en) miss.push("naam (nl/en)");
       if (!families.includes(a.family)) miss.push(`familie (${a.family})`);
+      else if (!FAMILIES.find(f => f[0] === a.family)[2].includes(k)) miss.push(`plek in de lijst van zijn familie in FAMILIES (${a.family})`);
       if (!a.sci) miss.push("sci");
       if (!pair(a.fact)) miss.push("fact [nl, en]");
       if (!pair(a.note)) miss.push("note [nl, en]");

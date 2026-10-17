@@ -202,14 +202,14 @@
   };
   Object.assign(NAMES, animalTable("nl"));
   Object.assign(NAMES_EN, animalTable("en"));
-  // The logbook in a sensible order: each group is split into small families. The animals come in the order of 00-animals.js.
+  // The logbook in a sensible order: each group is split into small families. The animals come in the order of FAMILIES.
   const LOG_SUBS = {
     "Wateren": [
       ["Warm en ondiep", "Warm and shallow", ["w:lagune", "w:rif", "w:mangrove"]],
       ["Koel en open", "Cool and open", ["w:wadden", "w:kelpwoud", "w:noordzee", "w:sargasso"]],
       ["Koud en donker", "Cold and dark", ["w:ijszee", "w:grot", "w:diepzee"]],
     ],
-    "Dieren": FAMILIES.map(([nl, en]) => [nl, en, Object.keys(ANIMALS).filter(k => ANIMALS[k].family === nl)]),
+    "Dieren": FAMILIES.map(([nl, en, keys]) => [nl, en, keys.filter(k => ANIMALS[k] && ANIMALS[k].family === nl)]),
     "Momenten": [
       ["Weer en aarde", "Weather and earth", ["storm", "waterspout", "quake", "eruption", "whirlpool", "glowtide", "meteor", "eclipse", "aurora"]],
       ["Paaien en trekken", "Spawning and migration", ["coralspawn", "spawning", "jellybloom", "eelmigration", "crabmarch", "hatchlings", "sardinerun"]],

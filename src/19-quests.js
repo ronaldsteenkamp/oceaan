@@ -1,14 +1,15 @@
   // ---- the quest of the day, the photo book and the water filter ------------------------
   // Every day has its own small quest, the same for everyone on that date. The photo book has photo tasks that are
   // checked against what is in view when you take a photo.
-  const famKeys = fam => { const s = LOG_SUBS["Dieren"].find(x => x[0] === fam); return s ? s[2] : []; };
+  // a quest can count one family or several together (fam is a name or a list of names)
+  const famKeys = fam => [].concat(fam).flatMap(f => { const s = LOG_SUBS["Dieren"].find(x => x[0] === f); return s ? s[2] : []; });
   const QUESTS = [
     { kind: "fam", fam: "Roggen", n: 3, nl: "Zie 3 roggen", en: "See 3 rays" },
-    { kind: "fam", fam: "Haaien en grote vissen", n: 2, nl: "Zie 2 haaien of grote vissen", en: "See 2 sharks or big fish" },
+    { kind: "fam", fam: "Haaien", n: 2, nl: "Zie 2 haaien", en: "See 2 sharks" },
     { kind: "fam", fam: "Walvissen en dolfijnen", n: 2, nl: "Zie 2 walvissen of dolfijnen", en: "See 2 whales or dolphins" },
     { kind: "fam", fam: "Inktvissen", n: 2, nl: "Zie 2 inktvissen of octopussen", en: "See 2 squid or octopuses" },
     { kind: "fam", fam: "Kwallen", n: 2, nl: "Zie 2 kwallen", en: "See 2 jellies" },
-    { kind: "fam", fam: "Zoogdieren en vogels", n: 2, nl: "Zie 2 zeezoogdieren of zeevogels", en: "See 2 sea mammals or seabirds" },
+    { kind: "fam", fam: ["Andere zeezoogdieren", "Zeevogels"], n: 2, nl: "Zie 2 zeezoogdieren of zeevogels", en: "See 2 sea mammals or seabirds" },
     { kind: "fam", fam: "Reptielen", n: 1, nl: "Zie een zeeschildpad, zeeslang of krokodil", en: "See a sea turtle, sea snake or crocodile" },
     { kind: "rescue", n: 1, nl: "Bevrijd een dier uit een spooknet", en: "Free an animal from a ghost net" },
     { kind: "shiny", n: 1, nl: "Vind een shiny", en: "Find a shiny" },
