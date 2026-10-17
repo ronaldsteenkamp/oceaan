@@ -137,10 +137,10 @@
   }
 
   // ---- the hunt list -----------------------------------------------------------------------
-  // Up to three things you have not found yet (five with Deep explorer), pinned from their logbook page. A new ocean tells you when one of them
+  // Up to three things you have not found yet (five with Sea hero), pinned from their logbook page. A new ocean tells you when one of them
   // is here (or may turn up), and finding one crosses it off. The sonar keeps listening only for rare things.
   const HUNT_KEY = "oceaan-speurlijst", HUNT_MAX = 5;
-  const huntMax = () => rewards.has("m130") ? HUNT_MAX : 3;  // Deep explorer (130 finds) gives five places
+  const huntMax = () => rewards.has("m80") ? HUNT_MAX : 3;  // Sea hero (80 finds) gives five places
   let hunt = store.get(HUNT_KEY, []).filter(k => typeof k === "string" && LOGGABLE.has(k) && !logbook.has(k)).slice(0, HUNT_MAX);
   const saveHunt = () => store.set(HUNT_KEY, hunt);
   function toggleHunt(key) {
@@ -181,15 +181,15 @@
       && (hint.includes(NAMES["w:" + water.name].toLowerCase()) || hint.includes("elk water") || (hint.includes("oppervlak") && water.surface))) return "can";
     return "";
   }
-  // Living encyclopedia (150 finds): a new ocean says how many animals you do not have yet are to be found here.
-  // Shine diver (125 shinies): it also says whether a shiny you still miss swims here.
+  // Living encyclopedia (130 finds): a new ocean says how many animals you do not have yet are to be found here.
+  // Shine diver (100 shinies): it also says whether a shiny you still miss swims here.
   function newNotice() {
     if (aquarium || selfTesting || rebuilding) return;
     // only when there is something new: an ocean without new animals stays quiet
-    const n = rewards.has("m150") ? newHere().length : 0;
+    const n = rewards.has("m130") ? newHere().length : 0;
     if (n) toast(n === 1 ? L("In deze oceaan is 1 nieuw dier te vinden.", "There is 1 new animal to find in this ocean.")
       : L(`In deze oceaan zijn ${n} nieuwe dieren te vinden.`, `There are ${n} new animals to find in this ocean.`));
-    if (rewards.has("s125") && scene.shinies.some(e => !logbook.has("shiny:" + e.key)))
+    if (rewards.has("s100") && scene.shinies.some(e => !logbook.has("shiny:" + e.key)))
       toast(L("Er zwemt hier een shiny die je nog niet hebt!", "A shiny you do not have yet swims here!"), "important");
   }
   function huntNotice() {

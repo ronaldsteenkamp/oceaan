@@ -382,10 +382,10 @@
       if (e.alive && !e.alive()) continue;
       const [x, y] = e.get();
       if (!isFinite(x) || !isFinite(y) || !isFinite(e.r)) continue; // a zero-size pane can give odd positions
-      // First shiny reward: a little bell the moment a shiny comes into view; Glitter tracker (s75): anywhere in the ocean
+      // First shiny reward: a little bell the moment a shiny comes into view; Shine diver (s100): anywhere in the ocean
       const allShiny = !!(aquarium && aquarium.shiny), inView = x > 0 && x < W && y > 0 && y < H;
       // one bell and one message per ocean, however many shinies there are
-      if (!scene.bellRang && !e.told && !allShiny && rewards.has("s1") && (inView || rewards.has("s75"))) {
+      if (!scene.bellRang && !e.told && !allShiny && rewards.has("s1") && (inView || rewards.has("s100"))) {
         scene.bellRang = true;
         try { tone({ type: "sine", freqs: [[1760, 0], [2349, 0.12]], dur: 0.9, gain: 0.05, attack: 0.005, release: 0.8, verb: 0.9 }); } catch (err) {}
         toast(inView ? L("Er klinkt een belletje: er glinstert iets in de buurt...", "A little bell rings: something glitters nearby...")
@@ -393,7 +393,7 @@
       }
       if (x < -60 || x > W + 60 || y < -60 || y > H + 60) continue;
       // Shiny hunter reward: a glittering trail behind every shiny
-      if (rewards.has("s15")) {
+      if (rewards.has("s10")) {
         if (e.lx === undefined || Math.hypot(x - e.lx, y - e.ly) > 6 * u) { e.lx = x; e.ly = y; shinyTrail.push({ x, y, a: 1, ph: Math.random() * TAU }); }
       }
       if (!e.told && allShiny) e.told = true;

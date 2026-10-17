@@ -169,7 +169,7 @@
     // a page of the notebook: the photo taped in, the name in pencil, and the notes beside it
     const group = (LOG_GROUPS.find(g => g[0] !== "Shiny" && g[1].includes(base)) || ["Dieren"])[0];
     const photo = { top: `<div class="nb-run">${groupName(group)}</div>${tabs}`, figure: `
-      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}${isShiny && !e && rewards.has("s5") ? " peek" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(base)}" src="${thumbURL(key, !!e || (isShiny && rewards.has("s5")), 4)}"><figcaption>${nm(base)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>` };
+      <figure class="nb-photo${isShiny && e ? " shinybig" : ""}${isShiny && !e && rewards.has("s10") ? " peek" : ""}" style="--tilt:${tiltOf(base) - 1}deg"><img class="big" alt="${nm(base)}" src="${thumbURL(key, !!e || (isShiny && rewards.has("s10")), 4)}"><figcaption>${nm(base)}${!isShiny && se ? ` <span class="shinymark inline" title="${L("Shiny gevonden", "Shiny found")}">✦</span>` : ""}</figcaption></figure>` };
     renderBookDetail(photo, {
       back: `<button type="button" id="detailBack" class="nb-back">‹ ${L("Terug naar het logboek", "Back to the logbook")}</button>`,
       body: `<h2 class="nb-title small">${nm(base)}</h2>${rewards.has("ga") && SCI[base] ? `<p class="nb-sci">${SCI[base]}</p>` : ""}

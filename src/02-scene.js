@@ -250,8 +250,8 @@
   // this ocean, so turning the phone does not bring them back. Waters, moments, rare things and shinies do not count,
   // fish schools and jellies are always there, and an aquarium keeps what was chosen.
   const NEW_LIMIT = 4;
-  // Reef keeper (110 finds) makes it five
-  const newLimit = () => rewards.has("m110") ? NEW_LIMIT + 1 : NEW_LIMIT;
+  // Sea expert (40 finds) makes it five
+  const newLimit = () => rewards.has("m40") ? NEW_LIMIT + 1 : NEW_LIMIT;
   let leaveOut = null;
   function newHere() {
     const life = presentLife(scene);

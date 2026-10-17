@@ -708,7 +708,7 @@
     if (sandY(d.x) - d.y < 40 * u && speed > 0.5 * u && Math.random() < 0.2 * k) puff(d.x - d.face * 20 * u, sandY(d.x) + 4 * u, 1);
 
     const L = DIVER_L * u;
-    if (rewards.has("s30") && !reduceMotion) {
+    if (rewards.has("s40") && !reduceMotion) {
       // a trail of twinkling stars that stay behind and slowly fade
       d.trailT = (d.trailT || 0) - k;
       if (!d.trail) d.trail = [];

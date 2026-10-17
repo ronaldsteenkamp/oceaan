@@ -17,7 +17,7 @@
   function bookCard(k, isNew, forceShiny) {
     const sk = "shiny:" + k, se = logbook.get(sk), shinyMode = forceShiny || (!!se && shinyPick.has(k)), e = logbook.get(shinyMode ? sk : k);
     const mark = se ? `<span class="shinymark" title="${L("Shiny gevonden", "Shiny found")}" aria-label="${L("Shiny gevonden", "Shiny found")}">✦</span>` : "";
-    const peek = shinyMode && !e && rewards.has("s5");  // Sparkle seeker: the colours of a shiny you still miss, pale
+    const peek = shinyMode && !e && rewards.has("s10");  // Sparkle seeker: the colours of a shiny you still miss, pale
     return `<button type="button" class="card ${e ? "on" : "off"}${shinyMode ? " shiny" : ""}${se ? " hasshiny" : ""}${isNew ? " new" : ""}${peek ? " peek" : ""}" style="--tilt:${tiltOf(k)}deg" data-detail="${shinyMode ? sk : k}"><img alt="" data-thumb="${shinyMode ? sk : k}" data-seen="${e || peek ? 1 : 0}"><span>${nmBreak(k)}</span>${isNew ? `<span class="newtag">${L("Nieuw", "New")}</span>` : ""}${mark}</button>`;
   }
 
@@ -56,7 +56,8 @@
     const msItem = m => {
       const [have, need] = m.prog(), done = rewards.has(m.id);
       // a reached milestone keeps its tick when an update raises the goal; then the count shows what is new
-      const how = done && have >= need ? L(m.goal[0], m.goal[1]) : `${Math.min(have, need)}/${need}`;
+      const goal = L(m.goal[0], m.goal[1]);
+      const how = done && have >= need && goal.length <= 24 ? goal : `${Math.min(have, need)}/${need}`;
       const gives = (m.event ? L(m.goal[0], m.goal[1]) + " → " : "→ ") + L(m.reward[0], m.reward[1]);
       return `<li class="${done ? "on" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span class="what">${L(m.name[0], m.name[1])}<small class="gives">${gives}</small></span><span class="how">${how}</span></li>`;
     };

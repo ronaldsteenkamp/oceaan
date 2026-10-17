@@ -4,37 +4,31 @@ Stand van 17 oktober 2026, na de nieuwe beloningen, het bewaren van mijlpalen, d
 
 ## 1. Overzicht
 
-Er zijn **40 mijlpalen**, onder vijf kopjes. 39 tellen mee voor de gouden kaft; de Spookjager niet, omdat je die alleen in de Spookweek kunt halen. Het logboek telt 189 vondsten: 10 wateren, 144 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 166 shiny's.
+Er zijn **32 mijlpalen**, onder vijf kopjes. 31 tellen mee voor de gouden kaft; de Spookjager niet, omdat je die alleen in de Spookweek kunt halen. Het logboek telt 189 vondsten: 10 wateren, 144 dieren, 23 momenten en 12 zeldzame dingen. Daarnaast zijn er 166 shiny's.
 
 Een gehaalde mijlpaal blijft gehaald. Hij staat opgeslagen in `oceaan-mijlpalen` en gaat mee in het reservebestand. Komen er in een update dieren bij, dan stijgt het doel, maar je houdt je beloning.
 
-### Vondsten (9)
+### Vondsten (5)
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
-| m10 | Ontdekker | 10 vondsten | elke 75 s een nieuwe oceaan (was 150 s) |
-| m25 | Zeekenner | 25 vondsten | elke 30 s |
-| m50 | Oceanograaf | 50 vondsten | elke 15 s |
-| m75 | Duikmeester | 75 vondsten | elke 7,5 s |
-| m90 | Zeeheld | 90 vondsten | gouden randjes om de foto's in het logboek, elke 5 s (het id was `m100`) |
-| m110 | Rifwachter | 110 vondsten | 5 nieuwe dieren per oceaan in plaats van 4 |
-| m130 | Diepzeeverkenner | 130 vondsten | een speurlijst met 5 plekken in plaats van 3 |
-| m150 | Levende encyclopedie | 150 vondsten | elke nieuwe oceaan meldt hoeveel nieuwe dieren er te vinden zijn |
+| m15 | Ontdekker | 15 vondsten | elke minuut een nieuwe oceaan (was 2,5 minuut) |
+| m40 | Zeekenner | 40 vondsten | elke 20 s, en 5 nieuwe dieren per oceaan in plaats van 4 |
+| m80 | Zeeheld | 80 vondsten | elke 5 s, gouden randjes om de foto's, een speurlijst met 5 plekken |
+| m130 | Levende encyclopedie | 130 vondsten | elke nieuwe oceaan meldt hoeveel nieuwe dieren er te vinden zijn |
 | mall | Meester van de zee | alles | geen wachttijd meer voor een nieuwe oceaan |
 
-### Shiny's (9)
+### Shiny's (5)
 
 | id | Naam | Doel | Beloning |
 | --- | --- | --- | --- |
 | s1 | Eerste shiny | 1 | belletje als er een shiny in beeld komt |
-| s5 | Glinsterzoeker | 5 | shiny's die je nog mist, zie je vaag in hun kleuren in het logboek |
-| s15 | Shinyjager | 15 | shiny's laten een glinsterspoor achter |
-| s30 | Shinyverzamelaar | 30 | sterretjes achter je duiker |
-| s50 | Glanskenner | 50 | de glinstermeter loopt door tot 4× |
-| s75 | Glinsterspeurder | 75 | het belletje klinkt al als er ergens in de oceaan een shiny zwemt |
-| s100 | Glimmeester | 100 | de glinstermeter loopt door tot 5× |
-| s125 | Glansduiker | 125 | elke nieuwe oceaan meldt of er een shiny zwemt die je nog mist |
+| s10 | Glinsterzoeker | 10 | shiny's laten een glinsterspoor achter; ontbrekende shiny's zie je vaag in kleur in het logboek |
+| s40 | Shinyjager | 40 | sterretjes achter je duiker; de glinstermeter loopt door tot 4× |
+| s100 | Glansduiker | 100 | het belletje klinkt overal in de oceaan; een nieuwe oceaan meldt een ontbrekende shiny; de glinstermeter tot 5× |
 | sall | Glimmende legende | alle shiny's | gouden flippers en tank, en shiny's komen in je eigen oceanen 6× zo vaak |
+
+Tot 17 oktober waren er 9 stappen voor vondsten en 9 voor shiny's. Wie een oude stap had, krijgt elke nieuwe stap die op of onder dat aantal ligt (de eerste oude stappen tellen voor de eerste nieuwe), dus niemand raakt een beloning kwijt.
 
 ### Hulp bij het zoeken (5)
 
