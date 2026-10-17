@@ -30,6 +30,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `01-basis.js` | wateren, vondsten, momenten, logboekvolgorde, mijlpalen, meldingen |
 | `02-scene.js` | een oceaan opbouwen uit een seed (met zijstromen, zodat de seed niet van het scherm afhangt) |
 | `03` tot en met `08` | water en bodem, de eerste dieren en bezoekers, logboekplaatjes, oppervlak en licht, geluid |
+| `06-stickers.js` | de eigen plaatjes van de stickers die je met mijlpalen verdient |
 | `09-moments-and-diver.js` | vulkaan, stad, bait-ball, onweer, vliegende vissen, de duiker, schatkaart |
 | `10-shiny.js` | shiny's: kansen, kleurenschema's en het tekenen ervan |
 | `11-mangrove-and-cave.js` | mangrove, grot en de tweede ronde dieren, bezoekers en momenten |

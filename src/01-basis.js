@@ -458,9 +458,8 @@
   function keepGlobetrotter() {
     if (WATERS.slice(0, FIRST_WATERS).every(w => logbook.has("w:" + w.name))) store.set(GLOBE_KEY, true);
   }
-  // the stickers that milestones give, with the animal or moment shown on each
-  const STICKERS = [["rd", "hawksbill"], ["nz", "puffin"], ["dz", "vampire"], ["wr", "clown"], ["wk", "otters"], ["wi", "polarbear"], ["wm", "archer"],
-    ["wg", "nautilus"], ["wl", "dugong"], ["ws", "sargassumfish"], ["sk", "meteor"], ["vh", "turtle"], ["fj", "orca"]];
+  // the milestones that give a sticker, in the order of the stickers page; each has its own picture in 06-stickers.js
+  const STICKERS = ["rd", "nz", "dz", "wr", "wk", "wi", "wm", "wg", "wl", "ws", "sk", "vh", "fj"];
   for (const m of MILESTONES) m.need = () => { const [a, b] = m.prog(); return a >= b; };
   let rewards = new Set();
   const reached = () => MILESTONES.filter(m => m.need()).map(m => m.id);

@@ -204,7 +204,8 @@
       for (const k of (ev.rare ? ev.rare.keys : [])) if (!RARE_KEYS.includes(k)) errors.push(`event ${ev.id}: onbekend zeldzaam ding ${k}`);
     }
     if (new Set(MILESTONES.map(m => m.id)).size !== MILESTONES.length) errors.push("mijlpalen: dubbele id");
-    for (const [id, key] of STICKERS) if (!MILESTONES.some(m => m.id === id) || !THUMBS[key]) errors.push(`sticker ${id}: mijlpaal of plaatje (${key}) ontbreekt`);
+    for (const id of STICKERS) if (!MILESTONES.some(m => m.id === id) || !STICKER_ART[id]) errors.push(`sticker ${id}: mijlpaal of plaatje ontbreekt`);
+    for (const id of STICKERS) try { stickerURL(id); } catch (e) { errors.push(`sticker ${id}: ${e.message}`); }
     for (const m of MILESTONES) { const [a, b] = m.prog(); if (!(b > 0) || !isFinite(a)) errors.push(`mijlpaal ${m.id}: doel ${b} klopt niet`); }
   }
 
@@ -285,6 +286,9 @@
         }).join("") + `</div>`;
       }
     }
+    // the stickers, round as on their page in the logbook
+    html += `<h2>Stickers</h2><div class="sb-grid">` + STICKERS.map(id => { const m = MILESTONES.find(x => x.id === id);
+      return `<figure data-key="sticker:${id}"><div><img alt="" src="${stickerURL(id)}" style="border-radius:50%"></div><figcaption>${L(m.name[0], m.name[1])}</figcaption></figure>`; }).join("") + `</div>`;
     el.innerHTML = html;
     document.body.appendChild(el);
   }
