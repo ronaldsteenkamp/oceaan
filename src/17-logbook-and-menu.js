@@ -183,21 +183,11 @@
           ${when ? `<div><dt>${L("Eerste keer", "First time")}</dt><dd>${when}</dd></div>` : ""}
           ${e && e.n > 1 ? `<div><dt>${L("Aantal keer", "Times seen")}</dt><dd>${L(`${e.n} keer gezien`, `seen ${e.n} times`)}</dd></div>` : ""}
         </dl>`,
-      kin: kinHTML(base, group),
       nav: detailNavHTML(key),
     });
     panelBody.scrollTop = 0;
     const tabBtn = sameAnimal && panelBody.querySelector(".dtabs .on");
     (step && panelBody.querySelector(`[data-dnav="${step > 0 ? 1 : -1}"]`) || tabBtn || document.getElementById("detailBack")).focus();
-  }
-  // On a spread the photo page also shows the neighbours of this animal in its family, as small polaroids to leaf to.
-  function kinHTML(base, group) {
-    const sub = (LOG_SUBS[group] || []).find(sb => sb[2].includes(base));
-    if (!sub || group === "Wateren") return "";
-    const keys = sub[2].filter(k => k !== base && inLogWater(k));
-    if (!keys.length) return "";
-    const i = Math.max(0, sub[2].indexOf(base) - 1), pick = [...keys.slice(i), ...keys.slice(0, i)].slice(0, 3);
-    return `<div class="nb-kin"><h4 class="nb-fam">${L(sub[0], sub[1])} <span>${keys.filter(k => logbook.has(k)).length + (logbook.has(base) ? 1 : 0)}/${keys.length + 1}</span></h4><div class="cards">${pick.map(k => bookCard(k, false)).join("")}</div></div>`;
   }
   function shinyOdds(base) {
     const n = SHINY_N[base] || 200;

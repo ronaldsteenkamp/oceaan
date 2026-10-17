@@ -32,7 +32,6 @@
       <div class="nb-bar" aria-hidden="true"><i style="width:${Math.round((got / all.length) * 100)}%"></i></div>
       ${questHTML()}
       ${eventHTML()}
-      ${huntHTML()}
       ${glintHTML()}
       <p class="nb-note">${L(`In elke oceaan zwemmen hooguit ${NEW_LIMIT} dieren die nog niet in je logboek staan. Momenten en zeldzame dingen komen daar nog bij.`, `Every ocean holds at most ${NEW_LIMIT} animals that are not in your logbook yet. Moments and rare things come on top of that.`)}</p>
       <p class="nb-note">${introLeft() ? L(`Nieuwe oceaan: eerst je oefenduiken, nog ${INTRO.length - introDone()}. Daarna elke ${durationText(lockSeconds())}.`, `New ocean: first your practice dives, ${INTRO.length - introDone()} to go. After that every ${durationText(lockSeconds())}.`) : store.get(FREE_KEY, 0) < FREE_OCEANS ? L(`Nieuwe oceaan: nog ${FREE_OCEANS - store.get(FREE_KEY, 0)} keer zonder wachten, daarna elke ${durationText(lockSeconds())}.`, `New ocean: ${FREE_OCEANS - store.get(FREE_KEY, 0)} more without waiting, then every ${durationText(lockSeconds())}.`) : L(`Nieuwe oceaan: elke ${durationText(lockSeconds())}. Elke mijlpaal maakt dat korter.`, `New ocean: every ${durationText(lockSeconds())}. Every milestone makes that shorter.`)}</p>
@@ -41,6 +40,8 @@
     blocks.push({ html: intro, newPage: true, group: "intro", jump: "intro" });
     // the water filter and the new finds are blocks of their own, so on a phone they carry on overleaf instead of falling off the page
     intro = waterFilterHTML();
+    // the hunt list comes after the filters, so a full list never pushes "Show" down
+    intro += huntHTML();
     if (news.length) {
       const show = news.slice(0, 6);
       intro += `<h4 class="nb-fam">${L("Nieuw sinds je vorige keer", "New since last time")} <span>${news.length}</span></h4><div class="cards">` + show.map(k => k.startsWith("shiny:") ? bookCard(k.slice(6), true, true) : bookCard(k, true)).join("") + `</div>`;
@@ -277,8 +278,8 @@
     const left = panelBody.querySelector(".nb-left"), right = panelBody.querySelector(".nb-right");
     // on one page: the way back and the colour tabs in one row, the photo beside where and when, then the notes
     if (single) left.innerHTML = `<div class="nb-detail one"><div class="nb-dhead">${n.back}<div>${photo.top}</div></div><div class="nb-dpair">${photo.figure}${n.side}</div>${n.body}${n.nav}</div>`;
-    // on a spread: the photo and its family on the left, the notes with where and when on the right
-    else { left.innerHTML = `<div class="nb-detail">${photo.top}${photo.figure}${n.kin || ""}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.side}${n.nav}</div>`; }
+    // on a spread: the photo on the left, the notes with where and when on the right
+    else { left.innerHTML = `<div class="nb-detail">${photo.top}${photo.figure}</div>`; right.innerHTML = `<div class="nb-detail">${n.back}${n.body}${n.side}${n.nav}</div>`; }
     fillIn(panelBody);
     fitDetail();
   }
