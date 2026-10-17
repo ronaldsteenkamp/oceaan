@@ -1,6 +1,6 @@
   // ---- speed: cached floor, automatic quality, background pause --------
   // Landmarks that never move are drawn once into a layer instead of every frame.
-  const STATIC = new Set(["rocks", "skull", "bottle", "anchor", "cannon", "ruins", "statue", "plane", "amphora", "car", "bell", "wheel", "phonebox", "sponges"]);
+  const STATIC = new Set(["rocks", "skull", "bottle", "anchor", "cannon", "ruins", "statue", "plane", "amphora", "car", "bell", "wheel", "phonebox", "sponges", "mammoth", "porcelain", "megtooth", "dropstone"]);
   function staticLayer(name) {
     const S = scene;
     if (!canvas.width || !canvas.height) return; // a hidden pane can report a zero size

@@ -541,6 +541,8 @@
       }
       s.treasure = { x: best, dug: false };
     });
+    // the finds of the twelfth round come last, from a stream of their own, where there is still room
+    sub("ground:w12", () => addWave12Ground(s, P));
 
     s.snow = sub("snow", () => Array.from({ length: Math.round((80 + 80 * density) * (s.season === "herfst" ? 2.2 : s.season === "lente" ? 1.7 : 1)) }, () => ({
       x: rng() * W, y: rng() * H, r: range(0.4, 1.6) * u, a: range(0.15, 0.55),
