@@ -1,5 +1,6 @@
   // ---- surface, food, coins and currents ---------------------------------
-  function waveY(x) { return 14 * u + Math.sin(x * 0.018 + t * 1.4) * 3 * u + Math.sin(x * 0.006 - t * 0.8) * 5 * u; }
+  // the water line; in the Wadden Sea the tide moves it down and up (tideDrop, 14-wave13-tide.js)
+  function waveY(x) { return tideDrop() + 14 * u + Math.sin(x * 0.018 + t * 1.4) * 3 * u + Math.sin(x * 0.006 - t * 0.8) * 5 * u; }
 
   function drawSurface(k, dtSec) {
     if (!water.surface) return;
@@ -11,6 +12,7 @@
     ctx.lineTo(W, 0);
     ctx.closePath();
     ctx.fill();
+    drawTideSky();
     ctx.strokeStyle = `rgba(255,255,255,${0.15 + 0.35 * day})`; ctx.lineWidth = 1.5 * u;
     ctx.beginPath();
     for (let x = 0; x <= W + 10; x += 10) x ? ctx.lineTo(x, waveY(x)) : ctx.moveTo(x, waveY(x));

@@ -834,7 +834,7 @@
     computeLight();
     const part = day > 0.8 ? L("dag", "day") : night > 0.8 ? L("nacht", "night") : L("schemer", "dusk");
     const SEASON = { lente: ["lente", "spring"], zomer: ["zomer", "summer"], herfst: ["herfst", "autumn"], winter: ["winter", "winter"] }[scene.season] || ["zomer", "summer"];
-    clockEl.textContent = `${part} · ${L(SEASON[0], SEASON[1])}`;
+    clockEl.textContent = `${part} · ${L(SEASON[0], SEASON[1])}${tideLabel()}`;
   }
 
   function drawTreasureMound() {

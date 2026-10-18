@@ -42,6 +42,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `14-wave10-finds.js` | eigen vondsten voor de Waddenzee (mosselbank) en de Sargassozee (drijfhout met eendenmosselen) |
 | `14-wave12-finds.js` | dertien vondsten die na de rest hun plek krijgen: zes drijvend (glazen visdrijver, badeendjes, puimsteenvlot, zeebonen, expeditiekist, kreeftenfuik met boei) en zeven op de bodem (mammoetkies, VOC-porselein, megalodontand, ammoniet, zeeballen, zwerfsteen, kelpwortel) |
 | `14-wave11-wadden.js` | de elfde ronde: strandkrab, bot, wulk, puitaal en grijze zeehond voor de Waddenzee en de Noordzee |
+| `14-wave13-tide.js` | eb en vloed in de Waddenzee: het water zakt elke drie minuten, met zandplaten en zeehonden in de verte |
 | `14-wave9.js` | de negende ronde: Californische schapenkop, remipede, yetikrab, sargassumnaaktslak en weddellzeehond |
 | `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
 | `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
