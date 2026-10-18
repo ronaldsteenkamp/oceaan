@@ -110,6 +110,7 @@
       } catch (e) { errors.push(`oceaan ${sd}: ${e.message}`); }
     }
     forceEvent = null;
+    checkPlay(errors);
     thumbErrors.length = 0;
     for (const key of LOG_GROUPS.flatMap(g => g[1])) {
       try { renderThumb(key, true, 1); renderThumb(key, false, 1); } catch (e) { errors.push(`plaatje ${key}: ${e.message}`); }
@@ -262,7 +263,7 @@
         const life = presentLife(scene), S = scene;
         out[sd] = {
           water: water.name, season: S.season, rare: S.rare || "",
-          ground: S.ground.map(g => g.kind + "@" + r2(g.x / W)).sort().join(","),
+          ground: S.ground.filter(g => g.kind !== "w13fx").map(g => g.kind + "@" + r2(g.x / W)).sort().join(","),
           life: Object.keys(life).filter(k => life[k]).sort().map(k => k + "×" + Number(life[k])).join(","),
           fauna: S.fauna.map(f => f.key + "@" + r2(f.x / W)).join(","),
           shinies: S.shinies.map(e => e.key).sort().join(","),

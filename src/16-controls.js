@@ -44,6 +44,7 @@
     if (bottle && S.treasure && !S.treasure.dug) { mapT = 8; sfxChest(); return; }
     if (S.treasure && !S.treasure.dug && Math.abs(x - S.treasure.x) < 35 * u && Math.abs(y - sandY(S.treasure.x)) < 50 * u) { dig(); return; }
     if (tapClam(x, y)) return;
+    if (tapWave13(x, y)) return;
     const chest = S.ground.find(g => g.kind === "chest" && Math.hypot(x - g.x, y - (sandY(g.x) - g.s * 0.4)) < g.s * 1.2);
     if (chest) {
       if (!chest.opened) {
@@ -72,10 +73,11 @@
     if (S.treasure && !S.treasure.dug) spots.push([S.treasure.x, sandY(S.treasure.x)]);
     for (const h of S.hidden) if (!h.found && h.x !== undefined) spots.push([h.x, h.y - 5 * u]);
     for (const g of S.ground) if (g.kind === "clam") spots.push([g.x, sandY(g.x) - g.s * 0.35]);
+    spots.push(...wave13DiverSpots());
     let best = null, bd = 90 * u;
     for (const p of spots) { const d = Math.hypot(p[0] - diver.x, p[1] - diver.y); if (d < bd) { bd = d; best = p; } }
     if (best) handleTap(best[0], best[1]);
-    else toast(L("Zwem dichter naar een kist, fles of zeepaardje", "Swim closer to a chest, bottle or seahorse"));
+    else toast(L("Zwem dichter naar iets om mee te spelen, zoals een kist, fles of zeepaardje", "Swim closer to something to play with, such as a chest, bottle or seahorse"));
   }
 
   addEventListener("keydown", e => {
@@ -542,7 +544,7 @@
 
   // The backup holds everything you have collected: the logbook and also the album, rescued animals,
   // quests of the day, the photo book and the shinies you picked. Settings (volume, language) stay out.
-  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze", "oceaan-speurlijst", "oceaan-mijlpalen", "oceaan-spookjager"];
+  const PROGRESS_KEYS = ["oceaan-gered", "oceaan-dagen", "oceaan-fotoboek", "oceaan-album", "oceaan-shinykeuze", "oceaan-speurlijst", "oceaan-mijlpalen", "oceaan-spookjager", "oceaan-kapitein"];
   function exportLog() {
     const d = new Date().toISOString().slice(0, 10);
     const voortgang = {};

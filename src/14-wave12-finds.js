@@ -184,7 +184,9 @@
     if (k) { g.ph += 0.02 * k; g.rattle = w12Ease(g.rattle, near(g.x, sandY(g.x) - g.s * 0.4, 120 * u) > 0 ? 1 : 0, k, 0.08); }
     const s = g.s, base = sandY(g.x) + s * 0.05, bx = g.x + g.bdx, by = w12Top(bx) + 4 * u;
     const rope = sh("#c8b080"), net = sh("#3a5a4a"), frame = sh("#2a3a30"), wood = sh("#6a5038"), buoy = sh("#e85a2a"), band = sh("#f4f0e8");
-    const shake = g.rattle * Math.sin(t * 30) * 1.2 * u;
+    // once the diver has opened the hatch (see 14-wave13-play.js) the lobster walks out and away
+    if (g.free && k) { g.free += k / 60; g.lx = (g.lx || 0) + Math.min(1, g.free) * 0.9 * u * k; }
+    const shake = g.free ? 0 : g.rattle * Math.sin(t * 30) * 1.2 * u;
     // the rope, swaying, then the buoy
     ctx.strokeStyle = rope; ctx.lineWidth = Math.max(1, 1.4 * u); ctx.beginPath(); ctx.moveTo(g.x, base - s * 0.72);
     ctx.quadraticCurveTo((g.x + bx) / 2 + Math.sin(g.ph) * 20 * u, (base + by) / 2, bx, by); ctx.stroke();
@@ -197,7 +199,8 @@
     }
     ctx.save(); ctx.translate(g.x + shake, base); ctx.scale(g.dir, 1);
     // the lobster, behind the netting
-    const lob = sh("#24344e"), lobLight = sh("#3a5070"), wave = Math.sin(t * 8) * g.rattle;
+    const lob = sh("#24344e"), lobLight = sh("#3a5070"), wave = g.free ? Math.sin(t * 5) * 0.5 : Math.sin(t * 8) * g.rattle;
+    ctx.save(); ctx.translate(g.lx || 0, g.free ? Math.abs(Math.sin(t * 9)) * -1.2 * u : 0);
     ctx.fillStyle = lob; ctx.beginPath(); ctx.ellipse(-s * 0.05, -s * 0.2, s * 0.32, s * 0.09, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = lobLight; for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(-s * (0.3 + i * 0.06), -s * 0.2, s * 0.04, s * 0.08, 0, 0, TAU); ctx.fill(); }
     ctx.fillStyle = lob; for (const sgn of [-1, 1]) {
@@ -207,6 +210,8 @@
     }
     ctx.strokeStyle = lobLight; ctx.lineWidth = Math.max(0.6, s * 0.012); ctx.beginPath();
     ctx.moveTo(s * 0.25, -s * 0.22); ctx.quadraticCurveTo(s * 0.4, -s * 0.5, s * 0.55, -s * 0.45 + wave * s * 0.05); ctx.stroke();
+    if (g.free) { ctx.beginPath(); for (let i = 0; i < 4; i++) { const lx = -s * (0.15 - i * 0.08), sw = Math.sin(t * 12 + i) * s * 0.03; ctx.moveTo(lx, -s * 0.14); ctx.lineTo(lx + sw, -s * 0.02); } ctx.stroke(); }
+    ctx.restore();
     // the cage: a wooden base, a half-round frame of hoops and a net between them
     ctx.fillStyle = wood; ctx.fillRect(-s * 0.6, -s * 0.06, s * 1.2, s * 0.08);
     ctx.strokeStyle = frame; ctx.lineWidth = Math.max(1, s * 0.035);
@@ -216,7 +221,7 @@
     for (let i = -5; i <= 5; i++) { ctx.moveTo(i * s * 0.1 - s * 0.08, -s * 0.05); ctx.lineTo(i * s * 0.1 + s * 0.08, -s * 0.66); ctx.moveTo(i * s * 0.1 + s * 0.08, -s * 0.05); ctx.lineTo(i * s * 0.1 - s * 0.08, -s * 0.66); }
     ctx.stroke(); ctx.globalAlpha = 1;
     // the entrance funnel on the side
-    ctx.strokeStyle = frame; ctx.lineWidth = Math.max(1, s * 0.03); ctx.beginPath(); ctx.ellipse(s * 0.5, -s * 0.3, s * 0.06, s * 0.13, 0, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = frame; ctx.lineWidth = Math.max(1, s * 0.03); ctx.beginPath(); if (g.free) ctx.ellipse(s * 0.58, -s * 0.3, s * 0.02, s * 0.13, 0, 0, TAU); else ctx.ellipse(s * 0.5, -s * 0.3, s * 0.06, s * 0.13, 0, 0, TAU); ctx.stroke();
     ctx.restore();
   }
 

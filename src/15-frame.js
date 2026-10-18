@@ -12,7 +12,7 @@
       const saved = ctx;
       ctx = c.getContext("2d");
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (name === "back") { drawSand(); for (const g of S.ground) if (STATIC.has(g.kind) && !g.shiny) GROUND_DRAW[g.kind](g, 0); }
+      if (name === "back") { drawSand(); for (const g of S.ground) if (STATIC.has(g.kind) && !g.shiny && !g.live) GROUND_DRAW[g.kind](g, 0); }
       else drawSandLip();
       ctx = saved;
       // only the part with something on it is copied each frame: from the top of its content down (the rest is empty)
@@ -177,7 +177,7 @@
     drawHidden(k);
     drawAbyss(k);
     staticLayer("back");
-    for (const g of S.ground) if ((!STATIC.has(g.kind) || g.shiny) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") shinyDraw(g, () => GROUND_DRAW[g.kind](g, k));
+    for (const g of S.ground) if ((!STATIC.has(g.kind) || g.shiny || g.live) && g.kind !== "eels" && g.kind !== "anemone" && g.kind !== "brine") shinyDraw(g, () => GROUND_DRAW[g.kind](g, k));
     staticLayer("lip");
     for (const g of S.ground) if (g.kind === "brine") drawBrine(g);
     drawTreasureMound();
