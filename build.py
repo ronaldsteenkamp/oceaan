@@ -5,7 +5,9 @@ Gebruik: python build.py [--zonder-controle] [--zonder-schermafbeeldingen] [--za
 1. Voegt src/ samen tot dist/oceaan.html: één pagina, ook de versie die als claude.ai-artifact wordt gepubliceerd.
    De bestanden gaan op volgorde van hun nummer (00-, 01-, ...) in één (() => { ... })().
 2. Draait check.py: de zelftest in een onzichtbare Chrome, en schermafbeeldingen in checks/. Bij een fout stopt de build.
-3. Schrijft de app: dist/index.html, sw.js, manifest en iconen.
+3. Schrijft de app: dist/spelen.html (de oceaan), sw.js, manifest en iconen.
+4. Schrijft de startpagina: dist/index.html en dist/img/ uit src/site/. Een gedeelde link (#code), ?meten en de
+   geïnstalleerde app gaan van daar meteen door naar spelen.html, zodat oude links en apps blijven werken.
 
 De versie is een vingerafdruk van de pagina: alleen als er echt iets verandert, halen geïnstalleerde apps een nieuwe versie.
 Online zetten gaat met publish.py, of met de Action in ci/pages.yml (zodra die in .github/workflows/ staat): beide zetten dist/ op de branch gh-pages.
@@ -14,6 +16,7 @@ import base64
 import hashlib
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -23,6 +26,7 @@ HERE = Path(__file__).parent
 SRC = HERE / "src"
 DIST = HERE / "dist"
 SOURCE = DIST / "oceaan.html"
+SITE = SRC / "site"
 
 
 def write(path, text):
@@ -127,14 +131,23 @@ def build_index(version):
 </body>
 </html>
 """
-    write(DIST / "index.html", html)
+    write(DIST / "spelen.html", html)
+
+
+def build_site(version):
+    """De startpagina: src/site/index.html met zijn plaatjes. Hij gebruikt de lettertypes en iconen van de app."""
+    page = (SITE / "index.html").read_text(encoding="utf-8").replace("__VERSION__", version)
+    write(DIST / "index.html", page)
+    if (DIST / "img").exists():
+        shutil.rmtree(DIST / "img")
+    shutil.copytree(SITE / "img", DIST / "img")
 
 
 def build_sw(version):
     sw = f"""// Service worker: maakt de oceaan installeerbaar en speelbaar zonder internet.
 const VERSION = "{version}";
 const SHELL = `oceaan-shell-${{VERSION}}`;
-const SHELL_FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", {", ".join(f'"fonts/{name}"' for _, _, name in FONTS)}];
+const SHELL_FILES = ["./", "index.html", "spelen.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", {", ".join(f'"fonts/{name}"' for _, _, name in FONTS)}];
 
 self.addEventListener("install", event => {{
   event.waitUntil(caches.open(SHELL).then(c => c.addAll(SHELL_FILES)).then(() => self.skipWaiting()));
@@ -165,7 +178,7 @@ self.addEventListener("fetch", event => {{
       }})
       .catch(async () =>
         (await caches.match(req, {{ ignoreSearch: true }})) ||
-        (req.mode === "navigate" ? caches.match("index.html") : Response.error()))
+        (req.mode === "navigate" ? caches.match("spelen.html") : Response.error()))
   );
 }});
 """
@@ -178,7 +191,7 @@ def build_manifest():
         "short_name": "Oceaan",
         "description": "Een levende onderwaterwereld vol zeedieren, wrakken en schatten, die elke keer anders is.",
         "lang": "nl",
-        "start_url": "./",
+        "start_url": "spelen.html",
         "scope": "./",
         "display": "fullscreen",
         "background_color": "#06182a",
@@ -241,8 +254,10 @@ if __name__ == "__main__":
             sys.exit("De zelftest vond een fout; er is niets gebouwd.")
         if "--zonder-schermafbeeldingen" not in sys.argv:
             print(f"{len(check.screenshots(SOURCE.resolve().as_uri()))} schermafbeeldingen in checks/")
-    v = os.environ.get("OCEAAN_VERSION") or version_of(page)
+    # the start page counts too, so a change to it also reaches installed apps
+    v = os.environ.get("OCEAAN_VERSION") or version_of(page + (SITE / "index.html").read_text(encoding="utf-8"))
     build_index(v)
+    build_site(v)
     build_sw(v)
     build_manifest()
     build_icons()

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<script>
+  // Shared oceans (#code), test views (#schermtest-…, #stijlblad), ?meten and the installed app go straight to the game.
+  (function () {
+    var app = (window.matchMedia && matchMedia("(display-mode: fullscreen), (display-mode: standalone)").matches) || navigator.standalone;
+    if (location.hash.length > 1 || location.search || app) location.replace("spelen.html" + location.search + location.hash);
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oceaan: elke duik een andere zee</title>
+<meta name="description" content="Een levende onderwaterwereld vol zeedieren, wrakken en schatten, die elke keer anders is. Gratis in je browser, ook zonder internet.">
+<meta name="theme-color" content="#06182a">
+<meta property="og:title" content="Oceaan">
+<meta property="og:description" content="Een levende onderwaterwereld die elke keer anders is.">
+<meta property="og:image" content="img/rif.jpg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  @font-face { font-family: "Caveat"; font-weight: 600; font-display: swap; src: url(fonts/caveat-600.woff2) format("woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 400; font-display: swap; src: url(fonts/dmmono-400.woff2) format("woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 500; font-display: swap; src: url(fonts/dmmono-500.woff2) format("woff2"); }
+  @font-face { font-family: "Figtree"; font-weight: 400 600; font-display: swap; src: url(fonts/figtree.woff2) format("woff2"); }
+
+  :root {
+    --deep: #06182a; --card: #0c2236; --text: #eaf4f6; --dim: #b9cfd5; --faint: #8fadb6;
+    --line: rgba(220, 236, 240, 0.14); --line-strong: rgba(220, 236, 240, 0.28);
+    --accent: #7fd8c9; --accent-hover: #9ae4d8; --accent-ink: #05221f; --gold: #ffd479; --gold-text: #ffe3a6;
+    --paper: #f3ead3; --paper-card: #fffdf7; --ink: #2d2a24; --ink-soft: #5b5140; --ink-faint: #6e624c; --pencil: #29507a; --shiny-ink: #8a6206;
+    --sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "DM Mono", ui-monospace, Consolas, monospace;
+    --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+    color-scheme: dark;
+  }
+  :root[lang="nl"] body [lang="en"], :root[lang="en"] body [lang="nl"] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { margin: 0; background: var(--deep); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--accent); }
+  a:hover { color: var(--accent-hover); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  h1, h2, h3 { font-weight: 600; margin: 0; }
+  h2 { font-size: clamp(34px, 4.2vw, 56px); line-height: 1.05; letter-spacing: -0.03em; margin-top: 12px; }
+  .dim { color: var(--dim); }
+  section { scroll-margin-top: 24px; }
+
+  /* nav */
+  .nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .brand span { font-family: var(--hand); font-size: 34px; line-height: 1; }
+  .nav nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; font-size: 15px; font-weight: 500; }
+  .nav nav a { color: var(--dim); text-decoration: none; padding: 10px 0; }
+  .nav nav a:hover { color: var(--text); }
+  .langs { display: flex; gap: 2px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px; }
+  .langs button { font: 500 13px var(--mono); color: var(--dim); background: none; border: 0; border-radius: 999px; padding: 6px 12px; min-height: 32px; cursor: pointer; }
+  .langs button[aria-pressed="true"] { background: rgba(127, 216, 201, 0.16); color: var(--text); }
+
+  /* hero */
+  .hero { padding-top: 72px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .event { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; border-radius: 999px; background: rgba(255, 212, 121, 0.12); border: 1px solid rgba(255, 212, 121, 0.35); color: var(--gold-text); text-decoration: none; font-size: 14px; margin-bottom: 28px; }
+  .event:hover { color: var(--gold-text); background: rgba(255, 212, 121, 0.18); }
+  .event b { font: 500 12px var(--mono); background: var(--gold); color: #3a2604; padding: 3px 10px; border-radius: 999px; }
+  .hero h1 { font-size: clamp(44px, 7.4vw, 96px); line-height: 1.02; letter-spacing: -0.04em; max-width: 960px; }
+  .hero h1 em { font-family: var(--hand); font-style: normal; font-weight: 600; letter-spacing: 0; color: var(--accent); font-size: 1.18em; }
+  .lead { margin: 28px 0 0; max-width: 660px; font-size: clamp(18px, 1.6vw, 21px); color: var(--dim); }
+  .ctas { margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 28px; border-radius: 999px; font-weight: 600; font-size: 17px; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-hover); color: var(--accent-ink); }
+  .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+  .meta { margin: 20px 0 0; font: 13px var(--mono); color: var(--faint); letter-spacing: 0.02em; }
+  .shot { position: relative; width: 100%; max-width: 1120px; margin-top: 72px; padding-bottom: 56px; }
+  .shot-main { border-radius: 20px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55), 0 0 0 8px rgba(127, 216, 201, 0.05); }
+  .shot-main img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+  .shot-phone { position: absolute; right: -8px; bottom: 0; width: 19%; min-width: 110px; border-radius: 28px; overflow: hidden; border: 6px solid #10283c; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+  .shot-phone img { width: 100%; aspect-ratio: 390 / 844; object-fit: cover; }
+  .shot-note { position: absolute; left: -6px; bottom: 20px; transform: rotate(-4deg); background: var(--paper-card); color: var(--ink); padding: 12px 18px 10px; border-radius: 4px; box-shadow: 0 1px 2px rgba(60, 40, 10, 0.28), 0 10px 30px rgba(0, 0, 0, 0.4); text-align: left; }
+  .shot-note strong { display: block; font: 600 26px/1.1 var(--hand); color: var(--pencil); }
+  .shot-note span { font: 12px var(--mono); color: var(--ink-faint); }
+  @media (max-width: 640px) { .shot-note { display: none; } .shot-phone { right: 0; border-width: 4px; border-radius: 18px; } }
+
+  /* numbers */
+  .facts { margin-top: 64px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .facts div { background: var(--deep); padding: 28px; }
+  .facts b { display: block; font-size: 44px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .facts > div > span { display: block; margin-top: 8px; color: var(--dim); font-size: 15px; }
+
+  .section { padding-top: 140px; }
+  .head-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
+  .head-row > div { max-width: 620px; }
+  .head-row p { margin: 0; max-width: 420px; color: var(--dim); }
+
+  /* waters */
+  .waters { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 20px; }
+  .waters figure { margin: 0; }
+  .waters img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); }
+  .waters figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px 4px 0; }
+  .waters figcaption b { font-weight: 600; }
+  .waters figcaption span { font: 13px var(--mono); color: var(--faint); text-align: right; }
+  .more { border-radius: 14px; border: 1px dashed var(--line-strong); padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; min-height: 200px; }
+  .more p { margin: 0; font: 600 30px/1.15 var(--hand); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .chips li { padding: 6px 14px; border-radius: 999px; background: rgba(156, 198, 220, 0.14); color: #cfe3ec; font-size: 14px; }
+
+  /* steps */
+  .steps { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+  .steps li { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 32px; }
+  .steps .top { display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+  .steps .n { font: 600 44px/1 var(--hand); color: var(--accent); }
+  kbd { font: 14px var(--mono); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-strong); border-bottom-width: 3px; color: var(--text); }
+  .steps h3 { margin: 24px 0 8px; font-size: 22px; }
+  .steps p { margin: 0; color: var(--dim); font-size: 16px; }
+  .note { margin: 24px 0 0; color: var(--faint); font-size: 15px; }
+
+  /* logbook */
+  .paper { margin-top: 140px; background-color: var(--paper); color: var(--ink); background-image: linear-gradient(rgba(41, 80, 122, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(41, 80, 122, 0.07) 1px, transparent 1px); background-size: 28px 28px; }
+  .paper .wrap { padding-top: 120px; padding-bottom: 120px; display: flex; flex-wrap: wrap; align-items: center; gap: 64px; }
+  .paper .eyebrow { color: var(--ink-faint); }
+  .paper .text { flex: 1 1 380px; min-width: 0; }
+  .paper .text > p { margin: 20px 0 0; color: var(--ink-soft); max-width: 480px; }
+  .paper ul { list-style: none; margin: 32px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .paper li { display: flex; gap: 14px; align-items: baseline; }
+  .paper li i { font: normal 600 24px var(--hand); color: var(--pencil); flex: 0 0 auto; }
+  .paper li i.shiny { color: var(--shiny-ink); }
+  .paper li b { font-weight: 600; }
+  .book { flex: 1.3 1 480px; min-width: 0; position: relative; padding-bottom: 48px; }
+  .book > img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; border-radius: 12px; box-shadow: 0 1px 2px rgba(60, 40, 10, 0.28), 0 24px 60px rgba(60, 40, 10, 0.25); }
+  .polaroid { position: absolute; right: -12px; bottom: 0; width: 38%; min-width: 150px; margin: 0; background: var(--paper-card); padding: 10px 10px 4px; transform: rotate(5deg); box-shadow: 0 1px 2px rgba(60, 40, 10, 0.28), 0 12px 30px rgba(60, 40, 10, 0.28); }
+  .polaroid::before { content: ""; position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 72px; height: 22px; background: rgba(236, 222, 178, 0.85); }
+  .polaroid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .polaroid figcaption { font: 600 24px var(--hand); text-align: center; color: var(--shiny-ink); padding: 4px 0; }
+  @media (max-width: 640px) { .paper .wrap { padding-top: 80px; padding-bottom: 80px; gap: 40px; } .polaroid { right: 0; } }
+
+  /* rare */
+  .rare { text-align: center; }
+  .rare .eyebrow { color: var(--gold); }
+  .rare h2 { max-width: 760px; margin-left: auto; margin-right: auto; }
+  .rare > p { margin: 20px auto 0; max-width: 560px; color: var(--dim); }
+  .rare ul { list-style: none; margin: 40px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 900px; }
+  .rare li { padding: 12px 22px; border-radius: 999px; border: 1px solid rgba(255, 212, 121, 0.35); color: var(--gold-text); font-weight: 600; }
+
+  /* features */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 40px 32px; }
+  .features svg { color: var(--accent); }
+  .features h3 { margin: 16px 0 6px; font-size: 19px; }
+  .features p { margin: 0; color: var(--dim); font-size: 16px; }
+
+  /* final */
+  .final { position: relative; border-radius: 24px; overflow: hidden; border: 1px solid var(--line); }
+  .final > img { position: absolute; inset: 0; width: 100%; height: 100% !important; object-fit: cover; opacity: 0.45; }
+  .final > div { position: relative; background: rgba(6, 24, 42, 0.55); padding: clamp(56px, 8vw, 112px) 24px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .final h2 { font-size: clamp(36px, 5vw, 68px); line-height: 1.02; letter-spacing: -0.035em; margin: 0; }
+  .final p { margin: 18px 0 0; color: #d6e6ea; font-size: 19px; max-width: 520px; }
+  .final .btn { margin-top: 36px; min-height: 56px; padding: 0 32px; font-size: 18px; }
+
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding-top: 80px; padding-bottom: 48px; color: var(--faint); font-size: 14px; }
+  footer .who { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  footer .who span:first-child { font: 600 28px var(--hand); color: var(--text); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  footer a { color: var(--dim); text-decoration: none; padding: 10px 0; }
+  footer a:hover { color: var(--text); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="wrap nav">
+  <a class="brand" href="#top">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke="#7fd8c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c4-3 7-3 10 0s6 3 10 0 6-3 6-3"/><path d="M3 20c4-3 7-3 10 0s6 3 10 0 6-3 6-3"/><circle cx="24" cy="26" r="1.5"/><circle cx="8" cy="5" r="1"/></svg>
+    <span>Oceaan</span>
+  </a>
+  <nav aria-label="Menu">
+    <a href="#wateren"><span lang="nl">Wateren</span><span lang="en">Waters</span></a>
+    <a href="#duiken"><span lang="nl">Zo speel je</span><span lang="en">How to play</span></a>
+    <a href="#logboek"><span lang="nl">Logboek</span><span lang="en">Logbook</span></a>
+    <a href="https://github.com/ronaldsteenkamp/oceaan"><span lang="nl">Broncode</span><span lang="en">Source</span></a>
+    <span class="langs" role="group" aria-label="Taal / Language">
+      <button type="button" data-set-lang="nl" aria-pressed="true">NL</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </span>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="wrap hero">
+    <a class="event" href="spelen.html" hidden>
+      <b><span lang="nl">NU</span><span lang="en">NOW</span></b>
+      <span class="event-text"></span>
+    </a>
+    <h1><span lang="nl">Elke duik een <em>andere</em> zee.</span><span lang="en">Every dive a <em>different</em> sea.</span></h1>
+    <p class="lead">
+      <span lang="nl">Een levende onderwaterwereld die elke keer anders is. Stuur je duiker langs koraal, wrakken en walvissen, vul je logboek en speur naar de Kraken.</span>
+      <span lang="en">A living underwater world that is different every time. Send your diver past coral, wrecks and whales, fill your logbook and hunt for the Kraken.</span>
+    </p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="spelen.html"><span lang="nl">Duik erin</span><span lang="en">Dive in</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="https://github.com/ronaldsteenkamp/oceaan">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+        <span lang="nl">Bekijk op GitHub</span><span lang="en">View on GitHub</span></a>
+    </div>
+    <p class="meta"><span lang="nl">Gratis · in je browser · werkt offline als app · Nederlands &amp; English</span><span lang="en">Free · in your browser · works offline as an app · English &amp; Nederlands</span></p>
+
+    <div class="shot">
+      <div class="shot-main"><img src="img/rif.jpg" width="1440" height="900" data-alt-nl="Een koraalrif bij nacht in Oceaan: een gezonken piratenschip, kwallen, een zeeschildpad en scholen vissen" data-alt-en="A coral reef at night in Oceaan: a sunken pirate ship, jellyfish, a sea turtle and schools of fish" alt=""></div>
+      <div class="shot-phone"><img src="img/telefoon-mangrove.jpg" width="390" height="844" loading="lazy" data-alt-nl="Oceaan op een telefoon: een mangrove met wortels, vissen en een octopus" data-alt-en="Oceaan on a phone: a mangrove with roots, fish and an octopus" alt=""></div>
+      <div class="shot-note" aria-hidden="true">
+        <strong><span lang="nl">Koraalrif, bij volle maan</span><span lang="en">Coral reef, full moon</span></strong>
+        <span><span lang="nl">nieuw: zeeschildpad, wimpelvis</span><span lang="en">new: sea turtle, Moorish idol</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" aria-label="Oceaan">
+    <div class="facts">
+      <div><b>10</b><span><span lang="nl">wateren, van lagune tot Waddenzee</span><span lang="en">waters, from lagoon to Wadden Sea</span></span></div>
+      <div><b>∞</b><span><span lang="nl">oceanen: elke keer een nieuwe</span><span lang="en">oceans: a new one every time</span></span></div>
+      <div><b style="color: var(--gold)">✦</b><span><span lang="nl">shiny dieren om te verzamelen</span><span lang="en">shiny animals to collect</span></span></div>
+      <div><b><span lang="nl">1 code</span><span lang="en">1 code</span></b><span><span lang="nl">dezelfde oceaan op elk scherm</span><span lang="en">the same ocean on every screen</span></span></div>
+    </div>
+  </section>
+
+  <section id="wateren" class="wrap section">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow"><span lang="nl">Tien wateren</span><span lang="en">Ten waters</span></div>
+        <h2><span lang="nl">Van warm koraal tot ijskoude poolzee.</span><span lang="en">From warm coral to icy polar sea.</span></h2>
+      </div>
+      <p><span lang="nl">Elk water heeft zijn eigen dieren, bodem en licht. Met dag en nacht, seizoenen, onweer en in de Waddenzee zelfs eb en vloed.</span><span lang="en">Every water has its own animals, seabed and light. With day and night, seasons, thunderstorms and, in the Wadden Sea, even the tides.</span></p>
+    </div>
+    <div class="waters">
+      <figure><img src="img/kelpwoud.jpg" width="1440" height="900" loading="lazy" data-alt-nl="Kelpwoud met hoge kelp, een octopus en scholen vissen" data-alt-en="Kelp forest with tall kelp, an octopus and schools of fish" alt="">
+        <figcaption><b><span lang="nl">Kelpwoud</span><span lang="en">Kelp forest</span></b><span><span lang="nl">zeeotter, garibaldi</span><span lang="en">sea otter, garibaldi</span></span></figcaption></figure>
+      <figure><img src="img/wadden.jpg" width="1440" height="900" loading="lazy" data-alt-nl="De Waddenzee in Oceaan" data-alt-en="The Wadden Sea in Oceaan" alt="">
+        <figcaption><b><span lang="nl">Waddenzee</span><span lang="en">Wadden Sea</span></b><span><span lang="nl">zeehond, kokkel</span><span lang="en">seal, cockle</span></span></figcaption></figure>
+      <figure><img src="img/ijszee.jpg" width="1440" height="900" loading="lazy" data-alt-nl="De IJszee in Oceaan" data-alt-en="The polar sea in Oceaan" alt="">
+        <figcaption><b><span lang="nl">IJszee</span><span lang="en">Polar sea</span></b><span><span lang="nl">ijsbeer, narwal</span><span lang="en">polar bear, narwhal</span></span></figcaption></figure>
+      <figure><img src="img/grot.jpg" width="1440" height="900" loading="lazy" data-alt-nl="Een onderwatergrot in Oceaan" data-alt-en="An underwater cave in Oceaan" alt="">
+        <figcaption><b><span lang="nl">Onderwatergrot</span><span lang="en">Underwater cave</span></b><span><span lang="nl">blinde grotvis</span><span lang="en">blind cave fish</span></span></figcaption></figure>
+      <figure><img src="img/diepzee.jpg" width="1440" height="900" loading="lazy" data-alt-nl="De diepzee in Oceaan" data-alt-en="The deep sea in Oceaan" alt="">
+        <figcaption><b><span lang="nl">Diepzee</span><span lang="en">Deep sea</span></b><span><span lang="nl">pelikaanaal, driepootvis</span><span lang="en">pelican eel, tripod fish</span></span></figcaption></figure>
+      <div class="more">
+        <p><span lang="nl">…en nog vijf om te ontdekken</span><span lang="en">…and five more to discover</span></p>
+        <ul class="chips">
+          <li><span lang="nl">Koraalrif</span><span lang="en">Coral reef</span></li>
+          <li><span lang="nl">Lagune</span><span lang="en">Lagoon</span></li>
+          <li><span lang="nl">Sargassozee</span><span lang="en">Sargasso Sea</span></li>
+          <li>Mangrove</li>
+          <li><span lang="nl">Noordzee</span><span lang="en">North Sea</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="duiken" class="wrap section">
+    <div class="eyebrow"><span lang="nl">Zo speel je</span><span lang="en">How to play</span></div>
+    <h2 style="max-width: 720px"><span lang="nl">Roep de duiker. Schijn. Schrijf het op.</span><span lang="en">Call the diver. Shine. Write it down.</span></h2>
+    <ol class="steps">
+      <li>
+        <div class="top"><span class="n">1</span><kbd>D</kbd></div>
+        <h3><span lang="nl">Roep de duiker</span><span lang="en">Call the diver</span></h3>
+        <p><span lang="nl">Hij verschijnt bij je vinger of cursor. Stuur hem met de pijltjes, of tik waar hij heen moet.</span><span lang="en">He appears at your finger or cursor. Steer him with the arrow keys, or tap where he should go.</span></p>
+      </li>
+      <li>
+        <div class="top"><span class="n">2</span><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#ffd479" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="17" cy="17" r="13" stroke-opacity="0.25"/><path d="M17 4a13 13 0 0 1 12.4 17"/></svg></div>
+        <h3><span lang="nl">Schijn op iets nieuws</span><span lang="en">Shine on something new</span></h3>
+        <p><span lang="nl">Houd de lamp even stil tot het ringetje vol is. Een polaroidje vliegt naar je logboek.</span><span lang="en">Hold the lamp still until the ring fills up. A little polaroid flies into your logbook.</span></p>
+      </li>
+      <li>
+        <div class="top"><span class="n">3</span><kbd>Q</kbd></div>
+        <h3><span lang="nl">Speur met de sonar</span><span lang="en">Search with the sonar</span></h3>
+        <p><span lang="nl">Een gouden echo wijst naar iets zeldzaams. Open schatkisten, flessen met schatkaarten en reuzenschelpen.</span><span lang="en">A golden echo points to something rare. Open treasure chests, bottles with treasure maps and giant clams.</span></p>
+      </li>
+    </ol>
+    <p class="note"><span lang="nl">Nieuw? Drie korte oefenduiken laten je alles zien, met een tip per duik.</span><span lang="en">New here? Three short practice dives show you everything, with a tip for each.</span></p>
+  </section>
+
+  <section id="logboek" class="paper">
+    <div class="wrap">
+      <div class="text">
+        <div class="eyebrow"><span lang="nl">Je logboek</span><span lang="en">Your logbook</span></div>
+        <h2><span lang="nl">Een veldboek vol polaroids.</span><span lang="en">A field notebook full of polaroids.</span></h2>
+        <p><span lang="nl">Alles wat je vindt komt erin: met naam, wetenschappelijke naam, een weetje en een veldnotitie. Wat je nog mist staat er grijs in, als uitnodiging.</span><span lang="en">Everything you find goes in: with its name, scientific name, a fun fact and a field note. What you are still missing waits in grey, as an invitation.</span></p>
+        <ul>
+          <li><i class="shiny" aria-hidden="true">✦</i><span><span lang="nl"><b>Shiny dieren</b> in andere kleuren. De glinstermeter maakt ze steeds vaker.</span><span lang="en"><b>Shiny animals</b> in other colours. The glitter meter makes them ever more common.</span></span></li>
+          <li><i aria-hidden="true">→</i><span><span lang="nl"><b>Speurlijst</b> met drie dingen die je zoekt. Een nieuwe oceaan zegt of ze er zijn.</span><span lang="en"><b>Wish list</b> of three things you are looking for. A new ocean tells you if they are there.</span></span></li>
+          <li><i aria-hidden="true">→</i><span><span lang="nl"><b>Fotoalbum en mijlpalen</b>, met stickers die je verdient.</span><span lang="en"><b>Photo album and milestones</b>, with stickers to earn.</span></span></li>
+          <li><i aria-hidden="true">→</i><span><span lang="nl"><b>Bewaren</b> als bestand, en verder spelen op een ander apparaat.</span><span lang="en"><b>Save</b> it all to a file and keep playing on another device.</span></span></li>
+        </ul>
+      </div>
+      <div class="book">
+        <img src="img/logboek.jpg" width="800" height="500" loading="lazy" data-alt-nl="Het logboek in Oceaan, open op de pagina met vissen, met polaroids van gevonden en nog niet gevonden dieren" data-alt-en="The logbook in Oceaan, open at the fish pages, with polaroids of found and not yet found animals" alt="">
+        <figure class="polaroid">
+          <img src="img/shiny-pelikaan.jpg" width="800" height="500" loading="lazy" data-alt-nl="Een shiny pelikaan in Oceaan" data-alt-en="A shiny pelican in Oceaan" alt="">
+          <figcaption><span lang="nl">Shiny pelikaan!</span><span lang="en">Shiny pelican!</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section rare">
+    <div class="eyebrow"><span lang="nl">Heel zeldzaam</span><span lang="en">Very rare</span></div>
+    <h2><span lang="nl">Sommige dingen zie je maar één keer.</span><span lang="en">Some things you only see once.</span></h2>
+    <p><span lang="nl">Tussen de scholen vissen, orka's en gezonken auto's duikt heel soms iets op dat niemand gelooft.</span><span lang="en">Among the schools of fish, orcas and sunken cars, every now and then something turns up that nobody believes.</span></p>
+    <ul>
+      <li><span lang="nl">De Kraken</span><span lang="en">The Kraken</span></li>
+      <li><span lang="nl">Een spookschip</span><span lang="en">A ghost ship</span></li>
+      <li><span lang="nl">Een zeemeermin</span><span lang="en">A mermaid</span></li>
+      <li><span lang="nl">De zeeslang</span><span lang="en">The sea serpent</span></li>
+      <li><span lang="nl">Een megalodon</span><span lang="en">A megalodon</span></li>
+      <li><span lang="nl">De witte potvis</span><span lang="en">The white sperm whale</span></li>
+      <li><span lang="nl">Een spookduiker</span><span lang="en">A ghost diver</span></li>
+      <li>Atlantis</li>
+    </ul>
+  </section>
+
+  <section class="wrap section" aria-label="Meer">
+    <div class="features">
+      <div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <h3><span lang="nl">Dag, nacht en seizoenen</span><span lang="en">Day, night and seasons</span></h3>
+        <p><span lang="nl">Volle maan, onweer, noorderlicht. Zeevogels die 's winters wegtrekken.</span><span lang="en">Full moons, thunderstorms, northern lights. Seabirds that leave for the winter.</span></p>
+      </div>
+      <div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <h3><span lang="nl">Kalender-events</span><span lang="en">Calendar events</span></h3>
+        <p><span lang="nl">Spookweek, Winterlicht en de Dag van de Oceaan, voor iedereen op dezelfde dag.</span><span lang="en">Ghost week, Winter lights and World Ocean Day, for everyone on the same day.</span></p>
+      </div>
+      <div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4M12 2v13"/></svg>
+        <h3><span lang="nl">Deel je oceaan</span><span lang="en">Share your ocean</span></h3>
+        <p><span lang="nl">Dezelfde code geeft overal dezelfde zee. Of bouw je eigen aquarium.</span><span lang="en">The same code gives the same sea everywhere. Or build your own aquarium.</span></p>
+      </div>
+      <div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+        <h3><span lang="nl">Ook zonder internet</span><span lang="en">No internet needed</span></h3>
+        <p><span lang="nl">Zet hem op je beginscherm en duik ook in de trein of op vakantie.</span><span lang="en">Put it on your home screen and dive on the train or on holiday.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="final">
+      <img src="img/kelpwoud.jpg" alt="" loading="lazy">
+      <div>
+        <h2><span lang="nl">Wat zwemt er vandaag?</span><span lang="en">What's swimming today?</span></h2>
+        <p><span lang="nl">Geen account, geen download. Klik en je bent onder water.</span><span lang="en">No account, no download. Click and you're underwater.</span></p>
+        <a class="btn btn-primary" href="spelen.html"><span lang="nl">Duik erin</span><span lang="en">Dive in</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="who"><span>Oceaan</span><span><span lang="nl">Gemaakt door Ronald.</span><span lang="en">Made by Ronald.</span></span></div>
+  <nav aria-label="Footer">
+    <a href="spelen.html"><span lang="nl">Spelen</span><span lang="en">Play</span></a>
+    <a href="https://github.com/ronaldsteenkamp/oceaan"><span lang="nl">Broncode op GitHub</span><span lang="en">Source on GitHub</span></a>
+  </nav>
+</footer>
+
+<script>
+  (function () {
+    // Same language as the game: the game keeps it in localStorage under "oceaan-taal" (as JSON), else the browser's.
+    var KEY = "oceaan-taal";
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+    var lang = stored === "nl" || stored === "en" ? stored : (String(navigator.language || "nl").toLowerCase().indexOf("nl") === 0 ? "nl" : "en");
+
+    // Calendar events, as in EVENTS in src/01-basis.js
+    var EVENTS = [
+      { from: "10-24", to: "11-02", nl: "Spookweek: meer spoken in elk water, tot 2 november", en: "Ghost week: more ghosts in every water, until 2 November" },
+      { from: "12-15", to: "01-06", nl: "Winterlicht: noorderlicht boven elk water, tot 6 januari", en: "Winter lights: northern lights over every water, until 6 January" },
+      { from: "06-08", to: "06-08", nl: "Dag van de Oceaan: vandaag twee keer zoveel shiny's", en: "World Ocean Day: twice as many shinies today" }
+    ];
+    var d = new Date(), md = String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    var ev = EVENTS.filter(function (e) { return e.from <= e.to ? md >= e.from && md <= e.to : md >= e.from || md <= e.to; })[0];
+    var badge = document.querySelector(".event");
+
+    function apply(next) {
+      lang = next;
+      document.documentElement.lang = lang;
+      document.title = lang === "en" ? "Oceaan: every dive a different sea" : "Oceaan: elke duik een andere zee";
+      document.querySelectorAll("[data-alt-nl]").forEach(function (img) { img.alt = img.getAttribute("data-alt-" + lang); });
+      document.querySelectorAll("[data-set-lang]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set-lang") === lang)); });
+      if (ev) { badge.hidden = false; badge.querySelector(".event-text").textContent = ev[lang]; }
+    }
+    document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        apply(b.getAttribute("data-set-lang"));
+        try { localStorage.setItem(KEY, JSON.stringify(lang)); } catch (e) {}
+      });
+    });
+    apply(lang);
+
+    if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("sw.js?v=__VERSION__").catch(function () {}); });
+  })();
+</script>
+</body>
+</html>

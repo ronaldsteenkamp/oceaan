@@ -2,7 +2,7 @@
 
 Een levende onderwaterwereld die elke keer anders is, in tien wateren van koraalrif en lagune tot Sargassozee, mangrove, onderwatergrot en Waddenzee: scholen vissen, kwallen, krabben, een octopus, walvissen, orka's en haaien, gezonken piratenschepen, auto's en amforen, schatkisten, Atlantis en heel zeldzaam de Kraken, een spookschip, een zeemeermin, een zeeslang, een megalodon, de witte potvis of een spookduiker. Met dag en nacht, seizoenen, onweer, een duiker, een logboek met plaatjes, shiny dieren en een fotoalbum. In het Nederlands en het Engels.
 
-Speel online op **https://ronaldsteenkamp.github.io/oceaan/**. Op je telefoon kun je hem als app op je beginscherm zetten; daarna werkt hij ook zonder internet.
+Speel online op **https://ronaldsteenkamp.github.io/oceaan/** (een startpagina; de oceaan zelf staat op `spelen.html`). Op je telefoon kun je hem als app op je beginscherm zetten; daarna werkt hij ook zonder internet.
 
 ## Bediening
 
@@ -26,6 +26,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | Bestand | Inhoud |
 | --- | --- |
 | `head.html`, `styles.css`, `body.html`, `fonts/` | titel, stijl, opmaak van de bediening en de lettertypes |
+| `site/` | de startpagina (`index.html`, Nederlands en Engels) met zijn schermafbeeldingen in `site/img/`. Een gedeelde link, `?meten` en de geïnstalleerde app gaan meteen door naar `spelen.html` |
 | `00-animals.js` | **het dierenregister**: per dier naam, familie, wetenschappelijke naam, wateren, shiny, weetje en veldnotitie |
 | `01-basis.js` | wateren, vondsten, momenten, logboekvolgorde, mijlpalen, meldingen |
 | `02-scene.js` | een oceaan opbouwen uit een seed (met zijstromen, zodat de seed niet van het scherm afhangt) |
@@ -59,7 +60,7 @@ pip install pillow
 python build.py
 ```
 
-Dit bouwt `dist/` (de pagina `oceaan.html`, die ook als claude.ai-artifact wordt gepubliceerd, en de app: `index.html`, `sw.js`, manifest en iconen), draait de zelftest in een onzichtbare Chrome en maakt schermafbeeldingen in `checks/`. Vindt de zelftest een fout, dan wordt er niets gebouwd. Chrome wordt vanzelf gevonden; anders zet je het pad in `CHROME`. `python check.py` controleert alleen.
+Dit bouwt `dist/` (de pagina `oceaan.html`, die ook als claude.ai-artifact wordt gepubliceerd, de startpagina `index.html` met `img/`, en de app: `spelen.html`, `sw.js`, manifest en iconen), draait de zelftest in een onzichtbare Chrome en maakt schermafbeeldingen in `checks/`. Vindt de zelftest een fout, dan wordt er niets gebouwd. Chrome wordt vanzelf gevonden; anders zet je het pad in `CHROME`. `python check.py` controleert alleen.
 
 De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk logboekplaatje en controleert ook: of elk dier compleet geregistreerd is, of dezelfde seed op computer, telefoon en liggende telefoon dezelfde oceaan geeft, terugkerende shiny dieren, en of er tekenfouten zijn ingeslikt.
 
