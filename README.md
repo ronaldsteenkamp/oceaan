@@ -17,6 +17,7 @@ Speel online op **https://ronaldsteenkamp.github.io/oceaan/** (een startpagina; 
 - Zet tot drie dingen die je nog zoekt op je **speurlijst** (op hun pagina in het logboek). Een nieuwe oceaan meldt of ze er zijn of kunnen langskomen.
 - De **glinstermeter** vult zich met elke eigen oceaan zonder nieuwe shiny: shiny's worden dan steeds iets vaker, tot drie keer zo vaak (vier keer met de mijlpaal Glanskenner, vijf met Glimmeester; wie alle shiny's heeft, krijgt ze altijd zes keer zo vaak). Een nieuwe shiny maakt hem leeg. Gedeelde links en aquaria tellen niet mee.
 - Een paar keer per jaar is er een **kalender-event**, voor iedereen op die datum: Spookweek (24 oktober tot 2 november, meer spoken), Winterlicht (15 december tot 6 januari, noorderlicht boven elk water) en de Dag van de Oceaan (8 juni, dubbel zoveel shiny's). Ze staan in `EVENTS` in `01-basis.js` en veranderen alleen kansen, nooit wat er te vinden is.
+- In de **Apotheek van de zee** (een tabblad in het logboek) staat een apothekerskast met een potje per dier dat de mens een medicijn, hulpstof of labmiddel gaf. Zie je het dier, dan vult zijn potje zich en lees je zijn kaart; een goed antwoord op de vraag geeft een gouden etiket, maar is niet nodig. De kogelvis is een gevaarkaart: houd hem in je lamp terwijl je duiker afstand houdt (komt hij te dichtbij, dan verschijnt er een ⚠). Een volle kast maakt je Zee-apotheker en geeft een gouden vijzel voor je aquarium.
 - Je logboek staat in je browser. Achterin het logboek, onder Bewaren, sla je alles op als bestand (vondsten, album, fotoboek, geredde dieren) en laad je het op een ander apparaat weer in.
 
 ## Hoe het in elkaar zit
@@ -46,6 +47,7 @@ De bron staat in `src/`. `build.py` plakt de genummerde JS-bestanden op volgorde
 | `14-wave13-tide.js` | eb en vloed in de Waddenzee: het water zakt elke drie minuten, met zandplaten en zeehonden in de verte |
 | `14-wave13-play.js` | dingen om mee te spelen: de bel luiden, de telefooncel opnemen, het roer omdraaien (stroming keert), een krabbetje uit de helm, de zeemijn losknippen, het gouden beeldje oppakken, de kreeft uit de fuik laten, en negen nieuwe vondsten (sloep met kapiteinsbrieven, schildpad in een net, zeeslot met tegelpuzzel, fles met briefje naar een andere oceaan, oude duikcamera, luik in de bodem, kokosnoot, drie amforen, scheepslantaarn). `checkPlay` speelt ze allemaal één keer in de zelftest |
 | `14-wave9.js` | de negende ronde: Californische schapenkop, remipede, yetikrab, sargassumnaaktslak en weddellzeehond |
+| `14-z-apotheek.js` | de Apotheek van de zee: de apothekerskast in het logboek met een kaart per dier (`PHARMA`, `PHARMA_EN`), de quiz voor een gouden etiket, de gevaarkaart van de kogelvis (kijken, niet aanraken), de gouden vijzel voor het aquarium, en de zeehaas en de zakpijp |
 | `15-frame.js` | de animatielus, automatische kwaliteit en het meetscherm |
 | `16-controls.js` | aanraken, toetsen, duiker, nieuwe oceaan, reservekopie |
 | `17-logbook-and-menu.js` | weetjes van de rest, detailkaarten, album en "Maken en delen" |
@@ -68,7 +70,7 @@ De zelftest bouwt 40 oceanen, dwingt alle momenten en bezoekers af, tekent elk l
 
 **Publiceren:** `python publish.py` bouwt en test de oceaan en zet `dist/` op de branch `gh-pages`; GitHub Pages toont die branch. De bouwresultaten staan zo nooit in `main`. De versie is een vingerafdruk van de pagina: alleen bij een echte wijziging krijgen geïnstalleerde apps de melding "nieuwe versie". De GitHub Action in `.github/workflows/pages.yml` doet precies hetzelfde (ook naar `gh-pages`) bij elke push naar `main`, zodat de site ook zonder `publish.py` bijblijft; op een andere branch of een pull request bouwt en test hij alleen.
 
-**Schermtests:** `#schermtest-<seed>` met `-logboek`, `-detail`, `-ontdek`, `-menu`, `-welkom` of `-nacht` opent die oceaan in een vaste stand; `#stijlblad` toont alle logboekplaatjes per familie (gewoon, shiny en nog niet gevonden).
+**Schermtests:** `#schermtest-<seed>` met `-logboek`, `-detail`, `-ontdek`, `-menu`, `-welkom`, `-nacht`, `-apotheek`, `-gevaar` (de duiker te dicht bij de kogelvis) of `-vijzel` (een aquarium met de gouden vijzel) opent die oceaan in een vaste stand; `#stijlblad` toont alle logboekplaatjes per familie (gewoon, shiny en nog niet gevonden).
 
 **Meten:** open de oceaan met `?meten` achter het adres (`https://ronaldsteenkamp.github.io/oceaan/?meten`). Linksboven staan dan de fps, de tekentijd per frame, het deel trage frames en het kwaliteitsniveau. Tik erop om een kort rapport te kopiëren.
 

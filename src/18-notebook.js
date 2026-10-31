@@ -5,7 +5,7 @@
   const bookSingle = () => panelEl.clientWidth < 760;
   // the last field is the tab's colour: --tab-<name> in styles.css
   const BOOK_TABS = [["intro", "Overzicht", "Overview", "intro"], ["Wateren", null, null, "waters"], ["Dieren", null, null, "animals"], ["Momenten", null, null, "moments"],
-    ["Zeldzaam", null, null, "rare"], ["album", "Foto's", "Photos", "photos"], ["keep", "Bewaren", "Keep", "keep"]];
+    ["Zeldzaam", null, null, "rare"], ["Apotheek", null, null, "pharma"], ["album", "Foto's", "Photos", "photos"], ["keep", "Bewaren", "Keep", "keep"]];
   // the parts of the book in the order of the tabs: first the waters, then who lives there, what happens and what is rare
   const BOOK_PARTS = ["Wateren", "Dieren", "Momenten", "Zeldzaam"];
   const tabLabel = t => t[1] ? L(t[1], t[2]) : groupName(t[0]);
@@ -93,6 +93,8 @@
         first = false;
       }
     }
+    // the apothecary cabinet (14-z-apotheek.js), always whole, whatever the filter
+    pharmaBlocks().forEach((html, i) => blocks.push({ html, newPage: !i, group: "Apotheek", jump: i ? null : "Apotheek" }));
     // photos and the back of the book
     const photos = album.length
       ? `<div class="album">` + album.map(ph => `<button type="button" data-photo="${ph.id}" style="--tilt:${tiltOf(ph.id)}deg" aria-label="${L("Foto van ", "Photo from ")}${dateText(ph.d)}"><img alt="" src="${ph.img}"></button>`).join("") + `</div>`

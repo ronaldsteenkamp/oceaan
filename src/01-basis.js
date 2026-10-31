@@ -135,7 +135,7 @@
   // Everything the aquarium can switch on, and everything the logbook can record.
   const PROP_KEYS = ["wreck", "plane", "chest", "anchor", "cannon", "ruins", "statue", "city", "arch", "helmet", "mine", "bottle", "skull", "coral", "anemone", "vent", "volcano", "brine", "rocks", "canyon", "amphora", "car", "bell", "clam", "seagrass", "wheel", "idol", "phonebox", "sponges", "mussels", "driftwood",
     "glassfloat", "ducks", "pumice", "seabeans", "crate", "lobsterpot", "mammoth", "porcelain", "megtooth", "ammonite", "seaballs", "dropstone", "holdfast",
-    "dinghy", "netturtle", "sealock", "notebottle", "camera", "hatch", "nut", "jars", "shiplantern"];
+    "dinghy", "netturtle", "sealock", "notebottle", "camera", "hatch", "nut", "jars", "shiplantern", "mortar"];
   const LIFE_KEYS = Object.keys(ANIMALS).filter(k => ANIMALS[k].life);
   const VIS_KEYS = [...Object.keys(ANIMALS).filter(k => ANIMALS[k].visits), "sub"];
   const RARE_KEYS = ["mermaid", "kraken", "ghost", "whalefall", "serpent", "megalodon", "goldpearl", "mobydick", "ghostdiver", "ghostsub", "leviathan", "lighthouse"];
@@ -149,7 +149,8 @@
     "mussels", "driftwood",
     "shorecrab", "flounder", "whelk", "eelpout", "greyseal",
     "glassfloat", "ducks", "pumice", "seabeans", "crate", "lobsterpot", "mammoth", "porcelain", "megtooth", "ammonite", "seaballs", "dropstone", "holdfast",
-    "dinghy", "netturtle", "sealock", "notebottle", "camera", "hatch", "nut", "jars", "shiplantern"];
+    "dinghy", "netturtle", "sealock", "notebottle", "camera", "hatch", "nut", "jars", "shiplantern",
+    "seahare", "tunicate", "mortar"];
   const AQ_ALL = [...AQ_BASE, ...Object.keys(ANIMALS).filter(k => (ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k))];
   // Keys that can no longer be chosen in the aquarium: animals taken out of the game, and the northern lights,
   // which became an ordinary weather moment. They keep their place in AQ_BASE.
@@ -174,7 +175,7 @@
     bottle: "Flessenpost", skull: "Doodshoofd", vent: "Heetwaterbron", volcano: "Onderzeese vulkaan",
     brine: "Pekelmeer", rocks: "Rotsblokken", canyon: "Afgrond", amphora: "Amforen",
     car: "Gezonken auto", bell: "Scheepsbel", seagrass: "Zeegrasveld", wheel: "Scheepsroer",
-    idol: "Gouden beeldje", phonebox: "Telefooncel", mussels: "Mosselbank", driftwood: "Drijfhout met eendenmosselen",
+    idol: "Gouden beeldje", phonebox: "Telefooncel", mortar: "Gouden vijzel", mussels: "Mosselbank", driftwood: "Drijfhout met eendenmosselen",
     glassfloat: "Glazen visdrijver", ducks: "Badeendjes", pumice: "Puimsteenvlot", seabeans: "Zeebonen", crate: "Expeditiekist", lobsterpot: "Kreeftenfuik",
     mammoth: "Mammoetkies", porcelain: "VOC-porselein", megtooth: "Megalodontand", ammonite: "Ammoniet", seaballs: "Zeeballen", dropstone: "Zwerfsteen", holdfast: "Kelpwortel",
     dinghy: "Gezonken sloep", netturtle: "Schildpad in een net", sealock: "Zeeslot", notebottle: "Fles met briefje", camera: "Oude duikcamera",
@@ -198,7 +199,7 @@
     bottle: "Message in a bottle", skull: "Skull", vent: "Hydrothermal vent", volcano: "Undersea volcano",
     brine: "Brine pool", rocks: "Boulders", canyon: "Abyss", amphora: "Amphorae",
     car: "Sunken car", bell: "Ship's bell", seagrass: "Seagrass meadow", wheel: "Ship's wheel",
-    idol: "Golden idol", phonebox: "Phone box", mussels: "Mussel bed", driftwood: "Driftwood with goose barnacles",
+    idol: "Golden idol", phonebox: "Phone box", mortar: "Golden mortar", mussels: "Mussel bed", driftwood: "Driftwood with goose barnacles",
     glassfloat: "Glass fishing float", ducks: "Rubber ducks", pumice: "Pumice raft", seabeans: "Sea beans", crate: "Expedition crate", lobsterpot: "Lobster pot",
     mammoth: "Mammoth tooth", porcelain: "VOC porcelain", megtooth: "Megalodon tooth", ammonite: "Ammonite", seaballs: "Sea balls", dropstone: "Dropstone", holdfast: "Kelp holdfast",
     dinghy: "Sunken dinghy", netturtle: "Turtle in a net", sealock: "Sea lock", notebottle: "Bottle with a note", camera: "Old diving camera",
@@ -318,7 +319,7 @@
   const SCI = animalTable("sci");
   const FIELD_NOTES = animalTable("note", 0), FIELD_NOTES_EN = animalTable("note", 1);
 
-  const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny" };
+  const GROUP_EN = { "Wateren": "Waters", "Bodem en vondsten": "Seabed and finds", "Dieren": "Animals", "Bezoekers": "Visitors", "Momenten": "Moments", "Zeldzaam": "Rare", "Shiny": "Shiny", "Apotheek": "Apothecary" };
   const groupName = title => L(title, GROUP_EN[title] || title);
   const LOG_KEY = "oceaan-logboek";
   const LOUD = new Set([...VIS_KEYS, ...RARE_KEYS, ...MOMENT_KEYS, "treasure", ...SHINY_KEYS.map(k => "shiny:" + k)]);
@@ -477,6 +478,8 @@
     // only to be had during Ghost week, so it does not count for the golden logbook
     { id: "sj", event: true, name: ["Spookjager", "Ghost hunter"], goal: ["een spook gevonden in de Spookweek (24 oktober tot 2 november)", "a ghost found during Ghost week (24 October to 2 November)"],
       prog: () => [store.get(SPOOK_KEY, false) ? 1 : 0, 1], reward: ["een Spookweek-sticker in je logboek", "a Ghost week sticker in your logbook"] },
+    // the apothecary cabinet in the logbook (14-z-apotheek.js); the quiz does not count
+    { id: "ap", name: ["Zee-apotheker", "Sea apothecary"], goal: ["de hele apothekerskast", "the whole apothecary cabinet"], prog: () => pharmaProgress(), reward: ["een gouden vijzel voor je aquarium", "a golden mortar for your aquarium"] },
   ];
   // the milestones on the first page of the logbook, under a heading per kind
   const MILESTONE_GROUPS = [
@@ -484,7 +487,7 @@
     ["Shiny's", "Shinies", ["s1", "s10", "s40", "s100", "sall"]],
     ["Hulp bij het zoeken", "Help with searching", ["gw", "ga", "gv", "gm", "gr"]],
     ["Wateren", "Waters", ["wl", "wm", "wr", "ws", "wd", "nz", "wk", "wi", "wg", "dz"]],
-    ["Bijzonder", "Special", ["ph", "rd", "vh", "vh30", "fj", "sk", "sj"]],
+    ["Bijzonder", "Special", ["ph", "rd", "vh", "vh30", "fj", "sk", "sj", "ap"]],
   ];
   // The Wadden Sea made ten waters. A logbook that already had the first nine keeps the Globetrotter reward;
   // this is worked out once, on the first visit after the update (called from the start in 20-language-and-start.js).

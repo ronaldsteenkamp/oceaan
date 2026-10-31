@@ -5,6 +5,7 @@
   function addWave2Ground(s, P, big, small) {
     if (chance(P.wheel || 0)) small.push({ kind: "wheel", w: 80 * u, s: range(26, 34) * u, tilt: range(-0.5, 0.5), spin: range(0, TAU) });
     if (chance(P.idol || 0)) small.push({ kind: "idol", w: 50 * u, s: range(20, 26) * u, ph: range(0, TAU) });
+    if (P.mortar) small.push(mortarProp()); // only in an aquarium, so it rolls no dice
     if (chance(P.phonebox || 0)) big.push({ kind: "phonebox", w: 110 * u, s: range(28, 34) * u, tilt: range(0.5, 1.2) * (chance(0.5) ? 1 : -1) });
     if (chance(P.sponges || 0)) {
       small.push({ kind: "sponges", w: 110 * u, parts: Array.from({ length: 3 + Math.floor(rng() * 3) }, () => ({

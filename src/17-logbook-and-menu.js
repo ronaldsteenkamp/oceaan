@@ -350,7 +350,8 @@
 
   // animals (and everything else that goes into the logbook) can only be chosen once you have seen them;
   // things on the seabed are not in the logbook, so they can always be chosen
-  const aqOpen = k => !LOGGABLE.has(k) || logbook.has(k);
+  // (the golden mortar only once the apothecary cabinet is full)
+  const aqOpen = k => k === "mortar" ? rewards.has("ap") : !LOGGABLE.has(k) || logbook.has(k);
   function currentAsDraft() {
     const d = currentAsDraftAll();
     for (const k of [...d.set]) if (!aqOpen(k)) d.set.delete(k);
@@ -379,7 +380,7 @@
     for (const [title, keys] of AQ_GROUPS) {
       html += `<h3>${groupName(title)}</h3><div class="chips">` + keys.map(k => aqOpen(k)
         ? `<button type="button" class="chip pick ${aqDraft.set.has(k) ? "on" : ""}" data-key="${k}" aria-pressed="${aqDraft.set.has(k)}">${nm(k)}</button>`
-        : `<button type="button" class="chip pick locked" disabled title="${L("Nog niet gezien", "Not seen yet")}">???</button>`).join("") + `</div>`;
+        : `<button type="button" class="chip pick locked" disabled title="${k === "mortar" ? L("Vul eerst de apothekerskast in je logboek", "Fill the apothecary cabinet in your logbook first") : L("Nog niet gezien", "Not seen yet")}">???</button>`).join("") + `</div>`;
     }
     html += `<div class="actions"><button type="button" id="aqBuild" class="primary">${L("Bouw dit aquarium", "Build this aquarium")}</button><button type="button" id="aqRandom">${L("Terug naar willekeurig", "Back to random")}</button></div>`;
     if (aquarium) html += `<p class="sum">${L("Je aquarium is gebouwd. De code bovenaan deze pagina deelt precies dit aquarium.", "Your aquarium is built. The code at the top of this page shares exactly this aquarium.")}</p>`;

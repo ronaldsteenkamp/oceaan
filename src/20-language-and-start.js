@@ -191,6 +191,22 @@
       if (!k.startsWith("shiny:") && (!FACTS[k] || !FACTS_EN[k])) errors.push(`logboek ${k}: weetje ontbreekt`);
       if (!THUMBS[base]) errors.push(`logboek ${k}: plaatje ontbreekt`);
     }
+    // every card of the apothecary is complete in both languages, with three choices and a right answer among them
+    for (const k of PHARMA_KEYS) {
+      const c = PHARMA[k], e = PHARMA_EN[k] || {}, miss = [];
+      if (!ANIMALS[k] || !LOGGABLE.has(k)) miss.push("dier in het logboek");
+      if (!PHARMA_TYPES[c.type]) miss.push(`soort (${c.type})`);
+      if (c.gevaar && !(c.les && e.les)) miss.push("les (nl/en) bij een gevaarkaart");
+      for (const f of ["stof", "gebruik", "sinds", "weetje", "vraag"]) if (!c[f] || !e[f]) miss.push(`${f} (nl/en)`);
+      if (!!c.dier !== !!e.dier) miss.push("dier (nl/en)");
+      for (const q of [c.keuzes, e.keuzes]) if (!Array.isArray(q) || q.length !== 3 || !q.every(x => typeof x === "string" && x)) miss.push("drie keuzes (nl/en)");
+      if (!(c.goed >= 0 && c.goed < 3)) miss.push("goed (0, 1 of 2)");
+      if (miss.length) errors.push(`apotheek ${k}: mist ${miss.join(", ")}`);
+    }
+    for (const k of Object.keys(PHARMA_EN)) if (!PHARMA[k]) errors.push(`apotheek ${k}: staat wel in PHARMA_EN, niet in PHARMA`);
+    if (!MILESTONES.some(m => m.id === "ap") || !PROP_KEYS.includes("mortar") || !GROUND_DRAW.mortar || !THUMBS.mortar) errors.push("apotheek: mijlpaal of gouden vijzel ontbreekt");
+    if (!AQ_BASE.includes("mortar")) errors.push("aquarium: zet de gouden vijzel (mortar) achteraan in AQ_BASE");
+    try { pharmaBlocks(); } catch (err) { errors.push(`apotheek: de kast tekent niet (${err.message})`); }
     if (new Set(AQ_ALL).size !== AQ_ALL.length) errors.push("aquarium: dubbele sleutel in AQ_ALL");
     for (const k of Object.keys(ANIMALS)) if ((ANIMALS[k].life || ANIMALS[k].visits) && !AQ_BASE.includes(k)) errors.push(`aquarium: zet ${k} achteraan in AQ_BASE (01-basis.js)`);
     // animals after the sixth round roll from their own stream, so they never change the oceans that were already there
@@ -347,16 +363,23 @@
   resize();
   // read the address before newVariant writes the seed into it
   const startHash = location.hash;
-  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek|nacht))?$/.exec(startHash);
+  const screenTest = /^#schermtest-(\d+)(?:-(logboek|menu|welkom|detail|ontdek|nacht|apotheek|gevaar|vijzel))?$/.exec(startHash);
   if (startHash === "#stijlblad") {
     welcomeEl.hidden = true;
     newVariant(7, false);
     showStyleSheet();
   } else if (screenTest) {
     welcomeEl.hidden = screenTest[2] !== "welkom";
+    // an aquarium with the golden mortar, the reward of the apothecary
+    if (screenTest[2] === "vijzel") aquarium = { water: 0, set: new Set(["mortar", "coral", "anemone", "chest", "puffer", "seahare"]), shiny: false };
+    if (screenTest[2] === "gevaar") aquarium = { water: 0, set: new Set(["coral", "anemone", "puffer"]), shiny: false };
     newVariant(Number(screenTest[1]), false);
     if (screenTest[2] === "logboek") bookBtn.click();
     if (screenTest[2] === "detail") { bookBtn.click(); openDetail("octopus"); }
+    // the diver too close to the pufferfish: the warning sign of the apothecary's danger card
+    if (screenTest[2] === "gevaar") setTimeout(() => { diverBtn.click(); if (scene.puffer) { diver.x = scene.puffer.x - 70 * u; diver.y = scene.puffer.y + 10 * u; } }, 1500);
+    // the apothecary cabinet, once the book has been measured
+    if (screenTest[2] === "apotheek") { bookBtn.click(); setTimeout(() => { if (bookJumps.Apotheek !== undefined) { bookAt = bookJumps.Apotheek - (bookSingle() ? 0 : bookJumps.Apotheek % 2); showSpread(); } }, 900); }
     // finding things: the diver, a ring filling up in the lamp, a small polaroid on its way and the dive report
     if (screenTest[2] === "ontdek") {
       setTimeout(() => {

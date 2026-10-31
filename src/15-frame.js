@@ -268,6 +268,8 @@
     drawWave6Sky(k);
     if (S.storm.flash > 0) { ctx.fillStyle = `rgba(225,235,255,${S.storm.flash * 0.4})`; ctx.fillRect(0, 0, W, H); }
     drawMap(k);
+    // the warning sign of the apothecary's danger card stays bright, also at night
+    watchDanger();
 
     if (fade > 0) {
       ctx.globalAlpha = fade;
