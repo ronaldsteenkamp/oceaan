@@ -52,6 +52,8 @@
     color-scheme: dark;
   }
   html, body { height: 100%; }
+  /* Geen herlaad-cirkel bij omlaag trekken (Chrome kijkt hiervoor naar html, niet naar body) */
+  html { overscroll-behavior-y: none; }
   body {
     background: var(--deep); color: var(--text-dim);
     font-family: var(--sans); font-size: var(--fs-sm);
